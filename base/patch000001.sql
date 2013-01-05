@@ -55,9 +55,9 @@ CREATE TABLE pre.tpresup_partida (
   CONSTRAINT fk_tpresup_partida__id_partida FOREIGN KEY (id_partida)
       REFERENCES pre.tpartida (id_partida) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT fk_tpresup_partida__id_centro_costo FOREIGN KEY (id_centro_costo)
-      REFERENCES gem.tcentro_costo (id_centro_costo) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+--  CONSTRAINT fk_tpresup_partida__id_centro_costo FOREIGN KEY (id_centro_costo)
+--      REFERENCES gem.tcentro_costo (id_centro_costo) MATCH SIMPLE
+--      ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT fk_tpresup_partida__id_moneda FOREIGN KEY (id_moneda)
       REFERENCES param.tmoneda (id_moneda) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -72,3 +72,70 @@ ALTER TABLE pre.tpresup_partida OWNER TO postgres;
 
 
 /***********************************F-SCP-GSS-PRE-31-23/11/2012*****************************************/
+
+
+
+/***********************************I-SCP-RAC-PRE-0-07/01/2013*****************************************/
+
+
+
+CREATE TABLE pre.tconcepto_ingas(
+id_concepto_ingas SERIAL NOT NULL, 
+desc_ingas varchar(150), 
+tipo varchar(255), 
+sw_tesoro int4, 
+id_oec int4, 
+id_item int4, 
+id_servicio int4, 
+PRIMARY  KEY(id_concepto_ingas))INHERITS (pxp.tbase);
+
+
+DROP TABLE pre.tpresupuesto;  --elimin a tabla creada para mantenimiento
+
+   
+CREATE TABLE pre.tpresupuesto(
+id_presupuesto SERIAL NOT NULL,
+codigo varchar(20), 
+descripcion varchar(200),
+id_ep int4 NOT NULL, 
+id_uo int4,
+id_fuente_financiammiento int4, 
+id_parametro int4, 
+id_gestion int4,
+id_concepto_colectivo int4, 
+id_categoria_prog int4, 
+nombre_agrupador varchar(150), 
+tipo_pres varchar(30), 
+estado varchar(30),   -- estado_pre en endesis
+cod_fin varchar(10), 
+cod_prg varchar(10), 
+cod_pry varchar(10), 
+cod_act varchar(10), 
+PRIMARY KEY(id_presupuesto))INHERITS (pxp.tbase);
+
+
+DROP TABLE pre.tpartida;  --elimina tabla creada para mantenimiento
+
+
+CREATE TABLE pre.tpartida(
+id_partida SERIAL NOT NULL, 
+id_partida_fk int4 NOT NULL, 
+id_gestion int4,
+id_parametros int4, 
+codigo varchar(30), 
+nombre_partida varchar(150), 
+descripcion varchar(1000), 
+nivel_partida int4, 
+sw_trasacional varchar(2), 
+tipo varchar(20), --endesis tipo_partida
+sw_movimiento varchar(10), 
+cod_trans varchar(40), 
+cod_ascii varchar(2),
+cod_excel varchar(2), 
+ent_trf varchar(4),
+PRIMARY KEY(id_partida)) INHERITS (pxp.tbase);
+
+
+/***********************************F-SCP-RAC-PRE-0-07/01/2013*****************************************/
+
+
