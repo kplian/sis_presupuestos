@@ -45,7 +45,7 @@ CREATE TABLE pre.tpresup_partida (
   fecha_hora timestamp,
   importe numeric(18,2),
   tipo varchar(15),
-  CONSTRAINT tpresup_partida__id_presup_partida PRIMARY KEY (id_presup_partida)
+  CONSTRAINT tpresup_partida__id_presup_partida PRIMARY KEY (id_presup_partida),
   CONSTRAINT chk_tpresup_partida__tipo check (tipo in ('presupuestado','ejecutado'))
 ) INHERITS (pxp.tbase)
 WITH (
