@@ -3,7 +3,7 @@
 alter table pre.tpartida
 add CONSTRAINT fk_tpartida__id_partida_fk FOREIGN KEY (id_partida_fk)
   	REFERENCES pre.tpartida (id_partida) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION
+    ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 alter table pre.tpresup_partida
 add CONSTRAINT fk_tpresup_partida__id_presupuesto FOREIGN KEY (id_presupuesto)
