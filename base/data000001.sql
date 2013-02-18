@@ -1,4 +1,4 @@
-/***********************************I-DATA-RAC-PRESU-0-31/12/2012*****************************************/
+/***********************************I-DAT-RAC-PRE-0-31/12/2012*****************************************/
 
 /*
 *	Author: RAC
@@ -23,8 +23,6 @@ Para  definir la la metadata, menus, roles, etc
 insert into segu.tsubsistema(codigo,nombre,prefijo,nombre_carpeta) values
 ('PRE','Sistema de presupuesto','PRE','presupuestos');
 	
-
-
 -------------------------------------
 --DEFINICION DE INTERFACES
 -----------------------------------
@@ -103,4 +101,4 @@ select pxp.f_insert_tprocedimiento ('PRE_PRE_INS', '	Insercion de registros
 
 
 
-/***********************************F-DATA-RAC-PRESU-0-31/12/2012*****************************************/
+/***********************************F-DAT-RAC-PRE-0-31/12/2012*****************************************/
