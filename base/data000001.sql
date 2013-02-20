@@ -94,7 +94,6 @@ select pxp.f_insert_tprocedimiento ('PRE_PRE_INS', '	Insercion de registros
 
 
 
-
 -------------------------------------
 --DEFINICION DE OTROS DATOS
 -----------------------------------
@@ -102,3 +101,26 @@ select pxp.f_insert_tprocedimiento ('PRE_PRE_INS', '	Insercion de registros
 
 
 /***********************************F-DAT-RAC-PRE-0-31/12/2012*****************************************/
+
+/***********************************I-DAT-GSS-PRE-38-18/02/2013*****************************************/
+
+select pxp.f_insert_tgui ('Concepto Ingas', 'concepto ingreso gasto', 'CINGAS', 'si', 2, 'sis_presupuestos/vista/concepto_ingas/ConceptoIngas.php', 3, '', 'ConceptoIngas', 'PRE');
+select pxp.f_insert_tgui ('Concepto Cuenta', 'concepto cuenta', 'CCTA', 'si', 3, 'sis_presupuestos/vista/concepto_cta/ConceptoCta.php', 3, '', 'ConceptoCta', 'PRE');
+select pxp.f_insert_tfuncion ('pre.f_concepto_ingas_sel', 'Funcion para tabla     ', 'PRE');
+select pxp.f_insert_tfuncion ('pre.f_concepto_ingas_ime', 'Funcion para tabla     ', 'PRE');
+select pxp.f_insert_tfuncion ('pre.f_concepto_cta_sel', 'Funcion para tabla     ', 'PRE');
+select pxp.f_insert_tfuncion ('pre.f_concepto_cta_ime', 'Funcion para tabla     ', 'PRE');
+select pxp.f_insert_tprocedimiento ('PRE_CINGAS_SEL', 'Consulta de datos', 'si', '', '', 'pre.f_concepto_ingas_sel');
+select pxp.f_insert_tprocedimiento ('PRE_CINGAS_CONT', 'Conteo de registros', 'si', '', '', 'pre.f_concepto_ingas_sel');
+select pxp.f_insert_tprocedimiento ('PRE_CINGAS_INS', 'Insercion de registros', 'si', '', '', 'pre.f_concepto_ingas_ime');
+select pxp.f_insert_tprocedimiento ('PRE_CINGAS_MOD', 'Modificacion de registros', 'si', '', '', 'pre.f_concepto_ingas_ime');
+select pxp.f_insert_tprocedimiento ('PRE_CINGAS_ELI', 'Eliminacion de registros', 'si', '', '', 'pre.f_concepto_ingas_ime');
+select pxp.f_insert_tprocedimiento ('PRE_CCTA_SEL', 'Consulta de datos', 'si', '', '', 'pre.f_concepto_cta_sel');
+select pxp.f_insert_tprocedimiento ('PRE_CCTA_CONT', 'Conteo de registros', 'si', '', '', 'pre.f_concepto_cta_sel');
+select pxp.f_insert_tprocedimiento ('PRE_CCTA_INS', 'Insercion de registros', 'si', '', '', 'pre.f_concepto_cta_ime');
+select pxp.f_insert_tprocedimiento ('PRE_CCTA_MOD', 'Modificacion de registros', 'si', '', '', 'pre.f_concepto_cta_ime');
+select pxp.f_insert_tprocedimiento ('PRE_CCTA_ELI', 'Eliminacion de registros', 'si', '', '', 'pre.f_concepto_cta_ime');
+select pxp.f_insert_testructura_gui ('CINGAS', 'PRE.1');
+select pxp.f_insert_testructura_gui ('CCTA', 'PRE.1');
+
+/***********************************F-DAT-GSS-PRE-38-18/02/2013*****************************************/

@@ -79,7 +79,7 @@ DROP TABLE pre.tpartida;  --elimina tabla creada para mantenimiento
 
 CREATE TABLE pre.tpartida(
   id_partida SERIAL NOT NULL, 
-  id_partida_fk int4 NOT NULL, 
+  id_partida_fk int4, 
   id_gestion int4,
   id_parametros int4, 
   codigo varchar(30), 
