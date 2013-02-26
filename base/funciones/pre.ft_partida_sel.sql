@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_partida_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -99,11 +101,19 @@ BEGIN
                          case
                           when (par.id_partida_fk is null )then
                                ''raiz''::varchar
-                          ELSE
-                              ''hijo''::varchar
-                          END as tipo_nodo
+                          when (par.sw_trasacional = ''titular'' )then
+                               ''hijo''::varchar
+                         when (par.sw_trasacional = ''movimiento'' )then
+                               ''hoja''::varchar
+                          END as tipo_nodo,
+                        par.nombre_partida,
+                        par.sw_movimiento,
+                        par.sw_trasacional,
+                        par.id_gestion
                         from pre.tpartida par
-                        where  '||v_where|| ' 
+                        where  '||v_where|| '
+                        and id_gestion =  '||COALESCE( v_parametros.id_gestion,0)|| ' 
+                        and tipo =  '''||COALESCE(v_parametros.tipo,'gasto')|| ''' 
                         ORDER BY par.id_partida';
             raise notice '%',v_consulta;
            

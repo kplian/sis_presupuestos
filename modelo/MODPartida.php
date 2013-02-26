@@ -50,7 +50,11 @@ class MODPartida extends MODbase{
         
         $id_padre = $this->objParam->getParametro('id_padre');
         
-        $this->setParametro('id_padre','id_padre','varchar');       
+        $this->setParametro('id_padre','id_padre','varchar'); 
+		
+		$this->setParametro('id_gestion','id_gestion','integer');  
+		$this->setParametro('tipo','tipo','varchar');  
+		      
         //$this->setParametro('id_subsistema','id_subsistema','integer');
                 
         //Definicion de la lista del resultado del query
@@ -60,6 +64,13 @@ class MODPartida extends MODbase{
         $this->captura('tipo','varchar');
         $this->captura('descripcion','varchar');
         $this->captura('tipo_nodo','varchar');
+		
+		 $this->captura('nombre_partida','varchar');
+		 $this->captura('sw_movimiento','varchar');
+		 $this->captura('sw_trasacional','varchar');
+		 $this->captura('id_gestion','integer');
+		 
+		 
         
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -78,9 +89,16 @@ class MODPartida extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_partida_fk','id_partida_fk','int4');
-		$this->setParametro('tipo','tipo','varchar');
+	
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
+		
+		$this->setParametro('id_gestion','id_gestion','integer');  
+		$this->setParametro('tipo','tipo','varchar'); 
+		
+		$this->setParametro('sw_movimiento','sw_movimiento','varchar'); 
+		$this->setParametro('sw_trasacional','sw_trasacional','varchar'); 
+		$this->setParametro('nombre_partida','nombre_partida','varchar'); 
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -100,9 +118,16 @@ class MODPartida extends MODbase{
 		$this->setParametro('id_partida','id_partida','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('id_partida_fk','id_partida_fk','int4');
-		$this->setParametro('tipo','tipo','varchar');
+		
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
+		
+		$this->setParametro('id_gestion','id_gestion','integer');  
+		$this->setParametro('tipo','tipo','varchar'); 
+		
+		$this->setParametro('sw_movimiento','sw_movimiento','varchar'); 
+		$this->setParametro('sw_trasacional','sw_trasacional','varchar'); 
+		$this->setParametro('nombre_partida','nombre_partida','varchar'); 
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

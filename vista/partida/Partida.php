@@ -14,10 +14,33 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
+		this.initButtons=[this.cmbGestion,this.cmbTipo];
     	//llama al constructor de la clase padre
 		Phx.vista.Partida.superclass.constructor.call(this,config);
 		this.init();
+		this.loaderTree.baseParams={id_gestion:0,tipo:'gasto'};
+		
+		this.cmbGestion.on('select',this.capturaFiltros,this);
+		
+		this.cmbTipo.on('select',this.capturaFiltros,this);
+		
 	},
+	
+	capturaFiltros:function(combo, record, index){
+		
+		this.loaderTree.baseParams={id_gestion:this.cmbGestion.getValue(),tipo:this.cmbTipo.getValue()};
+		this.root.reload();
+	},
+    
+    loadValoresIniciales:function()
+	{
+		Phx.vista.Partida.superclass.loadValoresIniciales.call(this);
+		this.getComponente('id_gestion').setValue(this.cmbGestion.getValue());	
+		this.getComponente('tipo').setValue(this.cmbTipo.getValue());	
+	},
+	
+	
+	
 			
 	Atributos:[
 		{
@@ -26,6 +49,26 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'id_partida'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_gestion'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'tipo'
 			},
 			type:'Field',
 			form:true 
@@ -54,32 +97,6 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 			form:true
 		},
 		{
-            config:{                
-                name:'tipo',
-                fieldLabel:'Tipo',
-                allowBlank:false,
-                emptyText:'Tipo...',
-                store: ['trans','no_trans'],
-                valueField: 'tipo',
-                displayField: 'tipo',
-                forceSelection:true,
-                triggerAction: 'all',
-                lazyRender:true,
-                mode:'local',
-                pageSize:10,
-                width:250,               
-                renderer:function(value, p, record){return String.format('{0}', record.data['tipo']);}
-            },
-            type:'ComboBox',
-            id_grupo:0,
-            filters:{   
-                pfiltro:'tipo',
-                type:'string'
-            },
-            grid:true,
-            form:true
-        },
-		{
 			config:{
 				name: 'codigo',
 				fieldLabel: 'Codigo',
@@ -93,7 +110,21 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 			id_grupo:1,
 			grid:true,
 			form:true
-		},
+		},{
+            config:{
+                name: 'nombre_partida',
+                fieldLabel: 'Nombre',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 100,
+                maxLength:200
+            },
+            type:'TextField',
+            filters:{pfiltro:'par.nombre_partida',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:true
+        },
         {
             config:{
                 name: 'descripcion',
@@ -101,14 +132,60 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
                 allowBlank: true,
                 anchor: '80%',
                 gwidth: 100,
-                maxLength:200
+                maxLength:900
             },
-            type:'TextField',
+            type:'TextArea',
             filters:{pfiltro:'par.descripcion',type:'string'},
             id_grupo:1,
             grid:true,
             form:true
         },
+	       	{
+	       		config:{
+	       			name:'sw_movimiento',
+	       			fieldLabel:'Movimiento',
+	       			allowBlank:false,
+	       			emptyText:'Tipo...',
+	       			typeAhead: true,
+	       		    triggerAction: 'all',
+	       		    lazyRender:true,
+	       		    mode: 'local',
+	       		    gwidth: 100,
+	       		    store:['presupuestario','flujo']
+	       		},
+	       		type:'ComboBox',
+	       		id_grupo:0,
+	       		filters:{	
+	       		         type: 'list',
+	       		         pfiltro:'par.sw_movimiento',
+	       				 options: ['fresupuestario','flujo'],	
+	       		 	},
+	       		grid:true,
+	       		form:true
+	       	},
+	       	{
+	       		config:{
+	       			name:'sw_trasacional',
+	       			fieldLabel:'Tipo Partida',
+	       			allowBlank:false,
+	       			emptyText:'Tipo...',
+	       			typeAhead: true,
+	       		    triggerAction: 'all',
+	       		    lazyRender:true,
+	       		    mode: 'local',
+	       		    gwidth: 100,
+	       		    store:['movimiento','titular']
+	       		},
+	       		type:'ComboBox',
+	       		id_grupo:0,
+	       		filters:{	
+	       		         type: 'list',
+	       		         pfiltro:'par.sw_trasacional',
+	       				 options: ['movimiento','titular'],	
+	       		 	},
+	       		grid:true,
+	       		form:true
+	       	},
 		{
 			config:{
 				name: 'usr_reg',
@@ -194,6 +271,50 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		
 	],
+	
+	cmbGestion:new Ext.form.ComboBox({
+				fieldLabel: 'Gestion',
+				allowBlank: true,
+				emptyText:'Gestion...',
+				store:new Ext.data.JsonStore(
+				{
+					url: '../../sis_parametros/control/Gestion/listarGestion',
+					id: 'id_gestion',
+					root: 'datos',
+					sortInfo:{
+						field: 'gestion',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_gestion','gestion'],
+					// turn on remote sorting
+					remoteSort: true,
+					baseParams:{par_filtro:'gestion'}
+				}),
+				valueField: 'id_gestion',
+				triggerAction: 'all',
+				displayField: 'gestion',
+			    hiddenName: 'id_gestion',
+    			mode:'remote',
+				pageSize:50,
+				queryDelay:500,
+				listWidth:'280',
+				width:80
+			}),
+	
+	cmbTipo:new Ext.form.ComboBox({
+	       			name:'movimiento',
+	       			fieldLabel:'Movimiento',
+	       			allowBlank:false,
+	       			emptyText:'Tipo...',
+	       			typeAhead: true,
+	       		    triggerAction: 'all',
+	       		    lazyRender:true,
+	       		    value:'gasto',
+	       		    mode: 'local',
+	       		    width: 70,
+	       		    store:['recurso','gasto']
+	       		}),
 	sortInfo:{
 		field: 'id_partida',
 		direction: 'ASC'
@@ -201,6 +322,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 	bdel:true,
 	bsave:true,
 	rootVisible:true,
+	expanded:false,
 	
 	onButtonNew:function(){
         var nodo = this.sm.getSelectedNode();           

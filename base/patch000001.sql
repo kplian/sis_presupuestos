@@ -59,23 +59,7 @@ ALTER TABLE pre.tpresup_partida OWNER TO postgres;
 
 /***********************************I-SCP-RAC-PRE-0-07/01/2013*****************************************/
 
-
-
-CREATE TABLE pre.tconcepto_ingas(
-  id_concepto_ingas SERIAL NOT NULL, 
-  desc_ingas varchar(150), 
-  tipo varchar(255), 
-  sw_tesoro int4, 
-  id_oec int4, 
-  id_item int4, 
-  id_servicio int4, 
-  CONSTRAINT pk_tconcepto_ingas__id_concepto_ingas PRIMARY  KEY(id_concepto_ingas)
-)INHERITS (pxp.tbase);
-
-
-
 DROP TABLE pre.tpartida;  --elimina tabla creada para mantenimiento
-
 
 CREATE TABLE pre.tpartida(
   id_partida SERIAL NOT NULL, 
@@ -86,15 +70,25 @@ CREATE TABLE pre.tpartida(
   nombre_partida varchar(150), 
   descripcion varchar(1000), 
   nivel_partida int4, 
-  sw_trasacional varchar(2), 
+  sw_trasacional varchar(20), 
+  sw_movimiento varchar(20),
   tipo varchar(20), --endesis tipo_partida
-  sw_movimiento varchar(10), 
   cod_trans varchar(40), 
   cod_ascii varchar(2),
   cod_excel varchar(2), 
   ent_trf varchar(4),
   CONSTRAINT pk_tpartida__id_partida PRIMARY KEY(id_partida)
 ) INHERITS (pxp.tbase);
+
+
+COMMENT ON COLUMN pre.tpartida.sw_trasacional
+IS 'movimiento, titular';
+
+COMMENT ON COLUMN pre.tpartida.tipo
+IS 'recurso o gasto';
+
+COMMENT ON COLUMN pre.tpartida.sw_movimiento
+IS 'flujo, presupuestaria';
 
 CREATE TABLE pre.tconcepto_cta(
   id_concepto_cta SERIAL NOT NULL, 
@@ -105,6 +99,15 @@ CREATE TABLE pre.tconcepto_cta(
   id_auxiliar int4, 
   CONSTRAINT pk_tconcepto_cta__id_concepto_cta PRIMARY KEY(id_concepto_cta)
 ) INHERITS (pxp.tbase);
+
+
+CREATE TABLE pre.tconcepto_partida(
+    id_concepto_partida SERIAL NOT NULL,
+    id_concepto_ingas int4 NOT NULL,
+    id_partida int4 NOT NULL,
+    PRIMARY KEY (id_concepto_partida))
+    INHERITS (pxp.tbase);
+
 
 /***********************************F-SCP-RAC-PRE-0-07/01/2013*****************************************/
 

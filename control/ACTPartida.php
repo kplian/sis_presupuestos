@@ -76,6 +76,15 @@ class ACTPartida extends ACTbase{
                                                         'tipo_nodo'=>'hijo',
                                                         'icon'=>'../../../lib/imagenes/a_form.png'),
                                                         $arreglo);
+														
+		$this->res->addNivelArbol('tipo_nodo','hoja',array(
+                                                        'leaf'=>true,
+                                                        'allowDelete'=>true,
+                                                        'allowEdit'=>true,
+                                                        'tipo_nodo'=>'hoja',
+                                                        'icon'=>'../../../lib/imagenes/a_form.png'),
+                                                        $arreglo);												
+														
 
         $this->res->imprimirRespuesta($this->res->generarJson());         
 

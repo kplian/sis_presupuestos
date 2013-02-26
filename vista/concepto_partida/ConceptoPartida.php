@@ -1,23 +1,23 @@
 <?php
 /**
 *@package pXP
-*@file ConceptoCta.php
-*@author  Gonzalo Sarmiento Sejas
-*@date 18-02-2013 22:57:58
+*@file gen-ConceptoPartida.php
+*@author  (admin)
+*@date 25-02-2013 22:09:52
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
+Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
-		Phx.vista.ConceptoCta.superclass.constructor.call(this,config);
+		Phx.vista.ConceptoPartida.superclass.constructor.call(this,config);
 		this.init();
-		
+		this.load({params:{start:0, limit:50}})
 	},
 			
 	Atributos:[
@@ -26,7 +26,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_concepto_cta'
+					name: 'id_concepto_partida'
 			},
 			type:'Field',
 			form:true 
@@ -34,7 +34,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'id_concepto_ingas',
-				fieldLabel: 'Id Concepto Ingas',
+				fieldLabel: 'id_concepto_ingas',
 				inputType:'hidden'
 			},
 			type:'Field',
@@ -43,59 +43,14 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'id_partida',
-				fieldLabel: 'Id Partida',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:4
-			},
-			type:'NumberField',
-			filters:{pfiltro:'ccta.id_partida',type:'numeric'},
-			id_grupo:1,
-			grid:true,
-			form:true
-		},
-		{
-			config:{
-				name: 'id_cuenta',
-				fieldLabel: 'Id Cuenta',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:4
-			},
-			type:'NumberField',
-			filters:{pfiltro:'ccta.id_cuenta',type:'numeric'},
-			id_grupo:1,
-			grid:true,
-			form:true
-		},
-		{
-			config:{
-				name: 'id_auxiliar',
-				fieldLabel: 'Id Auxiliar',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:4
-			},
-			type:'NumberField',
-			filters:{pfiltro:'ccta.id_auxiliar',type:'numeric'},
-			id_grupo:1,
-			grid:true,
-			form:true
-		},
-		{
-			config:{
-				name: 'id_centro_costo',
-				fieldLabel: 'Id Centro Costo',
+				fieldLabel: 'id_partida',
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:4
 			},
 			type:'NumberField',
-			filters:{pfiltro:'ccta.id_centro_costo',type:'numeric'},
+			filters:{pfiltro:'conp.id_partida',type:'numeric'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -110,23 +65,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 				maxLength:10
 			},
 			type:'TextField',
-			filters:{pfiltro:'ccta.estado_reg',type:'string'},
-			id_grupo:1,
-			grid:true,
-			form:false
-		},
-		{
-			config:{
-				name: 'fecha_reg',
-				fieldLabel: 'Fecha creación',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-						format: 'd/m/Y', 
-						renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
-			},
-			type:'DateField',
-			filters:{pfiltro:'ccta.fecha_reg',type:'date'},
+			filters:{pfiltro:'conp.estado_reg',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:false
@@ -148,6 +87,22 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'fecha_reg',
+				fieldLabel: 'Fecha creación',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+						format: 'd/m/Y', 
+						renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
+			},
+			type:'DateField',
+			filters:{pfiltro:'conp.fecha_reg',type:'date'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
+		{
+			config:{
 				name: 'fecha_mod',
 				fieldLabel: 'Fecha Modif.',
 				allowBlank: true,
@@ -157,7 +112,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 						renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 			type:'DateField',
-			filters:{pfiltro:'ccta.fecha_mod',type:'date'},
+			filters:{pfiltro:'conp.fecha_mod',type:'date'},
 			id_grupo:1,
 			grid:true,
 			form:false
@@ -179,21 +134,18 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	
-	title:'Concepto cuenta',
-	ActSave:'../../sis_presupuestos/control/ConceptoCta/insertarConceptoCta',
-	ActDel:'../../sis_presupuestos/control/ConceptoCta/eliminarConceptoCta',
-	ActList:'../../sis_presupuestos/control/ConceptoCta/listarConceptoCta',
-	id_store:'id_concepto_cta',
+	title:'Concepto-Partida',
+	ActSave:'../../sis_presupuestos/control/ConceptoPartida/insertarConceptoPartida',
+	ActDel:'../../sis_presupuestos/control/ConceptoPartida/eliminarConceptoPartida',
+	ActList:'../../sis_presupuestos/control/ConceptoPartida/listarConceptoPartida',
+	id_store:'id_concepto_partida',
 	fields: [
-		{name:'id_concepto_cta', type: 'numeric'},
-		{name:'estado_reg', type: 'string'},
-		{name:'id_auxiliar', type: 'numeric'},
-		{name:'id_cuenta', type: 'numeric'},
-		{name:'id_concepto_ingas', type: 'numeric'},
+		{name:'id_concepto_partida', type: 'numeric'},
 		{name:'id_partida', type: 'numeric'},
-		{name:'id_centro_costo', type: 'numeric'},
-		{name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+		{name:'id_concepto_ingas', type: 'numeric'},
+		{name:'estado_reg', type: 'string'},
 		{name:'id_usuario_reg', type: 'numeric'},
+		{name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
@@ -201,7 +153,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		
 	],
 	sortInfo:{
-		field: 'id_concepto_cta',
+		field: 'id_concepto_partida',
 		direction: 'ASC'
 	},
 	bdel:true,
