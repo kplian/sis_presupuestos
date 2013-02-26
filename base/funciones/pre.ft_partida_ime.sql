@@ -1,11 +1,3 @@
-CREATE OR REPLACE FUNCTION pre.ft_partida_ime (
-  p_administrador integer,
-  p_id_usuario integer,
-  p_tabla varchar,
-  p_transaccion varchar
-)
-RETURNS varchar AS
-$body$
 /**************************************************************************
  SISTEMA:		Sistema de presupuesto
  FUNCION: 		pre.ft_partida_ime
@@ -30,6 +22,8 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_partida	integer;
+    
+    v_id_partida_fk integer;
 			    
 BEGIN
 
@@ -46,6 +40,14 @@ BEGIN
 	if(p_transaccion='PRE_PAR_INS')then
 					
         begin
+            if v_parametros.id_partida_fk != 'id' and v_parametros.id_partida_fk !=''  then
+            
+            v_id_partida_fk = v_parametros.id_partida_fk::integer;
+            end if;
+        
+    
+        
+        
         	--Sentencia de la insercion
         	insert into pre.tpartida(
 			estado_reg,
@@ -56,17 +58,26 @@ BEGIN
 			id_usuario_reg,
 			fecha_reg,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            id_gestion,
+            sw_transaccional,
+            sw_movimiento,
+            nombre_partida
+            
           	) values(
 			'activo',
-			v_parametros.id_partida_fk,
+			v_id_partida_fk,
 			v_parametros.tipo,
 			v_parametros.descripcion,
 			v_parametros.codigo,
 			p_id_usuario,
 			now(),
 			null,
-			null
+			null,
+            v_parametros.id_gestion,
+            v_parametros.sw_transaccional,
+            v_parametros.sw_movimiento,
+            v_parametros.nombre_partida
 			)RETURNING id_partida into v_id_partida;
                
 			--Definicion de la respuesta
@@ -88,14 +99,24 @@ BEGIN
 	elsif(p_transaccion='PRE_PAR_MOD')then
 
 		begin
+        
+        if v_parametros.id_partida_fk != 'id' and v_parametros.id_partida_fk != '' then
+            
+            v_id_partida_fk = v_parametros.id_partida_fk::integer;
+        end if;
+        
 			--Sentencia de la modificacion
 			update pre.tpartida set
-			id_partida_fk = v_parametros.id_partida_fk,
+			id_partida_fk = v_id_partida_fk,
 			tipo = v_parametros.tipo,
 			descripcion = v_parametros.descripcion,
 			codigo = v_parametros.codigo,
 			id_usuario_mod = p_id_usuario,
-			fecha_mod = now()
+			fecha_mod = now(),
+            id_gestion=v_parametros.id_gestion,
+            sw_transaccional=v_parametros.sw_transaccional,
+            sw_movimiento=v_parametros.sw_movimiento,
+            nombre_partida=v_parametros.nombre_partida
 			where id_partida=v_parametros.id_partida;
                
 			--Definicion de la respuesta
@@ -146,9 +167,3 @@ EXCEPTION
 		raise exception '%',v_resp;
 				        
 END;
-$body$
-LANGUAGE 'plpgsql'
-VOLATILE
-CALLED ON NULL INPUT
-SECURITY INVOKER
-COST 100;

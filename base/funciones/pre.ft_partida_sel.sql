@@ -59,9 +59,17 @@ BEGIN
 						par.id_usuario_mod,
 						par.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
-						from pre.tpartida par
+						usu2.cuenta as usr_mod,
+                        
+                        par.nombre_partida,
+                        par.sw_movimiento,
+                        par.sw_transaccional,
+                        par.id_gestion,
+                        ges.gestion as desc_gestion
+						
+                        from pre.tpartida par
 						inner join segu.tusuario usu1 on usu1.id_usuario = par.id_usuario_reg
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod
 				        where  ';
 			
@@ -101,14 +109,14 @@ BEGIN
                          case
                           when (par.id_partida_fk is null )then
                                ''raiz''::varchar
-                          when (par.sw_trasacional = ''titular'' )then
+                          when (par.sw_transaccional = ''titular'' )then
                                ''hijo''::varchar
-                         when (par.sw_trasacional = ''movimiento'' )then
+                         when (par.sw_transaccional = ''movimiento'' )then
                                ''hoja''::varchar
                           END as tipo_nodo,
                         par.nombre_partida,
                         par.sw_movimiento,
-                        par.sw_trasacional,
+                        par.sw_transaccional,
                         par.id_gestion
                         from pre.tpartida par
                         where  '||v_where|| '
@@ -135,9 +143,10 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_partida)
 					    from pre.tpartida par
-					    inner join segu.tusuario usu1 on usu1.id_usuario = par.id_usuario_reg
+						inner join segu.tusuario usu1 on usu1.id_usuario = par.id_usuario_reg
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod
-					    where ';
+				       where ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
