@@ -11,6 +11,24 @@ class ACTPartida extends ACTbase{
 			
 	function listarPartida(){
 		$this->objParam->defecto('ordenacion','id_partida');
+		
+		if($this->objParam->getParametro('id_gestion')!=''){
+	    	$this->objParam->addFiltro("par.id_gestion = ".$this->objParam->getParametro('id_gestion'));	
+		}
+		
+		
+		if($this->objParam->getParametro('tipo')!=''){
+	    	$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
+		}
+		
+		
+		if($this->objParam->getParametro('sw_transaccional')!=''){
+	    	$this->objParam->addFiltro("par.sw_transaccional = ''".$this->objParam->getParametro('sw_transaccional')."''");	
+		}
+		
+		
+		
+		
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -53,7 +71,7 @@ class ACTPartida extends ACTbase{
         
         array_push($arreglo,array('nombre'=>'text','valor'=>'codigo'));
         array_push($arreglo,array('nombre'=>'cls','valor'=>'codigo'));
-        array_push($arreglo,array('nombre'=>'qtip','valores'=>'<b> #codigo#</b><br> #descripcion#'));
+        array_push($arreglo,array('nombre'=>'qtip','valores'=>'<b> #codigo#</b><b> #nombre_partida#</b><br> #descripcion#'));
         
         
         $this->res->addNivelArbol('tipo_nodo','raiz',array('leaf'=>false,

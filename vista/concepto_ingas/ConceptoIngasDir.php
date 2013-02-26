@@ -24,12 +24,23 @@ Phx.vista.ConceptoIngasDir = {
 		
 	},
 	
-	south:{ 
+	tabsouth:[
+	      { 
 		  url:'../../../sis_presupuestos/vista/concepto_partida/ConceptoPartida.php',
 		  title:'Partidas', 
 		  height:'50%',
 		  cls:'ConceptoPartida'
-		}
+		 },
+	     {
+		  url:'../../../sis_presupuestos/vista/concepto_cta/ConceptoCta.php',
+		  title:'Hijos', 
+		  height:'50%',
+		  cls:'ConceptoCta'
+		 },
+	
+	   ]
+	
+	
 	
 };
 </script>

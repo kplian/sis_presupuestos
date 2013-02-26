@@ -13,6 +13,11 @@ class ACTConceptoPartida extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_concepto_partida');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
+		
+		if($this->objParam->getParametro('id_concepto_ingas')!=''){
+	    	$this->objParam->addFiltro("conp.id_concepto_ingas = ''".$this->objParam->getParametro('id_concepto_ingas')."''");	
+		}
+		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODConceptoPartida','listarConceptoPartida');

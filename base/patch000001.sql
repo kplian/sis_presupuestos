@@ -70,7 +70,7 @@ CREATE TABLE pre.tpartida(
   nombre_partida varchar(150), 
   descripcion varchar(1000), 
   nivel_partida int4, 
-  sw_trasacional varchar(20), 
+  sw_trasnaccional varchar(20), 
   sw_movimiento varchar(20),
   tipo varchar(20), --endesis tipo_partida
   cod_trans varchar(40), 

@@ -17,7 +17,9 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.ConceptoPartida.superclass.constructor.call(this,config);
 		this.init();
-		this.load({params:{start:0, limit:50}})
+		
+		this.bloquearMenus();
+		
 	},
 			
 	Atributos:[
@@ -41,19 +43,96 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 			form:true
 		},
 		{
-			config:{
+			config: {
 				name: 'id_partida',
-				fieldLabel: 'id_partida',
+				fieldLabel: 'Partida',
+				typeAhead: false,
+				forceSelection: false,
 				allowBlank: false,
+				emptyText: 'Partida...',
+				store: new Ext.data.JsonStore({
+					url: '../../sis_presupuestos/control/Partida/listarPartida',
+					id: 'id_partida',
+					root: 'datos',
+					sortInfo: {
+						field: 'codigo',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_partida', 'codigo', 'nombre_partida','descripcion','id_gestion','desc_gestion','tipo','sw_transaccional'],
+					// turn on remote sorting
+					remoteSort: true,
+					baseParams: {par_filtro: 'par.nombre_partida#par.codigo',sw_transaccional:'movimiento'}
+				}),
+				valueField: 'id_partida',
+				displayField: 'nombre_partida',
+				gdisplayField: 'desc_partida',
+				triggerAction: 'all',
+				lazyRender: true,
+				mode: 'remote',
+				pageSize: 20,
+				queryDelay: 200,
+				listWidth:280,
+				minChars: 2,
+				gwidth: 170,
+				renderer: function(value, p, record) {
+					return String.format('{0}', record.data['desc_partida']);
+				},
+				tpl: '<tpl for="."><div class="x-combo-list-item"><p>Codigo: {codigo}</p><strong>{nombre_partida}</strong> <p>{tipo} - {desc_gestion}</p></div></tpl>'
+			},
+			type: 'ComboBox',
+			id_grupo: 0,
+			filters: {
+				pfiltro: 'par.nombre_partida',
+				type: 'string'
+			},
+			grid: false,
+			form: true
+		},
+		{
+			config:{
+				name: 'codigo_partida',
+				fieldLabel: 'Codigo',
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:4
 			},
-			type:'NumberField',
-			filters:{pfiltro:'conp.id_partida',type:'numeric'},
+			type:'Field',
+			filters:{pfiltro:'par.codigo',type:'string'},
 			id_grupo:1,
 			grid:true,
-			form:true
+			form:false
+		},
+		{
+			config:{
+				name: 'nombre_partida',
+				fieldLabel: 'Partida',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:4
+			},
+			type:'Field',
+			filters:{pfiltro:'par.nombre_partida',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
+		{
+			config:{
+				name: 'desc_gestion',
+				fieldLabel: 'Gestion',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:4
+			},
+			type:'Field',
+			filters:{pfiltro:'ges.gestion',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:false
 		},
 		{
 			config:{
@@ -149,15 +228,30 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},
+		{name:'usr_mod', type: 'string'},'desc_gestion','desc_partida','codigo_partida','nombre_partida'
 		
 	],
+	
+	onReloadPage:function(m)
+	{
+		this.maestro=m;						
+		this.store.baseParams={id_concepto_ingas:this.maestro.id_concepto_ingas};
+		this.load({params:{start:0, limit:50}});			
+	},
+	loadValoresIniciales:function()
+	{
+		Phx.vista.ConceptoPartida.superclass.loadValoresIniciales.call(this);
+		this.getComponente('id_concepto_ingas').setValue(this.maestro.id_concepto_ingas);
+		var tipo = this.maestro.tipo=='ingreso'?'recurso':'gasto';
+		this.getComponente('id_partida').store.baseParams.tipo=tipo;		
+	},
 	sortInfo:{
 		field: 'id_concepto_partida',
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true
+	bsave:false,
+	bedit:false
 	}
 )
 </script>

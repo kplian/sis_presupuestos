@@ -33,6 +33,13 @@ class MODPartida extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		
+		 $this->captura('nombre_partida','varchar');
+		 $this->captura('sw_movimiento','varchar');
+		 $this->captura('sw_transaccional','varchar');
+		 $this->captura('id_gestion','integer');
+		 $this->captura('desc_gestion','integer');
+		 
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -67,7 +74,7 @@ class MODPartida extends MODbase{
 		
 		 $this->captura('nombre_partida','varchar');
 		 $this->captura('sw_movimiento','varchar');
-		 $this->captura('sw_trasacional','varchar');
+		 $this->captura('sw_transaccional','varchar');
 		 $this->captura('id_gestion','integer');
 		 
 		 
@@ -88,17 +95,17 @@ class MODPartida extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('id_partida_fk','id_partida_fk','int4');
+		$this->setParametro('id_partida_fk','id_partida_fk','varchar');
 	
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
+		$this->setParametro('tipo','tipo','varchar');
 		
 		$this->setParametro('id_gestion','id_gestion','integer');  
-		$this->setParametro('tipo','tipo','varchar'); 
-		
 		$this->setParametro('sw_movimiento','sw_movimiento','varchar'); 
-		$this->setParametro('sw_trasacional','sw_trasacional','varchar'); 
-		$this->setParametro('nombre_partida','nombre_partida','varchar'); 
+		$this->setParametro('sw_transaccional','sw_transaccional','varchar'); 
+		$this->setParametro('nombre_partida','nombre_partida','varchar');
+		
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -117,7 +124,7 @@ class MODPartida extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('id_partida','id_partida','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('id_partida_fk','id_partida_fk','int4');
+		$this->setParametro('id_partida_fk','id_partida_fk','varchar');
 		
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('codigo','codigo','varchar');
@@ -126,8 +133,9 @@ class MODPartida extends MODbase{
 		$this->setParametro('tipo','tipo','varchar'); 
 		
 		$this->setParametro('sw_movimiento','sw_movimiento','varchar'); 
-		$this->setParametro('sw_trasacional','sw_trasacional','varchar'); 
+		$this->setParametro('sw_transaccional','sw_transaccional','varchar'); 
 		$this->setParametro('nombre_partida','nombre_partida','varchar'); 
+		
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

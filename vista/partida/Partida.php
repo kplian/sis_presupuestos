@@ -165,7 +165,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 	       	},
 	       	{
 	       		config:{
-	       			name:'sw_trasacional',
+	       			name:'sw_transaccional',
 	       			fieldLabel:'Tipo Partida',
 	       			allowBlank:false,
 	       			emptyText:'Tipo...',
@@ -180,7 +180,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 	       		id_grupo:0,
 	       		filters:{	
 	       		         type: 'list',
-	       		         pfiltro:'par.sw_trasacional',
+	       		         pfiltro:'par.sw_transaccional',
 	       				 options: ['movimiento','titular'],	
 	       		 	},
 	       		grid:true,
@@ -268,7 +268,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'fecha_mod', type: 'date', dateFormat:'Y-m-d H:i:s'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},
+		{name:'usr_mod', type: 'string'},'id_gestion','sw_transaccional','sw_movimiento'
 		
 	],
 	
@@ -340,9 +340,12 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
             Phx.vista.Partida.superclass.preparaMenu.call(this,n);
     },
     
-    EnableSelect:function(n){
+    /*EnableSelect:function(n){
+    	console.log('pasa...')
         var nivel = n.getDepth();
         var direc = this.getNombrePadre(n)
+        
+        console.log(direc)
         if(direc){            
             Phx.vista.Partida.superclass.EnableSelect.call(this,n)
         }        
@@ -363,7 +366,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
         else{
                 return undefined;
         }       
-     }
+     }*/
 }
 )
 </script>

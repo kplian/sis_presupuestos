@@ -31,6 +31,13 @@ class MODConceptoPartida extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		
+		$this->captura('desc_gestion','integer');
+		$this->captura('codigo_partida','varchar');
+		$this->captura('nombre_partida','varchar');
+		$this->captura('desc_partida','text');
+		
+		
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
