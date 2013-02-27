@@ -11,10 +11,17 @@
 
 CREATE TABLE pre.tpresupuesto (
   id_presupuesto  SERIAL NOT NULL,
-  codigo varchar(20),
-  descripcion varchar(200),
-  gestion integer,
-  estado varchar(15),
+  id_centro_costo INTEGER NOT NULL,
+  tipo_pres VARCHAR(30), 
+  estado_pres VARCHAR(30), 
+  id_categoria_prog INTEGER, 
+  id_parametro INTEGER, 
+  id_fuente_financiamiento INTEGER, 
+  id_concepto_colectivo INTEGER, 
+  cod_fin VARCHAR(10), 
+  cod_prg VARCHAR(10), 
+  cod_pry VARCHAR(10), 
+  cod_act VARCHAR(10), 
   CONSTRAINT pk_tpresupuesto__id_presupuesto PRIMARY KEY (id_presupuesto)
 ) INHERITS (pxp.tbase)
 WITH (
@@ -70,7 +77,7 @@ CREATE TABLE pre.tpartida(
   nombre_partida varchar(150), 
   descripcion varchar(1000), 
   nivel_partida int4, 
-  sw_trasnaccional varchar(20), 
+  sw_transaccional varchar(20), 
   sw_movimiento varchar(20),
   tipo varchar(20), --endesis tipo_partida
   cod_trans varchar(40), 
@@ -81,7 +88,7 @@ CREATE TABLE pre.tpartida(
 ) INHERITS (pxp.tbase);
 
 
-COMMENT ON COLUMN pre.tpartida.sw_trasacional
+COMMENT ON COLUMN pre.tpartida.sw_transaccional
 IS 'movimiento, titular';
 
 COMMENT ON COLUMN pre.tpartida.tipo

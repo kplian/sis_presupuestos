@@ -6,10 +6,11 @@
 *@date 26-11-2012 21:35:35
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
+/*
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/ReportWriter.php');
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/RPresupuesto.php');
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/DataSource.php');
-
+*/
 class ACTPresupuesto extends ACTbase{    
 			
 	function listarPresupuesto(){

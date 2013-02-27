@@ -50,13 +50,13 @@ BEGIN
     		--Sentencia de la consulta
 			v_consulta:='select
 						pre.id_presupuesto,
+						pre.id_centro_costo,
+						vcc.codigo_cc,
+						pre.tipo_pres,
+						pre.estado_pres,
 						pre.estado_reg,
-						pre.descripcion,
-						pre.estado,
-						pre.gestion,
-						pre.codigo,
-						pre.fecha_reg,
 						pre.id_usuario_reg,
+						pre.fecha_reg,
 						pre.fecha_mod,
 						pre.id_usuario_mod,
 						usu1.cuenta as usr_reg,
@@ -64,6 +64,7 @@ BEGIN
 						from pre.tpresupuesto pre
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
+				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
 				        where  ';
 			
 			--Definicion de la respuesta

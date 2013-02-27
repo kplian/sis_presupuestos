@@ -21,13 +21,13 @@ class MODPresupuesto extends MODbase{
 				
 		//Definicion de la lista del resultado del query
 		$this->captura('id_presupuesto','int4');
-		$this->captura('estado_reg','varchar');
-		$this->captura('descripcion','varchar');
-		$this->captura('estado','varchar');
-		$this->captura('gestion','int4');
-		$this->captura('codigo','varchar');
-		$this->captura('fecha_reg','timestamp');
+		$this->captura('id_centro_costo','int4');
+		$this->captura('codigo_cc','text');
+		$this->captura('tipo_pres','varchar');
+		$this->captura('estado_pres','varchar');
+		$this->captura('estado_reg','varchar');		
 		$this->captura('id_usuario_reg','int4');
+		$this->captura('fecha_reg','timestamp');
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
@@ -48,11 +48,9 @@ class MODPresupuesto extends MODbase{
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('descripcion','descripcion','varchar');
-		$this->setParametro('estado','estado','varchar');
-		$this->setParametro('gestion','gestion','int4');
-		$this->setParametro('codigo','codigo','varchar');
+		$this->setParametro('id_centro_costo','id_centro_costo','int4');
+		$this->setParametro('tipo_pres','tipo_pres','varchar');
+		$this->setParametro('estado_pres','estado_pres','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -70,11 +68,9 @@ class MODPresupuesto extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_presupuesto','id_presupuesto','int4');
-		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('descripcion','descripcion','varchar');
-		$this->setParametro('estado','estado','varchar');
-		$this->setParametro('gestion','gestion','int4');
-		$this->setParametro('codigo','codigo','varchar');
+		$this->setParametro('id_centro_costo','id_centro_costo','int4');
+		$this->setParametro('tipo_pres','id_tipo_pres','varchar');
+		$this->setParametro('estado_pres','estado_pres','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
