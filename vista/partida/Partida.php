@@ -320,13 +320,20 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		direction: 'ASC'
 	},
 	bdel:true,
-	bsave:true,
+	bsave:false,
 	rootVisible:true,
 	expanded:false,
 	
 	onButtonNew:function(){
-        var nodo = this.sm.getSelectedNode();           
-        Phx.vista.Partida.superclass.onButtonNew.call(this);
+		if(this.cmbGestion.getValue()){
+	        var nodo = this.sm.getSelectedNode();           
+	        Phx.vista.Partida.superclass.onButtonNew.call(this);
+	     }
+	     else
+	     {
+	     	alert("seleccione una gestion primero");
+	     	
+	     }   
     },
     
     preparaMenu:function(n){

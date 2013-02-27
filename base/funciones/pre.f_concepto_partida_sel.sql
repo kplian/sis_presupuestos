@@ -1,7 +1,13 @@
-CREATE OR REPLACE FUNCTION "pre"."f_concepto_partida_sel"(	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
+--------------- SQL ---------------
+
+CREATE OR REPLACE FUNCTION pre.f_concepto_partida_sel (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de presupuesto
  FUNCION: 		pre.f_concepto_partida_sel
@@ -50,11 +56,17 @@ BEGIN
 						conp.fecha_mod,
 						conp.id_usuario_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod,
+						ges.gestion desc_gestion,
+                        par.codigo as codigo_partida,
+                        par.nombre_partida as nombre_parida,
+                        par.codigo||''-''||ges.gestion as desc_partida	
 						from pre.tconcepto_partida conp
 						inner join segu.tusuario usu1 on usu1.id_usuario = conp.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = conp.id_usuario_mod
-				        where  ';
+                        inner join pre.tpartida par on par.id_partida = conp.id_partida
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
+                        where  ';
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -78,9 +90,11 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_concepto_partida)
 					    from pre.tconcepto_partida conp
-					    inner join segu.tusuario usu1 on usu1.id_usuario = conp.id_usuario_reg
+						inner join segu.tusuario usu1 on usu1.id_usuario = conp.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = conp.id_usuario_mod
-					    where ';
+                        inner join pre.tpartida par on par.id_partida = conp.id_partida
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
+                        where ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -105,7 +119,9 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
 COST 100;
-ALTER FUNCTION "pre"."f_concepto_partida_sel"(integer, integer, character varying, character varying) OWNER TO postgres;

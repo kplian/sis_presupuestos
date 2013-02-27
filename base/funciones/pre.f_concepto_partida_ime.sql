@@ -1,8 +1,13 @@
-CREATE OR REPLACE FUNCTION "pre"."f_concepto_partida_ime" (	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
+--------------- SQL ---------------
 
+CREATE OR REPLACE FUNCTION pre.f_concepto_partida_ime (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de presupuesto
  FUNCION: 		pre.f_concepto_partida_ime
@@ -43,6 +48,14 @@ BEGIN
 	if(p_transaccion='PRE_CONP_INS')then
 					
         begin
+           --verificamos si la partida no se encuentra registrada
+            IF exists (select 1  from pre.tconcepto_partida cp 
+                           where cp.id_partida = v_parametros.id_partida and cp.estado_reg ='activo' ) THEN
+                   raise exception 'La partida ya se encuntra asociada';
+             
+            END IF;
+        
+        
         	--Sentencia de la insercion
         	insert into pre.tconcepto_partida(
 			id_partida,
@@ -138,7 +151,9 @@ EXCEPTION
 		raise exception '%',v_resp;
 				        
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
 COST 100;
-ALTER FUNCTION "pre"."f_concepto_partida_ime"(integer, integer, character varying, character varying) OWNER TO postgres;
