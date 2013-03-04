@@ -251,7 +251,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.ConceptoCta.superclass.loadValoresIniciales.call(this);
 		this.getComponente('id_concepto_ingas').setValue(this.maestro.id_concepto_ingas);
 		
-		this.getComponente('id_cuenta').store.baseParams.id_gestion=id_gestion:this.cmbGestion.getValue();
+		this.getComponente('id_cuenta').store.baseParams.id_gestion= this.cmbGestion.getValue();
 		this.getComponente('id_centro_costo').store.baseParams.id_gestion=this.cmbGestion.getValue();	
 			
 		
