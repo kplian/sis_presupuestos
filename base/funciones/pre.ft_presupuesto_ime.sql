@@ -8,7 +8,7 @@ $BODY$
  FUNCION: 		pre.ft_presupuesto_ime
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tpresupuesto'
  AUTOR: 		Gonzalo Sarmiento Sejas
- FECHA:	        26-11-2012 21:35:35
+ FECHA:	        27-02-2013 00:30:39
  COMENTARIOS:	
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
@@ -36,8 +36,8 @@ BEGIN
 	/*********************************    
  	#TRANSACCION:  'PRE_PRE_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin	
- 	#FECHA:		26-11-2012 21:35:35
+ 	#AUTOR:		Gonzalo Sarmiento Sejas	
+ 	#FECHA:		27-02-2013 00:30:39
 	***********************************/
 
 	if(p_transaccion='PRE_PRE_INS')then
@@ -45,27 +45,26 @@ BEGIN
         begin
         	--Sentencia de la insercion
         	insert into pre.tpresupuesto(
+			id_centro_costo,
+			tipo_pres,
+			estado_pres,
 			estado_reg,
-			descripcion,
-			estado,
-			gestion,
-			codigo,
-			fecha_reg,
 			id_usuario_reg,
+			fecha_reg,
 			fecha_mod,
 			id_usuario_mod
           	) values(
+			v_parametros.id_centro_costo,
+			v_parametros.tipo_pres,
+			v_parametros.estado_pres,
 			'activo',
-			v_parametros.descripcion,
-			v_parametros.estado,
-			v_parametros.gestion,
-			v_parametros.codigo,
-			now(),
 			p_id_usuario,
+			now(),
 			null,
 			null
+							
 			)RETURNING id_presupuesto into v_id_presupuesto;
-               
+			
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Presupuestos almacenado(a) con exito (id_presupuesto'||v_id_presupuesto||')'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto',v_id_presupuesto::varchar);
@@ -79,7 +78,7 @@ BEGIN
  	#TRANSACCION:  'PRE_PRE_MOD'
  	#DESCRIPCION:	Modificacion de registros
  	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 21:35:35
+ 	#FECHA:		27-02-2013 00:30:39
 	***********************************/
 
 	elsif(p_transaccion='PRE_PRE_MOD')then
@@ -87,10 +86,9 @@ BEGIN
 		begin
 			--Sentencia de la modificacion
 			update pre.tpresupuesto set
-			descripcion = v_parametros.descripcion,
-			estado = v_parametros.estado,
-			gestion = v_parametros.gestion,
-			codigo = v_parametros.codigo,
+			id_centro_costo = v_parametros.id_centro_costo,
+			tipo_pres = v_parametros.tipo_pres,
+			estado_pres = v_parametros.estado_pres,
 			fecha_mod = now(),
 			id_usuario_mod = p_id_usuario
 			where id_presupuesto=v_parametros.id_presupuesto;
@@ -108,7 +106,7 @@ BEGIN
  	#TRANSACCION:  'PRE_PRE_ELI'
  	#DESCRIPCION:	Eliminacion de registros
  	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 21:35:35
+ 	#FECHA:		27-02-2013 00:30:39
 	***********************************/
 
 	elsif(p_transaccion='PRE_PRE_ELI')then

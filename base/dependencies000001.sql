@@ -26,3 +26,12 @@ add CONSTRAINT fk_tpresup_partida__id_moneda FOREIGN KEY (id_moneda)
     ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 /***********************************F-DEP-RCM-PRE-0-11/01/2013*****************************************/
+
+/***********************************I-DEP-GSS-PRE-0-26/02/2013*****************************************/
+
+ALTER TABLE pre.tpresupuesto
+  ADD CONSTRAINT fk_tpresupuesto__id_centro_costo FOREIGN KEY (id_centro_costo)
+    REFERENCES param.tcentro_costo(id_centro_costo) MATCH SIMPLE
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+/***********************************F-DEP-GSS-PRE-0-26/02/2013*****************************************/
