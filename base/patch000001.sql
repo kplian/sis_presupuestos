@@ -99,11 +99,11 @@ IS 'flujo, presupuestaria';
 
 CREATE TABLE pre.tconcepto_cta(
   id_concepto_cta SERIAL NOT NULL, 
-  id_centro_costo int4 NOT NULL, 
+  id_centro_costo int4, 
   id_concepto_ingas int4 NOT NULL, 
-  id_partida int4, 
   id_cuenta int4, 
-  id_auxiliar int4, 
+  id_auxiliar int4,
+  id_partida int4, 
   CONSTRAINT pk_tconcepto_cta__id_concepto_cta PRIMARY KEY(id_concepto_cta)
 ) INHERITS (pxp.tbase);
 

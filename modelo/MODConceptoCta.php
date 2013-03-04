@@ -25,7 +25,7 @@ class MODConceptoCta extends MODbase{
 		$this->captura('id_auxiliar','int4');
 		$this->captura('id_cuenta','int4');
 		$this->captura('id_concepto_ingas','int4');
-		$this->captura('id_partida','int4');
+		
 		$this->captura('id_centro_costo','int4');
 		$this->captura('fecha_reg','timestamp');
 		$this->captura('id_usuario_reg','int4');
@@ -33,6 +33,21 @@ class MODConceptoCta extends MODbase{
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+	    
+	    
+	    $this->captura('nro_cuenta','varchar');
+        $this->captura('nombre_cuenta','varchar');
+        $this->captura('desc_gestion','int4');
+        $this->captura('id_gestion','int4');
+        $this->captura('desc_centro_costo','text');
+        $this->captura('desc_auxiliar','text');
+        $this->captura('desc_cuenta','text');
+        
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('desc_partida','text');
+        
+      
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

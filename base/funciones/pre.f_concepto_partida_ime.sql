@@ -50,7 +50,11 @@ BEGIN
         begin
            --verificamos si la partida no se encuentra registrada
             IF exists (select 1  from pre.tconcepto_partida cp 
-                           where cp.id_partida = v_parametros.id_partida and cp.estado_reg ='activo' ) THEN
+                           where cp.id_partida = v_parametros.id_partida and cp.estado_reg ='activo' 
+                                 and  cp.id_concepto_ingas = v_parametros.id_concepto_ingas  ) THEN
+                   
+                   
+                   
                    raise exception 'La partida ya se encuntra asociada';
              
             END IF;

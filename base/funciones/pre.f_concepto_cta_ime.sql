@@ -1,8 +1,13 @@
-CREATE OR REPLACE FUNCTION "pre"."f_concepto_cta_ime" (	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
+--------------- SQL ---------------
 
+CREATE OR REPLACE FUNCTION pre.f_concepto_cta_ime (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de presupuesto
  FUNCION: 		pre.f_concepto_cta_ime
@@ -27,6 +32,7 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_concepto_cta	integer;
+    
 			    
 BEGIN
 
@@ -43,29 +49,48 @@ BEGIN
 	if(p_transaccion='PRE_CCTA_INS')then
 					
         begin
+        
+           IF exists (select 1  from pre.tconcepto_cta coc 
+                           where      coc.id_cuenta = v_parametros.id_cuenta 
+                                 and  coc.estado_reg ='activo' 
+                                 and  (coc.id_centro_costo = v_parametros.id_centro_costo  or (coc.id_centro_costo is null and v_parametros.id_centro_costo is NULL) )
+                                 and  coc.id_concepto_ingas = v_parametros.id_concepto_ingas 
+                                 and  coc.id_partida = v_parametros.id_partida 
+                                 
+                                 
+                                 ) THEN
+                   
+                  raise exception 'El centro de costos la cuenta y la partida ya estan relacionados para este concepto';
+             
+            END IF;
+        
+            
+        
+        
+        
         	--Sentencia de la insercion
         	insert into pre.tconcepto_cta(
 			estado_reg,
 			id_auxiliar,
 			id_cuenta,
 			id_concepto_ingas,
-			id_partida,
 			id_centro_costo,
 			fecha_reg,
 			id_usuario_reg,
 			fecha_mod,
-			id_usuario_mod
+			id_usuario_mod,
+            id_partida
           	) values(
 			'activo',
 			v_parametros.id_auxiliar,
 			v_parametros.id_cuenta,
 			v_parametros.id_concepto_ingas,
-			v_parametros.id_partida,
 			v_parametros.id_centro_costo,
-			now(),
+            now(),
 			p_id_usuario,
 			null,
-			null
+			null,
+            v_parametros.id_partida
 							
 			)RETURNING id_concepto_cta into v_id_concepto_cta;
 			
@@ -88,12 +113,32 @@ BEGIN
 	elsif(p_transaccion='PRE_CCTA_MOD')then
 
 		begin
+        
+          IF exists (select 1  from pre.tconcepto_cta coc 
+                           where      coc.id_cuenta = v_parametros.id_cuenta 
+                                 and  coc.estado_reg ='activo' 
+                                 and  (coc.id_centro_costo = v_parametros.id_centro_costo  or (coc.id_centro_costo is null and v_parametros.id_centro_costo is NULL) )
+                                 and  coc.id_concepto_ingas = v_parametros.id_concepto_ingas 
+                                 and  coc.id_partida = v_parametros.id_partida 
+                                 and coc.id_concepto_cta != v_parametros.id_concepto_cta
+                                 
+                                 
+                                 ) THEN
+                   
+                  raise exception 'El centro de costos  la cuenta y la partida ya estan relacionados para este concepto';
+             
+            END IF;
+        
+          
+        
+        
 			--Sentencia de la modificacion
 			update pre.tconcepto_cta set
 			id_auxiliar = v_parametros.id_auxiliar,
 			id_cuenta = v_parametros.id_cuenta,
+            id_partida = v_parametros.id_partida,
 			id_concepto_ingas = v_parametros.id_concepto_ingas,
-			id_partida = v_parametros.id_partida,
+		
 			id_centro_costo = v_parametros.id_centro_costo,
 			fecha_mod = now(),
 			id_usuario_mod = p_id_usuario
@@ -147,7 +192,9 @@ EXCEPTION
 		raise exception '%',v_resp;
 				        
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
 COST 100;
-ALTER FUNCTION "pre"."f_concepto_cta_ime"(integer, integer, character varying, character varying) OWNER TO postgres;

@@ -47,7 +47,7 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 				name: 'id_partida',
 				fieldLabel: 'Partida',
 				typeAhead: false,
-				forceSelection: false,
+				forceSelection: true,
 				allowBlank: false,
 				emptyText: 'Partida...',
 				store: new Ext.data.JsonStore({
@@ -83,7 +83,7 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 			type: 'ComboBox',
 			id_grupo: 0,
 			filters: {
-				pfiltro: 'par.nombre_partida',
+				pfiltro: 'par.nombre_partida#par.codigo',
 				type: 'string'
 			},
 			grid: false,
