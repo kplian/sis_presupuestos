@@ -29,6 +29,8 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 	      {
 	         this.bloquearMenus();
 	      }
+	      
+	     
 		
 		
 	},
@@ -82,6 +84,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
                     remoteSort: true,
                     baseParams: {par_filtro: 'par.nombre_partida#par.codigo',sw_transaccional:'movimiento'}
                 }),
+                sortable:false   ,
                 valueField: 'id_partida',
                 displayField: 'nombre_partida',
                 gdisplayField: 'desc_partida',
@@ -101,7 +104,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
             type: 'ComboBox',
             id_grupo: 0,
             filters: {
-                pfiltro: 'par.nombre_partida#par.codigo_partida',
+                pfiltro: 'par.nombre_partida#par.codigo',
                 type: 'string'
             },
             grid: true,
@@ -381,7 +384,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 	},
 	capturaFiltros:function(combo, record, index){
 		this.store.baseParams.id_gestion=this.cmbGestion.getValue();
-		this.store.load({params:{start:0, limit:250}});	
+		this.store.load({params:{start:0, limit:50}});	
 	},
 	
 	reload:function(p){
@@ -395,13 +398,18 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
 	onReloadPage:function(m){
 		this.maestro=m;
 		var idGes= this.cmbGestion.getValue()
-		if(idGes){
+		
     		this.store.baseParams={
     			 id_concepto_ingas:this.maestro.id_concepto_ingas,
-    			 id_gestion:this.cmbGestion.getValue()};
+    			 id_gestion:idGes?idGes:0,
+    			 start:0,
+    			 limit:50};
 		
+		if(idGes){
+		     
 		     this.load({params:{start:0, limit:50}});
 		}
+		
 	},
 	 onButtonNew:function(n){
        
