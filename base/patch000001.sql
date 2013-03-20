@@ -68,25 +68,25 @@ ALTER TABLE pre.tpresup_partida OWNER TO postgres;
 
 DROP TABLE pre.tpartida;  --elimina tabla creada para mantenimiento
 
-CREATE TABLE pre.tpartida(
-  id_partida SERIAL NOT NULL, 
-  id_partida_fk int4, 
-  id_gestion int4,
-  id_parametros int4, 
-  codigo varchar(30), 
-  nombre_partida varchar(150), 
-  descripcion varchar(1000), 
-  nivel_partida int4, 
-  sw_transaccional varchar(20), 
-  sw_movimiento varchar(20),
-  tipo varchar(20), --endesis tipo_partida
-  cod_trans varchar(40), 
-  cod_ascii varchar(2),
-  cod_excel varchar(2), 
-  ent_trf varchar(4),
+CREATE TABLE pre.tpartida (
+  id_partida SERIAL, 
+  id_partida_fk INTEGER, 
+  id_gestion INTEGER, 
+  id_parametros INTEGER, 
+  codigo VARCHAR(30), 
+  nombre_partida VARCHAR(150), 
+  descripcion VARCHAR(1000), 
+  nivel_partida INTEGER, 
+  sw_transaccional VARCHAR(20), 
+  tipo VARCHAR(20), 
+  sw_movimiento VARCHAR(20), 
+  cod_trans VARCHAR(40), 
+  cod_ascii VARCHAR(2), 
+  cod_excel VARCHAR(2), 
+  ent_trf VARCHAR(4), 
   CONSTRAINT pk_tpartida__id_partida PRIMARY KEY(id_partida)
-) INHERITS (pxp.tbase);
-
+) INHERITS (pxp.tbase)
+WITHOUT OIDS;
 
 COMMENT ON COLUMN pre.tpartida.sw_transaccional
 IS 'movimiento, titular';

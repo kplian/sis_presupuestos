@@ -403,11 +403,11 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
     			 id_concepto_ingas:this.maestro.id_concepto_ingas,
     			 id_gestion:idGes?idGes:0,
     			 start:0,
-    			 limit:50};
+    			 limit:this.tam_pag};
 		
 		if(idGes){
 		     
-		     this.load({params:{start:0, limit:50}});
+		     this.load({params:{start:0, limit:this.tam_pag}});
 		}
 		
 	},
