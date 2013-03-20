@@ -177,7 +177,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
                     fields: ['id_auxiliar', 'codigo_auxiliar', 'nombre_auxiliar'],
                     // turn on remote sorting
                     remoteSort: true,
-                    baseParams: {par_filtro: 'aux.codigo_auxiliar#aux.nombre_auxiliar'}
+                    baseParams: {par_filtro: 'auxcta.codigo_auxiliar#auxcta.nombre_auxiliar'}
                 }),
                 valueField: 'id_auxiliar',
                 displayField: 'codigo_auxiliar',
@@ -198,7 +198,7 @@ Phx.vista.ConceptoCta=Ext.extend(Phx.gridInterfaz,{
             type: 'ComboBox',
             id_grupo: 0,
             filters: {
-                pfiltro: 'aux.nombre_auxiliar',
+                pfiltro: 'aux.nombre_auxiliar#aux.codigo_auxiliar',
                 type: 'string'
             },
             grid: true,
