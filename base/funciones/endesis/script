@@ -1,0 +1,2 @@
+ALTER TABLE presto.tpr_partida_ejecucion
+  DROP CONSTRAINT fk_tpr_partida_ejecucion__id_solicitud_compra RESTRICT;

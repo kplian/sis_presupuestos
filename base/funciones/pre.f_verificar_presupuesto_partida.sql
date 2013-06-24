@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_partida (
   p_id_presupuesto integer,
   p_id_partida integer,
@@ -21,16 +23,53 @@ DECLARE
   v_consulta varchar;
   v_conexion varchar;
   v_resp	varchar;
+  v_sincronizar varchar;
+ 
+  
+  v_nombre_funcion  varchar;
 BEGIN
-v_conexion:=migra.f_obtener_cadena_conexion();
-v_consulta:='select presto."f_i_ad_verificarPresupuestoPartida" ('||p_id_presupuesto||','||p_id_partida||','||p_id_moneda||','||p_monto_total||')';
-select into verificado * from dblink(v_conexion,v_consulta) as (verificado numeric[]);
-if verificado[1]=0 then
- v_resp:='false';
-else
- v_resp:='true'; 
-end if;
-return v_resp;
+
+v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
+
+  v_sincronizar=pxp.f_get_variable_global('sincronizar');
+  
+  IF(v_sincronizar='true')THEN
+  	
+    --si la sincronizacion esta activa busca lso datos en endesis
+    v_conexion:=migra.f_obtener_cadena_conexion();
+  	v_consulta:='select presto."f_i_ad_verificarPresupuestoPartida" ('||p_id_presupuesto||','||p_id_partida||','||p_id_moneda||','||p_monto_total||')';
+  	select into verificado * from dblink(v_conexion,v_consulta,true) as (verificado numeric[]);
+  
+  
+  --raise exception '% %',v_consulta,v_conexion;
+  
+  
+  ELSE 
+    --TO DO,   si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
+  
+     raise exception 'Verificacion   presupuestaria en PXP no implementada';
+  
+  
+  
+  END IF;
+
+
+  if verificado[1]=0 then
+   v_resp:='false';
+  else
+   v_resp:='true'; 
+  end if;
+  return v_resp;
+
+
+EXCEPTION
+					
+	WHEN OTHERS THEN
+			v_resp='';
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+			raise exception '%',v_resp;
 END;
 $body$
 LANGUAGE 'plpgsql'
