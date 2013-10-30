@@ -4,3 +4,8 @@ ALTER TABLE presto.tpr_partida_ejecucion
   
 ALTER TABLE presto.tpr_partida_ejecucion
   ADD COLUMN id_obligacion_pago INTEGER;  
+  
+  --------------- SQL ---------------
+
+ALTER TABLE presto.tpr_partida_ejecucion
+  ADD COLUMN id_int_transaccion INTEGER;

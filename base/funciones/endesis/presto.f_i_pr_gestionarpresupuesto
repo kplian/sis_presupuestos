@@ -1,0 +1,423 @@
+--------------- SQL ---------------
+
+CREATE OR REPLACE FUNCTION presto.f_i_pr_gestionarpresupuesto (
+  pr_id_presupuesto integer,
+  pr_id_partida integer,
+  pr_id_moneda integer,
+  pr_monto_total numeric,
+  pr_fecha date,
+  pr_id_partida_ejecucion integer,
+  pr_sw_momento numeric,
+  pr_id_item integer,
+  pr_id_servicio integer,
+  pr_id_concepto_ingas integer,
+  pr_id_cuenta_doc integer,
+  pr_id_devengado integer,
+  pr_id_solicitud_compra integer,
+  pr_id_cuenta_doc_rendicion integer,
+  pr_id_comprobante integer,
+  pr_columna_relacion varchar,
+  pr_fk_llave integer
+)
+RETURNS numeric [] AS
+$body$
+/*
+    
+    Nombre: f_i_pr_gestionarpresupuesto
+    Descripción: Gestiona el presupuesto de gasto, inversion y recurso
+    Autor: Julio Guarachi Lopez
+    Fecha: 26/10/2009
+    
+    
+    Historial de modificaciones
+    -----  
+    Modificado: 
+    Fecha:  
+    descripcion:
+    -----
+    PARAMETROS DE ENTRADA
+    pr_id_presupuesto integer (Presupuesto a gestionar), 
+    pr_id_partida integer(partida a gestionar),  
+    pr_id_moneda integer (moneda de registro), 
+    pr_monto_total numeric, 
+    pr_fecha_compro date (fecha de historico), 
+    pr_id_partida_ejecucion integer (es el que relaciona al estados anteriores)
+    pr_sw_momento numeric (    1 Comprometido
+                            2 Comprometido Revertido
+                            3 Comprometido Ejecutado
+                            4 Pagado
+                            5 traspaso
+                            6 reformulaciones
+                            7 incremento
+                            8 Comprometido Ejecuctado Revertido
+                            9 Pagado Revertido), 
+    pr_sw_verifica numeric (si se verificara el presupuesto), 
+    pr_mensaje varchar (mensaje a retornar si es que ocurriena un error), 
+    pr_id_item integer , 
+    pr_id_servicio integer, 
+    pr_id_concepto_ingas integer
+    ----------------
+    */
+
+DECLARE
+/*
+pr_id_f_f integer Fuente de finenciamiento
+pr_id_uo integer unidad organizacional
+pr_id_epe integer estructura programatica
+pr_id_partida integer partida
+pr_id_moneda integer moneda
+pr_monto_total numeric monto total
+pr_fecha_compro date fecha 
+pr_id_concepto_ingas integer concepto
+pr_id_partida_ejecucion integer      partida ejecucion 
+sw_momento numeric  momento de gestion del presupuesto
+significado del campo sw_momento en la tabla :{1=comprometer,2=ejecutar o devengar,3=revertir, 4=pagar 5=traspaso}
+significado del campo sw_momento en la funcion : {1=comprometer,2=revertir,
+3=ejecutar presupuesto de gasto o inversion o o recurso,
+4=pagar 5=devengar o ejecutar presupuesto de ingreso}
+  
+sw_verifica presupuesto para comprometer (1=verifica presupuesto , !=1: no verifica presupuesto)
+*/
+g_resul numeric[2];                                                             
+g_sw_presupuesto numeric;
+g_saldo  numeric;
+
+g_monedas record;
+g_id_partida_ejecucion integer;
+g_id_partida_revercion_total integer;
+g_id_partida_revercion integer;
+g_sw_presto numeric;
+
+ 
+
+g_cantidad  BIGINT;
+g_id_partida_presupuesto INTEGER;
+g_tipo_pres NUMERIC;   --1 presupuesto de recurso, 2 presupuesto de gasto, 3 prespuesto de inversion 
+--importe de los estados presupuestarios
+g_fecha_tc date; 
+
+g_id_item    INTEGER;
+g_id_servicio INTEGER;
+g_id_concepto_ingas INTEGER;
+g_id_moneda_base INTEGER;
+g_id_parametro INTEGER;
+g_importe_base NUMERIC;
+g_tipo_cambio NUMERIC;
+g_id_cuenta_doc_rendicion INTEGER;
+g_id_cuenta_doc INTEGER;
+g_id_devengado INTEGER;
+g_id_solicitud_compra INTEGER;
+g_estado_com_eje NUMERIC;
+g_fecha_com_eje date;
+g_consulta text;
+BEGIN
+
+
+
+--raise exception 'LLEGA a la funcoin final %',pr_fecha;
+ -- raise notice '%','dddddddddddddddddddddddddddddddd';
+--   raise exception '%','Llega';
+g_id_partida_ejecucion =-1;
+g_id_partida_revercion_total =-1;
+g_id_partida_revercion =-1;
+
+--validamos que el importe no sea null
+IF pr_monto_total is null THEN 
+	raise exception '%', '(f_i_pr_gestionarpresupuesto) Valor no permitido en Ejecucion Partida (monto total es nulo)'; 
+END IF;
+
+--verificacion que tenga comprobante asociado 
+--RAC 19/10/2013 aumenta valifacion de parametro de PXP in_ind_comprobante , id_int_transaccion
+
+IF (pr_id_partida_ejecucion is not null and pr_id_comprobante is null and pr_sw_momento in (3,4)) and pr_columna_relacion != 'id_int_comprobante' and pr_columna_relacion!= 'id_int_transaccion'  then
+	
+    raise exception '%','(f_i_pr_gestionarpresupuesto); El registro no hace referencia a ningun comprobante, momento(%)',pr_sw_momento;
+
+END IF;
+ 
+--05-01-2012  Control para validar el estado del presupuesto GVC
+	if pr_id_presupuesto is not null then
+		if not EXISTS(Select 1 from presto.tpr_presupuesto where id_presupuesto=pr_id_presupuesto and estado_pres=5)then
+    		raise exception 'No se puede ejecutar el presupuesto porque aun no esta aprobado (Id_presupuesto: %)',pr_id_presupuesto;
+    	end if;
+        --RCM 08/02/2012: bloqueado la ejecución de la partida 25220 a solicitud nzurita
+        /*if pr_id_partida = 3124 and pr_sw_momento <> 2 and pr_id_presupuesto in (479,450,465,462,461,437,602) then
+        	raise exception 'La ejecución de la partida 25220 está temporalmente deshabilitada. Comunicarse con Depto. de Finanzas';
+        end if;*/
+        
+        /*if pr_id_partida = 3190 and pr_sw_momento <> 2 then
+        	raise exception 'La ejecución de la partida 46120 está temporalmente deshabilitado. Comunicarse con Depto. de Finanzas';
+        end if;*/
+        
+    end if;
+    
+	if pr_id_partida_ejecucion is not null then
+      if not EXISTS(Select 1 from presto.tpr_partida_ejecucion pe
+                          inner join presto.tpr_partida_presupuesto pp on pp.id_partida_presupuesto=pe.id_partida_presupuesto
+                          inner join presto.tpr_presupuesto p on p.id_presupuesto=pp.id_presupuesto
+                          where  pe.id_partida_ejecucion=pr_id_partida_ejecucion and p.estado_pres=5)then
+          raise exception 'No se puede ejecutar el presupuesto porque aun no esta aprobado. (Id_partida_ejecucion: %)',pr_id_partida_ejecucion;
+      end if;
+      
+      --RCM 08/02/2012: bloqueado la ejecución de la partida 25220 a solicitud nzurita
+      /*if exists(select 1 from presto.tpr_partida_ejecucion a
+      			inner join presto.tpr_partida_presupuesto b
+                on b.id_partida_presupuesto = a.id_partida_presupuesto
+                where a.id_partida_ejecucion = pr_id_partida_ejecucion
+                and b.id_partida = 3124 and b.id_presupuesto in (479,450,465,462,461,437,602)
+                ) then
+      	if pr_sw_momento <> 2 then
+    		raise exception 'La ejecución de la partida 25220 está temporalmente deshabilitada. Comunicarse con Depto. de Finanzas';
+        end if;
+      end if;*/
+      
+      /*if exists(select 1 from presto.tpr_partida_ejecucion a
+      			inner join presto.tpr_partida_presupuesto b
+                on b.id_partida_presupuesto = a.id_partida_presupuesto
+                where a.id_partida_ejecucion = pr_id_partida_ejecucion
+                and b.id_partida = 3190) then
+    	if pr_sw_momento <> 2 then
+    		raise exception 'La ejecución de la partida 46120 está temporalmente deshabilitada. Comunicarse con Depto. de Finanzas';
+        end if;
+      end if;*/
+      
+    end if;
+--fin gvc    
+    
+    
+
+
+    --Verificacion de integridad
+    if pr_sw_momento in (1,3,5,6,7) and pr_id_partida_ejecucion is null  THEN 
+            g_id_partida_presupuesto=presto.f_i_pr_gestionarpresupuesto_verificarintegridad(pr_id_presupuesto,pr_id_partida,pr_id_moneda,pr_sw_momento);
+    ELSE  
+            SELECT id_partida_presupuesto                      
+            INTO  g_id_partida_presupuesto
+            FROM presto.tpr_partida_ejecucion 
+            WHERE  id_partida_ejecucion=pr_id_partida_ejecucion;
+                  
+             IF g_id_partida_presupuesto IS NULL THEN
+                     raise exception '%',' (f_i_pr_gestionarpresupuesto) Partida presupuesto  no puede estar null; partida_ejecucion: '||COALESCE(pr_id_partida_ejecucion,0)||'; sw_momwnto: '||coalesce(pr_sw_momento,0.00);
+             END IF;         
+    END IF;
+    
+    --Verificacion de fecha  
+   -- raise exception ' antes de la fecha';
+    IF 'FALSE'= presto.f_i_pr_gestionarpresupuesto_verificarfecha(pr_id_presupuesto, pr_fecha ) THEN 
+            raise exception '%','(f_i_pr_gestionarpresupuesto) La fecha es inferior a la ultima fecha de partida ejecucion registrada.';
+    END IF;  
+
+    --Verificacion de importes cuando no es el momento pagado
+    if pr_sw_momento in (1,3, 5,6,7) and pr_id_partida_ejecucion is null  THEN    
+              --  raise exception  '%','(f_i_pr_gestionarpresupuesto) presto.f_i_pr_gestionarpresupuesto_verificarimportes(g_id_partida_presupuesto='||COALESCE(g_id_partida_presupuesto,0)||', pr_id_partida_ejecucion: '||COALESCE(pr_id_partida_ejecucion,0)||', pr_monto_total:'||COALESCE(pr_monto_total,0.00)||', pr_id_moneda: '||COALESCE(pr_id_moneda,0)||', pr_sw_momento: '||COALESCE(pr_sw_momento,0.00)||')';
+            g_saldo=  presto.f_i_pr_gestionarpresupuesto_verificarimportes (g_id_partida_presupuesto,NULL, pr_monto_total, pr_id_moneda  , pr_sw_momento);
+    ELSE  
+        --if 'dbendesis_jguarachi'=CURRENT_USER THEN
+        --        raise exception  '%','dbendesis_jguarachi (f_i_pr_gestionarpresupuesto) presto.f_i_pr_gestionarpresupuesto_verificarimportes(g_id_partida_presupuesto='||COALESCE(g_id_partida_presupuesto,0)||', pr_id_partida_ejecucion: '||COALESCE(pr_id_partida_ejecucion,0)||', pr_monto_total:'||COALESCE(pr_monto_total,0.00)||', pr_id_moneda: '||COALESCE(pr_id_moneda,0)||', pr_sw_momento: '||COALESCE(pr_sw_momento,0.00)||')';
+        -- END IF;                  
+            --raise exception  '%','(f_i_pr_gestionarpresupuesto) presto.f_i_pr_gestionarpresupuesto_verificarimportes(g_id_partida_presupuesto='||COALESCE(g_id_partida_presupuesto,0)||', pr_id_partida_ejecucion: '||COALESCE(pr_id_partida_ejecucion,0)||', pr_monto_total:'||COALESCE(pr_monto_total,0.00)||', pr_id_moneda: '||COALESCE(pr_id_moneda,0)||', pr_sw_momento: '||COALESCE(pr_sw_momento,0.00)||')';
+            --cuando estamos pagando
+         	g_saldo= presto.f_i_pr_gestionarpresupuesto_verificarimportes (null,pr_id_partida_ejecucion, pr_monto_total, pr_id_moneda  , pr_sw_momento);
+      
+    END IF; 
+ 
+    --inserta en la moneda que se produjo la compra
+    -- recupuera la fecha del tipo de cambio
+    g_fecha_tc=pr_fecha;
+    IF    pr_id_partida_ejecucion IS NOT NULL THEN  
+            SELECT fecha_com_eje 
+            INTO  g_fecha_tc
+            FROM presto.tpr_partida_ejecucion 
+            WHERE  id_partida_ejecucion =pr_id_partida_ejecucion;
+    END IF;
+    
+    --inserta la partida ejecucion
+    g_id_partida_ejecucion= nextval('presto.tpr_partida_ejecucion_id_partida_ejecucion_seq'::regclass);
+    
+    --se relaciona con el primer registro_documento
+    g_id_item    =pr_id_item;
+    g_id_servicio =pr_id_servicio;
+    g_id_concepto_ingas= pr_id_concepto_ingas;
+
+    g_id_cuenta_doc_rendicion=pr_id_cuenta_doc_rendicion;
+    g_id_cuenta_doc=pr_id_cuenta_doc;
+    g_id_devengado=pr_id_devengado;
+    g_id_solicitud_compra=pr_id_solicitud_compra;
+
+  	--cuando el campo id_partida_ejecucion tiene informacion
+	IF pr_id_partida_ejecucion is not NULL THEN
+        SELECT   id_item , id_servicio    ,id_concepto_ingas , --id_cuenta_doc_rendicion, 
+                 --id_cuenta_doc, 
+                 id_devengado,id_solicitud_compra
+        INTO   g_id_item    ,g_id_servicio,g_id_concepto_ingas,-- g_id_cuenta_doc_rendicion,
+               --g_id_cuenta_doc,
+               g_id_devengado,g_id_solicitud_compra
+        FROM  presto.tpr_partida_ejecucion   
+        WHERE  id_partida_ejecucion = pr_id_partida_ejecucion;
+	END IF;
+
+
+--para los transapaso , reformulaciones e incrementos 
+ if pr_sw_momento in (5,6,7) and pr_id_partida_ejecucion is null  THEN
+          --recupera la moneda base 
+           select id_moneda  
+           into g_id_moneda_base
+           from param.tpm_moneda
+           where prioridad=1; 
+               
+            --recuprea el parametro
+           select id_parametro  
+           into g_id_parametro
+           from presto.tpr_presupuesto 
+           where id_presupuesto=pr_id_presupuesto; 
+             
+           --recupera el tipo de cambio 
+            select tipo_cambio 
+            into g_tipo_cambio
+            from  presto.tpr_param_tcam 
+            where id_parametro=g_id_parametro and id_moneda_int=pr_id_moneda;
+            
+            --si la moneda base es igual a la moneda de ejecuion =1      
+           if   g_id_moneda_base=pr_id_moneda THEN
+                   g_tipo_cambio=1;
+           END IF;
+           
+           INSERT INTO presto.tpr_partida_ejecucion(id_partida_ejecucion    , id_partida_presupuesto     , id_moneda, 
+                                                importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                                id_item                    , id_servicio                , cantidad_com_eje,
+                                                fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                                id_cuenta_doc ,  id_devengado ,  id_solicitud_compra,id_cuenta_doc_rendicion
+                                                )
+                                                VALUES 
+                                                (
+                                                g_id_partida_ejecucion    ,g_id_partida_presupuesto     ,  pr_id_moneda, 
+                                                pr_monto_total            , pr_fecha                    ,    pr_sw_momento,
+                                                g_id_item                ,   g_id_servicio            , null ,
+                                                pr_id_partida_ejecucion ,g_id_concepto_ingas , CURRENT_TIMESTAMP, 
+                                                pr_id_cuenta_doc , pr_id_devengado , pr_id_solicitud_compra , g_id_cuenta_doc_rendicion
+                                                ); 
+              --recupera el id de la partida ejecucion para insertar en los registros de en las monedas restantes
+
+              FOR g_monedas in EXECUTE('    SELECT  id_moneda_int as id_moneda , tipo_cambio
+                                          from  presto.tpr_param_tcam 
+                                          where id_parametro='||g_id_parametro||' and id_moneda_int <>'||pr_id_moneda) LOOP
+              		INSERT INTO presto.tpr_partida_ejecucion(                id_partida_presupuesto     , id_moneda, 
+                                              importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                              id_item                    , id_servicio                , cantidad_com_eje,
+                                               fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                               id_cuenta_doc ,  id_devengado ,  id_solicitud_compra ,id_cuenta_doc_rendicion
+              		)
+                    VALUES
+                    (
+                                                                      g_id_partida_presupuesto     ,  g_monedas.id_moneda, 
+                                             round(pr_monto_total*g_tipo_cambio/g_monedas.tipo_cambio,2)            , pr_fecha                    ,    pr_sw_momento,
+                                              g_id_item                , g_id_servicio            , null ,
+                                               g_id_partida_ejecucion  ,g_id_concepto_ingas , CURRENT_TIMESTAMP,
+                                               pr_id_cuenta_doc , pr_id_devengado , pr_id_solicitud_compra ,g_id_cuenta_doc_rendicion ); 
+              END LOOP;   
+              --raise exception 'estacorriendo sin problemas';
+ELSE 
+	--raise exception 'estacorriendo sin problemas';
+	--raise exception 'g_id_partida_ejecucion: % g_id_partida_presupuesto:% pr_id_moneda:%,pr_monto_total:%,pr_fecha: %,pr_sw_momento: %, g_id_item: %,g_id_servicio:%,pr_id_partida_ejecucion: %,g_id_concepto_ingas: %,pr_id_cuenta_doc:%,pr_id_devengado: %,pr_id_solicitud_compra: %,pr_id_cuenta_doc_rendicion:%,pr_columna_relacion%' ,g_id_partida_ejecucion,g_id_partida_presupuesto,pr_id_moneda,pr_monto_total,pr_fecha,pr_sw_momento,g_id_item,g_id_servicio,pr_id_partida_ejecucion,g_id_concepto_ingas,pr_id_cuenta_doc,pr_id_devengado,pr_id_solicitud_compra,pr_id_cuenta_doc_rendicion, pr_fk_llave;
+	g_consulta='INSERT INTO presto.tpr_partida_ejecucion(id_partida_ejecucion    , id_partida_presupuesto     , id_moneda, 
+                                            importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                            id_item                    , id_servicio                , cantidad_com_eje,
+                                             fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                             id_cuenta_doc ,  id_devengado ,  id_solicitud_compra,id_cuenta_doc_rendicion,id_comprobante '||COALESCE(','||pr_columna_relacion,'')||' )
+                                            VALUES (
+                                            '||coalesce(g_id_partida_ejecucion||' ','null')||'    ,'||coalesce(g_id_partida_presupuesto||' ','null')||'     ,  '||coalesce(pr_id_moneda||' ','null')||', 
+                                            '||coalesce(pr_monto_total||' ','null')||'            , '''||coalesce(pr_fecha||' ','null')||'''                ,    '||coalesce(pr_sw_momento||' ','null')||',
+                                            '||coalesce(g_id_item||' ','null')||'                    ,'||coalesce(g_id_servicio||' ','null')||'            , null ,
+                                            '||coalesce(pr_id_partida_ejecucion||' ','null')||' ,'||coalesce(g_id_concepto_ingas||' ','null')||' , CURRENT_TIMESTAMP, 
+                                            '||coalesce(g_id_cuenta_doc||' ','null')||' , '||coalesce(g_id_devengado||' ','null')||' , '||coalesce(g_id_solicitud_compra||' ','null')||',
+                                            '||coalesce(g_id_cuenta_doc_rendicion||' ','null')||' ,'||coalesce(pr_id_comprobante||' ','null')||' '||coalesce(', '||pr_fk_llave, '')||' );
+	';
+
+ 		raise notice '%',g_consulta;
+		EXECUTE(g_consulta);
+		/*INSERT INTO presto.tpr_partida_ejecucion(id_partida_ejecucion    , id_partida_presupuesto     , id_moneda, 
+                                            importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                            id_item                    , id_servicio                , cantidad_com_eje,
+                                             fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                             id_cuenta_doc ,  id_devengado ,  id_solicitud_compra,id_cuenta_doc_rendicion,id_comprobante )
+                                            VALUES (
+                                            g_id_partida_ejecucion    ,g_id_partida_presupuesto     ,  pr_id_moneda, 
+                                            pr_monto_total            , pr_fecha                    ,    pr_sw_momento,
+                                            g_id_item                ,   g_id_servicio            , null ,
+                                            pr_id_partida_ejecucion ,g_id_concepto_ingas , CURRENT_TIMESTAMP, 
+                                            g_id_cuenta_doc , g_id_devengado , g_id_solicitud_compra, g_id_cuenta_doc_rendicion ,pr_id_comprobante );*/
+                
+                                               
+                    --recupera el id de la partida ejecucion para insertar en los registros de en las monedas restantes
+                   FOR g_monedas in EXECUTE('    SELECT id_moneda 
+                                                   FROM param.tpm_moneda 
+                                                WHERE estado= ''activo'' and id_moneda <>'||pr_id_moneda) LOOP    
+                                    IF round(param.f_pm_conversion_monedas( g_fecha_tc,pr_monto_total, pr_id_moneda, g_monedas.id_moneda,'O' ),2)!=0 THEN   
+                                                 g_consulta='INSERT INTO presto.tpr_partida_ejecucion(                id_partida_presupuesto     , id_moneda, 
+                                                                                importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                                                                id_item                    , id_servicio                , cantidad_com_eje,
+                                                                                 fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                                                                 id_cuenta_doc ,  id_devengado ,  id_solicitud_compra,id_cuenta_doc_rendicion ,id_comprobante '||COALESCE(','||pr_columna_relacion,'')||')
+                                                                            VALUES (
+                                                                                 '||coalesce(g_id_partida_presupuesto||' ','null')||'     ,  '||coalesce(g_monedas.id_moneda||' ','null')||' ,   
+                                                                               '||coalesce(round(param.f_pm_conversion_monedas( g_fecha_tc,pr_monto_total, pr_id_moneda, g_monedas.id_moneda,'O' ),2)||' ','null')||'  , '''||coalesce(pr_fecha||' ','null')||'''     ,   '||coalesce(pr_sw_momento||' ','null')||',                  
+                                                                                 '||coalesce(g_id_item||' ','null')||'                    ,'||coalesce(g_id_servicio||' ','null')||'            , null ,
+                                                                                 '||coalesce(pr_id_partida_ejecucion||' ','null')||' ,'||coalesce(g_id_concepto_ingas||' ','null')||' , CURRENT_TIMESTAMP, 
+                                                                                 '||coalesce(g_id_cuenta_doc||' ','null')||' , '||coalesce(g_id_devengado||' ','null')||' , '||coalesce(g_id_solicitud_compra||' ','null')||',
+                                                                                 '||coalesce(g_id_cuenta_doc_rendicion||' ','null')||' ,'||coalesce(pr_id_comprobante||' ','null')||' '||coalesce(', '||pr_fk_llave, '')||' );';
+                                               /* INSERT INTO presto.tpr_partida_ejecucion(                id_partida_presupuesto     , id_moneda, 
+                                                                                importe_com_eje             , fecha_com_eje                , estado_com_eje,         
+                                                                                id_item                    , id_servicio                , cantidad_com_eje,
+                                                                                 fk_partida_ejecucion    ,id_concepto_ingas            , fecha_reg,
+                                                                                 id_cuenta_doc ,  id_devengado ,  id_solicitud_compra,id_cuenta_doc_rendicion ,id_comprobante)
+                                                                            VALUES (
+                                                                                                        g_id_partida_presupuesto     ,  g_monedas.id_moneda, 
+                                                                               round(param.f_pm_conversion_monedas( g_fecha_tc,pr_monto_total, pr_id_moneda, g_monedas.id_moneda,'O' ),2)            , pr_fecha                    ,    pr_sw_momento,
+                                                                                g_id_item                , g_id_servicio            , null ,
+                                                                                 g_id_partida_ejecucion  ,g_id_concepto_ingas , CURRENT_TIMESTAMP,
+                                                                                  g_id_cuenta_doc , g_id_devengado , g_id_solicitud_compra, g_id_cuenta_doc_rendicion, pr_id_comprobante); */
+                                               raise notice '%',g_consulta;
+                                               EXECUTE(g_consulta);        
+
+                                    END IF;
+                  END LOOP;  
+          
+ END IF;
+ 
+ 	--Actualizacion de la fecha del comprometido
+      select estado_com_eje , fecha_com_eje
+      into g_estado_com_eje , g_fecha_com_eje
+      from presto.tpr_partida_ejecucion 
+      where id_partida_ejecucion =pr_id_partida_ejecucion;
+
+      IF g_fecha_com_eje> pr_fecha THEN
+              UPDATE presto.tpr_partida_ejecucion 
+              set fecha_com_eje=pr_fecha
+              where (presto.tpr_partida_ejecucion.fk_partida_ejecucion =pr_id_partida_ejecucion or  presto.tpr_partida_ejecucion.id_partida_ejecucion =pr_id_partida_ejecucion) 
+                    and presto.tpr_partida_ejecucion.estado_com_eje=g_estado_com_eje;
+      END IF;
+
+        
+          
+       g_resul[1]=g_id_partida_ejecucion;
+       g_resul[2]=g_saldo-pr_monto_total;
+             
+-- if pr_id_concepto_ingas=812 THEN
+/*if(pr_id_solicitud_compra=3547) then
+  raise exception 'llega al final%', g_resul[1]||'---'||g_resul[2] ;
+end if;*/
+--raise exception 'llega al final 812' ;
+--END IF;
+
+ RETURN g_resul;   
+         
+
+
+ 
+ 
+END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER;

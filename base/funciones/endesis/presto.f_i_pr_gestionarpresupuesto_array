@@ -57,8 +57,10 @@ BEGIN
 -- 0) determinar el tamanho del array
 
 
-  v_size = array_upper(pr_id_presupuesto, 1);
+ v_size = array_upper(pr_sw_momento, 1);
  -- 1)recorre las posiciones del array 
+ 
+ --  raise  exception 'xxx   ERROR ENDESIS %, %, %, %, %',pr_sw_momento, v_size, pr_fk_llave, pr_id_moneda, pr_monto_total ;
  
 FOR v_i IN 1..v_size LOOP
  
@@ -107,7 +109,8 @@ FOR v_i IN 1..v_size LOOP
  
  
       --  raise exception 'ante de la segunda  %',pr_fecha[v_i]::date;
-
+   
+       raise notice '>>>>>>  paso %',v_i;
        v_rescom:=presto.f_i_pr_gestionarpresupuesto(
                                                   pr_id_presupuesto[v_i],
                                                   pr_id_partida[v_i],
