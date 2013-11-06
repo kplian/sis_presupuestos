@@ -18,7 +18,9 @@ class MODPartida extends MODbase{
 		$this->procedimiento='pre.ft_partida_sel';
 		$this->transaccion='PRE_PAR_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-				
+			
+			
+		$this->setParametro('id_cuenta','id_cuenta','int4');		
 		//Definicion de la lista del resultado del query
 		$this->captura('id_partida','int4');
 		$this->captura('estado_reg','varchar');
