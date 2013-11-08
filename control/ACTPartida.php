@@ -12,23 +12,37 @@ class ACTPartida extends ACTbase{
 	function listarPartida(){
 		$this->objParam->defecto('ordenacion','id_partida');
 		
+		/////////////////
+		//	FILTROS
+		////////////////
 		if($this->objParam->getParametro('id_gestion')!=''){
 	    	$this->objParam->addFiltro("par.id_gestion = ".$this->objParam->getParametro('id_gestion'));	
 		}
-		
 		if($this->objParam->getParametro('id_concepto_ingas')!=''){
 	    	$this->objParam->addFiltro("par.id_partida in (select id_partida from pre.tconcepto_partida cp where cp.id_concepto_ingas = " . $this->objParam->getParametro('id_concepto_ingas') . ")");	
 		}
-		
-		
 		if($this->objParam->getParametro('tipo')!=''){
 	    	$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
 		}
-		
-		
 		if($this->objParam->getParametro('sw_transaccional')!=''){
 	    	$this->objParam->addFiltro("par.sw_transaccional = ''".$this->objParam->getParametro('sw_transaccional')."''");	
-		}		
+		}
+		if($this->objParam->getParametro('partida_tipo')!=''){
+			$tmp=$this->objParam->getParametro('partida_tipo');
+			if($tmp=='flujo'||$tmp=='presupuestaria'){
+				$this->objParam->addFiltro("par.sw_movimiento = ''$tmp'' ");
+			} 
+		}
+		if($this->objParam->getParametro('partida_rubro')!=''){
+			$tmp=$this->objParam->getParametro('partida_rubro');
+			if($tmp=='recurso'||$tmp=='gasto'){
+				$this->objParam->addFiltro("par.sw_movimiento = ''$tmp'' ");
+			} 
+		}
+		
+		/////////////////////
+		//Llamada al Modelo	
+		/////////////////////	
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

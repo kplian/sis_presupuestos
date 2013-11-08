@@ -13,7 +13,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		     	'<tpl if="sw_movimiento == \'presupuestaria\'">',
 		     	'<font color="green"><p>Nombre:{nombre_partida}</p></font>',
 		     	'</tpl>',
-		     '<p>{codigo}</p> <p>Tipo: {sw_movimiento}</p>',
+		     '<p>{codigo}</p> <p>Tipo: {sw_movimiento} <p>Rubro: {tipo}</p>',
 		     '</div>',
 		     '</tpl>'
 		     
@@ -44,7 +44,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 							direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_partida','codigo','nombre_partida','sw_movimiento'],
+					fields: ['id_partida','codigo','nombre_partida','tipo','sw_movimiento'],
 					// turn on remote sorting
 					remoteSort: true,
 					baseParams:{par_filtro:'codigo#nombre_partida',sw_transaccional:'movimiento'}
