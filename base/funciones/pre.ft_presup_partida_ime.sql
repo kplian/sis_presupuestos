@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_presup_partida_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -30,6 +32,7 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_presup_partida	integer;
+    v_resp_presu		varchar;
 			    
 BEGIN
 
@@ -138,7 +141,33 @@ BEGIN
             return v_resp;
 
 		end;
+    
+    /*********************************    
+ 	#TRANSACCION:  'PRE_VERPRE_IME'
+ 	#DESCRIPCION:	Interface para Verificar Presupuesto
+ 	#AUTOR:	     Rensi ARteaga Copari
+ 	#FECHA:		15-08-2013 22:02:47
+	***********************************/
+
+	elsif(p_transaccion='PRE_VERPRE_IME')then
+
+		begin
+			
+           v_resp_presu =    pre.f_verificar_presupuesto_partida ( v_parametros.id_presupuesto,
+            									v_parametros.id_partida,
+                                                v_parametros.id_moneda,
+                                                v_parametros.monto_total);
          
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Presupuesto verificado)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'presu_verificado',v_resp_presu);
+              
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+         
+	      
 	else
      
     	raise exception 'Transaccion inexistente: %',p_transaccion;

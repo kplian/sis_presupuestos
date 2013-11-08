@@ -96,6 +96,26 @@ class MODPresupuesto extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+	
+	function verificarPresupuesto(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_presup_partida_ime';
+        $this->transaccion='PRE_VERPRE_IME';
+        $this->tipo_procedimiento='IME';
+                
+        //Define los parametros para la funcion
+        $this->setParametro('id_presupuesto','id_presupuesto','int4');
+        $this->setParametro('id_partida','id_partida','int4');
+        $this->setParametro('id_moneda','id_moneda','int4');
+        $this->setParametro('monto_total','monto_total','numeric');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
     
     function reportePresupuesto(){
         $this->procedimiento='pre.ft_presupuesto_sel';
