@@ -23,7 +23,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 							direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_partida','codigo','nombre_partida'],
+					fields: ['id_partida','codigo','nombre_partida','tipo'],
 					// turn on remote sorting
 					remoteSort: true,
 					baseParams:{par_filtro:'codigo#nombre_partida',sw_transaccional:'movimiento'}
@@ -31,7 +31,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 				valueField: 'id_partida',
  				displayField: 'nombre_partida',
  				hiddenName: 'id_partida',
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
+				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p><p>Tipo: {tipo}</p> </div></tpl>',
 				forceSelection:true,
  				typeAhead: true,
                 triggerAction: 'all',
