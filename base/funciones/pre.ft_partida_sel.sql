@@ -30,6 +30,7 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
     v_where				varchar;
+    v_inner				varchar;
 			    
 BEGIN
 
@@ -46,6 +47,15 @@ BEGIN
 	if(p_transaccion='PRE_PAR_SEL')then
      				
     	begin
+        
+            v_inner = '';   
+        
+            IF pxp.f_existe_parametro(p_tabla,'id_cuenta') THEN
+            
+             v_inner = 'inner join conta.tcuenta_partida c on  c.id_partida = par.id_partida and c.id_cuenta ='|| v_parametros.id_cuenta::varchar;
+            
+            END IF;
+        
     		--Sentencia de la consulta
 			v_consulta:='select
 						par.id_partida,
@@ -70,7 +80,8 @@ BEGIN
                         from pre.tpartida par
 						inner join segu.tusuario usu1 on usu1.id_usuario = par.id_usuario_reg
                         inner join param.tgestion ges on ges.id_gestion = par.id_gestion
-						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod
+						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod  '||
+                        v_inner || '
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -140,12 +151,21 @@ BEGIN
 	elsif(p_transaccion='PRE_PAR_CONT')then
 
 		begin
+        
+        v_inner = '';   
+        
+            IF pxp.f_existe_parametro(p_tabla,'id_cuenta') THEN
+            
+             v_inner = 'inner join conta.tcuenta_partida c on  c.id_partida = par.id_partida and c.id_cuenta ='|| v_parametros.id_cuenta::varchar;
+            
+            END IF;
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_partida)
+			v_consulta:='select count(par.id_partida)
 					    from pre.tpartida par
 						inner join segu.tusuario usu1 on usu1.id_usuario = par.id_usuario_reg
                         inner join param.tgestion ges on ges.id_gestion = par.id_gestion
-						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod
+						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod  '||
+                        v_inner || '
 				       where ';
 			
 			--Definicion de la respuesta		    

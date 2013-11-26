@@ -35,6 +35,9 @@ DECLARE
  
  v_size integer;
  v_array_resp numeric[];
+ 
+ v_str_id_presupuesto varchar;
+ v_str_id_partida varchar;
   
 BEGIN
 
@@ -76,13 +79,33 @@ BEGIN
         
           
           */
+          
+          
+         v_str_id_presupuesto = array_to_string(p_id_presupuesto, ',');
          
+         IF v_str_id_presupuesto !='' and v_str_id_presupuesto is not null THEN
+           v_str_id_presupuesto ='array['|| v_str_id_presupuesto||']';
+         
+         ELSE
+           v_str_id_presupuesto = 'NULL::integer[]';
+         
+         END IF;
+         
+         v_str_id_partida= array_to_string(p_id_partida, ',');
+         
+         IF v_str_id_partida !='' and v_str_id_partida is not null THEN
+           v_str_id_partida ='array['|| v_str_id_partida||']';
+         
+         ELSE
+           v_str_id_partida = 'NULL::integer[]';
+         
+         END IF;
           
           
           
          v_conexion:=migra.f_obtener_cadena_conexion();
-         v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||COALESCE( ('array['|| array_to_string(p_id_presupuesto, ',')||']')::varchar,'NULL::integer[]')||',			--  pr_id_presupuesto integer
-                                                                              '||COALESCE(('array['|| array_to_string(p_id_partida, ',')||']')::varchar,'NULL::integer[]')||',   			--  pr_id_partida integer,
+         v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',			--  pr_id_presupuesto integer
+                                                                          '||v_str_id_partida||',   			--  pr_id_partida integer,
                                                                               '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     		--  pr_id_moneda integer,
                                                                               '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		--  pr_monto_total numeric,
                                                                               '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   				 --  pr_fecha date,

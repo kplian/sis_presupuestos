@@ -3,10 +3,31 @@ Ext.namespace('Phx','Phx.comborec.sis_presupuestos');
 Phx.comborec.sis_presupuestos.configini = function (config){
 	
 	if (config.origen == 'PARTIDA') {
+		
+		this.tpl = new Ext.XTemplate([
+		     '<tpl for=".">',
+		     '<div class="x-combo-list-item">',
+		     	'<tpl if="sw_movimiento == \'flujo\'">',
+		     	'<font color="red"><p>Nombre:{nombre_partida}</p></font>',
+		     	'</tpl>',
+		     	'<tpl if="sw_movimiento == \'presupuestaria\'">',
+		     	'<font color="green"><p>Nombre:{nombre_partida}</p></font>',
+		     	'</tpl>',
+		     '<p>{codigo}</p> <p>Tipo: {sw_movimiento} <p>Rubro: {tipo}</p>',
+		     '</div>',
+		     '</tpl>'
+		     
+		   ]);
+		   
+		  // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
+				
+		
+		
 		return {
 			 origen: 'PARTIDA',
 			 tinit:false,
 			 tasignacion:true,
+			  resizable:true,
 			 tname:'id_partida',
 			 tdisplayField:'nombre_partida',
 			 pid:this.idContenedor,
@@ -23,7 +44,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 							direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_partida','codigo','nombre_partida','tipo'],
+					fields: ['id_partida','codigo','nombre_partida','tipo','sw_movimiento'],
 					// turn on remote sorting
 					remoteSort: true,
 					baseParams:{par_filtro:'codigo#nombre_partida',sw_transaccional:'movimiento'}
@@ -31,7 +52,8 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 				valueField: 'id_partida',
  				displayField: 'nombre_partida',
  				hiddenName: 'id_partida',
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p><p>Tipo: {tipo}</p> </div></tpl>',
+				//tpl:'<tpl for=".">'<tpl if="STREET2.length &gt; 0">',<div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
+				tpl:this.tpl,
 				forceSelection:true,
  				typeAhead: true,
                 triggerAction: 'all',
