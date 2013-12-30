@@ -118,7 +118,7 @@ BEGIN
                             where op.id_obligacion_pago = ' || v_parametros.id || '
                             group by od.id_partida, od.id_centro_costo, op.id_moneda';
                             
-                            raise exception '%',v_sql;
+                            --raise exception '%',v_sql;
             	
                 else
             	
