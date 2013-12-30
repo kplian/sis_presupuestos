@@ -118,3 +118,12 @@ CREATE TABLE pre.tconcepto_partida(
 
 /***********************************F-SCP-RAC-PRE-0-07/01/2013*****************************************/
 
+
+/***********************************I-SCP-RCM-PRE-0-18/12/2013*****************************************/
+CREATE TABLE pre.tpartida_ids (
+  id_partida_uno INTEGER NOT NULL, 
+  id_partida_dos INTEGER NOT NULL, 
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion'::character varying, 
+  CONSTRAINT tpartida_ids_pkey PRIMARY KEY(id_partida_uno)
+) WITHOUT OIDS;
+/***********************************F-SCP-RCM-PRE-0-18/12/2013*****************************************/
