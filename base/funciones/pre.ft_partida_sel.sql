@@ -133,7 +133,7 @@ BEGIN
                         where  '||v_where|| '
                         and id_gestion =  '||COALESCE( v_parametros.id_gestion,0)|| ' 
                         and tipo =  '''||COALESCE(v_parametros.tipo,'gasto')|| ''' 
-                        ORDER BY par.id_partida';
+                        ORDER BY par.codigo';
             raise notice '%',v_consulta;
            
             --Devuelve la respuesta

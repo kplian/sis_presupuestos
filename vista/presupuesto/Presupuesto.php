@@ -206,8 +206,8 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true
-	}
-)
+
+})
 </script>
 		
 		
