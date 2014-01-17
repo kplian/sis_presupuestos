@@ -83,7 +83,7 @@ class ACTPartida extends ACTbase{
         array_push($arreglo,array('nombre'=>'id_p','valor'=>'id_partida_fk'));
         
         
-        array_push($arreglo,array('nombre'=>'text','valor'=>'codigo'));
+        array_push($arreglo,array('nombre'=>'text','valores'=>'#codigo# - #nombre_partida#'));
         array_push($arreglo,array('nombre'=>'cls','valor'=>'codigo'));
         array_push($arreglo,array('nombre'=>'qtip','valores'=>'<b> #codigo#</b><b> #nombre_partida#</b><br> #descripcion#'));
         
