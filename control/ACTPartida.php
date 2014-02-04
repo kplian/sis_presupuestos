@@ -36,7 +36,7 @@ class ACTPartida extends ACTbase{
 		if($this->objParam->getParametro('partida_rubro')!=''){
 			$tmp=$this->objParam->getParametro('partida_rubro');
 			if($tmp=='recurso'||$tmp=='gasto'){
-				$this->objParam->addFiltro("par.sw_movimiento = ''$tmp'' ");
+				$this->objParam->addFiltro("par.tipo = ''$tmp'' ");
 			} 
 		}
 		
