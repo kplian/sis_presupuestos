@@ -55,7 +55,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 				//tpl:'<tpl for=".">'<tpl if="STREET2.length &gt; 0">',<div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
 				tpl:this.tpl,
 				forceSelection:true,
- 				typeAhead: true,
+ 				typeAhead: false,
                 triggerAction: 'all',
                 lazyRender:true,
  				mode:'remote',
