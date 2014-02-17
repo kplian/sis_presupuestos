@@ -40,6 +40,10 @@ class ACTPartida extends ACTbase{
 			} 
 		}
 		
+		if($this->objParam->getParametro('id_centro_costo')!=''){
+	    	$this->objParam->addFiltro("par.id_partida in (select id_partida from pre.tpresup_partida where id_presupuesto = " . $this->objParam->getParametro('id_centro_costo') . ")");	
+		}
+		
 		/////////////////////
 		//Llamada al Modelo	
 		/////////////////////	
