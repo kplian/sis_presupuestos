@@ -129,7 +129,7 @@ CREATE TABLE pre.tpartida_ids (
 /***********************************F-SCP-RCM-PRE-0-18/12/2013*****************************************/
 
 /***********************************I-SCP-JRR-PRE-0-29/05/2014*****************************************/
-CREATE TABLE pre.tpr_presupuesto_ids (
+CREATE TABLE pre.tpresupuesto_ids (
   id_presupuesto_uno INTEGER NOT NULL, 
   id_presupuesto_dos INTEGER NOT NULL, 
   sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion'::character varying NOT NULL, 
