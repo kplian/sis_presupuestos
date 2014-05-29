@@ -127,3 +127,13 @@ CREATE TABLE pre.tpartida_ids (
   CONSTRAINT tpartida_ids_pkey PRIMARY KEY(id_partida_uno)
 ) WITHOUT OIDS;
 /***********************************F-SCP-RCM-PRE-0-18/12/2013*****************************************/
+
+/***********************************I-SCP-JRR-PRE-0-29/05/2014*****************************************/
+CREATE TABLE pre.tpr_presupuesto_ids (
+  id_presupuesto_uno INTEGER NOT NULL, 
+  id_presupuesto_dos INTEGER NOT NULL, 
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion'::character varying NOT NULL, 
+  CONSTRAINT tpresupuesto_ids_pkey PRIMARY KEY(id_presupuesto_uno)  
+) WITH OIDS;
+
+/***********************************F-SCP-JRR-PRE-0-29/05/2014*****************************************/

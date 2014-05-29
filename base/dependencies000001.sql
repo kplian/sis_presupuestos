@@ -102,3 +102,16 @@ select pxp.f_insert_tprocedimiento_gui ('PM_CAT_SEL', 'CINGAS.3', 'no');
 select pxp.f_insert_tprocedimiento_gui ('PM_CATCMB_SEL', 'CINGAS.3', 'no');
 
 /***********************************F-DEP-JRR-PRE-0-24/04/2014*****************************************/
+
+/***********************************I-DEP-JRR-PRE-0-29/05/2014*****************************************/
+ALTER TABLE pre.tpresupuesto
+  ADD  CONSTRAINT fk_tpr_presupuesto_ids__id_presupuesto_uno FOREIGN KEY (id_presupuesto_uno)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    
+ALTER TABLE pre.tpresupuesto
+  ADD  CONSTRAINT tpr_presupuesto_ids_fk FOREIGN KEY (id_presupuesto_dos)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION  ON UPDATE NO ACTION;
+
+/***********************************F-DEP-JRR-PRE-0-29/05/2014*****************************************/
