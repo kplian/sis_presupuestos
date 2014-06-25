@@ -162,3 +162,19 @@ select pxp.f_insert_tprocedimiento ('PRE_CONP_ELI', 'Eliminacion de registros', 
 
 
 /***********************************F-DAT-JRR-PRE-0-24/04/2014*****************************************/
+
+
+
+
+
+
+/***********************************I-DAT-RAC-PRE-0-25/06/2014*****************************************/
+
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
+VALUES ('error_presupuesto', E'0.02', 'error mas menos en la ejecucion de presupuesto');
+
+/***********************************F-DAT-RAC-PRE-0-25/06/2014*****************************************/
+
+
+
+
