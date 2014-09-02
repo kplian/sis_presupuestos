@@ -9,7 +9,8 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_sw_momento integer [],
   p_id_partida_ejecucion integer [],
   p_columna_relacion varchar [],
-  p_fk_llave integer []
+  p_fk_llave integer [],
+  p_id_int_comprobante integer = NULL::integer
 )
 RETURNS numeric [] AS
 $body$
@@ -17,7 +18,7 @@ $body$
  SISTEMA:		Sistema de Presupuestos
  FUNCION: 		pre.f_gestionar_presupuesto
  DESCRIPCION:   Funcion que llama a la funcion presto.f_i_pr_gestionarpresupuesto mediante dblink
- AUTOR: 		Gonzalo Sarmiento Sejas
+ AUTOR: 		Gonzalo Sarmiento Sejas (kplian)
  FECHA:	        15-03-2013
  COMENTARIOS:	
 ***************************************************************************/
@@ -115,17 +116,17 @@ BEGIN
                                                                               NULL::integer[],                  									--  pr_id_servicio integer,
                                                                               NULL::integer[],               				   					--  pr_id_concepto_ingas integer,
                                                                               '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		--  pr_columna_relacion varchar,
-                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||') ';	--  pr_fk_llave integer
+                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	--  pr_fk_llave integer
 
              
-              raise notice  '>>>>>>>>>>>>    CONSULTA DBLINK  %, %',v_consulta,v_conexion;
+            raise notice  '>>>>>>>>>>>>    CONSULTA DBLINK  %, %',v_consulta,v_conexion;
               
                
-              select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
+            select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
               
-             raise notice '>>>  RESPUESTA %  >>    %',v_array_resp, resultado;
+            raise notice '>>>  RESPUESTA %  >>    %',v_array_resp, resultado;
               
-              v_array_resp= resultado.res;
+            v_array_resp= resultado.res;
               
               IF  v_array_resp is NULL THEN
               
