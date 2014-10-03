@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_id_presupuesto integer [],
   p_id_partida integer [],
@@ -10,7 +8,8 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_id_partida_ejecucion integer [],
   p_columna_relacion varchar [],
   p_fk_llave integer [],
-  p_id_int_comprobante integer = NULL::integer
+  p_id_int_comprobante integer = NULL::integer,
+  p_conexion varchar = NULL::character varying
 )
 RETURNS numeric [] AS
 $body$
@@ -121,9 +120,12 @@ BEGIN
              
             raise notice  '>>>>>>>>>>>>    CONSULTA DBLINK  %, %',v_consulta,v_conexion;
               
-               
-            select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
-              
+            if (p_conexion is null) then   
+            	select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
+            else
+            	select * into resultado from dblink(p_conexion, v_consulta, true)AS (res numeric[]);
+            end if;  
+            
             raise notice '>>>  RESPUESTA %  >>    %',v_array_resp, resultado;
               
             v_array_resp= resultado.res;
