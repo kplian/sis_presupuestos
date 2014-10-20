@@ -137,3 +137,50 @@ CREATE TABLE pre.tpresupuesto_ids (
 ) WITH OIDS;
 
 /***********************************F-SCP-JRR-PRE-0-29/05/2014*****************************************/
+
+
+
+/***********************************I-SCP-RAC-PRE-0-09/10/2014*****************************************/
+
+--------------- SQL ---------------
+
+CREATE OR REPLACE VIEW pre.vpresupuesto_cc
+AS
+  SELECT cec.id_centro_costo,
+         cec.estado_reg,
+         cec.id_ep,
+         cec.id_gestion,
+         cec.id_uo,
+         cec.id_usuario_reg,
+         cec.fecha_reg,
+         cec.id_usuario_mod,
+         cec.fecha_mod,
+         usu1.cuenta AS usr_reg,
+         usu2.cuenta AS usr_mod,
+         uo.codigo AS codigo_uo,
+         uo.nombre_unidad AS nombre_uo,
+         ep.ep,
+         ges.gestion,
+         (((((('('::text || uo.codigo::text) || ')-('::text) || ep.ep) || ')-('
+           ::text) || ges.gestion) || ') id:'::text) || cec.id_centro_costo::
+           text AS codigo_cc,
+         ep.nombre_programa,
+         ep.nombre_proyecto,
+         ep.nombre_actividad,
+         ep.nombre_financiador,
+         ep.nombre_regional,
+         pre.tipo_pres,
+         pre.cod_act,
+         pre.cod_fin,
+         pre.cod_prg,
+         pre.cod_pry,
+         pre.estado_pres
+  FROM param.tcentro_costo cec
+       JOIN segu.tusuario usu1 ON usu1.id_usuario = cec.id_usuario_reg
+       LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = cec.id_usuario_mod
+       JOIN param.vep ep ON ep.id_ep = cec.id_ep
+       JOIN param.tgestion ges ON ges.id_gestion = cec.id_gestion
+       JOIN orga.tuo uo ON uo.id_uo = cec.id_uo
+       JOIN pre.tpresupuesto pre on pre.id_centro_costo = cec.id_centro_costo;
+       
+/***********************************F-SCP-RAC-PRE-0-09/10/2014*****************************************/
