@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -89,9 +91,10 @@ BEGIN
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_presupuesto)
 					    from pre.tpresupuesto pre
-					    inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
+						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
-					    where ';
+				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
+				        where ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
