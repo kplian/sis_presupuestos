@@ -21,7 +21,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.load({
 				params : {
 					start : 0,
-					limit : 50,
+					limit : this.tam_pag,
 					tabla: this.tabla,
 					id: id
 				}
@@ -39,10 +39,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				}
 			},
 			type : 'TextField',
-			filters : {
+			/*filters : {
 				pfiltro : 'desc_partida',
 				type : 'string'
-			},
+			},*/
 			id_grupo : 1,
 			grid : true,
 			form : false
@@ -56,10 +56,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				}
 			},
 			type : 'TextField',
-			filters : {
+			/*filters : {
 				pfiltro : 'desc_cc',
 				type : 'string'
-			},
+			},*/
 			id_grupo : 1,
 			grid : true,
 			form : false
@@ -70,10 +70,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				gwidth : 100
 			},
 			type : 'TextField',
-			filters : {
+			/*filters : {
 				pfiltro : 'importe',
 				type : 'string'
-			},
+			},*/
 			id_grupo : 1,
 			grid : true,
 			form : false
@@ -87,10 +87,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				}
 			},
 			type : 'TextField',
-			filters : {
+			/*filters : {
 				pfiltro : 'desc_moneda',
 				type : 'string'
-			},
+			},*/
 			id_grupo : 1,
 			grid : true,
 			form : false
@@ -104,10 +104,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				maxLength : 10
 			},
 			type : 'TextField',
-			filters : {
+			/*filters : {
 				pfiltro : 'disponibilidad',
 				type : 'string'
-			},
+			},*/
 			id_grupo : 1,
 			grid : true,
 			form : false
@@ -146,6 +146,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		bdel : false,
 		bsave : false,
 		bnew: false,
-		bedit:false
+		bedit:false,
+		tam_pag:1000
 	}); 
 </script>

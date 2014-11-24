@@ -196,14 +196,15 @@ BEGIN
                 ------------------------------------------------------------
                 --(4)RESPUESTA DEL LISTADO CON LA COLUMNA DE DISPONIBLIDAD
                 ------------------------------------------------------------
-                for v_rec in (select
+                for v_rec in execute ('select
                             rv.id_partida, rv.id_presupuesto,rv.id_moneda,
                             rv.importe,rv.disponibilidad,
-                            pa.codigo || ' - ' || pa.nombre_partida as desc_partida,
-                            cc.codigo_cc || ' - ' || cc.nombre_uo as desc_cc
+                            pa.codigo || '' - '' || pa.nombre_partida as desc_partida,
+                            cc.codigo_cc || '' - '' || cc.nombre_uo as desc_cc
                             from tt_result_verif rv
                             inner join pre.tpartida pa on pa.id_partida = rv.id_partida
-                            inner join param.vcentro_costo cc on cc.id_centro_costo = rv.id_presupuesto) loop        
+                            inner join param.vcentro_costo cc on cc.id_centro_costo = rv.id_presupuesto 
+                            order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion) loop        
                     return next v_rec;
                 end loop;
                 
