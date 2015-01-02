@@ -184,3 +184,15 @@ AS
        JOIN pre.tpresupuesto pre on pre.id_centro_costo = cec.id_centro_costo;
        
 /***********************************F-SCP-RAC-PRE-0-09/10/2014*****************************************/
+
+
+/***********************************I-SCP-JRR-PRE-0-02/01/2015*****************************************/
+CREATE TABLE pre.tcategoria_programatica (
+  id_categoria_programatica INTEGER NOT NULL, 
+  id_gestion INTEGER NOT NULL, 
+  descripcion TEXT NOT NULL, 
+  CONSTRAINT tcategoria_programatica_pkey PRIMARY KEY(id_categoria_programatica)) 
+INHERITS (pxp.tbase); 
+
+
+/***********************************F-SCP-JRR-PRE-0-02/01/2015*****************************************/
