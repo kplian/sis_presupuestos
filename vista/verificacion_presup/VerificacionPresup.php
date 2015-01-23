@@ -36,9 +36,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				gwidth : 200,
 				renderer: function(value, p, record){
 					return String.format('{0}', record.data.desc_partida);
-				}
+				},
+				gdisplayField: 'desc_partida'
 			},
-			type : 'TextField',
+			type : 'ComboBox',
 			/*filters : {
 				pfiltro : 'desc_partida',
 				type : 'string'
@@ -53,9 +54,10 @@ header("content-type: text/javascript; charset=UTF-8");
 				gwidth : 200,
 				renderer: function(value, p, record){
 					return String.format('{0}', record.data.desc_cc);
-				}
+				},
+				gdisplayField: 'desc_cc'
 			},
-			type : 'TextField',
+			type : 'ComboBox',
 			/*filters : {
 				pfiltro : 'desc_cc',
 				type : 'string'
