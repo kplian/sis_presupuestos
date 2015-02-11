@@ -56,6 +56,23 @@ class ACTPartida extends ACTbase{
 			$this->objFunc=$this->create('MODPartida');	
 			$this->res=$this->objFunc->listarPartida();
 		}
+		
+		
+		if($this->objParam->getParametro('_adicionar')!=''){
+		    
+			$respuesta = $this->res->getDatos();
+			
+										
+		    array_unshift ( $respuesta, array(  'id_partida'=>'0',
+		                                'nombre_partida'=>'Todos',
+									    'codigo'=>'Todos',
+										'sw_movimiento'=>'Todos',
+										'sw_transaccional'=>'Todos',
+										'desc_gestion'=>'Todos',
+										'tipo'=>'Todos'));
+		    //var_dump($respuesta);
+			$this->res->setDatos($respuesta);
+		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
     

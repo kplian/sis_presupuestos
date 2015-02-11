@@ -47,7 +47,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 					fields: ['id_partida','codigo','nombre_partida','tipo','sw_movimiento'],
 					// turn on remote sorting
 					remoteSort: true,
-					baseParams:{par_filtro:'codigo#nombre_partida',sw_transaccional:'movimiento'}
+					baseParams: Ext.apply({par_filtro:'codigo#nombre_partida',sw_transaccional:'movimiento'}, config.baseParams)
 					}),
 				valueField: 'id_partida',
  				displayField: 'nombre_partida',
