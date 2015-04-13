@@ -69,7 +69,7 @@ class MODPresupuesto extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('id_presupuesto','id_presupuesto','int4');
 		$this->setParametro('id_centro_costo','id_centro_costo','int4');
-		$this->setParametro('tipo_pres','id_tipo_pres','varchar');
+		$this->setParametro('tipo_pres','tipo_pres','varchar');
 		$this->setParametro('estado_pres','estado_pres','varchar');
 
 		//Ejecuta la instruccion

@@ -38,7 +38,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				emptyText : 'Centro Costo...',
 				store : new Ext.data.JsonStore({
-							url:'../../sis_parametros/control/CentroCosto/listarCentroCosto',
+							url:'../../sis_parametros/control/CentroCosto/listarCentroCostoGrid',
 							id : 'id_centro_costo',
 							root: 'datos',
 							sortInfo:{
