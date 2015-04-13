@@ -26,7 +26,7 @@ class MODConceptoIngas extends MODbase{
 		$this->captura('id_oec','int4');
 		$this->captura('id_item','int4');
 		$this->captura('tipo','varchar');
-		$this->captura('sw_tesoro','int4');
+		$this->captura('sw_tesoro','varchar');
 		$this->captura('desc_ingas','varchar');
 		$this->captura('fecha_reg','timestamp');
 		$this->captura('id_usuario_reg','int4');
@@ -55,7 +55,7 @@ class MODConceptoIngas extends MODbase{
 		$this->setParametro('id_oec','id_oec','int4');
 		$this->setParametro('id_item','id_item','int4');
 		$this->setParametro('tipo','tipo','varchar');
-		$this->setParametro('sw_tesoro','sw_tesoro','int4');
+		$this->setParametro('sw_tes','sw_tes','integer');
 		$this->setParametro('desc_ingas','desc_ingas','varchar');
 
 		//Ejecuta la instruccion
@@ -79,7 +79,7 @@ class MODConceptoIngas extends MODbase{
 		$this->setParametro('id_oec','id_oec','int4');
 		$this->setParametro('id_item','id_item','int4');
 		$this->setParametro('tipo','tipo','varchar');
-		$this->setParametro('sw_tesoro','sw_tesoro','int4');
+		$this->setParametro('sw_tes','sw_tes','integer');
 		$this->setParametro('desc_ingas','desc_ingas','varchar');
 
 		//Ejecuta la instruccion

@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_id_presupuesto integer [],
   p_id_partida integer [],

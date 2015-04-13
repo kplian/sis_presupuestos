@@ -14,11 +14,18 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
+		
     	//llama al constructor de la clase padre
 		Phx.vista.ConceptoPartida.superclass.constructor.call(this,config);
 		this.init();
-		
-		this.bloquearMenus();
+		var dataPadre = Phx.CP.getPagina(this.idContenedorPadre).getSelectedData()
+        if(dataPadre){
+            this.onEnablePanel(this, dataPadre);
+        }
+        else
+        {
+           this.bloquearMenus();
+        }
 		
 	},
 			

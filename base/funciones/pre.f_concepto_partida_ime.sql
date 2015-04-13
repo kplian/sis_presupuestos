@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_concepto_partida_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -32,6 +30,12 @@ DECLARE
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
 	v_id_concepto_partida	integer;
+    v_nombre_conexion		varchar;
+    v_concepto				record;
+    v_id_gestion			integer;
+    v_id_tipo_relacion_contable				integer[];
+    v_registros				record;
+    v_id_concepto_endesis	integer;
 			    
 BEGIN
 
@@ -79,6 +83,32 @@ BEGIN
 			null
 							
 			)RETURNING id_concepto_partida into v_id_concepto_partida;
+            
+            if (pxp.f_get_variable_global('sincronizar') = 'true') then
+             
+                select * into v_nombre_conexion from migra.f_crear_conexion();
+                select * into v_concepto from param.tconcepto_ingas 
+                where id_concepto_ingas = v_parametros.id_concepto_ingas;
+                
+                select id_gestion into v_id_gestion 
+                from pre.tpartida where id_partida = v_parametros.id_partida;
+                
+                select * FROM dblink(v_nombre_conexion,'
+                        select migracion.f_mig_concepto_ingas__tpr_concepto_ingas(NULL' || 
+                        ',''INS'',''' || v_concepto.desc_ingas || 
+                        ''',' || v_parametros.id_partida || ',' || v_concepto.sw_tes ||
+                        ', ' || p_id_usuario || ' ,'''|| v_concepto.tipo ||
+                        ''','''|| v_concepto.activo_fijo ||
+                        ''','''|| v_concepto.almacenable ||
+                        ''','|| p_id_usuario ||                    
+                    ')',true) AS (id_concepto_endesis integer) into v_id_concepto_endesis;
+                    insert into migra.tconcepto_ids (id_concepto_ingas, id_concepto_ingas_pxp,
+                								id_gestion, desc_ingas)  
+                                                values (v_id_concepto_endesis, v_parametros.id_concepto_ingas,
+                                                v_id_gestion, v_concepto.desc_ingas);
+            	select * into v_resp from migra.f_cerrar_conexion(v_nombre_conexion,'exito');
+             	
+             end if;
 			
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Concepto-Partida almacenado(a) con exito (id_concepto_partida'||v_id_concepto_partida||')'); 
@@ -126,7 +156,61 @@ BEGIN
 	elsif(p_transaccion='PRE_CONP_ELI')then
 
 		begin
-			--Sentencia de la eliminacion
+			
+            
+            if (pxp.f_get_variable_global('sincronizar') = 'true') then
+            	select cig.*,cp.id_partida,cp.id_concepto_partida into v_concepto 
+                from param.tconcepto_ingas cig 
+                inner join pre.tconcepto_partida cp on cp.id_concepto_ingas = cig.id_concepto_ingas
+                where cp.id_concepto_partida = v_parametros.id_concepto_partida;
+                
+                
+                
+            --validar que no exista aprametrizaciones para esta partida
+            	v_id_tipo_relacion_contable = NULL;
+                select pxp.aggarray(trc.id_tipo_relacion_contable) into v_id_tipo_relacion_contable
+                from conta.ttabla_relacion_contable tr
+                inner join conta.ttipo_relacion_contable trc 
+                	on trc.id_tabla_relacion_contable = tr.id_tabla_relacion_contable
+                where lower(tr.esquema) = 'param' and tr.tabla = 'tconcepto_ingas';
+                
+                if (v_id_tipo_relacion_contable is not null) then
+                	if (exists (SELECT 1 from conta.trelacion_contable 
+                    			where id_tipo_relacion_contable =ANY(v_id_tipo_relacion_contable)  
+                                and id_partida = v_concepto.id_partida and id_tabla = v_concepto.id_concepto_ingas ))then
+                		raise exception 'Elimine las relaciones contables asociadas a esta partida antes de eliminarla';
+                    end if;
+                end if;
+                select * into v_nombre_conexion from migra.f_crear_conexion();
+                
+                select id_gestion into v_id_gestion 
+                from pre.tpartida where id_partida = v_concepto.id_partida;
+                
+                for v_registros in (select id_concepto_ingas 
+                                    from migra.tconcepto_ids ci 
+                                    where id_concepto_ingas_pxp = v_concepto.id_concepto_ingas AND
+                                    id_gestion = v_id_gestion) loop
+                    select * FROM dblink(v_nombre_conexion,'
+                        select migracion.f_mig_concepto_ingas__tpr_concepto_ingas(' || v_registros.id_concepto_ingas ||
+                        ',''DEL'',''' || v_concepto.desc_ingas || 
+                        ''',' || v_concepto.id_partida || ',''' || v_concepto.sw_tes ||
+                        ''', ' || p_id_usuario || ' ,'''|| v_concepto.tipo ||
+                        ''','''|| v_concepto.activo_fijo ||
+                        ''','''|| v_concepto.almacenable ||
+                        ''','|| p_id_usuario ||                    
+                    ')',true) AS (id_concepto_endesis integer) into v_id_concepto_endesis;
+                    
+                    if (v_id_concepto_endesis = v_registros.id_concepto_ingas)then
+                    	delete from migra.tconcepto_ids where id_concepto_ingas = v_id_concepto_endesis;
+                    end if;
+                
+                end loop;
+            	select * into v_resp from migra.f_cerrar_conexion(v_nombre_conexion,'exito');
+             
+                
+            
+            end if;
+            --Sentencia de la eliminacion
 			delete from pre.tconcepto_partida
             where id_concepto_partida=v_parametros.id_concepto_partida;
                
