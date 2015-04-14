@@ -196,3 +196,17 @@ INHERITS (pxp.tbase);
 
 
 /***********************************F-SCP-JRR-PRE-0-02/01/2015*****************************************/
+
+/***********************************I-SCP-RAC-PRE-0-16/01/2015*****************************************/
+
+--------------- SQL ---------------
+
+COMMENT ON COLUMN pre.tpresupuesto.tipo_pres
+IS '1 presupuesto de recursos,
+2 presupuesto de gasto,
+3 presupuesto de inversion,
+4 presupuesto de recursos no oficial,
+5 presupuesto de gastos no oficial
+6 presupuesto de inversio no oficial';
+
+/***********************************F-SCP-RAC-PRE-0-16/01/2015*****************************************/
