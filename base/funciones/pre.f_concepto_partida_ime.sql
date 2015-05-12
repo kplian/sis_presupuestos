@@ -176,7 +176,8 @@ BEGIN
                 
                 if (v_id_tipo_relacion_contable is not null) then
                 	if (exists (SELECT 1 from conta.trelacion_contable 
-                    			where id_tipo_relacion_contable =ANY(v_id_tipo_relacion_contable)  and id_partida = v_concepto.id_partida))then
+                    			where id_tipo_relacion_contable =ANY(v_id_tipo_relacion_contable)  
+                                and id_partida = v_concepto.id_partida and id_tabla = v_concepto.id_concepto_ingas ))then
                 		raise exception 'Elimine las relaciones contables asociadas a esta partida antes de eliminarla';
                     end if;
                 end if;
