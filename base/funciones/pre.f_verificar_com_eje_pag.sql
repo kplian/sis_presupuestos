@@ -3,6 +3,7 @@
 CREATE OR REPLACE FUNCTION pre.f_verificar_com_eje_pag (
   p_id_partida_ejecucion integer,
   p_id_moneda integer,
+  p_conexion varchar = NULL::character varying,
   out ps_comprometido numeric,
   out ps_ejecutado numeric,
   out ps_pagado numeric
@@ -42,10 +43,14 @@ v_nombre_funcion = 'pre.f_verificar_com_eje_pag';
   	
     --si la sincronizacion esta activa busca lso datos en endesis
     v_conexion:=migra.f_obtener_cadena_conexion();
-  	
+    
     v_consulta:='select  p_comprometido, p_ejecutado, p_pagado from   presto."f_pr_verificar_comprometido3" ('||COALESCE(p_id_partida_ejecucion::varchar,'NULL')||','||COALESCE(p_id_moneda::varchar,'NULL')||')';
-  	select  * into verificado from dblink(v_conexion,v_consulta,true) as (p_comprometido numeric, p_ejecutado numeric, p_pagado numeric);
-  
+  	
+    if (p_conexion is null) then   
+        select  * into verificado from dblink(v_conexion,v_consulta,true) as (p_comprometido numeric, p_ejecutado numeric, p_pagado numeric);
+    else
+        select  * into verificado from dblink(p_conexion,v_consulta,true) as (p_comprometido numeric, p_ejecutado numeric, p_pagado numeric);
+    end if;
   
   --raise exception '% %',v_consulta,v_conexion;
   
