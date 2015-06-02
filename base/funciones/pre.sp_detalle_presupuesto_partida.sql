@@ -19,7 +19,9 @@ RETURNS TABLE (
   solicitante text,
   fecha_string text,
   fecha date,
-  user_reporte text
+  user_reporte text,
+  partida_ejecucion integer,
+  proveedor varchar
 ) AS
 $body$
 DECLARE
@@ -31,7 +33,7 @@ BEGIN
     registros.comprometido,registros.ejecutado, registros.pagado,registros.codigo,registros.id_centro_costo,
     registros.num_tramite,registros.descripcion, registros.gestion,
     registros.nombre_partida,registros.partida_cod, registros.codigo_cc, registros.desc_funcionario1,registros.fechaAux,
-    registros.fecha_soli, registros.desc_persona
+    registros.fecha_soli, registros.desc_persona, registros.id_partida_ejecucion, registros.desc_proveedor
 	from (select
     (select COALESCE(ps_comprometido,0) from pre.f_verificar_com_eje_pag(sd.id_partida_ejecucion, moneda_id)) as comprometido,
 	(select COALESCE(ps_ejecutado,0) from pre.f_verificar_com_eje_pag(sd.id_partida_ejecucion, moneda_id)) as ejecutado,
@@ -48,7 +50,8 @@ BEGIN
     to_char(s.fecha_soli ,'DD/MM/YYYY') as fechaAux,
     s.fecha_soli,
     usu.desc_persona , 
-    sd.id_partida_ejecucion
+    sd.id_partida_ejecucion,
+    pro.desc_proveedor
     from 
     adq.tsolicitud s
     inner join adq.tsolicitud_det sd on sd.id_solicitud = s.id_solicitud and s.estado_reg = 'activo' and  sd.estado_reg = 'activo'
@@ -59,6 +62,7 @@ BEGIN
     inner join pre.vpresupuesto_cc vpres on vpres.id_centro_costo = sd.id_centro_costo
     inner join orga.vfuncionario soli on soli.id_funcionario = s.id_funcionario
     inner join segu.vusuario  usu on usu.id_usuario = usuario_id
+    inner join param.vproveedor pro on pro.id_proveedor = s.id_proveedor
     where  s.estado not in ('borrador','vbgerencia','vbpresupuestos','anulado')
           AND ((presupuesto_id > 0 AND sd.id_centro_costo in (presupuesto_id))OR(presupuesto_id = 0))
           AND((partida_id > 0 AND sd.id_partida in (partida_id))OR(partida_id = 0))
@@ -81,7 +85,8 @@ BEGIN
     to_char(op.fecha,'DD/MM/YYYY'),
     op.fecha,
     usua.desc_persona,
-    odi.id_partida_ejecucion_com
+    odi.id_partida_ejecucion_com,
+    pro.desc_proveedor
     from 
     tes.tobligacion_pago op
     inner join tes.tobligacion_det odi on odi.id_obligacion_pago = op.id_obligacion_pago and odi.estado_reg = 'activo' and  op.estado_reg = 'activo'
@@ -92,6 +97,7 @@ BEGIN
     inner join pre.vpresupuesto_cc vpresu on vpresu.id_centro_costo = odi.id_centro_costo
     inner join orga.vfuncionario solici on solici.id_funcionario = op.id_funcionario
     inner join segu.vusuario  usua on usua.id_usuario = usuario_id
+    inner join param.vproveedor pro on pro.id_proveedor = op.id_proveedor
     where  op.estado not in ('borrador','vbgerencia','vbpresupuestos','anulado')
     AND ((presupuesto_id > 0 AND odi.id_centro_costo in (presupuesto_id))OR(presupuesto_id = 0))
     AND((partida_id > 0 AND odi.id_partida in (partida_id))OR(partida_id = 0))
