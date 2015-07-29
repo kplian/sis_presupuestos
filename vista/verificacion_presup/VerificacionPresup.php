@@ -15,7 +15,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.maestro = config;
 			Phx.vista.VerificacionPresup.superclass.constructor.call(this, config);
 			this.init();
-			
+			this.title2 = this.num_tramite;
 			var id = this.maestro[this.tabla_id];
 			
 			this.load({

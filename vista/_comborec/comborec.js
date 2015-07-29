@@ -4,7 +4,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 	
 	if (config.origen == 'PARTIDA') {
 		
-		this.tpl = new Ext.XTemplate([
+		var tpl = new Ext.XTemplate([
 		     '<tpl for=".">',
 		     '<div class="x-combo-list-item">',
 		     	'<tpl if="sw_movimiento == \'flujo\'">',
@@ -25,12 +25,12 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		
 		return {
 			 origen: 'PARTIDA',
-			 tinit:false,
-			 tasignacion:true,
-			  resizable:true,
+			 tinit: false,
+			 tasignacion: true,
+			 resizable: true,
 			 tname:'id_partida',
 			 tdisplayField:'nombre_partida',
-			 pid:this.idContenedor,
+			 pid: this.idContenedor,
 			 name:'id_partida',
  				fieldLabel:'Partida',
  				allowBlank:true,
@@ -53,7 +53,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
  				displayField: 'nombre_partida',
  				hiddenName: 'id_partida',
 				//tpl:'<tpl for=".">'<tpl if="STREET2.length &gt; 0">',<div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
-				tpl:this.tpl,
+				tpl: tpl,
 				forceSelection:true,
  				typeAhead: false,
                 triggerAction: 'all',

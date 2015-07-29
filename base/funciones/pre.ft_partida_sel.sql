@@ -31,6 +31,9 @@ DECLARE
 	v_resp				varchar;
     v_where				varchar;
     v_inner				varchar;
+    v_id_gestion		integer;
+    v_gestion			varchar;
+    v_add_filtro		varchar;
 			    
 BEGIN
 
@@ -54,6 +57,25 @@ BEGIN
             
              v_inner = 'inner join conta.tcuenta_partida c on  c.id_partida = par.id_partida and c.id_cuenta ='|| v_parametros.id_cuenta::varchar;
             
+            END IF;
+            
+            -- si existe el filtro de gestion actual , filtramos en funcion a la fecha actual
+            IF  pxp.f_existe_parametro(p_tabla,'filtro_ges')   THEN
+            
+               --recuepra gestion actual
+                v_gestion =  EXTRACT(YEAR FROM  now())::varchar;
+            
+                select 
+                 ges.id_gestion
+                into
+                 v_id_gestion
+                from param.tgestion ges 
+              where ges.gestion::varchar  = v_gestion and ges.estado_reg = 'activo';
+            END IF;
+            
+            v_add_filtro = '0=0 and ';
+            IF  v_id_gestion is not null THEN
+              v_add_filtro = ' par.id_gestion = '||v_id_gestion::varchar|| '  and  par.estado_reg = ''activo'' and ';
             END IF;
         
     		--Sentencia de la consulta
@@ -82,7 +104,7 @@ BEGIN
                         inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod  '||
                         v_inner || '
-				        where  ';
+				        where  '||v_add_filtro;
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -108,6 +130,8 @@ BEGIN
               else
                 v_where := ' par.id_partida_fk = '||v_parametros.id_padre;
               end if;
+              
+              
        
        
             --Sentencia de la consulta
@@ -154,10 +178,27 @@ BEGIN
         
         v_inner = '';   
         
-            IF pxp.f_existe_parametro(p_tabla,'id_cuenta') THEN
-            
+            IF pxp.f_existe_parametro(p_tabla,'id_cuenta') THEN            
              v_inner = 'inner join conta.tcuenta_partida c on  c.id_partida = par.id_partida and c.id_cuenta ='|| v_parametros.id_cuenta::varchar;
+            END IF;
             
+            -- si existe el filtro de gestion actual , filtramos en funcion a la fecha actual
+            IF  pxp.f_existe_parametro(p_tabla,'filtro_ges')   THEN
+            
+               --recuepra gestion actual
+                v_gestion =  EXTRACT(YEAR FROM  now())::varchar;
+            
+                select 
+                 ges.id_gestion
+                into
+                 v_id_gestion
+                from param.tgestion ges 
+              where ges.gestion::varchar  = v_gestion and ges.estado_reg = 'activo';
+            END IF;
+            
+            v_add_filtro = '0=0 and ';
+            IF  v_id_gestion is not null THEN
+              v_add_filtro = ' par.id_gestion = '||v_id_gestion::varchar|| '  and  par.estado_reg = ''activo'' and ';
             END IF;
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(par.id_partida)
@@ -166,7 +207,7 @@ BEGIN
                         inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						left join segu.tusuario usu2 on usu2.id_usuario = par.id_usuario_mod  '||
                         v_inner || '
-				       where ';
+				       where  '||v_add_filtro;
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
