@@ -158,6 +158,12 @@ class ACTPartida extends ACTbase{
 		$this->res=$this->objFunc->eliminarPartida();
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	
+	function clonarPartidasGestion(){
+		$this->objFunc=$this->create('MODPartida');	
+		$this->res=$this->objFunc->clonarPartidasGestion($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 			
 }
 

@@ -167,6 +167,23 @@ class MODPresupuesto extends MODbase{
         $this->ejecutarConsulta();
         
         return $this->respuesta;
-    }			
+    }	
+
+   function clonarPresupuestosGestion(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_presupuesto_ime';
+		$this->transaccion='PRE_CLONARPRE_IME';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_gestion','id_gestion','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}		
 }
 ?>

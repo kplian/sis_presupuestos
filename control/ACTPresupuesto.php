@@ -17,6 +17,11 @@ class ACTPresupuesto extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_presupuesto');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
+		
+		if($this->objParam->getParametro('id_gestion')!=''){
+	    	$this->objParam->addFiltro("vcc.id_gestion = ".$this->objParam->getParametro('id_gestion'));	
+		}
+		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam, $this);
 			$this->res = $this->objReporte->generarReporteListado('MODPresupuesto','listarPresupuesto');
@@ -90,6 +95,12 @@ class ACTPresupuesto extends ACTbase{
         $this->res=$this->objFunc->reportePresupuesto();        
         $this->res->imprimirRespuesta($this->res->generarJson());        
     }
+	
+	function clonarPresupuestosGestion(){
+		$this->objFunc=$this->create('MODPresupuesto');	
+		$this->res=$this->objFunc->clonarPresupuestosGestion();
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 			
 }
 

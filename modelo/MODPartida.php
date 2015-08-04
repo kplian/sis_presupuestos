@@ -164,6 +164,23 @@ class MODPartida extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+	
+	function clonarPartidasGestion(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_partida_ime';
+		$this->transaccion='PRE_CLONAR_IME';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_gestion','id_gestion','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 }
 ?>

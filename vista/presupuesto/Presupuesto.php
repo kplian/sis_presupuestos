@@ -14,12 +14,126 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
+		this.initButtons=[this.cmbGestion];
     	//llama al constructor de la clase padre
 		Phx.vista.Presupuesto.superclass.constructor.call(this,config);
 		this.init();
-		this.load({params:{start:0, limit:50}})
+		
+		
+		
+		
+		this.bloquearOrdenamientoGrid();
+		this.cmbGestion.on('select', function(){
+		    
+		    if(this.validarFiltros()){
+                  this.capturaFiltros();
+           }
+		    
+		    
+		},this);
+		
+		
+		//Crea el botón para llamar a la replicación
+		this.addButton('btnRepRelCon',
+			{
+				text: 'Duplicar Presupuestos',
+				iconCls: 'bchecklist',
+				disabled: false,
+				handler: this.duplicarPresupuestos,
+				tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'
+			}
+		);
 	},
-			
+	cmbGestion: new Ext.form.ComboBox({
+				fieldLabel: 'Gestion',
+				allowBlank: true,
+				emptyText:'Gestion...',
+				store:new Ext.data.JsonStore(
+				{
+					url: '../../sis_parametros/control/Gestion/listarGestion',
+					id: 'id_gestion',
+					root: 'datos',
+					sortInfo:{
+						field: 'gestion',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_gestion','gestion'],
+					// turn on remote sorting
+					remoteSort: true,
+					baseParams:{par_filtro:'gestion'}
+				}),
+				valueField: 'id_gestion',
+				triggerAction: 'all',
+				displayField: 'gestion',
+			    hiddenName: 'id_gestion',
+    			mode:'remote',
+				pageSize:50,
+				queryDelay:500,
+				listWidth:'280',
+				width:80
+			}),	
+	
+	validarFiltros:function(){
+        if(this.cmbGestion.isValid()){
+            return true;
+        }
+        else{
+            return false;
+        }
+        
+    },
+	
+	capturaFiltros:function(combo, record, index){
+		
+		this.desbloquearOrdenamientoGrid();
+        this.store.baseParams.id_gestion=this.cmbGestion.getValue();
+		
+		this.load({params:{start:0, limit:50}});
+	},
+	
+	onButtonAct:function(){
+        if(!this.validarFiltros()){
+            alert('Especifique los filtros antes')
+         }
+        else{
+            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
+            Phx.vista.Presupuesto.superclass.onButtonAct.call(this);
+        }
+    },
+    
+    duplicarPresupuestos: function(){
+		if(this.cmbGestion.getValue()){
+			Phx.CP.loadingShow(); 
+	   		Ext.Ajax.request({
+				url: '../../sis_presupuestos/control/Presupuesto/clonarPresupuestosGestion',
+			  	params:{
+			  		id_gestion: this.cmbGestion.getValue()
+			      },
+			      success:this.successRep,
+			      failure: this.conexionFailure,
+			      timeout:this.timeout,
+			      scope:this
+			});
+		}
+		else{
+			alert('primero debe selecionar la gestion origen');
+		}
+   		
+   },
+   
+   successRep:function(resp){
+        Phx.CP.loadingHide();
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        if(!reg.ROOT.error){
+            this.reload();
+            alert(reg.ROOT.datos.observaciones)
+        }else{
+            alert('Ocurrió un error durante el proceso')
+        }
+	},
+	
+	
 	Atributos:[
 		{
 			//configuracion del componente

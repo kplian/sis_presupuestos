@@ -24,6 +24,48 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		
 		this.cmbTipo.on('select',this.capturaFiltros,this);
 		
+		//Crea el botón para llamar a la replicación
+		this.addButton('btnRepRelCon',
+			{
+				text: 'Duplicar Partidas',
+				iconCls: 'bchecklist',
+				disabled: false,
+				handler: this.duplicarPartidas,
+				tooltip: '<b>Clonar  las partidas para las gestión siguiente </b><br/>Clonar las partidas, para la gestión siguiente guardando las relacion entre las mismas'
+			}
+		);
+		
+	},
+	
+	duplicarPartidas: function(){
+		if(this.cmbGestion.getValue()){
+			Phx.CP.loadingShow(); 
+	   		Ext.Ajax.request({
+				url: '../../sis_presupuestos/control/Partida/clonarPartidasGestion',
+			  	params:{
+			  		id_gestion: this.cmbGestion.getValue()
+			      },
+			      success:this.successRep,
+			      failure: this.conexionFailure,
+			      timeout:this.timeout,
+			      scope:this
+			});
+		}
+		else{
+			alert('primero debe selecionar la gestion origen');
+		}
+   		
+   },
+   
+   successRep:function(resp){
+        Phx.CP.loadingHide();
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        if(!reg.ROOT.error){
+            this.reload();
+            alert(reg.ROOT.datos.observaciones)
+        }else{
+            alert('Ocurrió un error durante el proceso')
+        }
 	},
 	
 	capturaFiltros:function(combo, record, index){
