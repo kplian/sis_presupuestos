@@ -101,6 +101,22 @@ class MODConceptoPartida extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+	function clonarConfig(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.f_concepto_partida_ime';
+		$this->transaccion='PRE_REPPARCON_REP';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 }
 ?>

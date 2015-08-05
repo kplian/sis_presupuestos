@@ -36,6 +36,10 @@ DECLARE
     v_id_tipo_relacion_contable				integer[];
     v_registros				record;
     v_id_concepto_endesis	integer;
+    v_id_gestion_actual		integer;
+    v_id_gestion_siguiente	integer;
+    v_rec					record;
+    v_id_partida_nueva		integer;
 			    
 BEGIN
 
@@ -217,6 +221,105 @@ BEGIN
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Concepto-Partida eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_concepto_partida',v_parametros.id_concepto_partida::varchar);
+              
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+    
+    /*********************************    
+ 	#TRANSACCION:  'PRE_REPPARCON_REP'
+ 	#DESCRIPCION:	Replicacion de concepto_partida a la siguiente gestion
+ 	#AUTOR:		admin	
+ 	#FECHA:		25-02-2013 22:09:52
+	***********************************/
+
+	elsif(p_transaccion='PRE_REPPARCON_REP')then
+
+		begin
+			
+            select g.id_gestion into v_id_gestion_actual
+            from param.tgestion g
+            where  g.gestion::text = to_char(now(),'YYYY'); 
+            
+            select g.id_gestion into v_id_gestion_siguiente
+            from param.tgestion g
+            where  g.gestion::integer = (to_char(now(),'YYYY'))::INTEGER + 1;             
+                          
+
+             if v_id_gestion_siguiente is null then
+               raise exception 'La gestión destino no existe (%)', (to_char(now(),'YYYY'))::INTEGER + 1;
+             end if;            
+            
+            if (pxp.f_get_variable_global('sincronizar') = 'true') then
+             
+                select * into v_nombre_conexion from migra.f_crear_conexion();
+            end if;
+            
+            for v_rec in (
+            	select 
+                	cp.id_concepto_ingas, cp.id_partida
+                from pre.tconcepto_partida cp
+                inner join pre.tpartida p on p.id_partida = cp.id_partida
+                where p.id_gestion = v_id_gestion_actual) loop
+            
+            	v_id_partida_nueva = pre.f_get_partida_ids(v_rec.id_partida);
+            	--Validar que no exista la relacion
+                if (not exists (select 1 
+                		from pre.tconcepto_partida 
+                        where id_concepto_ingas = v_rec.id_concepto_ingas and id_partida = v_id_partida_nueva) )then
+                    --Sentencia de la insercion
+                    insert into pre.tconcepto_partida(
+                    id_partida,
+                    id_concepto_ingas,
+                    estado_reg,
+                    id_usuario_reg,
+                    fecha_reg,
+                    fecha_mod,
+                    id_usuario_mod
+                    ) values(
+                    v_id_partida_nueva,
+                    v_rec.id_concepto_ingas,
+                    'activo',
+                    p_id_usuario,
+                    now(),
+                    null,
+                    null
+        							
+                    )RETURNING id_concepto_partida into v_id_concepto_partida;
+                    
+                    if (pxp.f_get_variable_global('sincronizar') = 'true') then             
+                        
+                        select * into v_concepto from param.tconcepto_ingas 
+                        where id_concepto_ingas = v_rec.id_concepto_ingas;
+                        
+                        
+                        
+                        select * FROM dblink(v_nombre_conexion,'
+                                select migracion.f_mig_concepto_ingas__tpr_concepto_ingas(NULL' || 
+                                ',''INS'',''' || v_concepto.desc_ingas || 
+                                ''',' || v_id_partida_nueva || ',' || v_concepto.sw_tes ||
+                                ', ' || p_id_usuario || ' ,'''|| v_concepto.tipo ||
+                                ''','''|| v_concepto.activo_fijo ||
+                                ''','''|| v_concepto.almacenable ||
+                                ''','|| p_id_usuario ||                    
+                            ')',true) AS (id_concepto_endesis integer) into v_id_concepto_endesis;
+                            insert into migra.tconcepto_ids (id_concepto_ingas, id_concepto_ingas_pxp,
+                                                        id_gestion, desc_ingas)  
+                                                        values (v_id_concepto_endesis, v_rec.id_concepto_ingas,
+                                                        v_id_gestion_siguiente, v_concepto.desc_ingas);                      
+                     	
+                     end if;
+                    
+                end if;
+            end loop;
+            if (pxp.f_get_variable_global('sincronizar') = 'true') then
+            	select * into v_resp from migra.f_cerrar_conexion(v_nombre_conexion,'exito');
+            end if;
+                           
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Concepto-Partida Replicado'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'id_gestion',v_id_gestion_siguiente::varchar);
               
             --Devuelve la respuesta
             return v_resp;

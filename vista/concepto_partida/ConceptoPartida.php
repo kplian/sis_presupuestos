@@ -26,6 +26,7 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
         {
            this.bloquearMenus();
         }
+        this.addButton('clonarConf',{ text: 'Clonar configuración', iconCls: 'blist',disabled: false, handler: this.clonarConf, tooltip: 'Clonar la configuración para la siguiente gestión'});
 		
 	},
 			
@@ -243,8 +244,49 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 	{
 		this.maestro=m;						
 		this.store.baseParams={id_concepto_ingas:this.maestro.id_concepto_ingas};
-		this.load({params:{start:0, limit:50}});			
+		this.load({params:{start:0, limit:50}});
+				
 	},
+	
+	preparaMenu: function(n) {
+		var tb = Phx.vista.ConceptoPartida.superclass.preparaMenu.call(this);
+	   	this.getBoton('clonarConf').setDisabled(false);
+  		return tb;
+	},
+	liberaMenu: function() {
+		var tb = Phx.vista.ConceptoPartida.superclass.liberaMenu.call(this);
+		this.getBoton('clonarConf').setDisabled(false);
+		return tb;
+	},
+	
+	clonarConf:function(){
+	     if(confirm('¿Está seguro de clonar? Se clonaran las partidas de todos los conceptos para la siguiente gestion')){
+	        var d = this.maestro;
+		    Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url: '../../sis_presupuestos/control/ConceptoPartida/clonarConfig',
+                params: { 
+                	      id_concepto_inas: d.id_concepto_ingas
+                	    },
+                success: this.successSinc,
+                failure: this.conexionFailure,
+                timeout: this.timeout,
+                scope: this
+            });
+	     }
+	},
+	
+	successSinc:function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if(!reg.ROOT.error){
+            	
+            	alert(reg.ROOT.datos.observaciones)
+            	this.reload();
+             }else{
+                alert('ocurrio un error durante el proceso')
+            }
+    },
 	loadValoresIniciales:function()
 	{
 		Phx.vista.ConceptoPartida.superclass.loadValoresIniciales.call(this);

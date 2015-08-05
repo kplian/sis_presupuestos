@@ -44,6 +44,12 @@ class ACTConceptoPartida extends ACTbase{
 		$this->res=$this->objFunc->eliminarConceptoPartida($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+	function clonarConfig(){
+		$this->objFunc=$this->create('MODConceptoPartida');	
+		$this->res=$this->objFunc->clonarConfig($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 			
 }
 
