@@ -211,7 +211,7 @@ BEGIN
                                         v_reg_cc_ori.id_uo,
                                         v_id_gestion_destino
                                       ) RETURNING id_centro_costo into v_id_centro_costo;
-                           END IF; 
+                           
                        
                      --TODO revisar el estado de formualcion del presupeusto ......        OJO
                      --  insertamos nuevo presupuesto
@@ -254,6 +254,8 @@ BEGIN
                                   INSERT INTO pre.tpresupuesto_ids (id_presupuesto_uno, id_presupuesto_dos, sw_cambio_gestion ) 
                                   VALUES ( v_registros.id_presupuesto, v_id_presupuesto, 'gestion');
                                    v_conta = v_conta + 1;
+                                   
+                     END IF;
                                        
             END LOOP;
         
