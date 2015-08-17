@@ -177,4 +177,12 @@ VALUES ('error_presupuesto', E'0.02', 'error mas menos en la ejecucion de presup
 
 
 
+/***********************************I-DAT-RAC-PRE-0-17/08/2015*****************************************/
+
+
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
+VALUES (E'pre_integrar_presupuestos', E'true', E'integrar con el sistema de presupeustos, realizar ejecucion y comprometer presupeusto');
+
+
+/***********************************F-DAT-RAC-PRE-0-17/08/2015*****************************************/
 

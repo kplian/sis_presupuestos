@@ -26,27 +26,29 @@ $body$
 
 
 DECLARE
-  resultado record;
-  v_consulta varchar;
-  v_conexion varchar;
-  v_resp	varchar;
-  v_sincronizar varchar;
-  v_nombre_funcion varchar;
+  resultado 					record;
+  v_consulta 					varchar;
+  v_conexion 					varchar;
+  v_resp						varchar;
+  v_sincronizar 				varchar;
+  v_nombre_funcion 				varchar;
   
 
  
- v_size integer;
- v_array_resp numeric[];
+ v_size 						integer;
+ v_array_resp 					numeric[];
  
- v_str_id_presupuesto varchar;
- v_str_id_partida varchar;
+ v_str_id_presupuesto 			varchar;
+ v_str_id_partida				varchar;
+ v_pre_integrar_presupuestos	varchar;
   
 BEGIN
 
-      v_nombre_funcion = 'pre.f_gestionar_presupuesto';
+  v_nombre_funcion = 'pre.f_gestionar_presupuesto';
 
-      v_sincronizar=pxp.f_get_variable_global('sincronizar');
-     
+  v_sincronizar = pxp.f_get_variable_global('sincronizar');
+  v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
+ IF v_pre_integrar_presupuestos = 'true' THEN  
      IF(v_sincronizar='true')THEN
 
           /*
@@ -147,7 +149,11 @@ BEGIN
       
       END IF;
 
+ ELSE
 
+    raise notice 'no se integra con presupuestos';
+
+ END IF;
     
 
   return v_array_resp;
