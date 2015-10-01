@@ -164,6 +164,38 @@ class ACTPartida extends ACTbase{
 		$this->res=$this->objFunc->clonarPartidasGestion($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	
+	function reporteClasificador(){
+			
+		$nombreArchivo = uniqid(md5(session_id()).'Clasificador') . '.pdf'; 
+		$dataSource = $this->recuperarDatosPlanCuentas();	
+		
+		
+		//parametros basicos
+		$tamano = 'LETTER';
+		$orientacion = 'P';
+		$titulo = 'Clasificador de Partidas Gestión XXXX';
+		
+		$this->objParam->addParametro('orientacion',$orientacion);
+		$this->objParam->addParametro('tamano',$tamano);		
+		$this->objParam->addParametro('titulo_archivo',$titulo);	
+        
+		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+		//Instancia la clase de pdf
+		
+		$reporte = new RPlanCuentas($this->objParam);
+		$reporte->datosHeader($dataSource);
+		//$this->objReporteFormato->renderDatos($this->res2->datos);
+		
+		$reporte->generarReporte();
+		$reporte->output($reporte->url_archivo,'F');
+		
+		$this->mensajeExito=new Mensaje();
+		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+		
+	}
 			
 }
 

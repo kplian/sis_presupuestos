@@ -10,7 +10,7 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
+Phx.vista.Partida=Ext.extend(Phx.arbGridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
@@ -23,7 +23,15 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		this.cmbGestion.on('select',this.capturaFiltros,this);
 		
 		this.cmbTipo.on('select',this.capturaFiltros,this);
-		
+		this.addButton('btnImprimir',
+			{
+				text: 'Imprimir',
+				iconCls: 'bprint',
+				disabled: true,
+				handler: this.imprimirCbte,
+				tooltip: '<b>Imprimir Clasificador</b><br/>Imprime el clasificador en el formato oficial.'
+			}
+		);
 		//Crea el botón para llamar a la replicación
 		this.addButton('btnRepRelCon',
 			{
@@ -52,7 +60,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 			});
 		}
 		else{
-			alert('primero debe selecionar la gestion origen');
+			alert('Primero debe selecionar la gestion origen');
 		}
    		
    },
@@ -81,7 +89,20 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 		this.getComponente('tipo').setValue(this.cmbTipo.getValue());	
 	},
 	
-	
+	imprimirCbte: function(){
+		Phx.CP.loadingShow();
+		Ext.Ajax.request({
+						//url : '../../sis_contabilidad/control/IntComprobante/reporteComprobante',
+						url : '../../sis_presupuesto/control/Partida/reporteClasificador',
+						params : {
+							'id_gestion' : this.cmbGestion.getValue()
+						},
+						success : this.successExport,
+						failure : this.conexionFailure,
+						timeout : this.timeout,
+						scope : this
+					});
+	},
 	
 			
 	Atributos:[
@@ -115,21 +136,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 			type:'Field',
 			form:true 
 		},
-		{
-			config:{
-				name: 'estado_reg',
-				fieldLabel: 'Estado Reg.',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:10
-			},
-			type:'TextField',
-			filters:{pfiltro:'par.estado_reg',type:'string'},
-			id_grupo:1,
-			grid:true,
-			form:false
-		},
+		
 		{
 			config:{
 				name: 'id_partida_fk',
@@ -137,6 +144,20 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 			},
 			type:'Field',
 			form:true
+		},
+		{
+			config:{
+				name: 'text',
+				fieldLabel: 'Partida',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 400,
+				maxLength:100
+			},
+			type:'TextField',
+			id_grupo:1,
+			grid:true,
+			form:false
 		},
 		{
 			config:{
@@ -228,6 +249,21 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 	       		grid:true,
 	       		form:true
 	       	},
+		{
+			config:{
+				name: 'estado_reg',
+				fieldLabel: 'Estado Reg.',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10
+			},
+			type:'TextField',
+			filters:{pfiltro:'par.estado_reg',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
 		{
 			config:{
 				name: 'usr_reg',
@@ -325,7 +361,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 					root: 'datos',
 					sortInfo:{
 						field: 'gestion',
-						direction: 'ASC'
+						direction: 'DESC'
 					},
 					totalProperty: 'total',
 					fields: ['id_gestion','gestion'],
@@ -373,7 +409,7 @@ Phx.vista.Partida=Ext.extend(Phx.arbInterfaz,{
 	     }
 	     else
 	     {
-	     	alert("seleccione una gestion primero");
+	     	alert("Seleccione una gestion primero.");
 	     	
 	     }   
     },
