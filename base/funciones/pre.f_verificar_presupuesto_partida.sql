@@ -4,7 +4,8 @@ CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_partida (
   p_id_presupuesto integer,
   p_id_partida integer,
   p_id_moneda integer,
-  p_monto_total numeric
+  p_monto_total numeric,
+  p_resp_com varchar = 'no'::character varying
 )
 RETURNS varchar AS
 $body$
@@ -35,13 +36,13 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   
   IF(v_sincronizar='true')THEN
   	
-    --si la sincronizacion esta activa busca lso datos en endesis
-    v_conexion:=migra.f_obtener_cadena_conexion();
-  	v_consulta:='select presto."f_i_ad_verificarPresupuestoPartida" ('||p_id_presupuesto||','||p_id_partida||','||p_id_moneda||','||p_monto_total||')';
-  	select into verificado * from dblink(v_conexion,v_consulta,true) as (verificado numeric[]);
-  
-  
-  --raise exception '% %',v_consulta,v_conexion;
+      --si la sincronizacion esta activa busca lso datos en endesis
+      v_conexion:=migra.f_obtener_cadena_conexion();
+      v_consulta:='select presto."f_i_ad_verificarPresupuestoPartida" ('||p_id_presupuesto||','||p_id_partida||','||p_id_moneda||','||p_monto_total||')';
+      select into verificado * from dblink(v_conexion,v_consulta,true) as (verificado numeric[]);
+    
+    
+       --raise exception '% %',v_consulta,v_conexion;
   
   
   ELSE 
@@ -53,12 +54,20 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   
   END IF;
 
-
-  if verificado[1]=0 then
-   v_resp:='false';
-  else
-   v_resp:='true'; 
-  end if;
+  IF p_resp_com = 'no' THEN
+    if verificado[1]=0 then
+      v_resp:='false';
+    else
+     v_resp:='true'; 
+    end if;
+  ELSE
+    if verificado[1]=0 then
+      v_resp:='false'||','||verificado[2];
+    else
+     v_resp:='true'||','||verificado[2]; 
+    end if;
+  END IF;
+  
   return v_resp;
 
 

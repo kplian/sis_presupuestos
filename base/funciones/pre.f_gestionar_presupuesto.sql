@@ -104,41 +104,57 @@ BEGIN
            v_str_id_partida = 'NULL::integer[]';
          
          END IF;
+         
+         IF  p_conexion is NULL  THEN
+           select * into v_conexion from migra.f_crear_conexion();
+         ELSE
+           v_conexion = p_conexion;
+         END IF; 
           
           
-          
-         v_conexion:=migra.f_obtener_cadena_conexion();
+       
+         /*
          v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',			--  pr_id_presupuesto integer
-                                                                          '||v_str_id_partida||',   			--  pr_id_partida integer,
-                                                                              '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     		--  pr_id_moneda integer,
-                                                                              '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		--  pr_monto_total numeric,
-                                                                              '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   				 --  pr_fecha date,
-                                                                              '||COALESCE(('array['|| array_to_string(p_id_partida_ejecucion, ',')||']')::varchar,'NULL::integer[]')||', 	    --  pr_id_partida_ejecucion integer,
-                                                                              '||COALESCE(('array['|| array_to_string(p_sw_momento, ',')||']')::varchar,'NULL::numeric[]')||',    		--  pr_sw_momento numeric,
-                                                                              NULL::integer[],               				   					--  pr_id_item integer,
-                                                                              NULL::integer[],                  									--  pr_id_servicio integer,
-                                                                              NULL::integer[],               				   					--  pr_id_concepto_ingas integer,
-                                                                              '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		--  pr_columna_relacion varchar,
+                                                                          '||v_str_id_partida||',   			--  pr_id_partida integer
+                                                                              '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     		--  pr_id_moneda integer
+                                                                              '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		--  pr_monto_total numeric
+                                                                              '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   				 --  pr_fecha date
+                                                                              '||COALESCE(('array['|| array_to_string(p_id_partida_ejecucion, ',')||']')::varchar,'NULL::integer[]')||', 	    --  pr_id_partida_ejecucion intege,
+                                                                              '||COALESCE(('array['|| array_to_string(p_sw_momento, ',')||']')::varchar,'NULL::numeric[]')||',    		--  pr_sw_momento numeric
+                                                                              NULL::integer[],               				   					--  pr_id_item integer
+                                                                              NULL::integer[],                  								--  pr_id_servicio integer
+                                                                              NULL::integer[],               				   					--  pr_id_concepto_ingas integer
+                                                                              '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		--  pr_columna_relacion varchar
                                                                               '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	--  pr_fk_llave integer
+*/
+          
+          
+           
+          v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',		
+                                                                          '||v_str_id_partida||',   
+                                                                              '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     
+                                                                              '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		
+                                                                              '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   
+                                                                              '||COALESCE(('array['|| array_to_string(p_id_partida_ejecucion, ',')||']::integer[]')::varchar,'NULL::integer[]')||', 
+                                                                              '||COALESCE(('array['|| array_to_string(p_sw_momento, ',')||']')::varchar,'NULL::numeric[]')||',  
+                                                                              NULL::integer[],               				   					
+                                                                              NULL::integer[],                  								
+                                                                              NULL::integer[],               				   					
+                                                                              '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		
+                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	
 
              
-            raise notice  '>>>>>>>>>>>>    CONSULTA DBLINK  %, %',v_consulta,v_conexion;
+            --raise exception  '>>>>>>>>>>>>    CONSULTA DBLINK  %',v_consulta;
               
-            if (p_conexion is null) then   
-            	select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
-            else
-            	select * into resultado from dblink(p_conexion, v_consulta, true)AS (res numeric[]);
-            end if;  
+            select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
             
             raise notice '>>>  RESPUESTA %  >>    %',v_array_resp, resultado;
               
             v_array_resp= resultado.res;
               
-              IF  v_array_resp is NULL THEN
-              
-                raise exception 'Error al comprometer el presupuesto';
-              
-              END IF;
+            IF  v_array_resp is NULL THEN
+              raise exception 'Error al comprometer el presupuesto';
+            END IF;
               
               
       ELSE 
@@ -148,7 +164,12 @@ BEGIN
       
       
       END IF;
-
+      
+     
+      
+      if  p_conexion is  null then
+          select * into v_resp from migra.f_cerrar_conexion(v_conexion,'exito'); 
+      end if;
  ELSE
 
     raise notice 'no se integra con presupuestos';

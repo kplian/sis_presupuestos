@@ -145,7 +145,7 @@ BEGIN
     /*********************************    
  	#TRANSACCION:  'PRE_VERPRE_IME'
  	#DESCRIPCION:	Interface para Verificar Presupuesto
- 	#AUTOR:	     Rensi ARteaga Copari
+ 	#AUTOR:	     Rensi Arteaga Copari
  	#FECHA:		15-08-2013 22:02:47
 	***********************************/
 
