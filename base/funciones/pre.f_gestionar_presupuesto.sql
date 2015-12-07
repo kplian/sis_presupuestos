@@ -1,6 +1,8 @@
 --------------- SQL ---------------
 
 CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
+  p_id_usuario integer,
+  p_tipo_cambio numeric,
   p_id_presupuesto integer [],
   p_id_partida integer [],
   p_id_moneda integer [],
@@ -10,6 +12,7 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_id_partida_ejecucion integer [],
   p_columna_relacion varchar [],
   p_fk_llave integer [],
+  p_nro_tramite varchar,
   p_id_int_comprobante integer = NULL::integer,
   p_conexion varchar = NULL::character varying
 )
@@ -32,15 +35,13 @@ DECLARE
   v_resp						varchar;
   v_sincronizar 				varchar;
   v_nombre_funcion 				varchar;
-  
-
- 
- v_size 						integer;
- v_array_resp 					numeric[];
- 
- v_str_id_presupuesto 			varchar;
- v_str_id_partida				varchar;
- v_pre_integrar_presupuestos	varchar;
+  v_size 						integer;
+  v_array_resp 					numeric[]; 
+  v_str_id_presupuesto 			varchar;
+  v_str_id_partida				varchar;
+  v_pre_integrar_presupuestos	varchar;
+  v_id_moneda_base				integer;
+  v_monto_mb 					numeric;
   
 BEGIN
 
@@ -48,6 +49,11 @@ BEGIN
 
   v_sincronizar = pxp.f_get_variable_global('sincronizar');
   v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
+  
+  
+  v_id_moneda_base = param.f_get_moneda_base();
+  
+  
  IF v_pre_integrar_presupuestos = 'true' THEN  
      IF(v_sincronizar='true')THEN
 
@@ -113,22 +119,6 @@ BEGIN
           
           
        
-         /*
-         v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',			--  pr_id_presupuesto integer
-                                                                          '||v_str_id_partida||',   			--  pr_id_partida integer
-                                                                              '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     		--  pr_id_moneda integer
-                                                                              '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		--  pr_monto_total numeric
-                                                                              '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   				 --  pr_fecha date
-                                                                              '||COALESCE(('array['|| array_to_string(p_id_partida_ejecucion, ',')||']')::varchar,'NULL::integer[]')||', 	    --  pr_id_partida_ejecucion intege,
-                                                                              '||COALESCE(('array['|| array_to_string(p_sw_momento, ',')||']')::varchar,'NULL::numeric[]')||',    		--  pr_sw_momento numeric
-                                                                              NULL::integer[],               				   					--  pr_id_item integer
-                                                                              NULL::integer[],                  								--  pr_id_servicio integer
-                                                                              NULL::integer[],               				   					--  pr_id_concepto_ingas integer
-                                                                              '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		--  pr_columna_relacion varchar
-                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	--  pr_fk_llave integer
-*/
-          
-          
            
           v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',		
                                                                           '||v_str_id_partida||',   
@@ -144,17 +134,65 @@ BEGIN
                                                                               '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	
 
              
-            --raise exception  '>>>>>>>>>>>>    CONSULTA DBLINK  %',v_consulta;
+           
               
             select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
             
-            raise notice '>>>  RESPUESTA %  >>    %',v_array_resp, resultado;
+            
               
             v_array_resp= resultado.res;
               
             IF  v_array_resp is NULL THEN
               raise exception 'Error al comprometer el presupuesto';
             END IF;
+            
+            
+            --inserta resultados en partida ejecución
+            FOR v_cont IN 1..array_length(v_array_resp, 1 ) LOOP
+            
+                     v_monto_mb =    param.f_convertir_moneda ( p_id_moneda[v_cont], 
+                     											v_id_moneda_base,    
+                                                                p_monto_total[v_cont],  
+                                                                p_fecha[v_cont], 'CUS',50, p_tipo_cambio, 'no');
+            
+            
+                      INSERT INTO  pre.tpartida_ejecucion
+                                          (
+                                            id_usuario_reg,
+                                            fecha_reg,
+                                            estado_reg,
+                                            id_partida_ejecucion,
+                                            nro_tramite,
+                                            monto,
+                                            monto_mb,
+                                            id_moneda,
+                                            id_presupuesto,
+                                            id_partida,
+                                            tipo_movimiento,
+                                            tipo_cambio,
+                                            fecha,
+                                            id_int_comprobante
+                                          )
+                                          VALUES (
+                                            p_id_usuario,
+                                            now(),
+                                            'activo',
+                                            v_array_resp[v_cont],--:id_partida_ejecucion,
+                                            p_nro_tramite,
+                                            p_monto_total[v_cont],
+                                            v_monto_mb,
+                                            p_id_moneda[v_cont],
+                                            p_id_presupuesto[v_cont],
+                                            p_id_partida[v_cont],
+                                            (p_sw_momento[v_cont])::varchar, --tipo_movimiento
+                                            p_tipo_cambio,
+                                            p_fecha[v_cont],
+                                            p_id_int_comprobante
+                                          );
+                   
+                      
+          END LOOP;
+            
               
               
       ELSE 

@@ -210,3 +210,45 @@ IS '1 presupuesto de recursos,
 6 presupuesto de inversio no oficial';
 
 /***********************************F-SCP-RAC-PRE-0-16/01/2015*****************************************/
+
+
+/***********************************I-SCP-RAC-PRE-0-01/12/2015*****************************************/
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tpartida_ejecucion (
+  id_partida_ejecucion SERIAL,
+  nro_tramite VARCHAR,
+  monto NUMERIC,
+  monto_mb NUMERIC,
+  id_moneda INTEGER,
+  id_presupuesto INTEGER,
+  id_partida INTEGER,
+  tipo_movimiento VARCHAR(30) NOT NULL,
+  tipo_cambio NUMERIC,
+  PRIMARY KEY(id_partida_ejecucion)
+) INHERITS (pxp.tbase)
+;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.tipo_movimiento
+IS 'formulado, comprometido, devengado, pagao, traspaso, modificacion (los revertidos son numeros negativos)';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN fecha DATE DEFAULT now() NOT NULL;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.fecha
+IS 'fecha de ejecucion , no necesariamente igual a la fecha de registro';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN id_int_comprobante INTEGER;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.id_int_comprobante
+IS 'identifica el cbte si existe';
+/***********************************F-SCP-RAC-PRE-0-01/12/2015*****************************************/
