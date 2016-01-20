@@ -108,7 +108,7 @@ class MODConceptoPartida extends MODbase{
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('id_concepto_ingas','id_concepto_ingas','int4');
+		$this->setParametro('id_concepto_partida','id_concepto_partida','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

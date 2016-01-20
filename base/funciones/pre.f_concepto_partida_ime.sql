@@ -40,6 +40,7 @@ DECLARE
     v_id_gestion_siguiente	integer;
     v_rec					record;
     v_id_partida_nueva		integer;
+    v_gestion_actual		integer;
 			    
 BEGIN
 
@@ -237,14 +238,18 @@ BEGIN
 	elsif(p_transaccion='PRE_REPPARCON_REP')then
 
 		begin
-			
-            select g.id_gestion into v_id_gestion_actual
+			select g.id_gestion,g.gestion::integer into v_id_gestion_actual, v_gestion_actual
             from param.tgestion g
-            where  g.gestion::text = to_char(now(),'YYYY'); 
-            
+            inner join pre.tpartida par
+            	on par.id_gestion = g.id_gestion
+            inner join pre.tconcepto_partida cp
+            	on cp.id_partida = par.id_partida
+            where cp.id_concepto_partida =  v_parametros.id_concepto_partida;
+        	
+                        
             select g.id_gestion into v_id_gestion_siguiente
             from param.tgestion g
-            where  g.gestion::integer = (to_char(now(),'YYYY'))::INTEGER + 1;             
+            where  g.gestion::integer = v_gestion_actual + 1;             
                           
 
              if v_id_gestion_siguiente is null then

@@ -261,12 +261,12 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 	
 	clonarConf:function(){
 	     if(confirm('¿Está seguro de clonar? Se clonaran las partidas de todos los conceptos para la siguiente gestion')){
-	        var d = this.maestro;
+	        var rec = this.sm.getSelected();
 		    Phx.CP.loadingShow();
             Ext.Ajax.request({
                 url: '../../sis_presupuestos/control/ConceptoPartida/clonarConfig',
                 params: { 
-                	      id_concepto_inas: d.id_concepto_ingas
+                	      id_concepto_partida: rec.data.id_concepto_partida
                 	    },
                 success: this.successSinc,
                 failure: this.conexionFailure,
