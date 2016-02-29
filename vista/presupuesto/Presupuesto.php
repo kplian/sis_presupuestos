@@ -147,26 +147,41 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'id_centro_costo',
+				name: 'codigo_cc',
 				fieldLabel: 'Centro Costo',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 300,
+				maxLength:30
+			},
+			type:'TextField',
+			filters:{pfiltro:'vcc.codigo_cc',type:'string'},
+			id_grupo:1,
+			grid: true,
+			form: false
+		},
+		{
+			config:{
+				name: 'tipo_pres',
+				fieldLabel: 'Tipo Presupuesto',
 				allowBlank: false,
-				emptyText : 'Centro Costo...',
+				emptyText : '...',
 				store : new Ext.data.JsonStore({
-							url:'../../sis_parametros/control/CentroCosto/listarCentroCostoGrid',
-							id : 'id_centro_costo',
+							url:'../../sis_presupuestos/control/TipoPresupuesto/listarTipoPresupuesto',
+							id : 'codigo',
 							root: 'datos',
 							sortInfo:{
-									field: 'codigo_cc',
+									field: 'codigo',
 									direction: 'ASC'
 							},
 							totalProperty: 'total',
-							fields: ['id_centro_costo','codigo_cc'],
+							fields: ['codigo','nombre','movimiento'],
 							remoteSort: true,
-							baseParams:{par_filtro:'codigo_cc'}
+							baseParams:{par_filtro:'nombre'}
 				}),
-				valueField: 'id_centro_costo',
-			   displayField: 'codigo_cc',
-			   gdisplayField: 'codigo_cc',
+			   valueField: 'codigo',
+			   displayField: 'nombre',
+			   gdisplayField: 'desc_tipo_presupuesto',
 			   hiddenName: 'id_centro_costo',
 			   forceSelection:true,
 			   typeAhead: true,
@@ -175,35 +190,37 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			   mode:'remote',
 			   pageSize:10,
 			   queryDelay:1000,
-			   width: 300,
-			   gwidth: 300,
+			   width: 150,
+			   listWidth: 280,
+			   gwidth: 150,
 			   minChars:2,
-			   renderer:function(value, p, record){return String.format('{0}', record.data['codigo_cc']);}
+			   renderer:function(value, p, record){return String.format('{0}', record.data['desc_tipo_presupuesto']);}
 			},
 			type:'ComboBox',
-			filters:{pfiltro:'vcc.codigo_cc',type:'string'},
+			filters:{pfiltro:'tp.codigo#tp.nombre',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:true
 		},
 		{
 			config:{
-				name: 'tipo_pres',
-				fieldLabel: 'Tipo Pres',
+				name: 'nro_tramite',
+				fieldLabel: 'Nro Tramite',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 150,
 				maxLength:30
 			},
 			type:'TextField',
-			filters:{pfiltro:'pre.tipo_pres',type:'string'},
+			filters:{pfiltro:'pre.nro_tramite',type:'string'},
 			id_grupo:1,
-			grid:true,
-			form:true
+			grid: true,
+			form: false
 		},
+		
 		{
 			config:{
-				name: 'estado_pres',
+				name: 'estado',
 				fieldLabel: 'Estado Presupuesto',
 				allowBlank: true,
 				anchor: '80%',
@@ -211,11 +228,28 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 				maxLength:30
 			},
 			type:'TextField',
-			filters:{pfiltro:'pre.estado_pres',type:'string'},
+			filters:{pfiltro:'pre.estado',type:'string'},
 			id_grupo:1,
-			grid:true,
-			form:true
+			grid: true,
+			form: false
 		},
+		
+		{
+			config:{
+				name: 'descripcion',
+				fieldLabel: 'Descripcion',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:30
+			},
+			type:'TextArea',
+			filters: { pfiltro:'pre.descripcion',type:'string' },
+			id_grupo:1,
+			grid: true,
+			form: true
+		},
+		
 		{
 			config:{
 				name: 'estado_reg',
@@ -312,15 +346,26 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},
+		{name:'usr_mod', type: 'string'},'estado',
+		'id_estado_wf','nro_tramite','id_proceso_wf',
+		'desc_tipo_presupuesto','descripcion'
 		
 	],
+	tabeast:[
+		  {
+    		  url:'../../../sis_presupuestos/vista/presupuesto_usuario/PresupuestoUsuario.php',
+    		  title:'Usuarios', 
+    		  width:'60%',
+    		  cls:'PresupuestoUsuario'
+		  }
+		],
 	sortInfo:{
 		field: 'id_presupuesto',
 		direction: 'ASC'
 	},
-	bdel:true,
-	bsave:true
+	bdel: false,
+	bnew: false,
+	bsave: false
 
 })
 </script>

@@ -51,23 +51,30 @@ BEGIN
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
-						pre.id_presupuesto,
-						pre.id_centro_costo,
-						vcc.codigo_cc,
-						pre.tipo_pres,
-						pre.estado_pres,
-						pre.estado_reg,
-						pre.id_usuario_reg,
-						pre.fecha_reg,
-						pre.fecha_mod,
-						pre.id_usuario_mod,
-						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+                            pre.id_presupuesto,
+                            pre.id_centro_costo,
+                            vcc.codigo_cc,
+                            pre.tipo_pres,
+                            pre.estado_pres,
+                            pre.estado_reg,
+                            pre.id_usuario_reg,
+                            pre.fecha_reg,
+                            pre.fecha_mod,
+                            pre.id_usuario_mod,
+                            usu1.cuenta as usr_reg,
+                            usu2.cuenta as usr_mod,
+                            pre.estado,
+                            pre.id_estado_wf,
+                            pre.nro_tramite,
+                            pre.id_proceso_wf,
+                            (''(''||tp.codigo||'') ''||tp.nombre)::varchar as desc_tipo_presupuesto,
+                            pre.descripcion	
 						from pre.tpresupuesto pre
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
+                        left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
 				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
-				        where  ';
+                        where  ';
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -90,11 +97,12 @@ BEGIN
 		begin
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_presupuesto)
-					    from pre.tpresupuesto pre
-						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
-				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
-				        where ';
+					     from pre.tpresupuesto pre
+                          inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
+                          left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
+                          left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
+                          left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
+                         where ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;

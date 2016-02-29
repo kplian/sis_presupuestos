@@ -55,26 +55,7 @@ BEGIN
 					
         begin
         	--Sentencia de la insercion
-        	insert into pre.tpresupuesto(
-			id_centro_costo,
-			tipo_pres,
-			estado_pres,
-			estado_reg,
-			id_usuario_reg,
-			fecha_reg,
-			fecha_mod,
-			id_usuario_mod
-          	) values(
-			v_parametros.id_centro_costo,
-			v_parametros.tipo_pres,
-			v_parametros.estado_pres,
-			'activo',
-			p_id_usuario,
-			now(),
-			null,
-			null
-							
-			)RETURNING id_presupuesto into v_id_presupuesto;
+        	raise exception 'Para isnertar presupuesto inserte un centro de costo';
 			
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Presupuestos almacenado(a) con exito (id_presupuesto'||v_id_presupuesto||')'); 
@@ -97,9 +78,9 @@ BEGIN
 		begin
 			--Sentencia de la modificacion
 			update pre.tpresupuesto set
-			id_centro_costo = v_parametros.id_centro_costo,
+			
 			tipo_pres = v_parametros.tipo_pres,
-			estado_pres = v_parametros.estado_pres,
+			descripcion = v_parametros.descripcion,
 			fecha_mod = now(),
 			id_usuario_mod = p_id_usuario
 			where id_presupuesto=v_parametros.id_presupuesto;

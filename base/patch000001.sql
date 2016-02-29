@@ -252,3 +252,91 @@ ALTER TABLE pre.tpartida_ejecucion
 COMMENT ON COLUMN pre.tpartida_ejecucion.id_int_comprobante
 IS 'identifica el cbte si existe';
 /***********************************F-SCP-RAC-PRE-0-01/12/2015*****************************************/
+
+
+
+
+
+/***********************************I-SCP-RAC-PRE-0-26/02/2016*****************************************/
+
+
+
+CREATE TABLE pre.tclase_gasto (
+  id_clase_gasto SERIAL,
+  codigo VARCHAR(5),
+  nombre VARCHAR(200),
+  CONSTRAINT tclase_gasto_pkey PRIMARY KEY(id_clase_gasto)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+CREATE TABLE pre.tclase_gasto_partida (
+  id_clase_gasto_partida SERIAL,
+  id_clase_gasto INTEGER,
+  id_partida INTEGER,
+  CONSTRAINT tclase_gasto_partida_pkey PRIMARY KEY(id_clase_gasto_partida)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tpresupuesto_usuario (
+  id_presupuesto_usuario SERIAL NOT NULL,
+  id_presupuesto INTEGER NOT NULL,
+  id_usuario INTEGER NOT NULL,
+  accion VARCHAR[] NOT NULL,
+  PRIMARY KEY(id_presupuesto_usuario)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tpresupuesto_usuario
+  ALTER COLUMN id_usuario SET STATISTICS 0;
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.ttipo_presupuesto (
+  id_tipo_presupuesto SERIAL NOT NULL,
+  codigo VARCHAR(30),
+  nombre VARCHAR,
+  descripcion VARCHAR,
+  movimiento VARCHAR(15) DEFAULT 'gasto' NOT NULL,
+  PRIMARY KEY(id_tipo_presupuesto)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+COMMENT ON COLUMN pre.ttipo_presupuesto.movimiento
+IS 'gasto o recurso';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN estado VARCHAR DEFAULT 'borrador' NOT NULL;
+  
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN nro_tramite VARCHAR;
+  
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN id_proceso_wf INTEGER;  
+  
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN descripcion VARCHAR;
+  
+/***********************************F-SCP-RAC-PRE-0-26/02/2016*****************************************/
+
+
+
+
+

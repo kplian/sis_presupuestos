@@ -186,3 +186,39 @@ VALUES (E'pre_integrar_presupuestos', E'true', E'integrar con el sistema de pres
 
 /***********************************F-DAT-RAC-PRE-0-17/08/2015*****************************************/
 
+
+
+
+
+
+/***********************************I-DAT-RAC-PRE-0-26/02/2016*****************************************/
+
+INSERT INTO pre.tclase_gasto ("id_usuario_reg", "id_usuario_mod", "fecha_reg", "fecha_mod", "estado_reg", "id_usuario_ai", "usuario_ai", "codigo", "nombre")
+VALUES 
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'1', E'SERVICIOS PERSONALES'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'2', E'OTROS SERVICIOS PERSONALES'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'4', E'BIENES Y SERVICIOS'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'5', E'SERVICIOS BASICOS'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'7', E'CONSTRUCCIONES'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'6', E'BIENES DE USO'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'8', E'OTRAS DEUDAS'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'9', E'DEUDA PUBLICA'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'10', E'TRANSFERENCIAS CORRIENTES'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'12', E'TRANSFERENCIAS DE CAPITAL'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'11', E'OTROS'),
+  (1, NULL, E'2015-08-18 18:51:57.821', NULL, E'Activo', NULL, NULL, E'13', E'ACTIVOS FIJOS');
+
+
+
+/***********************************F-DAT-RAC-PRE-0-26/02/2016*****************************************/
+
+
+
+
+/***********************************I-DAT-RAC-PRE-0-26/02/2016*****************************************/
+
+select pxp.f_insert_tgui ('Tipo de Presupuesto', 'Tipos de presupuesto', 'TIPR', 'si', 5, 'sis_presupuestos/vista/tipo_presupuesto/TipoPresupuesto.php', 3, '', 'TipoPresupuesto', 'PRE');
+select pxp.f_insert_testructura_gui ('TIPR', 'PRE.1');
+
+/***********************************F-DAT-RAC-PRE-0-26/02/2016*****************************************/
+

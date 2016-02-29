@@ -32,6 +32,12 @@ class MODPresupuesto extends MODbase{
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('estado','varchar');
+		$this->captura('id_estado_wf','int4');
+		$this->captura('nro_tramite','varchar');
+		$this->captura('id_proceso_wf','int4');
+		$this->captura('desc_tipo_presupuesto','varchar');
+		$this->captura('descripcion','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -70,7 +76,7 @@ class MODPresupuesto extends MODbase{
 		$this->setParametro('id_presupuesto','id_presupuesto','int4');
 		$this->setParametro('id_centro_costo','id_centro_costo','int4');
 		$this->setParametro('tipo_pres','tipo_pres','varchar');
-		$this->setParametro('estado_pres','estado_pres','varchar');
+		$this->setParametro('descripcion','descripcion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
