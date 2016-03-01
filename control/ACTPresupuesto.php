@@ -18,8 +18,24 @@ class ACTPresupuesto extends ACTbase{
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 		
+		
+		
+		if(strtolower($this->objParam->getParametro('estado'))=='borrador'){
+             $this->objParam->addFiltro("(pre.estado in (''borrador''))");
+        }
+		if(strtolower($this->objParam->getParametro('estado'))=='en_proceso'){
+             $this->objParam->addFiltro("(pre.estado not in (''borrador'',''aprobado''))");
+        }
+		if(strtolower($this->objParam->getParametro('estado'))=='finalizados'){
+             $this->objParam->addFiltro("(pre.estado in (''aprobado''))");
+        }
+		
 		if($this->objParam->getParametro('id_gestion')!=''){
 	    	$this->objParam->addFiltro("vcc.id_gestion = ".$this->objParam->getParametro('id_gestion'));	
+		}
+		
+		if($this->objParam->getParametro('codigos_tipo_pres')!=''){
+	    	$this->objParam->addFiltro("(pre.tipo_pres::integer in (".$this->objParam->getParametro('codigos_tipo_pres').") or pre.tipo_pres is null or pre.tipo_pres = '''')");	
 		}
 		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -108,6 +124,12 @@ class ACTPresupuesto extends ACTbase{
 		$this->res=$this->objFunc->iniciarTramite();
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	
+	function siguienteEstadoPresupuesto(){
+        $this->objFunc=$this->create('MODPresupuesto');  
+        $this->res=$this->objFunc->siguienteEstadoPresupuesto($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 	
 	
 			

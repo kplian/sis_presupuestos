@@ -45,6 +45,13 @@ DECLARE
     v_id_estado_wf			integer;
     v_codigo_estado 		varchar;
     v_codigo_wf				varchar;
+    v_id_depto				integer;
+    v_obs					varchar;
+    v_id_estado_actual		integer;
+    v_id_tipo_estado		integer;
+    v_codigo_estado_siguiente			varchar;
+    v_registros_proc 			record;
+    v_codigo_tipo_pro   			varchar;
 			    
 BEGIN
 
@@ -345,6 +352,167 @@ BEGIN
             return v_resp;
 
 		end;
+    /*********************************    
+ 	#TRANSACCION:  'PRE_SIGESTP_IME'
+ 	#DESCRIPCION:  cambia al siguiente estado	
+ 	#AUTOR:		RAC	
+ 	#FECHA:		04-03-2016 12:12:51
+	***********************************/
+
+	elseif(p_transaccion='PRE_SIGESTP_IME')then   
+        begin
+        
+         /*   PARAMETROS
+         
+        $this->setParametro('id_proceso_wf_act','id_proceso_wf_act','int4');
+        $this->setParametro('id_tipo_estado','id_tipo_estado','int4');
+        $this->setParametro('id_funcionario_wf','id_funcionario_wf','int4');
+        $this->setParametro('id_depto_wf','id_depto_wf','int4');
+        $this->setParametro('obs','obs','text');
+        $this->setParametro('json_procesos','json_procesos','text');
+        */
+        
+        --obtenermos datos basicos
+          select
+              p.id_proceso_wf,
+              p.id_estado_wf,
+              p.estado
+              
+             into
+              v_id_proceso_wf,
+              v_id_estado_wf,
+              v_codigo_estado
+              
+          from pre.tpresupuesto p
+          where p.id_presupuesto = v_parametros.id_presupuesto;
+          
+          --------------------------------------------
+          --  validamos que el presupeusto tenga por 
+          --  lo menos una partida asignada
+          --------------------------------------------
+          IF not EXISTS(
+                        select 1
+                        from pre.tpresup_partida pp
+                        where     pp.estado_reg = 'activo'  
+                              and pp.id_presupuesto = v_parametros.id_presupuesto) THEN
+              
+              raise exception 'Por lo menos necesita asignar una partida para formulación';
+          END IF;
+         
+         
+         
+          -- recupera datos del estado
+         
+           select 
+            ew.id_tipo_estado ,
+            te.codigo
+           into 
+            v_id_tipo_estado,
+            v_codigo_estado
+          from wf.testado_wf ew
+          inner join wf.ttipo_estado te on te.id_tipo_estado = ew.id_tipo_estado
+          where ew.id_estado_wf = v_parametros.id_estado_wf_act;
+        
+         
+          
+           -- obtener datos tipo estado
+           select
+                 te.codigo
+            into
+                 v_codigo_estado_siguiente
+           from wf.ttipo_estado te
+           where te.id_tipo_estado = v_parametros.id_tipo_estado;
+                
+           IF  pxp.f_existe_parametro(p_tabla,'id_depto_wf') THEN
+              v_id_depto = v_parametros.id_depto_wf;
+           END IF;
+                
+           IF  pxp.f_existe_parametro(p_tabla,'obs') THEN
+                  v_obs=v_parametros.obs;
+           ELSE
+                  v_obs='---';
+           END IF;
+            
+           ---------------------------------------
+           -- REGISTA EL SIGUIENTE ESTADO DEL WF.
+           ---------------------------------------
+            
+           v_id_estado_actual =  wf.f_registra_estado_wf(  v_parametros.id_tipo_estado, 
+                                                           v_parametros.id_funcionario_wf, 
+                                                           v_parametros.id_estado_wf_act, 
+                                                           v_id_proceso_wf,
+                                                           p_id_usuario,
+                                                           v_parametros._id_usuario_ai,
+                                                           v_parametros._nombre_usuario_ai,
+                                                           v_id_depto,
+                                                           v_obs);
+                                                             
+          --------------------------------------
+          -- registra los procesos disparados
+          --------------------------------------
+         
+          FOR v_registros_proc in ( select * from json_populate_recordset(null::wf.proceso_disparado_wf, v_parametros.json_procesos::json)) LOOP
+    
+               -- get cdigo tipo proceso
+               select   
+                  tp.codigo 
+               into 
+                  v_codigo_tipo_pro   
+               from wf.ttipo_proceso tp 
+               where  tp.id_tipo_proceso =  v_registros_proc.id_tipo_proceso_pro;
+          
+          
+              -- disparar creacion de procesos seleccionados
+              SELECT
+                       ps_id_proceso_wf,
+                       ps_id_estado_wf,
+                       ps_codigo_estado
+                 into
+                       v_id_proceso_wf,
+                       v_id_estado_wf,
+                       v_codigo_estado
+              FROM wf.f_registra_proceso_disparado_wf(
+                       p_id_usuario,
+                       v_parametros._id_usuario_ai,
+                       v_parametros._nombre_usuario_ai,
+                       v_id_estado_actual, 
+                       v_registros_proc.id_funcionario_wf_pro, 
+                       v_registros_proc.id_depto_wf_pro,
+                       v_registros_proc.obs_pro,
+                       v_codigo_tipo_pro,    
+                       v_codigo_tipo_pro);
+                       
+                       
+           END LOOP; 
+           
+           
+           
+          --------------------------------------------------
+          --  ACTUALIZA EL NUEVO ESTADO DEL PRESUPUESTO
+          ----------------------------------------------------
+                  
+           update pre.tpresupuesto  set 
+             id_estado_wf =  v_id_estado_actual,
+             estado = v_codigo_estado_siguiente,
+             id_usuario_mod = p_id_usuario,
+             fecha_mod = now(),
+             id_usuario_ai = v_parametros._id_usuario_ai,
+             usuario_ai = v_parametros._nombre_usuario_ai
+           where id_presupuesto  = v_parametros.id_presupuesto;
+          
+          
+          
+         
+             
+          -- si hay mas de un estado disponible  preguntamos al usuario
+          v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Se realizo el cambio de estado del presupuesto id='||v_parametros.id_presupuesto); 
+          v_resp = pxp.f_agrega_clave(v_resp,'operacion','cambio_exitoso');
+          
+          
+          -- Devuelve la respuesta
+          return v_resp;
+        
+     end;  
          
 	else
      

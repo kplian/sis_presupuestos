@@ -283,18 +283,21 @@ WITH (oids = false);
 
 --------------- SQL ---------------
 
-CREATE TABLE pre.tpresupuesto_usuario (
-  id_presupuesto_usuario SERIAL NOT NULL,
+CREATE TABLE pre.tpresupuesto_funcionario (
+  id_presupuesto_funcionario SERIAL,
   id_presupuesto INTEGER NOT NULL,
-  id_usuario INTEGER NOT NULL,
-  accion VARCHAR[] NOT NULL,
-  PRIMARY KEY(id_presupuesto_usuario)
+  id_funcionario INTEGER,
+  accion VARCHAR(50) DEFAULT 'responsable'::character varying NOT NULL,
+  CONSTRAINT tpresupuesto_funcionario_pkey PRIMARY KEY(id_presupuesto_funcionario)
 ) INHERITS (pxp.tbase)
 
 WITH (oids = false);
 
-ALTER TABLE pre.tpresupuesto_usuario
-  ALTER COLUMN id_usuario SET STATISTICS 0;
+ALTER TABLE pre.tpresupuesto_funcionario
+  ALTER COLUMN id_funcionario SET STATISTICS 0;
+
+COMMENT ON COLUMN pre.tpresupuesto_funcionario.accion
+IS 'responsable, aprobacion, formulacion';
 
 --------------- SQL ---------------
 
