@@ -38,6 +38,9 @@ class MODPresupuesto extends MODbase{
 		$this->captura('id_proceso_wf','int4');
 		$this->captura('desc_tipo_presupuesto','varchar');
 		$this->captura('descripcion','varchar');
+		$this->captura('movimiento_tipo_pres','varchar');
+		$this->captura('id_gestion','int4');
+		
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -183,6 +186,27 @@ class MODPresupuesto extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_gestion','id_gestion','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+   
+   
+   
+   function iniciarTramite(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_presupuesto_ime';
+		$this->transaccion='PRE_INITRA_IME';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		
+		$this->setParametro('id_presupuesto','id_presupuesto','int4');
+		$this->setParametro('id_funcionario_usu','id_funcionario_usu','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

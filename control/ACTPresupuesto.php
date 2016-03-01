@@ -101,6 +101,15 @@ class ACTPresupuesto extends ACTbase{
 		$this->res=$this->objFunc->clonarPresupuestosGestion();
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	
+	function iniciarTramite(){
+		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
+		$this->objFunc=$this->create('MODPresupuesto');	
+		$this->res=$this->objFunc->iniciarTramite();
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	
+	
 			
 }
 

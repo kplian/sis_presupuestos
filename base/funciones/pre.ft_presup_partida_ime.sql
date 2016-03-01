@@ -9,11 +9,11 @@ CREATE OR REPLACE FUNCTION pre.ft_presup_partida_ime (
 RETURNS varchar AS
 $body$
 /**************************************************************************
- SISTEMA:		Sistema de presupuesto
+ SISTEMA:		Sistema de Presupuesto
  FUNCION: 		pre.ft_presup_partida_ime
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tpresup_partida'
- AUTOR: 		Gonzalo Sarmiento Sejas
- FECHA:	        26-11-2012 22:02:47
+ AUTOR: 		 (admin)
+ FECHA:	        29-02-2016 19:40:34
  COMENTARIOS:	
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
@@ -31,8 +31,8 @@ DECLARE
 	v_resp		            varchar;
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
-	v_id_presup_partida	integer;
-    v_resp_presu		varchar;
+	v_id_presup_partida		integer;
+    v_registros				record;
 			    
 BEGIN
 
@@ -40,46 +40,71 @@ BEGIN
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_PREPAR_INS'
+ 	#TRANSACCION:  'PRE_PRPA_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 22:02:47
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
 	***********************************/
 
-	if(p_transaccion='PRE_PREPAR_INS')then
+	if(p_transaccion='PRE_PRPA_INS')then
 					
         begin
+        
+        
+        
+           select 
+             pre.estado
+           into
+            v_registros
+           from pre.tpresupuesto pre
+           where pre.id_presupuesto = v_parametros.id_presupuesto;
+        
+        
+           --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
+           IF  v_registros.estado != 'borrador' THEN
+             raise exception 'Solo puede añadir partidas en presupuesto en estado borrador';
+           END IF; 
+        
+          
+           IF exists(select 1
+                    from pre.tpresup_partida pp
+                    where pp.id_partida = v_parametros.id_partida 
+                          and pp.id_presupuesto = v_parametros.id_presupuesto
+                          and pp.estado_reg = 'activo') THEN              
+                raise exception 'esta aprtida ya esta relacionada con el presupuesto';            
+           END IF;
+        
+        
         	--Sentencia de la insercion
         	insert into pre.tpresup_partida(
-			estado_reg,
-			tipo,
-			id_centro_costo,
-			id_presupuesto,
-			id_partida,
-			fecha_hora,
-			id_moneda,
-			importe,
-			fecha_reg,
-			id_usuario_reg,
-			fecha_mod,
-			id_usuario_mod
+              id_partida,
+              id_centro_costo,
+              id_presupuesto,			
+              id_usuario_ai,
+              usuario_ai,
+              estado_reg,
+              fecha_reg,
+              id_usuario_reg,
+              id_usuario_mod,
+              fecha_mod
           	) values(
-			'activo',
-			v_parametros.tipo,
-			v_parametros.id_centro_costo,
-			v_parametros.id_presupuesto,
-			v_parametros.id_partida,
-			v_parametros.fecha_hora,
-			v_parametros.id_moneda,
-			v_parametros.importe,
-			now(),
-			p_id_usuario,
-			null,
-			null
+              v_parametros.id_partida,
+              v_parametros.id_presupuesto,		
+              v_parametros.id_presupuesto,			
+              v_parametros._id_usuario_ai,
+              v_parametros._nombre_usuario_ai,
+              'activo',
+              now(),
+              p_id_usuario,
+              null,
+              null
+							
+			
+			
 			)RETURNING id_presup_partida into v_id_presup_partida;
-               
+			
 			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PresupPartida almacenado(a) con exito (id_presup_partida'||v_id_presup_partida||')'); 
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PREPAR almacenado(a) con exito (id_presup_partida'||v_id_presup_partida||')'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_presup_partida',v_id_presup_partida::varchar);
 
             --Devuelve la respuesta
@@ -87,87 +112,48 @@ BEGIN
 
 		end;
 
-	/*********************************    
- 	#TRANSACCION:  'PRE_PREPAR_MOD'
- 	#DESCRIPCION:	Modificacion de registros
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 22:02:47
-	***********************************/
-
-	elsif(p_transaccion='PRE_PREPAR_MOD')then
-
-		begin
-			--Sentencia de la modificacion
-			update pre.tpresup_partida set
-			tipo = v_parametros.tipo,
-			id_centro_costo = v_parametros.id_centro_costo,
-			id_presupuesto = v_parametros.id_presupuesto,
-			id_partida = v_parametros.id_partida,
-			fecha_hora = v_parametros.fecha_hora,
-			id_moneda = v_parametros.id_moneda,
-			importe = v_parametros.importe,
-			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario
-			where id_presup_partida=v_parametros.id_presup_partida;
-               
-			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PresupPartida modificado(a)'); 
-            v_resp = pxp.f_agrega_clave(v_resp,'id_presup_partida',v_parametros.id_presup_partida::varchar);
-               
-            --Devuelve la respuesta
-            return v_resp;
-            
-		end;
+	
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_PREPAR_ELI'
+ 	#TRANSACCION:  'PRE_PRPA_ELI'
  	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 22:02:47
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
 	***********************************/
 
-	elsif(p_transaccion='PRE_PREPAR_ELI')then
+	elsif(p_transaccion='PRE_PRPA_ELI')then
 
 		begin
+        
+            
+        
+            select 
+              pre.estado
+            into
+             v_registros
+            from pre.tpresupuesto pre
+            inner join pre.tpresup_partida pp on pre.id_presupuesto = pp.id_presupuesto
+            where pp.id_presup_partida = v_parametros.id_presup_partida;
+        
+        
+            --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
+            IF  v_registros.estado != 'borrador' THEN
+             raise exception 'Solo puede elimnar partidas en presupuesto en estado borrador';
+            END IF;
+           
 			--Sentencia de la eliminacion
 			delete from pre.tpresup_partida
             where id_presup_partida=v_parametros.id_presup_partida;
                
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PresupPartida eliminado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PREPAR eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_presup_partida',v_parametros.id_presup_partida::varchar);
               
             --Devuelve la respuesta
             return v_resp;
 
 		end;
-    
-    /*********************************    
- 	#TRANSACCION:  'PRE_VERPRE_IME'
- 	#DESCRIPCION:	Interface para Verificar Presupuesto
- 	#AUTOR:	     Rensi Arteaga Copari
- 	#FECHA:		15-08-2013 22:02:47
-	***********************************/
-
-	elsif(p_transaccion='PRE_VERPRE_IME')then
-
-		begin
-			
-           v_resp_presu =    pre.f_verificar_presupuesto_partida ( v_parametros.id_presupuesto,
-            									v_parametros.id_partida,
-                                                v_parametros.id_moneda,
-                                                v_parametros.monto_total);
          
-            --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Presupuesto verificado)'); 
-            v_resp = pxp.f_agrega_clave(v_resp,'presu_verificado',v_resp_presu);
-              
-            --Devuelve la respuesta
-            return v_resp;
-
-		end;
-         
-	      
 	else
      
     	raise exception 'Transaccion inexistente: %',p_transaccion;

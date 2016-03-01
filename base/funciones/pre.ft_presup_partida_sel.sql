@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_presup_partida_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -7,11 +9,11 @@ CREATE OR REPLACE FUNCTION pre.ft_presup_partida_sel (
 RETURNS varchar AS
 $body$
 /**************************************************************************
- SISTEMA:		Sistema de presupuesto
+ SISTEMA:		Sistema de Presupuesto
  FUNCION: 		pre.ft_presup_partida_sel
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.tpresup_partida'
- AUTOR: 		Gonzalo Sarmiento Sejas
- FECHA:	        26-11-2012 22:02:47
+ AUTOR: 		 (admin)
+ FECHA:	        29-02-2016 19:40:34
  COMENTARIOS:	
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
@@ -34,43 +36,40 @@ BEGIN
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_PREPAR_SEL'
+ 	#TRANSACCION:  'PRE_PRPA_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 22:02:47
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
 	***********************************/
 
-	if(p_transaccion='PRE_PREPAR_SEL')then
+	if(p_transaccion='PRE_PRPA_SEL')then
      				
-    	begin
+    	begin  
     		--Sentencia de la consulta
 			v_consulta:='select
-						prepar.id_presup_partida,
-						prepar.estado_reg,
-						prepar.tipo,
-						prepar.id_centro_costo,
-                        cen.codigo as centro_codigo,
-						prepar.id_presupuesto,
-						prepar.id_partida,
-                        par.codigo as partida_codigo,
-						prepar.fecha_hora,
-						prepar.id_moneda,
-                        mon.moneda,
-						prepar.importe,
-						prepar.fecha_reg,
-						prepar.id_usuario_reg,
-						prepar.fecha_mod,
-						prepar.id_usuario_mod,
-						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
-						from pre.tpresup_partida prepar
-						inner join segu.tusuario usu1 on usu1.id_usuario = prepar.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = prepar.id_usuario_mod
-                        left join gem.tcentro_costo cen on cen.id_centro_costo = prepar.id_centro_costo
-                        inner join pre.tpartida par on par.id_partida = prepar.id_partida	
-                        inner join param.tmoneda mon on mon.id_moneda = prepar.id_moneda
-				        where prepar.id_presupuesto='||v_parametros.id_presupuesto||
-                        ' and prepar.tipo='''||v_parametros.tipo||''' and ';
+                            prpa.id_presup_partida,
+                            prpa.tipo,
+                            prpa.id_moneda,
+                            prpa.id_partida,
+                            prpa.id_centro_costo,
+                            prpa.fecha_hora,
+                            prpa.estado_reg,
+                            prpa.id_presupuesto,
+                            COALESCE(prpa.importe, 0) as importe,
+                            prpa.id_usuario_ai,
+                            prpa.usuario_ai,
+                            prpa.fecha_reg,
+                            prpa.id_usuario_reg,
+                            prpa.id_usuario_mod,
+                            prpa.fecha_mod,
+                            usu1.cuenta as usr_reg,
+                            usu2.cuenta as usr_mod,
+                            (''(''||par.codigo||'') ''|| par.nombre_partida)::varchar as desc_partida
+						from pre.tpresup_partida prpa
+                        inner join pre.tpartida par on par.id_partida = prpa.id_partida
+						inner join segu.tusuario usu1 on usu1.id_usuario = prpa.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = prpa.id_usuario_mod
+				        where  ';
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -82,21 +81,22 @@ BEGIN
 		end;
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_PREPAR_CONT'
+ 	#TRANSACCION:  'PRE_PRPA_CONT'
  	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		26-11-2012 22:02:47
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
 	***********************************/
 
-	elsif(p_transaccion='PRE_PREPAR_CONT')then
+	elsif(p_transaccion='PRE_PRPA_CONT')then
 
 		begin
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_presup_partida)
-					    from pre.tpresup_partida prepar
-					    inner join segu.tusuario usu1 on usu1.id_usuario = prepar.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = prepar.id_usuario_mod
-					    where ';
+					    from pre.tpresup_partida prpa
+                        inner join pre.tpartida par on par.id_partida = prpa.id_partida
+						inner join segu.tusuario usu1 on usu1.id_usuario = prpa.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = prpa.id_usuario_mod
+				        where';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;

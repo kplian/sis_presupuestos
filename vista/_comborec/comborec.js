@@ -40,7 +40,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 						 id: 'id_partida',
 						 root: 'datos',
 						 sortInfo:{
-							field: 'nombre_partida',
+							field: 'codigo',
 							direction: 'ASC'
 					},
 					totalProperty: 'total',

@@ -37,7 +37,14 @@ DECLARE
     v_conta 				integer;
     v_registros 			record;
     v_reg_cc_ori 			record;
+    v_reg_pres		    	record;
     v_id_centro_costo 		integer;
+    
+    v_num_tramite			varchar;
+    v_id_proceso_wf			integer;
+    v_id_estado_wf			integer;
+    v_codigo_estado 		varchar;
+    v_codigo_wf				varchar;
 			    
 BEGIN
 
@@ -76,7 +83,21 @@ BEGIN
 	elsif(p_transaccion='PRE_PRE_MOD')then
 
 		begin
-			--Sentencia de la modificacion
+			
+            select
+              p.estado,
+              p.tipo_pres
+            into
+             v_reg_pres
+            from pre.tpresupuesto p
+            where  p.id_presupuesto = v_parametros.id_presupuesto;
+            
+            IF v_reg_pres.estado != 'borrador' and v_reg_pres.tipo_pres != v_parametros.tipo_pres THEN
+              raise exception 'Solo puede editar el tipo de presupuesto  en estado borrador';
+            END IF;
+            
+            
+            --Sentencia de la modificacion
 			update pre.tpresupuesto set
 			
 			tipo_pres = v_parametros.tipo_pres,
@@ -116,7 +137,81 @@ BEGIN
             return v_resp;
 
 		end;
+     
+    /*********************************    
+ 	#TRANSACCION:  'PRE_INITRA_IME'
+ 	#DESCRIPCION:	Iniciar tramite de presupuesto
+ 	#AUTOR:		Rensi Artega Copari (KPLIAN)
+ 	#FECHA:		02/03/2016 00:30:39
+	***********************************/
+
+	elsif(p_transaccion='PRE_INITRA_IME')then
+
+		begin
         
+                
+             
+                 select
+                   cc.id_gestion,
+                   cc.codigo_cc,
+                   pre.nro_tramite
+                 into
+                   v_reg_pres
+                 from pre.tpresupuesto pre
+                 inner join param.vcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
+                 where pre.id_presupuesto = v_parametros.id_presupuesto;
+                 
+                 
+                  v_codigo_wf = pxp.f_get_variable_global('pre_wf_codigo');
+                           
+              IF  v_reg_pres.nro_tramite is not NULL or  v_reg_pres.nro_tramite !='' THEN
+                 raise exception 'El trámite ya fue iniciado % ', v_reg_pres.nro_tramite;              
+              END IF;
+        
+              -- obtiene numero de tramite
+                 SELECT 
+                       ps_num_tramite ,
+                       ps_id_proceso_wf ,
+                       ps_id_estado_wf ,
+                       ps_codigo_estado 
+                    into
+                       v_num_tramite,
+                       v_id_proceso_wf,
+                       v_id_estado_wf,
+                       v_codigo_estado   
+                        
+                  FROM wf.f_inicia_tramite(
+                       p_id_usuario, 
+                       v_parametros._id_usuario_ai,
+                       v_parametros._nombre_usuario_ai,
+                       v_reg_pres.id_gestion, 
+                       v_codigo_wf, 
+                       v_parametros.id_funcionario_usu,
+                       NULL,
+                       'Inicio de tramite.... ',
+                       v_reg_pres.codigo_cc);
+			
+            
+            
+            update pre.tpresupuesto  p  set
+               nro_tramite = v_num_tramite,
+               id_estado_wf = v_id_estado_wf,
+               id_proceso_wf = v_id_proceso_wf,
+               estado = v_codigo_estado
+            where p.id_presupuesto = v_parametros.id_presupuesto;
+            
+            
+            
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','se inicio el tramite del presupuesto' ); 
+            v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto',v_parametros.id_presupuesto::varchar);
+            
+              
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+    
+       
     /*********************************    
  	#TRANSACCION:  'PRE_CLONARPRE_IME'
  	#DESCRIPCION:	Clona los presupeustos y centros de costos para la siguiente gestion

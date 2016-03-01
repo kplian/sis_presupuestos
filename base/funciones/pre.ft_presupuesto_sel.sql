@@ -68,7 +68,9 @@ BEGIN
                             pre.nro_tramite,
                             pre.id_proceso_wf,
                             (''(''||tp.codigo||'') ''||tp.nombre)::varchar as desc_tipo_presupuesto,
-                            pre.descripcion	
+                            pre.descripcion	,
+                            tp.movimiento as movimiento_tipo_pres,
+                            vcc.id_gestion
 						from pre.tpresupuesto pre
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres

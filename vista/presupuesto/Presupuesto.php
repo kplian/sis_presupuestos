@@ -43,6 +43,17 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 				tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'
 			}
 		);
+		
+		//Crea el botón para iniciar tramite
+		this.addButton('btnIniTra',
+			{
+				text: 'Iniciar',
+				iconCls: 'bchecklist',
+				disabled: false,
+				handler: this.iniTramite,
+				tooltip: '<b>Iniciar Trámite</b><br/>Inicia el trámite de formulación para el presupuesto'
+			}
+		);
 	},
 	cmbGestion: new Ext.form.ComboBox({
 				fieldLabel: 'Gestion',
@@ -121,13 +132,32 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		}
    		
    },
+   iniTramite: function(){
+   	        var rec = this.sm.getSelected();
+		    Phx.CP.loadingShow(); 
+	   		Ext.Ajax.request({
+				url: '../../sis_presupuestos/control/Presupuesto/iniciarTramite',
+			  	params:{
+			  		id_presupuesto: rec.data.id_presupuesto
+			      },
+			      success:this.successRep,
+			      failure: this.conexionFailure,
+			      timeout:this.timeout,
+			      scope:this
+			});
+		
+   		
+   },
    
    successRep:function(resp){
         Phx.CP.loadingHide();
         var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
         if(!reg.ROOT.error){
             this.reload();
-            alert(reg.ROOT.datos.observaciones)
+            if(reg.ROOT.datos.observaciones){
+               alert(reg.ROOT.datos.observaciones)
+            }
+           
         }else{
             alert('Ocurrió un error durante el proceso')
         }
@@ -157,6 +187,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			type:'TextField',
 			filters:{pfiltro:'vcc.codigo_cc',type:'string'},
 			id_grupo:1,
+			bottom_filter: true,
 			grid: true,
 			form: false
 		},
@@ -197,6 +228,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			   renderer:function(value, p, record){return String.format('{0}', record.data['desc_tipo_presupuesto']);}
 			},
 			type:'ComboBox',
+			bottom_filter: true,
 			filters:{pfiltro:'tp.codigo#tp.nombre',type:'string'},
 			id_grupo:1,
 			grid:true,
@@ -348,7 +380,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
-		'desc_tipo_presupuesto','descripcion'
+		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres','id_gestion'
 		
 	],
 	tabeast:[
@@ -357,6 +389,12 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
     		  title:'Usuarios', 
     		  width:'60%',
     		  cls:'PresupuestoUsuario'
+		  },
+		  {
+    		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartida.php',
+    		  title:'Partidas', 
+    		  width:'60%',
+    		  cls:'PresupPartida'
 		  }
 		],
 	sortInfo:{

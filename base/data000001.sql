@@ -222,3 +222,18 @@ select pxp.f_insert_testructura_gui ('TIPR', 'PRE.1');
 
 /***********************************F-DAT-RAC-PRE-0-26/02/2016*****************************************/
 
+
+
+
+/***********************************I-DAT-RAC-PRE-0-02/03/2016*****************************************/
+
+/* Data for the 'pxp.variable_global' table  (Records 1 - 1) */
+
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion") VALUES (E'pre_wf_codigo', E'PRE', E'codigo de proceso work flow para la formualcion de presupuesto');
+
+
+/***********************************F-DAT-RAC-PRE-0-02/03/2016*****************************************/
+
+
+
+
