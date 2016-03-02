@@ -253,3 +253,19 @@ select pxp.f_insert_testructura_gui ('ESTPRE', 'PRE.2');
 /***********************************F-DAT-RAC-PRE-0-13/03/2016*****************************************/
 
 
+
+/***********************************I-DAT-RAC-PRE-0-16/03/2016*****************************************/
+
+/* Data for the 'pre.ttipo_presupuesto' table  (Records 1 - 6) */
+
+INSERT INTO pre.ttipo_presupuesto ("id_usuario_reg", "id_usuario_mod", "fecha_reg", "fecha_mod", "estado_reg", "id_usuario_ai", "usuario_ai", "codigo", "nombre", "descripcion", "movimiento")
+VALUES 
+  (1, 1, E'2016-02-29 01:49:48.610', E'2016-02-29 22:14:52.536', E'activo', NULL, E'NULL', E'1', E'Recursos', E'este presupuesto se utiliza para el registro de ingresos', E'recurso'),
+  (1, NULL, E'2016-02-29 01:50:08.136', NULL, E'activo', NULL, E'NULL', E'2', E'Gasto', E'Presupuesto para gasto comunes', E'gasto'),
+  (1, NULL, E'2016-02-29 01:52:47.610', NULL, E'activo', NULL, E'NULL', E'3', E'Inversión', E'Presupuesto de Inversión', E'gasto'),
+  (1, NULL, E'2016-02-29 01:53:06.651', NULL, E'activo', NULL, E'NULL', E'4', E'Recursos Formulación', E'Recursos Formulación', E'recurso'),
+  (1, NULL, E'2016-02-29 01:53:42.606', NULL, E'activo', NULL, E'NULL', E'5', E'gasto formulación', E'gasto formulación', E'gasto'),
+  (1, NULL, E'2016-02-29 01:54:06.199', NULL, E'activo', NULL, E'NULL', E'6', E'inversión formulación', E'Inversión formulación', E'gasto');
+
+/***********************************F-DAT-RAC-PRE-0-16/03/2016*****************************************/
+
