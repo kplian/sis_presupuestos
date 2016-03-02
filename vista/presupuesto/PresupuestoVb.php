@@ -29,12 +29,7 @@ Phx.vista.PresupuestoVb = {
         
     },
     
-    fin_registro: function(a,b,forzar_fin, paneldoc){                   
-        if (confirm('¿Esta seguro? Este cambio no puede revertirse, solo podra modificar desde la interface de ajustes presupuestarios')) {
-			  Phx.vista.PresupuestoVb.superclass.fin_registro.call(this,a,b,forzar_fin, paneldoc);
-		}
-			         
-	},
+   
    
    tabeast:[
 	       {
