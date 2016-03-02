@@ -215,12 +215,12 @@ VALUES
 
 
 
-/***********************************I-DAT-RAC-PRE-0-26/02/2016*****************************************/
+/***********************************I-DAT-RAC-PRE-1-26/02/2016*****************************************/
 
 select pxp.f_insert_tgui ('Tipo de Presupuesto', 'Tipos de presupuesto', 'TIPR', 'si', 5, 'sis_presupuestos/vista/tipo_presupuesto/TipoPresupuesto.php', 3, '', 'TipoPresupuesto', 'PRE');
 select pxp.f_insert_testructura_gui ('TIPR', 'PRE.1');
 
-/***********************************F-DAT-RAC-PRE-0-26/02/2016*****************************************/
+/***********************************F-DAT-RAC-PRE-1-26/02/2016*****************************************/
 
 
 
