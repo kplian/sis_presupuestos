@@ -255,11 +255,10 @@ IS 'identifica el cbte si existe';
 
 
 
-
-
 /***********************************I-SCP-RAC-PRE-0-26/02/2016*****************************************/
 
 
+/***********************************F-SCP-RAC-PRE-0-26/02/2016*****************************************/
 
 CREATE TABLE pre.tclase_gasto (
   id_clase_gasto SERIAL,
@@ -271,6 +270,7 @@ CREATE TABLE pre.tclase_gasto (
 WITH (oids = false);
 
 
+
 CREATE TABLE pre.tclase_gasto_partida (
   id_clase_gasto_partida SERIAL,
   id_clase_gasto INTEGER,
@@ -279,6 +279,13 @@ CREATE TABLE pre.tclase_gasto_partida (
 ) INHERITS (pxp.tbase)
 
 WITH (oids = false);
+
+
+/***********************************I-SCP-RAC-PRE-1-26/02/2016*****************************************/
+
+
+
+
 
 
 --------------- SQL ---------------
@@ -337,7 +344,7 @@ ALTER TABLE pre.tpresupuesto
 ALTER TABLE pre.tpresupuesto
   ADD COLUMN descripcion VARCHAR;
   
-/***********************************F-SCP-RAC-PRE-0-26/02/2016*****************************************/
+/***********************************F-SCP-RAC-PRE-1-26/02/2016*****************************************/
 
 
 /***********************************I-SCP-RAC-PRE-0-07/03/2016*****************************************/
@@ -383,7 +390,6 @@ IS 'periodo de la gestión al que corresponde el importe';
 
 /***********************************I-SCP-RAC-PRE-0-11/03/2016*****************************************/
 
---------------- SQL ---------------
 
 ALTER TABLE pre.tpresup_partida
   ADD COLUMN importe_aprobado NUMERIC(18,2) DEFAULT 0.0 NOT NULL;
