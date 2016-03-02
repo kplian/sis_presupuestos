@@ -158,7 +158,7 @@ Phx.vista.PresupuestoReporte = {
           {
     		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaEstado.php',
     		  title:'Partidas', 
-    		  width:'60%',
+    		  width:'70%',
     		  cls:'PresupPartidaEstado'
 		  }],
 	
