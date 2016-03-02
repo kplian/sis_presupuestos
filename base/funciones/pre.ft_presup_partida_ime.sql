@@ -126,7 +126,7 @@ BEGIN
        
            update pre.tpresup_partida pp set
              importe_aprobado =  v_parametros.importe_aprobado
-           where id_presup_partidam  =  v_parametros.id_presup_partida;
+           where id_presup_partida  =  v_parametros.id_presup_partida;
            
            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','importe aprobado modificado '||v_parametros.id_presup_partida); 
            v_resp = pxp.f_agrega_clave(v_resp,'id_presup_partida',v_parametros.id_presup_partida::varchar);
