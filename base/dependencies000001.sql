@@ -304,10 +304,10 @@ FROM pre.tmemoria_calculo mca
          = cc.id_gestion;
 
 
-CREATE TRIGGER trig_tmemoria_caculo
+CREATE TRIGGER trig_tmemoria_calculo
   AFTER INSERT OR UPDATE OF id_concepto_ingas, importe_total, id_presupuesto OR DELETE 
   ON pre.tmemoria_calculo FOR EACH ROW 
-  EXECUTE PROCEDURE public.trig_tmemoria_caculo();
+  EXECUTE PROCEDURE pre.trig_tmemoria_calculo();
   
   
 /***********************************F-DEP-RAC-PRE-0-10/03/2016*****************************************/
