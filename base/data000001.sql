@@ -269,3 +269,17 @@ VALUES
 
 /***********************************F-DAT-RAC-PRE-0-16/03/2016*****************************************/
 
+
+/***********************************I-DAT-RAC-PRE-2-16/03/2016*****************************************/
+
+
+select pxp.f_insert_tgui ('Clases de Gasto', 'Clases Gastos', 'CLAGAS', 'si', 4, 'sis_presupuestos/vista/clase_gasto/ClaseGasto.php', 3, '', 'ClaseGasto', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'CLAGAS.1', 'no', 0, 'sis_presupuestos/vista/clase_gasto_partida/ClaseGastoPartida.php', 4, '', '60%', 'PRE')
+select pxp.f_insert_tgui ('Tipo de Presupuesto', 'Tipos de presupuesto', 'TIPR', 'si', 5, 'sis_presupuestos/vista/tipo_presupuesto/TipoPresupuesto.php', 3, '', 'TipoPresupuesto', 'PRE');
+select pxp.f_insert_testructura_gui ('TIPR', 'PRE.1');
+
+
+/***********************************F-DAT-RAC-PRE-2-16/03/2016*****************************************/
+
+
+
