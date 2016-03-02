@@ -399,7 +399,7 @@ IS 'este es el importe final que se traduce a partida ejecucion como formulado, 
 
 update pre.tpresup_partida pp set
  importe = 0.00 
- where importe is null
+ where importe is null;
  
 --------------- SQL ---------------
 
