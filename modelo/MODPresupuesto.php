@@ -18,7 +18,10 @@ class MODPresupuesto extends MODbase{
 		$this->procedimiento='pre.ft_presupuesto_sel';
 		$this->transaccion='PRE_PRE_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
-				
+		$this->setParametro('tipo_interfaz','tipo_interfaz','varchar');	
+		$this->setParametro('id_funcionario_usu','id_funcionario_usu','int4');
+			
+			
 		//Definicion de la lista del resultado del query
 		$this->captura('id_presupuesto','int4');
 		$this->captura('id_centro_costo','int4');
@@ -40,6 +43,8 @@ class MODPresupuesto extends MODbase{
 		$this->captura('descripcion','varchar');
 		$this->captura('movimiento_tipo_pres','varchar');
 		$this->captura('id_gestion','int4');
+		$this->captura('obs_wf','varchar');
+		
 		
 		
 		//Ejecuta la instruccion
@@ -240,6 +245,31 @@ class MODPresupuesto extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+
+
+    function anteriorEstadoPresupuesto(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_presupuesto_ime';
+        $this->transaccion='PR_ANTEPR_IME';
+        $this->tipo_procedimiento='IME';
+                
+        //Define los parametros para la funcion
+        $this->setParametro('id_proceso_wf','id_proceso_wf','int4');
+        $this->setParametro('id_estado_wf','id_estado_wf','int4');
+		$this->setParametro('obs','obs','varchar');
+		$this->setParametro('estado_destino','estado_destino','varchar');
+		
+		
+	
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+ 
    		
 }
 ?>

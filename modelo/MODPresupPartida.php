@@ -18,6 +18,10 @@ class MODPresupPartida extends MODbase{
 		$this->procedimiento='pre.ft_presup_partida_sel';
 		$this->transaccion='PRE_PRPA_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		
+		$this->capturaCount('total_importe','numeric');
+		$this->capturaCount('total_importe_aprobado','numeric');
+		
 				
 		//Definicion de la lista del resultado del query
 		$this->captura('id_presup_partida','int4');
@@ -38,6 +42,12 @@ class MODPresupPartida extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('desc_partida','varchar');
+		$this->captura('desc_gestion','varchar');
+		$this->captura('importe_aprobado','numeric');
+		
+		
+		
+		
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -79,14 +89,7 @@ class MODPresupPartida extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_presup_partida','id_presup_partida','int4');
-		$this->setParametro('tipo','tipo','varchar');
-		$this->setParametro('id_moneda','id_moneda','int4');
-		$this->setParametro('id_partida','id_partida','int4');
-		$this->setParametro('id_centro_costo','id_centro_costo','int4');
-		$this->setParametro('fecha_hora','fecha_hora','timestamp');
-		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('id_presupuesto','id_presupuesto','int4');
-		$this->setParametro('importe','importe','numeric');
+		$this->setParametro('importe_aprobado','importe_aprobado','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -104,6 +107,26 @@ class MODPresupPartida extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_presup_partida','id_presup_partida','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+  function verificarPresupuesto(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_presup_partida_ime';
+		$this->transaccion='PRE_PREPARVER_IME';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_presupuesto','id_presupuesto','int4');
+		$this->setParametro('porcentaje_aprobado','porcentaje_aprobado','int4');
+		
+		
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

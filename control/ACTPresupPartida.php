@@ -27,6 +27,21 @@ class ACTPresupPartida extends ACTbase{
 			
 			$this->res=$this->objFunc->listarPresupPartida($this->objParam);
 		}
+		
+		$temp = Array();
+			$temp['importe'] = $this->res->extraData['total_importe'];
+			$temp['importe_aprobado'] = $this->res->extraData['total_importe_aprobado'];
+			$temp['tipo_reg'] = 'summary';
+			$temp['id_presup_partida'] = 0;
+			
+			
+			
+			
+			$this->res->total++;
+			
+			$this->res->addLastRecDatos($temp);
+		
+		
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 				
@@ -41,8 +56,14 @@ class ACTPresupPartida extends ACTbase{
 	}
 						
 	function eliminarPresupPartida(){
-			$this->objFunc=$this->create('MODPresupPartida');	
+		$this->objFunc=$this->create('MODPresupPartida');	
 		$this->res=$this->objFunc->eliminarPresupPartida($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	
+	function verificarPresupuesto(){
+		$this->objFunc=$this->create('MODPresupPartida');	
+		$this->res=$this->objFunc->verificarPresupuesto($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 			

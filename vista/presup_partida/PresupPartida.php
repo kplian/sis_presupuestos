@@ -17,14 +17,7 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.PresupPartida.superclass.constructor.call(this,config);
 		this.init();
-		var dataPadre = Phx.CP.getPagina(this.idContenedorPadre).getSelectedData()
-        if(dataPadre){
-            this.onEnablePanel(this, dataPadre);
-        }
-        else
-        {
-           this.bloquearMenus();
-        }
+		this.bloquearMenus();
 	},
 			
 	Atributos:[
@@ -57,8 +50,18 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
    				fieldLabel:'Partida',
    				gdisplayField:'desc_partida',//mapea al store del grid
    				baseParams: {sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
-   				gwidth:200,
-   				width: 350,
+   				renderer:function(value, p, record){
+   					
+   					 if(record.data.tipo_reg != 'summary'){
+	            	   return String.format('{0} - ({1})', record.data['desc_partida'],   record.data['desc_gestion']);
+	            	 }
+	            	 else{
+	            	 	''
+	            	 }
+               	 
+                },
+   				gwidth:459,
+   				width: 280,
    				listWidth: 350
        	     },
    			type:'ComboRec',
@@ -76,11 +79,20 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'importe',
-				fieldLabel: 'importe',
+				fieldLabel: 'Importe',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:1179650
+				maxLength:1179650,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', value);
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', value);
+						}
+						
+					}
 			},
 				type:'NumberField',
 				filters:{pfiltro:'prpa.importe',type:'numeric'},
@@ -88,6 +100,36 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 				grid: true,
 				form: false
 		},
+		
+		{
+			config:{
+				name: 'importe_aprobado',
+				fieldLabel: 'Importe Verificado',
+				selectOnFocus: true,
+				allowNegative: false,
+				allowDecimals: true,
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength: 1179650,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', value);
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', value);
+						}
+						
+					}
+			},
+				type: 'NumberField',
+				filters: { pfiltro:'prpa.importe', type: 'numeric' },
+				id_grupo: 1,
+				grid: true,
+				form: false
+		},
+		
+		
 		{
 			config:{
 				name: 'estado_reg',
@@ -220,13 +262,13 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},'desc_partida'
+		{name:'usr_mod', type: 'string'},'desc_partida','desc_gestion','importe_aprobado','tipo_reg'
 		
 	],
 	onReloadPage:function(m){
 		this.maestro=m;
         this.store.baseParams={id_presupuesto:this.maestro.id_presupuesto};
-        this.load({params:{start:0, limit:50}})
+        this.load({ params: { start: 0, limit: 50 }});
         this.Cmp.id_partida.store.baseParams.tipo = this.maestro.movimiento_tipo_pres;
         this.Cmp.id_partida.store.baseParams.id_gestion = this.maestro.id_gestion;        
         this.Cmp.id_partida.modificado = true;
@@ -240,6 +282,33 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 		field: 'id_presup_partida',
 		direction: 'ASC'
 	},
+	preparaMenu:function(){
+		var rec = this.sm.getSelected();
+		var tb = this.tbar;
+		if (rec.data.tipo_reg == 'summary'){
+			if( this.getBoton('edit') ){
+				this.getBoton('edit').disable();
+			}
+			if( this.getBoton('del') ){
+				this.getBoton('del').disable();
+			}
+			if( this.getBoton('new') ){
+				this.getBoton('new').disable();
+			}
+		     
+             
+		}
+		else{
+		   Phx.vista.PresupPartida.superclass.preparaMenu.call(this);
+		}
+   },
+	
+   liberaMenu: function() {
+		var tb = Phx.vista.PresupPartida.superclass.liberaMenu.call(this);
+		
+   },
+	
+	
 	bdel: true,
 	bedit: false,
 	bsave: false

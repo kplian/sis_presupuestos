@@ -33,6 +33,7 @@ DECLARE
 	v_mensaje_error         text;
 	v_id_presup_partida		integer;
     v_registros				record;
+    v_factor				numeric;
 			    
 BEGIN
 
@@ -112,7 +113,27 @@ BEGIN
 
 		end;
 
-	
+    /*********************************    
+ 	#TRANSACCION:  'PRE_PRPA_MOD'
+ 	#DESCRIPCION:	modificacion de presupuestos y partidas
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
+	***********************************/
+
+	elsif(p_transaccion='PRE_PRPA_MOD')then
+					
+       begin
+       
+            raise exception 'no puede modificar la relacion presupeusto partida';
+           
+           v_resp = pxp.f_agrega_clave(v_resp,'mensaje','importe aprobado modificado '||v_id_presup_partida); 
+           v_resp = pxp.f_agrega_clave(v_resp,'id_presup_partida',v_parametros.id_presup_partida::varchar);
+           
+           --Devuelve la respuesta
+            return v_resp;
+       
+
+	   end;
 
 	/*********************************    
  	#TRANSACCION:  'PRE_PRPA_ELI'
@@ -127,19 +148,29 @@ BEGIN
         
             
         
+            
             select 
-              pre.estado
+              pre.estado,
+              pp.importe
             into
              v_registros
             from pre.tpresupuesto pre
             inner join pre.tpresup_partida pp on pre.id_presupuesto = pp.id_presupuesto
             where pp.id_presup_partida = v_parametros.id_presup_partida;
-        
-        
+            
+            
             --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
             IF  v_registros.estado != 'borrador' THEN
              raise exception 'Solo puede elimnar partidas en presupuesto en estado borrador';
             END IF;
+        
+        
+            IF v_registros.importe > 0 THEN
+               raise exception 'Tiene que eliminar primero las memorias de calculo asociadas a esta partida';
+            END IF;
+            
+            
+            
            
 			--Sentencia de la eliminacion
 			delete from pre.tpresup_partida
@@ -154,7 +185,49 @@ BEGIN
 
 		end;
          
-	else
+	/*********************************    
+ 	#TRANSACCION:  'PRE_PREPARVER_IME'
+ 	#DESCRIPCION:	VErifica seun por centaje el monto a presupuestar
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
+	***********************************/
+
+	elsif(p_transaccion='PRE_PREPARVER_IME')then
+
+		begin
+        
+               v_factor = v_parametros.porcentaje_aprobado/100.00;
+        
+              --lista los presupeustos partidas
+              FOR v_registros in   ( select 
+                                         pp.id_presup_partida,
+                                         pp.importe,
+                                         pp.importe_aprobado
+                                      from pre.tpresup_partida pp
+                                      where pp.id_presupuesto = v_parametros.id_presupuesto) LOOP
+                                      
+                     update pre.tpresup_partida pp set
+                        importe_aprobado = importe * v_factor
+                     where pp.id_presup_partida  = v_registros.id_presup_partida;
+              
+              END LOOP; 
+                  
+                  
+               -- actuliza el importe vericado
+        
+               
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','PRESUPUESTO PARTIDA VERIFICADO AL '||v_parametros.porcentaje_aprobado::Varchar||' %'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto',v_parametros.id_presupuesto::varchar);
+              
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+    
+    
+    
+    else
      
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 

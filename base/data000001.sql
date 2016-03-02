@@ -232,8 +232,24 @@ select pxp.f_insert_testructura_gui ('TIPR', 'PRE.1');
 INSERT INTO pxp.variable_global ("variable", "valor", "descripcion") VALUES (E'pre_wf_codigo', E'PRE', E'codigo de proceso work flow para la formualcion de presupuesto');
 
 
+select pxp.f_insert_tgui ('Presupuestos', 'Registro de presupuestos', 'PRE.2.1', 'si', 1, 'sis_presupuestos/vista/presupuesto/PresupuestoInicio.php', 3, '', 'PresupuestoInicio', 'PRE');
+select pxp.f_insert_tgui ('Presupuesto VoBo', 'VoBo de presupuestos', 'PREVB', 'si', 3, 'sis_presupuestos/vista/presupuesto/PresupuestoVb.php', 3, '', 'PresupuestoVb', 'PRE');
+select pxp.f_insert_tgui ('Presupuesto Formulación', 'Formulación de presupuesto ', 'PRESFR', 'si', 2, 'sis_presupuestos/vista/presupuesto/PresupuestoFor.php', 3, '', 'PresupuestoFor', 'PRE');
+select pxp.f_insert_testructura_gui ('PRESFR', 'PRE.2');
+select pxp.f_insert_testructura_gui ('PREVB', 'PRE.2');
+select pxp.f_insert_tgui ('Autorización de Presupuesto', 'Autorización de Presupuesto', 'AUTPRE', 'si', 4, 'sis_presupuestos/vista/presupuesto/PresupuestoAprobacion.php', 3, '', 'PresupuestoAprobacion', 'PRE');
+select pxp.f_insert_testructura_gui ('AUTPRE', 'PRE.2');
+
 /***********************************F-DAT-RAC-PRE-0-02/03/2016*****************************************/
 
 
+
+/***********************************I-DAT-RAC-PRE-0-13/03/2016*****************************************/
+
+select pxp.f_insert_tgui ('Estado de Presupuesto', 'Estado del presupuesto', 'ESTPRE', 'si', 6, 'sis_presupuestos/vista/presupuesto/PresupuestoReporte.php', 3, '', 'PresupuestoReporte', 'PRE');
+
+select pxp.f_insert_testructura_gui ('ESTPRE', 'PRE.2');
+
+/***********************************F-DAT-RAC-PRE-0-13/03/2016*****************************************/
 
 

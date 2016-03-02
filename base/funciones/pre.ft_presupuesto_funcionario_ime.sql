@@ -49,7 +49,7 @@ BEGIN
 					
         begin
         
-        
+        /*
              IF exists(select 
                       1
                      from pre.tpresupuesto_funcionario pf
@@ -58,7 +58,7 @@ BEGIN
                            and pf.id_presupuesto = v_parametros.id_presupuesto) THEN
                 raise exception 'El funcionario ya se encuentra registrado para este presupuesto';   
              END IF;
-        
+        */
         
         	--Sentencia de la insercion
         	insert into pre.tpresupuesto_funcionario(

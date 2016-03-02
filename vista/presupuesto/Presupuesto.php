@@ -6,251 +6,54 @@
 *@date 27-02-2013 00:30:39
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
-
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
-	 swEstado : 'borrador',
-     gruposBarraTareas:[{name:'borrador',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Borradores</h1>', grupo:0,height:0},
-                        {name:'en_proceso',title:'<H1 align="center"><i class="fa fa-eye"></i> En Proceso</h1>', grupo:1,height:0},
-                        {name:'finalizados',title:'<H1 align="center"><i class="fa fa-file-o"></i> Finalizados</h1>', grupo:2,height:0}],
-	
-     beditGroups: [0,1,2],     
-     bactGroups:  [0,1,2],
-     btestGroups: [0],
-     bexcelGroups: [0,1,2],
+	 
 
 	constructor:function(config){
 		this.maestro=config.maestro;
-		this.initButtons=[this.cmbGestion, this.cmbTipoPres];
+		
     	//llama al constructor de la clase padre
 		Phx.vista.Presupuesto.superclass.constructor.call(this,config);
-		this.init();
 		
-		
-		
-		
-		this.bloquearOrdenamientoGrid();
-		this.cmbGestion.on('select', function(){
-		    
-		    if(this.validarFiltros()){
-                  this.capturaFiltros();
-           }
-		    
-		    
-		},this);
-		
-		this.bloquearOrdenamientoGrid();
-
-		this.cmbTipoPres.on('clearcmb', function() {
-				this.DisableSelect();
-				this.store.removeAll();
-			}, this);
-
-		this.cmbTipoPres.on('valid', function() {
-				this.capturaFiltros();
-
-			}, this);
-		
-		
-		//Crea el botón para llamar a la replicación
-		this.addButton('btnRepRelCon',
-			{
-				grupo:[2],
-				text: 'Duplicar Presupuestos',
-				iconCls: 'bchecklist',
-				disabled: false,
-				handler: this.duplicarPresupuestos,
-				tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'
-			}
-		);
-		
-		//Crea el botón para iniciar tramite
-		this.addButton('btnIniTra',
-			{
-				grupo:[0],
-				text: 'Iniciar',
-				iconCls: 'bchecklist',
-				disabled: false,
-				handler: this.iniTramite,
-				tooltip: '<b>Iniciar Trámite</b><br/>Inicia el trámite de formulación para el presupuesto'
-			}
-		);
-		
-		 this.addButton('ant_estado',{
-         	  grupo:[1],
+		this.addButton('ant_estado',{
+         	  grupo:[4],
               argument: {estado: 'anterior'},
               text: 'Retroceder',
               iconCls: 'batras',
               disabled: true,
               handler: this.antEstado,
               tooltip: '<b>Pasar al Anterior Estado</b>'
-          });
+        });
           
-        this.addButton('fin_registro', { grupo:[0,1], text:'Siguiente', iconCls: 'badelante',disabled:true,handler:this.fin_registro,tooltip: '<b>Siguiente</b><p>Pasa al siguiente estado, si esta en borrador comprometera presupuesto</p>'});
-        this.finCons = true;
-		
-	},
-	cmbGestion: new Ext.form.ComboBox({
-				fieldLabel: 'Gestion',
-				grupo:[0,1,2],
-				allowBlank: false,
-				emptyText:'Gestion...',
-				store:new Ext.data.JsonStore(
-				{
-					url: '../../sis_parametros/control/Gestion/listarGestion',
-					id: 'id_gestion',
-					root: 'datos',
-					sortInfo:{
-						field: 'gestion',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_gestion','gestion'],
-					// turn on remote sorting
-					remoteSort: true,
-					baseParams:{par_filtro:'gestion'}
-				}),
-				valueField: 'id_gestion',
-				triggerAction: 'all',
-				displayField: 'gestion',
-			    hiddenName: 'id_gestion',
-    			mode:'remote',
-				pageSize:50,
-				queryDelay:500,
-				listWidth:'280',
-				width:80
-			}),	
-	
-	cmbTipoPres: new Ext.form.AwesomeCombo({
-				fieldLabel: 'Tipo',
-				grupo:[0,1,2],
-				allowBlank: false,
-				emptyText:'Filtro...',
-				store : new Ext.data.JsonStore({
-							url:'../../sis_presupuestos/control/TipoPresupuesto/listarTipoPresupuesto',
-							id : 'codigo',
-							root: 'datos',
-							sortInfo:{
-									field: 'codigo',
-									direction: 'ASC'
-							},
-							totalProperty: 'total',
-							fields: ['codigo', 'nombre', 'movimiento'],
-							remoteSort: true,
-							baseParams: { par_filtro:'nombre' }
-				}),
-				valueField : 'codigo',
-			    displayField : 'nombre',
-			    hiddenName : 'codigo',
-				enableMultiSelect : true,
-				triggerAction : 'all',
-				lazyRender : true,
-				mode : 'remote',
-				pageSize : 20,
-				width : 150,
-				anchor : '80%',
-				listWidth : '280',
-				resizable : true,
-				minChars : 2
-			}),	
-	
-	validarFiltros:function(){
-        if(this.cmbGestion.isValid() && this.cmbTipoPres.validate()){
-            return true;
-        }
-        else{
-            return false;
-        }
-        
-    },
-	
-	capturaFiltros:function(combo, record, index){
-		
-		this.desbloquearOrdenamientoGrid();
-        this.store.baseParams.id_gestion=this.cmbGestion.getValue();
-        this.store.baseParams.codigos_tipo_pres = this.cmbTipoPres.getValue();
-        this.store.baseParams.estado = this.swEstado;
-        this.load({params:{start:0, limit:50}});
-		
-		
-		
-			
-			
-	},
-	
-	actualizarSegunTab: function(name, indice){
-		
-		this.swEstado = name;
-    	if(this.validarFiltros()){
-            this.store.baseParams.estado = this.swEstado;
-            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
-            this.store.baseParams.codigos_tipo_pres = this.cmbTipoPres.getValue();
-            Phx.vista.Presupuesto.superclass.onButtonAct.call(this);
-        }
-    },
-	
-	onButtonAct:function(){
-        if(!this.validarFiltros()){
-            alert('Especifique los filtros antes')
-         }
-        else{
-            this.store.baseParams.id_gestion=this.cmbGestion.getValue();
-            this.store.baseParams.codigos_tipo_pres = this.cmbTipoPres.getValue();
-            this.store.baseParams.estado = this.swEstado;
-            Phx.vista.Presupuesto.superclass.onButtonAct.call(this);
-        }
-    },
-    
-    duplicarPresupuestos: function(){
-		if(this.cmbGestion.getValue()){
-			Phx.CP.loadingShow(); 
-	   		Ext.Ajax.request({
-				url: '../../sis_presupuestos/control/Presupuesto/clonarPresupuestosGestion',
-			  	params:{
-			  		id_gestion: this.cmbGestion.getValue()
-			      },
-			      success:this.successRep,
-			      failure: this.conexionFailure,
-			      timeout:this.timeout,
-			      scope:this
-			});
-		}
-		else{
-			alert('primero debe selecionar la gestion origen');
-		}
-   		
-   },
-   iniTramite: function(){
-   	        var rec = this.sm.getSelected();
-		    Phx.CP.loadingShow(); 
-	   		Ext.Ajax.request({
-				url: '../../sis_presupuestos/control/Presupuesto/iniciarTramite',
-			  	params:{
-			  		id_presupuesto: rec.data.id_presupuesto
-			      },
-			      success:this.successRep,
-			      failure: this.conexionFailure,
-			      timeout:this.timeout,
-			      scope:this
-			});
-		
-   		
-   },
-   
-   successRep:function(resp){
-        Phx.CP.loadingHide();
-        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-        if(!reg.ROOT.error){
-            this.reload();
-            if(reg.ROOT.datos.observaciones){
-               alert(reg.ROOT.datos.observaciones)
+        this.addButton('fin_registro', { grupo:[0], text:'Siguiente', iconCls: 'badelante', disabled:true,handler:this.fin_registro,tooltip: '<b>Siguiente</b><p>Pasa al siguiente estado, si esta en borrador comprometera presupuesto</p>'});
+        this.addButton('btnMemoria',{ grupo:[0,1,2], text :'Memoria', iconCls:'bdocuments', disabled: true, handler : this.onButtonMemoria,tooltip : '<b>Memoria de Calculo</b><br/><b>Planificación de gastos o recursos</b>'});
+  		this.addButton('diagrama_gantt',{ grupo:[1,2], text: 'Gantt', iconCls: 'bgantt', disabled: true, handler: this.diagramGantt, tooltip: '<b>Diagrama gantt de proceso macro</b>'});
+        this.addButton('btnChequeoDocumentosWf',
+            {
+                text: 'Documentos',
+                grupo:[0,1,2],
+                iconCls: 'bchecklist',
+                disabled: true,
+                handler: this.loadCheckDocumentosSolWf,
+                tooltip: '<b>Documentos de la Solicitud</b><br/>Subir los documetos requeridos en la solicitud seleccionada.'
             }
-           
-        }else{
-            alert('Ocurrió un error durante el proceso')
-        }
+        );
+        
+        this.addButton('btnObs',{
+                    text :'Obs Wf',
+                    grupo:[1,2],
+                    iconCls : 'bchecklist',
+                    disabled: true,
+                    handler : this.onOpenObs,
+                    tooltip : '<b>Observaciones</b><br/><b>Observaciones del WF</b>'
+         });
+        
+        
+        
+		
 	},
 	
 	
@@ -336,6 +139,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			type:'TextField',
 			filters:{pfiltro:'pre.nro_tramite',type:'string'},
 			id_grupo:1,
+			bottom_filter: true,
 			grid: true,
 			form: false
 		},
@@ -370,6 +174,22 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			id_grupo:1,
 			grid: true,
 			form: true
+		},
+		
+		{
+			config:{
+				name: 'obs_wf',
+				fieldLabel: 'Observaciones estado',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:30
+			},
+			type:'TextArea',
+			filters: { pfiltro:'ewf.obs_wf',type:'string' },
+			id_grupo:1,
+			grid: true,
+			form: false
 		},
 		
 		{
@@ -470,67 +290,23 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
-		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres','id_gestion'
+		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres','id_gestion','obs_wf'
 		
 	],
-	tabeast:[
-		  {
-    		  url:'../../../sis_presupuestos/vista/presupuesto_funcionario/PresupuestoFuncionario.php',
-    		  title:'Funcionarios', 
-    		  width:'60%',
-    		  cls:'PresupuestoFuncionario'
-		  },
-		  {
-    		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartida.php',
-    		  title:'Partidas', 
-    		  width:'60%',
-    		  cls:'PresupPartida'
-		  }
-		],
+	
 	sortInfo:{
 		field: 'id_presupuesto',
 		direction: 'ASC'
 	},
 	
-	antEstado:function(res,eve)
-     {                   
-            var d= this.sm.getSelected().data;
-            Phx.CP.loadingShow();
-            var operacion = 'cambiar';
-            operacion=  res.argument.estado == 'inicio'?'inicio':operacion; 
-            
-            Ext.Ajax.request({
-                url:'../../sis_tesoreria/control/ObligacionPago/anteriorEstadoObligacion',
-                params:{id_obligacion_pago:d.id_obligacion_pago, 
-                        operacion: operacion},
-                success:this.successSinc,
-                failure: this.conexionFailure,
-                timeout:this.timeout,
-                scope:this
-            });     
-      },
+	
+    
 	fin_registro: function(a,b,forzar_fin, paneldoc){                   
             var d = this.sm.getSelected().data;
             this.mostrarWizard(this.sm.getSelected());
 	},
       
-    preparaMenu:function(n){
-          var data = this.getSelectedData();
-          var tb =this.tbar;
-          Phx.vista.Presupuesto.superclass.preparaMenu.call(this,n);
-          
-          if (data['estado']== 'borrador'){
-              if(data['nro_tramite']){
-              	 this.getBoton('fin_registro').enable();
-              }
-              
-             this.getBoton('ant_estado').disable(); 
-          }
-          else{
-          	 this.getBoton('fin_registro').disable();
-          	 this.getBoton('ant_estado').disable(); 
-          }
-    }, 
+    
     liberaMenu:function(){
         var tb = Phx.vista.Presupuesto.superclass.liberaMenu.call(this);
         if(tb){
@@ -605,10 +381,147 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
         Phx.CP.loadingHide();
         resp.argument.wizard.panel.destroy()
         this.reload();
-    },    
+    },  
+    preparaMenu:function(n){
+          var data = this.getSelectedData();
+          var tb =this.tbar;
+          
+          Phx.vista.Presupuesto.superclass.preparaMenu.call(this,n);
+          
+          if(data['nro_tramite']){
+          	 if (data['estado']!= 'aprobado'){
+              	 this.getBoton('fin_registro').enable();
+            }
+          }
+          
+          
+          if (data['estado']!= 'borrador' && data['estado']!= 'aprobado'){
+             this.getBoton('ant_estado').enable(); 
+          }
+          
+          this.getBoton('btnMemoria').enable();
+          this.getBoton('btnObs').enable();    
+          this.getBoton('btnChequeoDocumentosWf').enable(); 
+          this.getBoton('diagrama_gantt').enable();
+    }, 
+    
+    
+    liberaMenu:function(){
+        var tb = Phx.vista.Presupuesto.superclass.liberaMenu.call(this);
+        if(tb){
+           this.getBoton('btnMemoria').disable(); 
+           this.getBoton('btnObs').disable();  
+           this.getBoton('diagrama_gantt').disable();
+           this.getBoton('btnChequeoDocumentosWf').disable();
+        }
+    },  
 	bdel: false,
 	bnew: false,
-	bsave: false
+	bsave: false,
+	 
+     loadCheckDocumentosSolWf:function() {
+            var rec=this.sm.getSelected();
+            rec.data.nombreVista = this.nombreVista;
+            Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+                    'Documentos del Proceso',
+                    {
+                        width:'90%',
+                        height:500
+                    },
+                    rec.data,
+                    this.idContenedor,
+                    'DocumentoWf'
+        )
+    },
+    onOpenObs:function() {
+            var rec=this.sm.getSelected();
+            
+            var data = {
+            	id_proceso_wf: rec.data.id_proceso_wf,
+            	id_estado_wf: rec.data.id_estado_wf,
+            	num_tramite: rec.data.num_tramite
+            }
+            
+            Phx.CP.loadWindows('../../../sis_workflow/vista/obs/Obs.php',
+                    'Observaciones del WF',
+                    {
+                        width:'80%',
+                        height:'70%'
+                    },
+                    data,
+                    this.idContenedor,
+                    'Obs'
+        )
+    },
+    diagramGantt:function(){           
+            var data=this.sm.getSelected().data.id_proceso_wf;
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url:'../../sis_workflow/control/ProcesoWf/diagramaGanttTramite',
+                params:{'id_proceso_wf':data},
+                success:this.successExport,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });         
+    },
+    onButtonMemoria:function() {
+            var rec=this.sm.getSelected();
+            Phx.CP.loadWindows('../../../sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php',
+                    'Memoria de Calculo',
+                    {
+                        width:'98%',
+                        height:'98%'
+                    },
+                    rec.data,
+                    this.idContenedor,
+                    'MemoriaCalculo');
+    },
+    
+    antEstado:function(res){
+         var rec=this.sm.getSelected();
+         Phx.CP.loadWindows('../../../sis_workflow/vista/estado_wf/AntFormEstadoWf.php',
+            'Estado de Wf',
+            {
+                modal:true,
+                width:450,
+                height:250
+            }, { data:rec.data, estado_destino: res.argument.estado }, this.idContenedor,'AntFormEstadoWf',
+            {
+                config:[{
+                          event: 'beforesave',
+                          delegate: this.onAntEstado,
+                        }
+                        ],
+               scope:this
+             })
+   },
+   
+   onAntEstado: function(wizard,resp){
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                // form:this.form.getForm().getEl(),
+                url:'../../sis_presupuestos/control/Presupuesto/anteriorEstadoPresupuesto',
+                params:{
+                        id_proceso_wf: resp.id_proceso_wf,
+                        id_estado_wf:  resp.id_estado_wf,  
+                        obs: resp.obs,
+                        estado_destino: resp.estado_destino
+                 },
+                argument: { wizard:wizard},  
+                success:this.successEstadoSinc,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+           
+     },
+     
+   successEstadoSinc:function(resp){
+        Phx.CP.loadingHide();
+        resp.argument.wizard.panel.destroy()
+        this.reload();
+     }
 
 })
 </script>

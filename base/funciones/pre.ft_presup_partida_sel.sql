@@ -64,9 +64,12 @@ BEGIN
                             prpa.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            (''(''||par.codigo||'') ''|| par.nombre_partida)::varchar as desc_partida
+                            (''(''||par.codigo||'') ''|| par.nombre_partida)::varchar as desc_partida,
+                            ges.gestion::varchar as desc_gestion,
+                            importe_aprobado
 						from pre.tpresup_partida prpa
                         inner join pre.tpartida par on par.id_partida = prpa.id_partida
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						inner join segu.tusuario usu1 on usu1.id_usuario = prpa.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = prpa.id_usuario_mod
 				        where  ';
@@ -91,16 +94,19 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_presup_partida)
+			v_consulta:='select count(prpa.id_presup_partida),
+                         COALESCE(sum(prpa.importe),0)::numeric  as total_importe,
+                         COALESCE(sum(prpa.importe_aprobado),0)::numeric  as total_importe_aprobado
 					    from pre.tpresup_partida prpa
                         inner join pre.tpartida par on par.id_partida = prpa.id_partida
+                        inner join param.tgestion ges on ges.id_gestion = par.id_gestion
 						inner join segu.tusuario usu1 on usu1.id_usuario = prpa.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = prpa.id_usuario_mod
 				        where';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
-
+            raise notice '%', v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 

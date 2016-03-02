@@ -266,3 +266,49 @@ AS
          
 /***********************************F-DEP-JRR-PRE-0-30/05/2015*****************************************/
 
+
+
+/***********************************I-DEP-RAC-PRE-0-10/03/2016*****************************************/
+
+
+CREATE VIEW pre.vmemoria_calculo (
+    id_memoria_calculo,
+    id_concepto_ingas,
+    importe_total,
+    obs,
+    id_presupuesto,
+    id_centro_costo,
+    desc_ingas,
+    id_partida,
+    desc_partida,
+    desc_gestion)
+AS
+SELECT mca.id_memoria_calculo,
+    mca.id_concepto_ingas,
+    mca.importe_total,
+    mca.obs,
+    mca.id_presupuesto,
+    pre.id_centro_costo,
+    cig.desc_ingas,
+    par.id_partida,
+    ((par.codigo::text || ' - '::text) || par.nombre_partida::text)::character
+        varying AS desc_partida,
+    ges.gestion::character varying AS desc_gestion
+FROM pre.tmemoria_calculo mca
+     JOIN pre.tpresupuesto pre ON pre.id_presupuesto = mca.id_presupuesto
+     JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_centro_costo
+     JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = mca.id_concepto_ingas
+     JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas = mca.id_concepto_ingas
+     JOIN param.tgestion ges ON ges.id_gestion = cc.id_gestion
+     JOIN pre.tpartida par ON par.id_partida = cp.id_partida AND par.id_gestion
+         = cc.id_gestion;
+
+
+CREATE TRIGGER trig_tmemoria_caculo
+  AFTER INSERT OR UPDATE OF id_concepto_ingas, importe_total, id_presupuesto OR DELETE 
+  ON pre.tmemoria_calculo FOR EACH ROW 
+  EXECUTE PROCEDURE public.trig_tmemoria_caculo();
+  
+  
+/***********************************F-DEP-RAC-PRE-0-10/03/2016*****************************************/
+

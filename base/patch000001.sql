@@ -340,6 +340,68 @@ ALTER TABLE pre.tpresupuesto
 /***********************************F-SCP-RAC-PRE-0-26/02/2016*****************************************/
 
 
+/***********************************I-SCP-RAC-PRE-0-07/03/2016*****************************************/
+
+CREATE TABLE pre.tmemoria_calculo (
+  id_memoria_calculo SERIAL,
+  id_concepto_ingas INTEGER NOT NULL,
+  obs VARCHAR NOT NULL,
+  importe_total NUMERIC(18,2) DEFAULT 0.00 NOT NULL,
+  id_presupuesto INTEGER NOT NULL,
+  CONSTRAINT tmemoria_calculo_pkey PRIMARY KEY(id_memoria_calculo)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+COMMENT ON COLUMN pre.tmemoria_calculo.obs
+IS 'justificación del concepto';
+
+COMMENT ON COLUMN pre.tmemoria_calculo.importe_total
+IS 'importe totalen moneda base';
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tmemoria_det (
+  id_memoria_det SERIAL NOT NULL,
+  importe NUMERIC(18,2) DEFAULT 0 NOT NULL,
+  id_periodo INTEGER NOT NULL,
+  id_memoria_calculo INTEGER NOT NULL,
+  PRIMARY KEY(id_memoria_det)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+COMMENT ON COLUMN pre.tmemoria_det.importe
+IS 'importe para el periodo en moneda base';
+
+COMMENT ON COLUMN pre.tmemoria_det.id_periodo
+IS 'periodo de la gestión al que corresponde el importe';
 
 
+/***********************************F-SCP-RAC-PRE-0-07/03/2016*****************************************/
+
+
+/***********************************I-SCP-RAC-PRE-0-11/03/2016*****************************************/
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ADD COLUMN importe_aprobado NUMERIC(18,2) DEFAULT 0.0 NOT NULL;
+
+COMMENT ON COLUMN pre.tpresup_partida.importe_aprobado
+IS 'este es el importe final que se traduce a partida ejecucion como formulado, segun WF en el estado vobopre, se determina el monto';
+
+update pre.tpresup_partida pp set
+ importe = 0.00 
+ where importe is null
+ 
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ALTER COLUMN importe SET DEFAULT 0.00;
+
+ALTER TABLE pre.tpresup_partida
+  ALTER COLUMN importe SET NOT NULL;
+
+/***********************************F-SCP-RAC-PRE-0-11/03/2016*****************************************/
 
