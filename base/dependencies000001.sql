@@ -312,3 +312,151 @@ CREATE TRIGGER trig_tmemoria_caculo
   
 /***********************************F-DEP-RAC-PRE-0-10/03/2016*****************************************/
 
+
+
+
+/***********************************I-DEP-RAC-PRE-0-15/03/2016*****************************************/
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD CONSTRAINT tpartida_ejecucion__id_int_comprobante FOREIGN KEY (id_int_comprobante)
+    REFERENCES conta.tint_comprobante(id_int_comprobante)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD CONSTRAINT tpartida_ejecucion_fk FOREIGN KEY (id_partida)
+    REFERENCES pre.tpartida(id_partida)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD CONSTRAINT tpartida_ejecucion__id_presupuesto_fk FOREIGN KEY (id_presupuesto)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;    
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD CONSTRAINT tpartida_ejecucion__id_moenda_fk FOREIGN KEY (id_moneda)
+    REFERENCES param.tmoneda(id_moneda)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD CONSTRAINT tpartida_ejecucion__id_usuario_ref_fk FOREIGN KEY (id_usuario_reg)
+    REFERENCES segu.tusuario(id_usuario)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+
+--------------- SQL ---------------
+
+CREATE INDEX tpartida_ejecucion_idx ON pre.tpartida_ejecucion
+  USING btree (nro_tramite);
+  
+--------------- SQL ---------------
+
+CREATE INDEX tpartida_ejecucion__secundario ON pre.tpartida_ejecucion
+  USING btree (id_presupuesto, id_partida);
+  
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ADD CONSTRAINT tpresup_partida__id_presupuesto FOREIGN KEY (id_presupuesto)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ADD CONSTRAINT tpresup_partida__id_partida_fk FOREIGN KEY (id_partida)
+    REFERENCES pre.tpartida(id_partida)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+--------------- SQL ---------------
+
+CREATE INDEX tpresup_partida_secuntdario ON pre.tpresup_partida
+  USING btree (id_presupuesto, id_partida);
+  
+--------------- SQL ---------------
+
+CREATE INDEX tpresup_partida__presupuesto ON pre.tpresup_partida
+  USING btree (id_presupuesto);
+  
+ --------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD CONSTRAINT tpresupuesto__id_proceso_ef_fk FOREIGN KEY (id_proceso_wf)
+    REFERENCES wf.tproceso_wf(id_proceso_wf)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+
+
+--------------- SQL ---------------
+CREATE OR REPLACE VIEW pre.vpresup_partida(
+    id_presup_partida,
+    tipo,
+    id_moneda,
+    id_partida,
+    id_centro_costo,
+    fecha_hora,
+    estado_reg,
+    id_presupuesto,
+    importe,
+    desc_partida,
+    desc_gestion,
+    importe_aprobado,
+    formulado,
+    comprometido,
+    ejecutado,
+    pagado)
+AS
+  SELECT prpa.id_presup_partida,
+         prpa.tipo,
+         prpa.id_moneda,
+         prpa.id_partida,
+         prpa.id_centro_costo,
+         prpa.fecha_hora,
+         prpa.estado_reg,
+         prpa.id_presupuesto,
+         COALESCE(prpa.importe, 0::numeric) AS importe,
+         ((('('::text || par.codigo::text) || ') '::text) || par.nombre_partida
+           ::text)::character varying AS desc_partida,
+         ges.gestion::character varying AS desc_gestion,
+         prpa.importe_aprobado,
+         pre.f_get_estado_presupuesto_mb(prpa.id_presupuesto, prpa.id_partida,
+           'formulado'::character varying) AS formulado,
+         pre.f_get_estado_presupuesto_mb(prpa.id_presupuesto, prpa.id_partida,
+           'comprometido'::character varying) AS comprometido,
+         pre.f_get_estado_presupuesto_mb(prpa.id_presupuesto, prpa.id_partida,
+           'ejecutado'::character varying) AS ejecutado,
+         pre.f_get_estado_presupuesto_mb(prpa.id_presupuesto, prpa.id_partida,
+           'pagado'::character varying) AS pagado
+  FROM pre.tpresup_partida prpa
+       JOIN pre.tpartida par ON par.id_partida = prpa.id_partida
+       JOIN pre.tpresupuesto p ON p.id_presupuesto = prpa.id_presupuesto
+       JOIN param.tgestion ges ON ges.id_gestion = par.id_gestion;
+         
+/***********************************F-DEP-RAC-PRE-0-15/03/2016*****************************************/

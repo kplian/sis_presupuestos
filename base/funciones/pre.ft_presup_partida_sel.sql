@@ -111,7 +111,80 @@ BEGIN
 			return v_consulta;
 
 		end;
-					
+	
+    /*********************************    
+ 	#TRANSACCION:  'PRE_PRPAEST_SEL'
+ 	#DESCRIPCION:	Listado de partidas por presupeusto con sus estados
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
+	***********************************/
+
+	elseif(p_transaccion='PRE_PRPAEST_SEL')then
+     				
+    	begin  
+    		--Sentencia de la consulta
+			v_consulta:='SELECT 
+                          id_presup_partida,
+                          tipo,
+                          id_moneda,
+                          id_partida,
+                          id_centro_costo,
+                          fecha_hora,
+                          estado_reg,
+                          id_presupuesto,
+                          importe,
+                          desc_partida,
+                          desc_gestion,
+                          importe_aprobado,
+                          formulado,
+                          comprometido,
+                          ejecutado,
+                          pagado
+                        FROM 
+                          pre.vpresup_partida prpa
+				        where  ';
+			
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+			--Devuelve la respuesta
+			return v_consulta;
+						
+		end;
+
+	/*********************************    
+ 	#TRANSACCION:  'PRE_PRPAEST_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
+	***********************************/
+
+	elsif(p_transaccion='PRE_PRPAEST_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:=' select count(prpa.id_presup_partida),
+                         COALESCE(sum(prpa.importe),0)::numeric  as total_importe,
+                         COALESCE(sum(prpa.importe_aprobado),0)::numeric  as total_importe_aprobado,
+                         COALESCE(sum(prpa.formulado),0)::numeric  as total_formulado,
+                         COALESCE(sum(prpa.comprometido),0)::numeric  as total_comprometido,
+                         COALESCE(sum(prpa.ejecutado),0)::numeric  as total_ejecutado,
+                         COALESCE(sum(prpa.pagado),0)::numeric  as total_pagado
+			            
+                        FROM 
+                          pre.vpresup_partida prpa
+				        where   ';
+			
+			--Definicion de la respuesta		    
+			v_consulta:=v_consulta||v_parametros.filtro;
+            raise notice '%', v_consulta;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+    
+    				
 	else
 					     
 		raise exception 'Transaccion inexistente';

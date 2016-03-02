@@ -156,10 +156,10 @@ Phx.vista.PresupuestoReporte = {
     
     tabeast:[
           {
-    		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaInicio.php',
+    		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaEstado.php',
     		  title:'Partidas', 
     		  width:'60%',
-    		  cls:'PresupPartidaInicio'
+    		  cls:'PresupPartidaEstado'
 		  }],
 	
     
