@@ -412,7 +412,7 @@ ALTER TABLE pre.tpresup_partida
 --------------- SQL ---------------
 
 ALTER TABLE pre.tpresupuesto
-  ADD COLUMN id_proceso_wf INTEGER; 
+  ADD COLUMN id_estado_wf INTEGER; 
   
    
   
