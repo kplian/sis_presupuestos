@@ -41,6 +41,7 @@ DECLARE
     v_rec					record;
     v_id_partida_nueva		integer;
     v_gestion_actual		integer;
+    v_consulta				varchar;
 			    
 BEGIN
 
@@ -309,11 +310,22 @@ BEGIN
                                 ''','''|| v_concepto.almacenable ||
                                 ''','|| p_id_usuario ||                    
                             ')',true) AS (id_concepto_endesis integer) into v_id_concepto_endesis;
+                            
+                            v_consulta = 'UPDATE 
+                                  presto.tpr_concepto_ingas 
+                                SET 
+                                  id_grupo_ots = string_to_array('''||array_to_string(v_concepto.id_grupo_ots,',') || ''','','')::integer[],
+                                  sw_autorizacion = string_to_array('''||array_to_string(v_concepto.sw_autorizacion,',') || ''','','')::varchar[]
+                                WHERE 
+                                  id_concepto_ingas ='|| v_id_concepto_endesis;
+                 
+                 			perform  dblink(v_nombre_conexion, v_consulta, true);
+                            
                             insert into migra.tconcepto_ids (id_concepto_ingas, id_concepto_ingas_pxp,
                                                         id_gestion, desc_ingas)  
                                                         values (v_id_concepto_endesis, v_rec.id_concepto_ingas,
                                                         v_id_gestion_siguiente, v_concepto.desc_ingas);                      
-                     	
+                     		
                      end if;
                     
                 end if;

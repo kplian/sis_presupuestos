@@ -12,9 +12,12 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
   p_id_partida_ejecucion integer [],
   p_columna_relacion varchar [],
   p_fk_llave integer [],
-  p_nro_tramite varchar,
+  p_nro_tramite varchar [],
   p_id_int_comprobante integer = NULL::integer,
-  p_conexion varchar = NULL::character varying
+  p_conexion varchar = NULL::character varying,
+  p_sw_comprometer varchar = 'defecto'::character varying,
+  p_sw_ejecutar varchar = 'defecto'::character varying,
+  p_sw_pagar varchar = 'defecto'::character varying
 )
 RETURNS numeric [] AS
 $body$
@@ -42,6 +45,8 @@ DECLARE
   v_pre_integrar_presupuestos	varchar;
   v_id_moneda_base				integer;
   v_monto_mb 					numeric;
+  v_sw_momento					varchar;
+  v_resultado_ges				varchar[];
   
 BEGIN
 
@@ -134,7 +139,8 @@ BEGIN
                                                                               NULL::integer[],                  								
                                                                               NULL::integer[],               				   					
                                                                               '||COALESCE(('array['''|| array_to_string(p_columna_relacion, ''',''')||''']::varchar[]')::varchar,'NULL::varchar[]')||', 		
-                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||','||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	
+                                                                              '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||',
+                                                                              '||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	
 
              
            
@@ -158,7 +164,6 @@ BEGIN
                                                                 p_monto_total[v_cont],  
                                                                 p_fecha[v_cont], 'CUS',50, p_tipo_cambio, 'no');
             
-            
                       INSERT INTO  pre.tpartida_ejecucion
                                           (
                                             id_usuario_reg,
@@ -181,7 +186,7 @@ BEGIN
                                             now(),
                                             'activo',
                                             v_array_resp[v_cont],--:id_partida_ejecucion,
-                                            p_nro_tramite,
+                                            p_nro_tramite[v_cont],
                                             p_monto_total[v_cont],
                                             v_monto_mb,
                                             p_id_moneda[v_cont],
@@ -192,25 +197,184 @@ BEGIN
                                             p_fecha[v_cont],
                                             p_id_int_comprobante
                                           );
-                   
+                              raise notice 'sale1'; 
                       
           END LOOP;
             
-              
+          if  p_conexion is  null then
+            select * into v_resp from migra.f_cerrar_conexion(v_conexion,'exito'); 
+          end if; 
               
       ELSE 
-        --TO DO,   si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
+          
+          
+          -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
       
-        raise exception 'Gestion  presupuestaria en PXP no implementada';
+            --recorrer array y llamar a la funcion de ejecucion 
+            FOR v_cont IN 1..array_length(p_monto_total, 1 ) LOOP
+            
+            
+                -- traducir el momento numerico a varchar
+                -- *** por herencia de ENDESIS
+                IF p_sw_momento[v_cont] = 1 or p_sw_momento[v_cont] = 2 THEN
+                    v_sw_momento = 'comprometido';
+                END IF;
+                
+                IF p_sw_momento[v_cont] = 3  THEN
+                    v_sw_momento = 'ejecutado';
+                END IF;
+                
+                IF p_sw_momento[v_cont] = 4 THEN
+                    v_sw_momento = 'pagado';
+                END IF;
+                
+               
+               --, si no tenemos comprometido, ...y queremos pagar directamente o ejecutar ????????
+                IF  p_sw_comprometer = 'si' and v_sw_momento in ('ejecutado','pagado') THEN
+                
+                     --comprometemos
+                     --ejecutamos por defecto solo lo solicitado
+                     v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                              p_id_usuario, 
+                                              p_tipo_cambio, 
+                                              p_id_presupuesto[v_cont], 
+                                              p_id_partida[v_cont], 
+                                              p_id_moneda[v_cont], 
+                                              p_monto_total[v_cont], 
+                                              p_fecha[v_cont], 
+                                              'comprometeido', --traducido a varchar
+                                              p_id_partida_ejecucion[v_cont], 
+                                              p_columna_relacion[v_cont], 
+                                              p_fk_llave[v_cont], 
+                                              p_nro_tramite[v_cont], 
+                                              p_id_int_comprobante);
+                     
+                     
+                     --ejecutamos
+                     
+                     v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                              p_id_usuario, 
+                                              p_tipo_cambio, 
+                                              p_id_presupuesto[v_cont], 
+                                              p_id_partida[v_cont], 
+                                              p_id_moneda[v_cont], 
+                                              p_monto_total[v_cont], 
+                                              p_fecha[v_cont], 
+                                              'ejecutado', --traducido a varchar
+                                              v_resultado_ges[2],   --partida ejecucion
+                                              p_columna_relacion[v_cont], 
+                                              p_fk_llave[v_cont], 
+                                              p_nro_tramite[v_cont], 
+                                              p_id_int_comprobante);
+                     
+                     
+                     IF  p_sw_momento = 'pagado' THEN
+                     
+                         -- pagamos
+                         v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                              p_id_usuario, 
+                                              p_tipo_cambio, 
+                                              p_id_presupuesto[v_cont], 
+                                              p_id_partida[v_cont], 
+                                              p_id_moneda[v_cont], 
+                                              p_monto_total[v_cont], 
+                                              p_fecha[v_cont], 
+                                              'pagado', --traducido a varchar
+                                              v_resultado_ges[2],   --partida ejecucion
+                                              p_columna_relacion[v_cont], 
+                                              p_fk_llave[v_cont], 
+                                              p_nro_tramite[v_cont], 
+                                              p_id_int_comprobante);
+                         
+                     END IF;
+                   
+                ELSIF  p_sw_ejecutar = 'si' and v_sw_momento in ('ejecutado','pagado') THEN 
+                
+                     --ejecutamos
+                      v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                              p_id_usuario, 
+                                              p_tipo_cambio, 
+                                              p_id_presupuesto[v_cont], 
+                                              p_id_partida[v_cont], 
+                                              p_id_moneda[v_cont], 
+                                              p_monto_total[v_cont], 
+                                              p_fecha[v_cont], 
+                                              'ejecutado', --traducido a varchar
+                                              p_id_partida_ejecucion[v_cont],   --partida ejecucion
+                                              p_columna_relacion[v_cont], 
+                                              p_fk_llave[v_cont], 
+                                              p_nro_tramite[v_cont], 
+                                              p_id_int_comprobante);
+                    
+                     IF  p_sw_momento = 'pagado' THEN
+                     
+                         -- pagamos
+                         v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                              p_id_usuario, 
+                                              p_tipo_cambio, 
+                                              p_id_presupuesto[v_cont], 
+                                              p_id_partida[v_cont], 
+                                              p_id_moneda[v_cont], 
+                                              p_monto_total[v_cont], 
+                                              p_fecha[v_cont], 
+                                              'pagado', --traducido a varchar
+                                              v_resultado_ges[2],   --partida ejecucion
+                                              p_columna_relacion[v_cont], 
+                                              p_fk_llave[v_cont], 
+                                              p_nro_tramite[v_cont], 
+                                              p_id_int_comprobante);
+                         
+                     END IF;
+                    
+                    
+                ELSE
+                   
+                   --  ejecutamos por defecto solo lo solicitado
+                   v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                            p_id_usuario, 
+                                            p_tipo_cambio, 
+                                            p_id_presupuesto[v_cont], 
+                                            p_id_partida[v_cont], 
+                                            p_id_moneda[v_cont], 
+                                            p_monto_total[v_cont], 
+                                            p_fecha[v_cont], 
+                                            v_sw_momento, --traducido a varchar
+                                            p_id_partida_ejecucion[v_cont], 
+                                            p_columna_relacion[v_cont], 
+                                            p_fk_llave[v_cont], 
+                                            p_nro_tramite[v_cont], 
+                                            p_id_int_comprobante);
+                
+                END IF;
+                
+                
+                                      
+                
+               -- analizamos respuesta y retornamos error
+               IF v_resultado_ges[1] = 0 THEN
+                  
+                    IF v_resultado_ges[4] is not null and  v_resultado_ges[4] = 1  THEN
+                        raise exception 'el presupuesto no alcanza por diferencia cambiaria, en moneda base tenemos:  % ',v_resultado_ges[3];
+                    ELSE
+                        IF v_id_moneda_base = p_id_moneda[v_cont] THEN
+                            raise exception 'solo se tiene disponible un monto en moneda base de:  %', v_resultado_ges[3];    
+                        ELSE
+                            raise exception 'solo se tiene disponible un monto de:  %', v_resultado_ges[5];
+                        END IF;
+                      
+                   END IF;
+                   
+               END IF;
+               
+               v_array_resp[v_cont] =  v_resultado_ges[2]; --resultado de array
       
+       END LOOP;
       
       END IF;
       
      
       
-      if  p_conexion is  null then
-          select * into v_resp from migra.f_cerrar_conexion(v_conexion,'exito'); 
-      end if;
+      
  ELSE
 
     raise notice 'no se integra con presupuestos';

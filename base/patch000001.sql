@@ -424,3 +424,35 @@ ALTER TABLE pre.tpresupuesto
   
 /***********************************F-SCP-RAC-PRE-0-16/03/2016*****************************************/
 
+
+
+
+/***********************************I-SCP-RAC-PRE-0-23/03/2016*****************************************/
+
+------------ SQL ---------------
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.tipo_movimiento
+IS 'formulado, comprometido, ejecutado, pagado (los revertidos son numeros negativos)';
+
+/***********************************F-SCP-RAC-PRE-0-23/03/2016*****************************************/
+
+
+
+/***********************************I-SCP-RAC-PRE-0-31/03/2016*****************************************/
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN columna_origen VARCHAR;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.columna_origen
+IS 'columna origen donde se hizo la llamada para la ejecucion';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN valor_id_origen INTEGER;
+
+/***********************************F-SCP-RAC-PRE-0-31/03/2016*****************************************/
+
+
