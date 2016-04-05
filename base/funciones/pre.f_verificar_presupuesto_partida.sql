@@ -55,6 +55,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
          v_resp:='true'; 
         end if;
       ELSE
+        
         if verificado[1]=0 then
           v_resp:='false'||','||verificado[2];
         else
@@ -92,8 +93,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
                                 p_id_partida, 
                                 v_monto_mb, 
                                 p_monto_total, 
-                                'comprometido',
-                                now());
+                                'comprometido');
                                 
                                 
            IF p_resp_com = 'no' THEN
@@ -122,9 +122,9 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
                  
                  
                  if v_verif_pres[1] = 'true' then
-                   v_resp:='false'||','||v_disponible::varchar;
+                   v_resp:='true'||','||v_disponible::varchar;
                  else
-                   v_resp:='true'||','||v_disponible::varchar; 
+                   v_resp:='false'||','||v_disponible::varchar;
                  end if;
                  
             END IF;                   

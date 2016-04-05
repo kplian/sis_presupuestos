@@ -460,3 +460,59 @@ AS
        JOIN param.tgestion ges ON ges.id_gestion = par.id_gestion;
          
 /***********************************F-DEP-RAC-PRE-0-15/03/2016*****************************************/
+
+
+/***********************************I-DEP-RAC-PRE-0-05/04/2016*****************************************/
+
+--------------- SQL ---------------
+
+CREATE INDEX tpartida_ejecucion__id_partida_ejecucion_fk ON pre.tpartida_ejecucion
+  USING btree (id_partida_ejecucion_fk);
+  
+
+
+--------------- SQL ---------------
+
+CREATE OR REPLACE VIEW pre.vestado_presupuesto_por_tramite(
+    id_presup_partida,
+    id_partida,
+    id_presupuesto,
+    desc_partida,
+    id_centro_costo,
+    codigo_cc,
+    id_gestion,
+    id_uo,
+    id_ep,
+    tipo_pres,
+    nro_tramite,
+    comprometido,
+    ejecutado,
+    pagado)
+AS
+  SELECT DISTINCT pp.id_presup_partida,
+         pe.id_partida,
+         pe.id_presupuesto,
+         (('('::text || par.codigo::text) || ') '::text) || par.nombre_partida::
+           text AS desc_partida,
+         cc.id_centro_costo,
+         cc.codigo_cc,
+         cc.id_gestion,
+         cc.id_uo,
+         cc.id_ep,
+         cc.tipo_pres,
+         pe.nro_tramite,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'comprometido'::character varying, pe.nro_tramite) AS comprometido,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'ejecutado'::character varying, pe.nro_tramite) AS ejecutado,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'pagado'::character varying, pe.nro_tramite) AS pagado
+  FROM pre.tpartida_ejecucion pe
+       JOIN pre.tpartida par ON par.id_partida = pe.id_partida
+       JOIN pre.vpresupuesto_cc cc ON cc.id_centro_costo = pe.id_presupuesto
+       JOIN pre.tpresup_partida pp ON pp.id_partida = pe.id_partida AND
+         pp.id_presupuesto = pe.id_presupuesto;
+  
+/***********************************F-DEP-RAC-PRE-0-05/04/2016*****************************************/
+
+  

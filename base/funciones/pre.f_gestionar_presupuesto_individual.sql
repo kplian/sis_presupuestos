@@ -63,6 +63,20 @@ BEGIN
      
           --  verificar que el presupuesto este  aprobado
           
+          IF p_id_partida_ejecucion is not null THEN
+          
+             select 
+                pe.id_presupuesto,
+                pe.id_partida
+             into
+               p_id_presupuesto,
+               p_id_partida
+             from pre.tpartida_ejecucion pe
+             where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+          
+          END IF;
+          
+          
           IF not exists(select 
                           1
                         from pre.tpresupuesto pr
@@ -109,9 +123,11 @@ BEGIN
                     p_id_partida, 
                     v_monto_mb, 
                     v_monto, 
-                    p_sw_momento,
-                    p_fecha);
+                    p_sw_momento);
                     
+            
+            
+              
                     
             IF v_verif_pres[1] = 'true' THEN
                v_permitido = true;
@@ -140,7 +156,7 @@ BEGIN
                                             id_usuario_reg,
                                             fecha_reg,
                                             estado_reg,
-                                            id_partida_ejecucion,
+                                            id_partida_ejecucion_fk,
                                             nro_tramite,
                                             monto,
                                             monto_mb,
@@ -178,6 +194,8 @@ BEGIN
                  v_array_resp[1] = 1;      -- bandera de exito
                  v_array_resp[2] = v_id_partida_ejecucion;   -- id partida ejecucion 
                  v_array_resp[3] = v_verif_pres[2]::numeric - v_monto_mb;   -- saldo actulizado , - monto actual
+                 
+                  
               
               
               ELSE
@@ -210,7 +228,12 @@ BEGIN
 
     --  retorna respuesta  , posicion 0 (1, exito, 0 fallo), 1 (id partida ejecucion), 2( monto faltante)
 
+   -- if v_monto_mb < 0  THEN
+    --                   raise exception '% , %',v_verif_pres,  v_array_resp;
+     -- END IF; 
     return v_array_resp;
+    
+    
 
 
  

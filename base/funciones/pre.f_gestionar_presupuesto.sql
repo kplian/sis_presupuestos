@@ -46,7 +46,7 @@ DECLARE
   v_id_moneda_base				integer;
   v_monto_mb 					numeric;
   v_sw_momento					varchar;
-  v_resultado_ges				varchar[];
+  v_resultado_ges				numeric[];
   
 BEGIN
 
@@ -242,12 +242,14 @@ BEGIN
                                               p_id_moneda[v_cont], 
                                               p_monto_total[v_cont], 
                                               p_fecha[v_cont], 
-                                              'comprometeido', --traducido a varchar
-                                              p_id_partida_ejecucion[v_cont], 
+                                              'comprometido'::Varchar, --traducido a varchar
+                                              p_id_partida_ejecucion[v_cont]::integer, 
                                               p_columna_relacion[v_cont], 
                                               p_fk_llave[v_cont], 
                                               p_nro_tramite[v_cont], 
                                               p_id_int_comprobante);
+                                              
+                                            
                      
                      
                      --ejecutamos
@@ -260,18 +262,19 @@ BEGIN
                                               p_id_moneda[v_cont], 
                                               p_monto_total[v_cont], 
                                               p_fecha[v_cont], 
-                                              'ejecutado', --traducido a varchar
-                                              v_resultado_ges[2],   --partida ejecucion
+                                              'ejecutado'::varchar, --traducido a varchar
+                                              v_resultado_ges[2]::integer,   --partida ejecucion
                                               p_columna_relacion[v_cont], 
                                               p_fk_llave[v_cont], 
                                               p_nro_tramite[v_cont], 
                                               p_id_int_comprobante);
                      
+                  
                      
-                     IF  p_sw_momento = 'pagado' THEN
+                     IF  v_sw_momento = 'pagado' THEN
                      
                          -- pagamos
-                         v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario, 
                                               p_tipo_cambio, 
                                               p_id_presupuesto[v_cont], 
@@ -279,12 +282,15 @@ BEGIN
                                               p_id_moneda[v_cont], 
                                               p_monto_total[v_cont], 
                                               p_fecha[v_cont], 
-                                              'pagado', --traducido a varchar
-                                              v_resultado_ges[2],   --partida ejecucion
+                                              'pagado'::varchar, --traducido a varchar
+                                              v_resultado_ges[2]::integer,   --partida ejecucion
                                               p_columna_relacion[v_cont], 
                                               p_fk_llave[v_cont], 
                                               p_nro_tramite[v_cont], 
                                               p_id_int_comprobante);
+                        
+                                              
+                                  
                          
                      END IF;
                    
@@ -344,14 +350,23 @@ BEGIN
                                             p_fk_llave[v_cont], 
                                             p_nro_tramite[v_cont], 
                                             p_id_int_comprobante);
-                
+                                            
+                                     
                 END IF;
                 
-                
-                                      
+               
+                          
                 
                -- analizamos respuesta y retornamos error
                IF v_resultado_ges[1] = 0 THEN
+               
+                 if p_monto_total[v_cont] < 0  THEN
+                      raise exception '%  , %',  v_resultado_ges, p_monto_total[v_cont];
+                 END IF; 
+               
+               
+                     -- raise exception '- % , % , % , % -',v_sw_momento,  p_id_partida_ejecucion[v_cont], p_id_partida[v_cont],p_monto_total[v_cont];
+                     raise exception ' % ',v_resultado_ges;
                   
                     IF v_resultado_ges[4] is not null and  v_resultado_ges[4] = 1  THEN
                         raise exception 'el presupuesto no alcanza por diferencia cambiaria, en moneda base tenemos:  % ',v_resultado_ges[3];
@@ -367,6 +382,8 @@ BEGIN
                END IF;
                
                v_array_resp[v_cont] =  v_resultado_ges[2]; --resultado de array
+               
+               
       
        END LOOP;
       
@@ -386,7 +403,8 @@ BEGIN
 
 
  
-/*
+
+
 EXCEPTION
 					
 	WHEN OTHERS THEN
@@ -394,7 +412,7 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_function_name);
-			raise exception '%',v_resp;*/
+			raise exception '%',v_resp;
 END;
 $body$
 LANGUAGE 'plpgsql'

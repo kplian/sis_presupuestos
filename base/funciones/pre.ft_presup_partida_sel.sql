@@ -148,6 +148,8 @@ BEGIN
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
+            raise notice '%', v_consulta;
+            
 			--Devuelve la respuesta
 			return v_consulta;
 						
@@ -175,6 +177,75 @@ BEGIN
                         FROM 
                           pre.vpresup_partida prpa
 				        where   ';
+			
+			--Definicion de la respuesta		    
+			v_consulta:=v_consulta||v_parametros.filtro;
+            raise notice '%', v_consulta;
+			--Devuelve la respuesta
+			return v_consulta;
+
+		end;
+    
+     /*********************************    
+ 	#TRANSACCION:  'PRE_ETPRENRO_SEL'
+ 	#DESCRIPCION:	Listado del estado de presupeusto segun nro de tramite
+ 	#AUTOR:		renso(kplian)	
+ 	#FECHA:		05-04-2016 19:40:34
+	***********************************/
+
+	elseif(p_transaccion='PRE_ETPRENRO_SEL')then
+     				
+    	begin  
+    		--Sentencia de la consulta
+			v_consulta:='SELECT
+                            id_presup_partida, 
+                            id_partida,
+                            id_presupuesto,
+                            desc_partida,
+                            id_centro_costo,
+                            codigo_cc,
+                            id_gestion,
+                            id_uo,
+                            id_ep,
+                            tipo_pres,
+                            nro_tramite,
+                            comprometido,
+                            ejecutado,
+                            pagado
+                        FROM 
+                          pre.vestado_presupuesto_por_tramite prpa
+				        where  ';
+			
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||v_parametros.filtro;
+			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            raise notice '%', v_consulta;
+            
+			--Devuelve la respuesta
+			return v_consulta;
+						
+		end;
+
+	/*********************************    
+ 	#TRANSACCION:  'PRE_ETPRENRO_CONT'
+ 	#DESCRIPCION:	Conteo de registros
+ 	#AUTOR:		admin	
+ 	#FECHA:		29-02-2016 19:40:34
+	***********************************/
+
+	elsif(p_transaccion='PRE_ETPRENRO_CONT')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:=' select count(prpa.id_presup_partida),
+                         COALESCE(sum(prpa.comprometido),0)::numeric  as total_comprometido,
+                         COALESCE(sum(prpa.ejecutado),0)::numeric  as total_ejecutado,
+                         COALESCE(sum(prpa.pagado),0)::numeric  as total_pagado
+			            
+                        FROM 
+                          pre.vestado_presupuesto_por_tramite prpa
+				        where    ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;

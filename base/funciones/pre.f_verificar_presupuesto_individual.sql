@@ -85,7 +85,7 @@ BEGIN
                              and pe.tipo_movimiento = 'formulado';
                       
                        v_respuesta[1] = 'true';
-                       v_respuesta[2] = v_total_formulado_mb;
+                       v_respuesta[2] = COALESCE(v_total_formulado_mb,0);
                      
                   -------------------------
                   --  si es comprometer
@@ -121,7 +121,7 @@ BEGIN
                                and pe.estado_reg = 'activo'
                                and pe.tipo_movimiento = 'comprometido';       
                      
-                        v_saldo_mb = v_total_formulado_mb - v_total_comprometido_mb;
+                        v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
                         
                         IF p_monto_total_mb <= v_saldo_mb THEN
                           v_respuesta[1] = 'true';
@@ -193,8 +193,8 @@ BEGIN
                                  and pe.nro_tramite = p_nro_tramite
                                  and pe.tipo_movimiento = 'ejecutado';
                         
-                        v_saldo =   v_total_comprometido -  v_total_ejecutado;
-                        v_saldo_mb =   v_total_comprometido_mb -  v_total_ejecutado_mb;       
+                        v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
+                        v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
                                  
                         IF p_monto_total_mb <= v_saldo_mb THEN
                           v_respuesta[1] = 'true';
@@ -273,8 +273,8 @@ BEGIN
                                      and pe.nro_tramite = p_nro_tramite
                                      and pe.tipo_movimiento = 'pagado'; 
                             
-                            v_saldo_mb =   v_total_ejecutado_mb -  v_total_pagado_mb;
-                            v_saldo =   v_total_ejecutado -  v_total_pagado;       
+                            v_saldo_mb =    COALESCE(v_total_ejecutado_mb,0) -   COALESCE(v_total_pagado_mb,0);
+                            v_saldo =    COALESCE(v_total_ejecutado,0) -   COALESCE(v_total_pagado,0);       
                                      
                             IF p_monto_total_mb <= v_saldo_mb THEN
                               v_respuesta[1] = 'true';
@@ -336,7 +336,7 @@ BEGIN
                                and pe.estado_reg = 'activo'
                                and pe.tipo_movimiento = 'comprometido';       
                      
-                        v_saldo_mb = v_total_formulado_mb - v_total_comprometido_mb;
+                        v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
                         
                         IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
                           v_respuesta[1] = 'true';
@@ -406,8 +406,8 @@ BEGIN
                                      and pe.nro_tramite = p_nro_tramite
                                      and pe.tipo_movimiento = 'ejecutado';
                             
-                            v_saldo =   v_total_comprometido -  v_total_ejecutado;
-                            v_saldo_mb =   v_total_comprometido_mb -  v_total_ejecutado_mb;       
+                            v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
+                            v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
                                      
                             IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
                               v_respuesta[1] = 'true';
@@ -484,8 +484,8 @@ BEGIN
                                      and pe.nro_tramite = p_nro_tramite
                                      and pe.tipo_movimiento = 'pagado';
                             
-                            v_saldo_mb =   v_total_ejecutado_mb -  v_total_pagado_mb;
-                            v_saldo =   v_total_ejecutado -  v_total_pagado;       
+                            v_saldo_mb =   COALESCE(v_total_ejecutado_mb,0) -  COALESCE(v_total_pagado_mb,0);
+                            v_saldo =   COALESCE(v_total_ejecutado,0) -  COALESCE(v_total_pagado,0);       
                                      
                             IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
                               v_respuesta[1] = 'true';
@@ -547,8 +547,8 @@ BEGIN
                                      and pe.nro_tramite = p_nro_tramite
                                      and pe.tipo_movimiento = 'pagado';
                             
-                           v_saldo_mb =  v_total_pagado_mb;
-                           v_saldo =   v_total_pagado;       
+                           v_saldo_mb =  COALESCE(v_total_pagado_mb,0);
+                           v_saldo =   COALESCE(v_total_pagado,0);       
                                      
                            IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
                               v_respuesta[1] = 'true';

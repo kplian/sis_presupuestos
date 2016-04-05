@@ -6,7 +6,6 @@
 *@date 29-02-2016 19:40:34
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
 */
-
 class MODPresupPartida extends MODbase{
 	
 	function __construct(CTParametro $pParam){
@@ -44,9 +43,6 @@ class MODPresupPartida extends MODbase{
 		$this->captura('desc_partida','varchar');
 		$this->captura('desc_gestion','varchar');
 		$this->captura('importe_aprobado','numeric');
-		
-		
-		
 		
 		
 		//Ejecuta la instruccion
@@ -179,6 +175,41 @@ class MODPresupPartida extends MODbase{
 
 		//Devuelve la respuesta
 		return $this->respuesta;
+	}
+  
+  function listarPresupPartidaEstadoXNroTramite(){
+			//Definicion de variables para ejecucion del procedimientp
+			$this->procedimiento='pre.ft_presup_partida_sel';
+			$this->transaccion='PRE_ETPRENRO_SEL';
+			$this->tipo_procedimiento='SEL';//tipo de transaccion
+			
+			$this->capturaCount('total_importe_comprometido','numeric');
+			$this->capturaCount('total_importe_ejecutado','numeric');
+			$this->capturaCount('total_importe_pagado','numeric');
+			
+			
+			$this->captura('id_presup_partida','int4');
+            $this->captura('id_partida','int4');
+            $this->captura('id_presupuesto','int4');
+            $this->captura('desc_partida','text');
+            $this->captura('id_centro_costo','int4');
+            $this->captura('codigo_cc','TEXT');
+            $this->captura('id_gestion','int4');
+            $this->captura('id_uo','int4');
+            $this->captura('id_ep','int4');
+            $this->captura('tipo_pres','varchar');
+            $this->captura('nro_tramite','varchar');
+            $this->captura('comprometido','numeric');
+            $this->captura('ejecutado','numeric');
+            $this->captura('pagado','numeric');
+			
+			
+			//Ejecuta la instruccion
+			$this->armarConsulta();
+			$this->ejecutarConsulta();
+			
+			//Devuelve la respuesta
+			return $this->respuesta;
 	}
 			
 }

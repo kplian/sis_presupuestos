@@ -68,7 +68,7 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
    			bottom_filter: true,
    			id_grupo:0,
    			filters:{	
-		        pfiltro: 'par.codigo#par.nombre_partida',
+		        pfiltro: 'prpa.desc_partida',
 				type: 'string'
 			},
    		   
