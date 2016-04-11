@@ -456,3 +456,17 @@ ALTER TABLE pre.tpartida_ejecucion
 /***********************************F-SCP-RAC-PRE-0-31/03/2016*****************************************/
 
 
+
+/*****************************I-SCP-RAC-PRE-0-04/04/2016*************/
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN id_partida_ejecucion_fk INTEGER;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.id_partida_ejecucion_fk
+IS 'id partida ejecuon referencial';
+
+/*****************************F-SCP-RAC-PRE-0-04/04/2016*************/
+
+

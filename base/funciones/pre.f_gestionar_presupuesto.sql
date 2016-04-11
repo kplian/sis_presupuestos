@@ -66,7 +66,8 @@ BEGIN
      IF(v_sincronizar='true')THEN
 
           /*
-          PARAMETROS DE ENTRADA
+        PARAMETROS DE ENTRADA
+        
         pr_id_presupuesto integer (Presupuesto a gestionar), 
         pr_id_partida integer(partida a gestionar),  
         pr_id_moneda integer (moneda de registro), 
@@ -128,8 +129,8 @@ BEGIN
           
     
            
-          v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',		
-                                                                          '||v_str_id_partida||',   
+           v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',		
+                                                                             '||v_str_id_partida||',   
                                                                               '||COALESCE(('array['|| array_to_string(p_id_moneda, ',')||']')::varchar,'NULL::integer[]')||',     
                                                                               '||COALESCE(('array['|| array_to_string(p_monto_total, ',')||']')::varchar,'NULL::numeric[]')||',   		
                                                                               '||COALESCE(('array['''|| array_to_string(p_fecha, ''',''')||''']::date[]')::varchar,'NULL::date[]')||',   
@@ -213,7 +214,7 @@ BEGIN
             --recorrer array y llamar a la funcion de ejecucion 
             FOR v_cont IN 1..array_length(p_monto_total, 1 ) LOOP
             
-            
+               
                 -- traducir el momento numerico a varchar
                 -- *** por herencia de ENDESIS
                 IF p_sw_momento[v_cont] = 1 or p_sw_momento[v_cont] = 2 THEN
@@ -231,7 +232,7 @@ BEGIN
                
                --, si no tenemos comprometido, ...y queremos pagar directamente o ejecutar ????????
                 IF  p_sw_comprometer = 'si' and v_sw_momento in ('ejecutado','pagado') THEN
-                
+                 
                      --comprometemos
                      --ejecutamos por defecto solo lo solicitado
                      v_resultado_ges = pre.f_gestionar_presupuesto_individual(
@@ -295,7 +296,7 @@ BEGIN
                      END IF;
                    
                 ELSIF  p_sw_ejecutar = 'si' and v_sw_momento in ('ejecutado','pagado') THEN 
-                
+               
                      --ejecutamos
                       v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario, 
@@ -311,9 +312,13 @@ BEGIN
                                               p_fk_llave[v_cont], 
                                               p_nro_tramite[v_cont], 
                                               p_id_int_comprobante);
+                                              
                     
-                     IF  p_sw_momento = 'pagado' THEN
-                     
+                                               
+                          
+                     IF  v_sw_momento = 'pagado' THEN
+                                          
+                    
                          -- pagamos
                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario, 
@@ -329,6 +334,8 @@ BEGIN
                                               p_fk_llave[v_cont], 
                                               p_nro_tramite[v_cont], 
                                               p_id_int_comprobante);
+                                              
+                           
                          
                      END IF;
                     

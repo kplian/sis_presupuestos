@@ -13,7 +13,8 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_individual (
   p_columna_relacion varchar,
   p_fk_llave integer,
   p_nro_tramite varchar,
-  p_id_int_comprobante integer = NULL::integer
+  p_id_int_comprobante integer = NULL::integer,
+  p_monto_total_mb numeric = NULL::numeric
 )
 RETURNS numeric [] AS
 $body$
@@ -46,6 +47,8 @@ DECLARE
   v_permitido_mt				boolean;
   v_verif_pres					varchar[];
   v_id_partida_ejecucion		integer;
+  v_reg_par_eje_fk				record;
+  v_error_presupuesto			numeric;
   
 BEGIN
 
@@ -55,6 +58,7 @@ BEGIN
   v_function_name := 'pre.f_gestionar_presupuesto_individual';
   v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
   v_id_moneda_base = param.f_get_moneda_base();
+  v_error_presupuesto = pxp.f_get_variable_global('error_presupuesto')::numeric;
  
 
 
@@ -97,6 +101,7 @@ BEGIN
             IF  v_id_moneda_base != p_id_moneda THEN
                   -- tenemos tipo de cambio
                   -- si el tipo de cambio es null utilza el cambio oficial para la fecha
+                  IF  p_monto_total_mb is null THEN
                   v_monto_mb  =   param.f_convertir_moneda (
                              v_id_moneda_base, 
                              p_id_moneda,   
@@ -104,6 +109,9 @@ BEGIN
                              p_fecha,
                              'CUS',50, 
                              p_tipo_cambio, 'no');
+                  ELSE
+                    v_monto_mb = p_monto_total_mb;
+                  END IF;
      
            ELSE
               v_monto_mb = p_monto_total;
@@ -127,12 +135,27 @@ BEGIN
                     
             
             
-              
+            --evaluar error permitido
+            
                     
             IF v_verif_pres[1] = 'true' THEN
                v_permitido = true;
             ELSE
                v_permitido = false;
+               
+               IF v_monto_mb > 0 THEN
+                   
+                   IF  v_monto_mb - v_error_presupuesto <= v_verif_pres[2]::numeric THEN
+                      v_monto_mb =  v_verif_pres[2]::numeric;
+                      v_permitido = true;
+                   END IF;
+               ELSE
+                   IF  (v_monto_mb*(-1)) - v_error_presupuesto  <= v_verif_pres[2]::numeric THEN
+                        v_monto_mb =  (v_verif_pres[2]::numeric)*(-1);
+                        v_permitido = true;
+                   END IF;
+               END IF;
+            
             END IF;
             
             IF v_verif_pres[3] = 'true' THEN
@@ -141,7 +164,28 @@ BEGIN
                v_permitido_mt = false;
             END IF;
             
+            
+            -- si ejecutar o pagar la moneda de la transaccion tiene que ser la misma
+            IF  p_id_partida_ejecucion is not null THEN
+              
+                select 
+                  pe.id_moneda
+                into
+                  v_reg_par_eje_fk
+                from pre.tpartida_ejecucion pe
+                where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                
+                IF  v_reg_par_eje_fk.id_moneda != p_id_moneda THEN
+                  raise exception 'la moneda de la transacción previa es diferente, tiene que manteer la misma moneda entre el comprometido, ejecutado, pagado y susreversiones';
+                END IF;
+            
+            END IF;
+            
+            
             --TODO ...   caso especial pagado permite sobregirar si por diferencia cambiaria 
+            
+            
+            
             
             ---------------------------------
             -- Registor de partida ejecución
@@ -195,10 +239,8 @@ BEGIN
                  v_array_resp[2] = v_id_partida_ejecucion;   -- id partida ejecucion 
                  v_array_resp[3] = v_verif_pres[2]::numeric - v_monto_mb;   -- saldo actulizado , - monto actual
                  
-                  
               
-              
-              ELSE
+            ELSE
                 
                 -- si no esta permitido devolver el monto faltante
                
@@ -228,9 +270,6 @@ BEGIN
 
     --  retorna respuesta  , posicion 0 (1, exito, 0 fallo), 1 (id partida ejecucion), 2( monto faltante)
 
-   -- if v_monto_mb < 0  THEN
-    --                   raise exception '% , %',v_verif_pres,  v_array_resp;
-     -- END IF; 
     return v_array_resp;
     
     

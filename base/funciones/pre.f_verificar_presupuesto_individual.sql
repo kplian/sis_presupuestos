@@ -127,7 +127,7 @@ BEGIN
                           v_respuesta[1] = 'true';
                         ELSE  
                           v_respuesta[1] = 'false';
-                       END IF;
+                        END IF;
                         
                        v_respuesta[2] = v_saldo_mb::varchar;
                      
@@ -417,7 +417,7 @@ BEGIN
                               v_respuesta[2] = v_saldo_mb::varchar;
                             END IF; 
                             
-                            IF (p_monto_total*-1) >= v_saldo THEN
+                            IF (p_monto_total*-1) <= v_saldo THEN
                               v_respuesta[3] = 'true';
                               v_respuesta[4] = v_saldo::varchar;
                             ELSE  
