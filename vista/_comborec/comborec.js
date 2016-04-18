@@ -8,20 +8,17 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		     '<tpl for=".">',
 		     '<div class="x-combo-list-item">',
 		     	'<tpl if="sw_movimiento == \'flujo\'">',
-		     	'<font color="red"><p>Nombre:{nombre_partida}</p></font>',
+		     	'<font color="red"><p>{nombre_partida} ({codigo})</p></font>',
 		     	'</tpl>',
 		     	'<tpl if="sw_movimiento == \'presupuestaria\'">',
-		     	'<font color="green"><p>Nombre:{nombre_partida}</p></font>',
+		     	'<font color="green"><p>{nombre_partida} ({codigo})</p></font>',
 		     	'</tpl>',
-		     '<p>{codigo}</p> <p>Tipo: {sw_movimiento} <p>Rubro: {tipo}</p>',
+		     '<p>Tipo: {sw_movimiento} </p>Rubro: {tipo}</p>',
 		     '</div>',
 		     '</tpl>'
 		     
 		   ]);
 		   
-		  // tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}</p><p>Nombre:{nombre_partida}</p> </div></tpl>',
-				
-		
 		
 		return {
 			 origen: 'PARTIDA',
@@ -67,6 +64,75 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		}
 		
 	}
+	
+	if(config.origen=='PRESUPUESTO'){    		
+		    		
+		    var tpl = new Ext.XTemplate([
+		     '<tpl for=".">',
+		     '<div class="x-combo-list-item">',
+		     	'<tpl if="movimiento_tipo_pres == \'gasto\'">',
+		     	'<font color="red"><p>{codigo_cc}</p></font>',
+		     	'</tpl>',
+		     	'<tpl if="movimiento_tipo_pres == \'recurso\'">',
+		     	'<font color="green"><p>{codigo_cc}</p></font>',
+		     	'</tpl>',
+		     	'<tpl if="movimiento_tipo_pres == \'administrativo\'">',
+		     	'<font color="blue"><p>{codigo_cc}</p></font>',
+		     	'</tpl>',
+		     '<p>Tipo: {desc_tipo_presupuesto}</p> <p> Estado: {estado}</p>',
+		     '</div>',
+		     '</tpl>'
+		     
+		   ]);
+		   
+		   
+		    
+		    return {
+		    			 origen:'PRESUPUESTO',
+		    			 tinit:false,
+		    			 resizable:true,
+		    			 tasignacion:false,
+				         name:'id_presupuesto',
+			   			 fieldLabel:'Presupuesto',
+			   				allowBlank:false,
+			   				emptyText:'Presupuestos...',
+			   				store: new Ext.data.JsonStore({
+		
+		    					url: config.url?config.url:'../../sis_presupuestos/control/Presupuesto/listarPresupuestoCmb',
+		    					id: 'id_presupuesto',
+		    					root: 'datos',
+		    					sortInfo:{
+		    						field: 'codigo_cc',
+		    						direction: 'ASC'
+		    					},
+		    					totalProperty: 'total',
+		    					fields: ['id_centro_costo','id_presupuesto','desc_tipo_presupuesto','descripcion','codigo_cc','tipo_pres',
+		    					          'desc_tipo_presupuesto','movimiento_tipo_pres','nro_tramite','id_gestion',
+		    					         'movimiento_tipo_pres','estado'],
+		    					// turn on remote sorting
+		    					remoteSort: true,
+		    					baseParams:Ext.apply({tipo_pres:"gasto",par_filtro:'id_centro_costo#codigo_cc#desc_tipo_presupuesto#movimiento_tipo_pres'},config.baseParams)
+		    					
+		    				}), 
+		    				tpl:tpl,		
+		    				valueField: 'id_presupuesto',
+		       				displayField: 'codigo_cc',
+		       				gdisplayField: 'desc_presupuesto',
+		       				hiddenName: 'id_presupuesto',
+		       				forceSelection:true,
+		       				typeAhead: false,
+		           			triggerAction: 'all',
+		           			lazyRender:true,
+		       				mode:'remote',
+		       				pageSize:10,
+		       				queryDelay:1000,
+		       				listWidth:'320',
+		       				width:290,
+		       				minChars:2
+		    		}
+		    		
+		
+		    	}
 	
 }
 	    		

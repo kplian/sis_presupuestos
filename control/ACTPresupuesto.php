@@ -46,6 +46,50 @@ class ACTPresupuesto extends ACTbase{
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+
+    function listarPresupuestoCmb(){
+		$this->objParam->defecto('ordenacion','id_presupuesto');
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
+		
+		
+		
+        if($this->objParam->getParametro('estado')!=''){
+	    	$this->objParam->addFiltro("estado = ''".$this->objParam->getParametro('estado')."''");	
+		}
+		
+		
+		if($this->objParam->getParametro('id_gestion')!=''){
+	    	$this->objParam->addFiltro("id_gestion = ".$this->objParam->getParametro('id_gestion'));	
+		}
+		
+		if($this->objParam->getParametro('codigos_tipo_pres')!=''){
+	    	$this->objParam->addFiltro("(tipo_pres::integer in (".$this->objParam->getParametro('codigos_tipo_pres').") or pre.tipo_pres is null or pre.tipo_pres = '''')");	
+		}
+		
+		if($this->objParam->getParametro('movimiento_tipo_pres')!=''){
+	    	$this->objParam->addFiltro("movimiento_tipo_pres = ''".$this->objParam->getParametro('movimiento_tipo_pres')."''");	
+		}
+		
+		if($this->objParam->getParametro('sw_oficial')!=''){
+	    	$this->objParam->addFiltro("sw_oficial = ''".$this->objParam->getParametro('sw_oficial')."''");	
+		}
+		
+		if($this->objParam->getParametro('sw_consolidado')!=''){
+	    	$this->objParam->addFiltro("sw_consolidado = ''".$this->objParam->getParametro('sw_consolidado')."''");	
+		}
+		
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam, $this);
+			$this->res = $this->objReporte->generarReporteListado('MODPresupuesto','listarPresupuestoCmb');
+		} else{
+			$this->objFunc=$this->create('MODPresupuesto');	
+			$this->res=$this->objFunc->listarPresupuestoCmb();
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 				
 	function insertarPresupuesto(){
 		$this->objFunc=$this->create('MODPresupuesto');	

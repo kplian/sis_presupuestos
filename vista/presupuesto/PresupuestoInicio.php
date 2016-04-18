@@ -33,61 +33,29 @@ Phx.vista.PresupuestoInicio = {
 	
 	
 	constructor: function(config) {
-	   this.initButtons=[this.cmbGestion, this.cmbTipoPres];
-	   Phx.vista.PresupuestoInicio.superclass.constructor.call(this,config);
-       this.bloquearOrdenamientoGrid();
-	   this.cmbGestion.on('select', function(){
-		    
+	    this.initButtons=[this.cmbGestion, this.cmbTipoPres];
+	    Phx.vista.PresupuestoInicio.superclass.constructor.call(this,config);
+        this.bloquearOrdenamientoGrid();
+	    this.cmbGestion.on('select', function(){
 		    if(this.validarFiltros()){
                   this.capturaFiltros();
            }
-		    
-		    
 		},this);
 		
 		this.bloquearOrdenamientoGrid();
-
-		this.cmbTipoPres.on('clearcmb', function() {
-				this.DisableSelect();
-				this.store.removeAll();
-			}, this);
-
-		this.cmbTipoPres.on('valid', function() {
-				this.capturaFiltros();
-
-			}, this);
-			
-			
-		
+		this.cmbTipoPres.on('clearcmb', function() {this.DisableSelect();this.store.removeAll();}, this);
+		this.cmbTipoPres.on('valid', function() {this.capturaFiltros();}, this);
 		//Crea el botón para llamar a la replicación
-		this.addButton('btnRepRelCon',
-			{
-				grupo:[2],
-				text: 'Duplicar Presupuestos',
-				iconCls: 'bchecklist',
-				disabled: false,
-				handler: this.duplicarPresupuestos,
-				tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'
-			}
-		);
-		
-		//Crea el botón para iniciar tramite
-		this.addButton('btnIniTra',
-			{
-				grupo:[0],
-				text: 'Iniciar',
-				iconCls: 'bchecklist',
-				disabled: false,
-				handler: this.iniTramite,
-				tooltip: '<b>Iniciar Trámite</b><br/>Inicia el trámite de formulación para el presupuesto'
-			}
-		);
-		
+		this.addButton('btnRepRelCon',{grupo:[2],text: 'Duplicar Presupuestos',iconCls: 'bchecklist',disabled: false,handler: this.duplicarPresupuestos,tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'});
+		this.addButton('btnIniTra',{grupo:[0],text: 'Iniciar',iconCls: 'bchecklist',disabled: true,handler: this.iniTramite,tooltip: '<b>Iniciar Trámite</b><br/>Inicia el trámite de formulación para el presupuesto'});
 		
 	   
 		this.init();
-       this.finCons = true; 
+		this.TabPanelEast.get(2).disable();
+        this.finCons = true; 
    },
+   
+  
    cmbGestion: new Ext.form.ComboBox({
 				fieldLabel: 'Gestion',
 				grupo:[0,1,2],
@@ -250,9 +218,61 @@ Phx.vista.PresupuestoInicio = {
 	},
 	
 	
-   
+	onButtonPartes:function() {
+            var rec=this.sm.getSelected();
+            Phx.CP.loadWindows('../../../sis_presupuestos/vista/rel_pre/RelPre.php',
+                    'Composición del Presupuesto',
+                    {
+                        width:'60%',
+                        height:'60%'
+                    },
+                    rec.data,
+                    this.idContenedor,
+                    'RelPre');
+    },
     
-    tabeast:[
+    preparaMenu:function(n){
+          var data = this.getSelectedData();
+          var tb =this.tbar;
+          
+          Phx.vista.PresupuestoInicio.superclass.preparaMenu.call(this,n);
+          if(data['estado'] == 'aprobado' || data['estado'] == 'preparado'){
+          	 this.getBoton('btnRepRelCon').enable();
+          }
+          else{
+          	 this.getBoton('btnRepRelCon').disable();
+          }
+          
+          if(data['estado'] == 'borrador'){
+          	 this.getBoton('btnIniTra').enable();
+          }
+          else{
+          	 this.getBoton('btnIniTra').disable();
+          }
+          
+           if(data['sw_consolidado'] == 'si'){
+          	  this.TabPanelEast.get(2).enable();
+          }
+          else{
+          	  this.TabPanelEast.get(2).disable();
+          	  this.TabPanelEast.setActiveTab(0)
+          }
+          
+         
+     		     
+          
+    },
+    
+    liberaMenu:function(){
+        var tb = Phx.vista.PresupuestoInicio.superclass.liberaMenu.call(this);
+        if(tb){
+            this.getBoton('btnIniTra').disable();
+            this.getBoton('btnRepRelCon').disable();
+        }
+    },
+    
+	
+   tabeast:[
           {
     		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaInicio.php',
     		  title:'Partidas', 
@@ -264,6 +284,12 @@ Phx.vista.PresupuestoInicio = {
     		  title:'Funcionarios', 
     		  width:'60%',
     		  cls:'PresupuestoFuncionario'
+		  },
+		  {
+    		  url:'../../../sis_presupuestos/vista/rel_pre/RelPreInicio.php',
+    		  title:'Composición', 
+    		  width:'60%',
+    		  cls:'RelPreInicio'
 		  }],
 	
     

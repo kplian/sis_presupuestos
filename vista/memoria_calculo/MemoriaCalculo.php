@@ -283,13 +283,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 	
 	onButtonNew:function(){         
             Phx.vista.MemoriaCalculo.superclass.onButtonNew.call(this);
-           
-            
             this.Cmp.id_presupuesto.setValue(this.id_presupuesto); 
-            
-           
-
-        
     },
     
     onButtonEdit:function(){ 

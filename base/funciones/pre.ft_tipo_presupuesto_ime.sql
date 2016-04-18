@@ -60,7 +60,8 @@ BEGIN
 			fecha_reg,
 			id_usuario_reg,
 			fecha_mod,
-			id_usuario_mod
+			id_usuario_mod,
+            sw_oficial
           	) values(
 			upper(trim(v_parametros.codigo)),
 			v_parametros.movimiento,
@@ -72,7 +73,8 @@ BEGIN
 			now(),
 			p_id_usuario,
 			null,
-			null
+			null,
+            v_parametros.sw_oficial
 							
 			
 			
@@ -99,14 +101,15 @@ BEGIN
 		begin
 			--Sentencia de la modificacion
 			update pre.ttipo_presupuesto set
-			codigo = upper(trim(v_parametros.codigo)),
-			movimiento = v_parametros.movimiento,
-			nombre = v_parametros.nombre,
-			descripcion = v_parametros.descripcion,
-			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario,
-			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+              codigo = upper(trim(v_parametros.codigo)),
+              movimiento = v_parametros.movimiento,
+              nombre = v_parametros.nombre,
+              descripcion = v_parametros.descripcion,
+              fecha_mod = now(),
+              id_usuario_mod = p_id_usuario,
+              id_usuario_ai = v_parametros._id_usuario_ai,
+              usuario_ai = v_parametros._nombre_usuario_ai,
+              sw_oficial = v_parametros.sw_oficial
 			where id_tipo_presupuesto=v_parametros.id_tipo_presupuesto;
                
 			--Definicion de la respuesta

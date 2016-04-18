@@ -35,8 +35,7 @@ Phx.vista.PresupPartidaAprobacion = {
 				disabled: false,
 				handler: this.verificarPresupuesto,
 				tooltip: '<b>Autorizar Presupuesto</b><br/>Define el porcentaje autorizado '
-			}
-		);
+			});
    },
    preparaMenu:function(){
 		var rec = this.sm.getSelected();

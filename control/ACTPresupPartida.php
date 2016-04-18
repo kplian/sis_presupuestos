@@ -29,17 +29,17 @@ class ACTPresupPartida extends ACTbase{
 		}
 		
 		$temp = Array();
-			$temp['importe'] = $this->res->extraData['total_importe'];
-			$temp['importe_aprobado'] = $this->res->extraData['total_importe_aprobado'];
-			$temp['tipo_reg'] = 'summary';
-			$temp['id_presup_partida'] = 0;
-			
-			
-			
-			
-			$this->res->total++;
-			
-			$this->res->addLastRecDatos($temp);
+		$temp['importe'] = $this->res->extraData['total_importe'];
+		$temp['importe_aprobado'] = $this->res->extraData['total_importe_aprobado'];
+		$temp['tipo_reg'] = 'summary';
+		$temp['id_presup_partida'] = 0;
+		
+		
+		
+		
+		$this->res->total++;
+		
+		$this->res->addLastRecDatos($temp);
 		
 		
 		$this->res->imprimirRespuesta($this->res->generarJson());

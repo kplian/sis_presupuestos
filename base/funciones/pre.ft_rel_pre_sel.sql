@@ -1,6 +1,6 @@
 --------------- SQL ---------------
 
-CREATE OR REPLACE FUNCTION pre.ft_tipo_presupuesto_sel (
+CREATE OR REPLACE FUNCTION pre.ft_rel_pre_sel (
   p_administrador integer,
   p_id_usuario integer,
   p_tabla varchar,
@@ -10,10 +10,10 @@ RETURNS varchar AS
 $body$
 /**************************************************************************
  SISTEMA:		Sistema de Presupuesto
- FUNCION: 		pre.ft_tipo_presupuesto_sel
- DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.ttipo_presupuesto'
+ FUNCION: 		pre.ft_rel_pre_sel
+ DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.trel_pre'
  AUTOR: 		 (admin)
- FECHA:	        29-02-2016 05:18:02
+ FECHA:	        18-04-2016 13:18:06
  COMENTARIOS:	
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
@@ -32,39 +32,40 @@ DECLARE
 			    
 BEGIN
 
-	v_nombre_funcion = 'pre.ft_tipo_presupuesto_sel';
+	v_nombre_funcion = 'pre.ft_rel_pre_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_TIPR_SEL'
+ 	#TRANSACCION:  'PRE_RELP_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		admin	
- 	#FECHA:		29-02-2016 05:18:02
+ 	#FECHA:		18-04-2016 13:18:06
 	***********************************/
 
-	if(p_transaccion='PRE_TIPR_SEL')then
+	if(p_transaccion='PRE_RELP_SEL')then
      				
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
-						tipr.id_tipo_presupuesto,
-						tipr.codigo,
-						tipr.movimiento,
-						tipr.nombre,
-						tipr.descripcion,
-						tipr.estado_reg,
-						tipr.id_usuario_ai,
-						tipr.usuario_ai,
-						tipr.fecha_reg,
-						tipr.id_usuario_reg,
-						tipr.fecha_mod,
-						tipr.id_usuario_mod,
-						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod,
-                        tipr.sw_oficial	
-						from pre.ttipo_presupuesto tipr
-						inner join segu.tusuario usu1 on usu1.id_usuario = tipr.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = tipr.id_usuario_mod
+                            relp.id_rel_pre,
+                            relp.estado,
+                            relp.id_presupuesto_hijo,
+                            relp.fecha_union,
+                            relp.estado_reg,
+                            relp.id_presupuesto_padre,
+                            relp.id_usuario_ai,
+                            relp.fecha_reg,
+                            relp.usuario_ai,
+                            relp.id_usuario_reg,
+                            relp.id_usuario_mod,
+                            relp.fecha_mod,
+                            usu1.cuenta as usr_reg,
+                            usu2.cuenta as usr_mod,
+                            (pre.codigo_cc)::varchar as desc_presupuesto_hijo
+						from pre.trel_pre relp
+                        inner join pre.vpresupuesto_cc pre on pre.id_presupuesto = relp.id_presupuesto_hijo 
+						inner join segu.tusuario usu1 on usu1.id_usuario = relp.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = relp.id_usuario_mod
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -77,21 +78,22 @@ BEGIN
 		end;
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_TIPR_CONT'
+ 	#TRANSACCION:  'PRE_RELP_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		admin	
- 	#FECHA:		29-02-2016 05:18:02
+ 	#FECHA:		18-04-2016 13:18:06
 	***********************************/
 
-	elsif(p_transaccion='PRE_TIPR_CONT')then
+	elsif(p_transaccion='PRE_RELP_CONT')then
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_tipo_presupuesto)
-					    from pre.ttipo_presupuesto tipr
-					    inner join segu.tusuario usu1 on usu1.id_usuario = tipr.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = tipr.id_usuario_mod
-					    where ';
+			v_consulta:='select count(id_rel_pre)
+					    from pre.trel_pre relp
+                        inner join pre.vpresupuesto_cc pre on pre.id_presupuesto = relp.id_presupuesto_hijo 
+						inner join segu.tusuario usu1 on usu1.id_usuario = relp.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = relp.id_usuario_mod
+				        where ';
 			
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;

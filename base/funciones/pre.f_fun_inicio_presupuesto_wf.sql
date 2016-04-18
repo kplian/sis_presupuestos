@@ -33,6 +33,8 @@ DECLARE
     v_id_usuario_firma			integer;
     v_id_moneda_base			integer;
     v_fecha						date; 
+    v_importe_aprobado_total	numeric;
+    v_importe_total				numeric;
    
 	
     
@@ -57,74 +59,103 @@ BEGIN
    
    IF p_codigo_estado = 'aprobado' THEN
    
-      --recupera datos del presupuesto
-      select 
-         pre.id_presupuesto,
-         pre.estado,
-         pre.tipo_pres,
-         pre.nro_tramite,
-         cc.id_gestion,
-         ges.gestion
-      into
-        v_registros
-      from pre.tpresupuesto pre
-      inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
-      inner join param.tgestion ges on ges.id_gestion = cc.id_gestion
-      where pre.id_proceso_wf = p_id_proceso_wf;
-      
-      -- recupera la moneda base (el importe aprobado esta en moneda base)
-      v_id_moneda_base =  param.f_get_moneda_base();
-      
-      -- fecha de formulacion
-      
-      v_fecha= ('01-01-'|| v_registros.gestion::varchar)::date;
-      
-      -- lista todas las partidas
-      
-      FOR v_regitros_pp in ( 
-                            SELECT 
-                              pp.id_presup_partida,
-                              pp.id_presupuesto,
-                              pp.id_partida,
-                              pp.importe_aprobado
-                            FROM pre.tpresup_partida pp
-                            where  pp.id_presupuesto =  v_registros.id_presupuesto 
-                                   and pp.estado_reg = 'activo' ) LOOP
-      
-                 
-               INSERT INTO  pre.tpartida_ejecucion
-                                          (
-                                            id_usuario_reg,
-                                            fecha_reg,
-                                            estado_reg,                                           
-                                            nro_tramite,
-                                            monto,
-                                            monto_mb,
-                                            id_moneda,
-                                            id_presupuesto,
-                                            id_partida,
-                                            tipo_movimiento,
-                                            tipo_cambio,
-                                            fecha
-                                          )
-                                          VALUES (
-                                            p_id_usuario,
-                                            now(),
-                                            'activo',                                         
-                                            v_registros.nro_tramite,
-                                            v_regitros_pp.importe_aprobado, --moneda de formualcion
-                                            v_regitros_pp.importe_aprobado,  --moneda base
-                                            v_id_moneda_base,
-                                            v_registros.id_presupuesto,
-                                            v_regitros_pp.id_partida,
-                                            'formulado', --tipo_movimiento
-                                            1,  --tipo de cambios, moneda formulacion y moneda base (es la misma)
-                                            v_fecha
-                                          );
-      
+          --recupera datos del presupuesto
+          select 
+             pre.id_presupuesto,
+             pre.estado,
+             pre.tipo_pres,
+             pre.nro_tramite,
+             cc.id_gestion,
+             ges.gestion,
+             tp.sw_oficial
+          into
+            v_registros
+          from pre.tpresupuesto pre
+          inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
+          inner join param.tgestion ges on ges.id_gestion = cc.id_gestion
+          inner join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
+          where pre.id_proceso_wf = p_id_proceso_wf;
           
-          END LOOP;
-      
+          
+          -- 
+          SELECT 
+             sum(pp.importe),
+             sum(pp.importe_aprobado)
+          into
+             v_importe_total,
+             v_importe_aprobado_total
+          FROM pre.tpresup_partida pp
+          where  pp.id_presupuesto =  v_registros.id_presupuesto 
+                 and pp.estado_reg = 'activo';
+                 
+          
+          IF v_registros.sw_oficial = 'si' THEN
+               IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) THEN 
+                  raise exception 'No tiene ningun monto aprobado mayor a cero';
+               END IF; 
+          ELSE
+              IF (v_importe_total is null or  v_importe_total = 0) THEN 
+                 raise exception 'No tiene ningun monto formulado';
+              END IF; 
+          END IF;
+          
+          
+          -- recupera la moneda base (el importe aprobado esta en moneda base)
+          v_id_moneda_base =  param.f_get_moneda_base();
+          
+          -- fecha de formulacion
+          
+          v_fecha= ('01-01-'|| v_registros.gestion::varchar)::date;
+          
+         
+          --solo se lleva a partida ejeucion los presupeustos oficiales
+          IF v_registros.sw_oficial = 'si'  THEN
+             
+                 -- lista todas las partidas
+                 FOR v_regitros_pp in ( 
+                                      SELECT 
+                                        pp.id_presup_partida,
+                                        pp.id_presupuesto,
+                                        pp.id_partida,
+                                        pp.importe_aprobado
+                                      FROM pre.tpresup_partida pp
+                                      where  pp.id_presupuesto =  v_registros.id_presupuesto 
+                                             and pp.estado_reg = 'activo' ) LOOP
+                
+                           
+                         INSERT INTO  pre.tpartida_ejecucion
+                                                    (
+                                                      id_usuario_reg,
+                                                      fecha_reg,
+                                                      estado_reg,                                           
+                                                      nro_tramite,
+                                                      monto,
+                                                      monto_mb,
+                                                      id_moneda,
+                                                      id_presupuesto,
+                                                      id_partida,
+                                                      tipo_movimiento,
+                                                      tipo_cambio,
+                                                      fecha
+                                                    )
+                                                    VALUES (
+                                                      p_id_usuario,
+                                                      now(),
+                                                      'activo',                                         
+                                                      v_registros.nro_tramite,
+                                                      v_regitros_pp.importe_aprobado, --moneda de formualcion
+                                                      v_regitros_pp.importe_aprobado,  --moneda base
+                                                      v_id_moneda_base,
+                                                      v_registros.id_presupuesto,
+                                                      v_regitros_pp.id_partida,
+                                                      'formulado', --tipo_movimiento
+                                                      1,  --tipo de cambios, moneda formulacion y moneda base (es la misma)
+                                                      v_fecha
+                                                    );
+                
+                    
+                    END LOOP;
+         END IF; 
       
    
    END IF;

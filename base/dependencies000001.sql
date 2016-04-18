@@ -516,3 +516,197 @@ AS
 /***********************************F-DEP-RAC-PRE-0-05/04/2016*****************************************/
 
   
+  
+/***********************************I-DEP-RAC-PRE-0-14/04/2016*****************************************/
+
+
+--------------- SQL ---------------
+
+DROP VIEW pre.vestado_presupuesto_por_tramite;
+
+
+
+  
+  CREATE OR REPLACE VIEW pre.vpresupuesto(
+    id_presupuesto,
+    id_centro_costo,
+    codigo_cc,
+    tipo_pres,
+    estado_pres,
+    estado_reg,
+    id_usuario_reg,
+    fecha_reg,
+    fecha_mod,
+    id_usuario_mod,
+    estado,
+    id_estado_wf,
+    nro_tramite,
+    id_proceso_wf,
+    desc_tipo_presupuesto,
+    descripcion,
+    movimiento_tipo_pres,
+    id_gestion)
+AS
+  SELECT pre.id_presupuesto,
+         pre.id_centro_costo,
+         vcc.codigo_cc,
+         pre.tipo_pres,
+         pre.estado_pres,
+         pre.estado_reg,
+         pre.id_usuario_reg,
+         pre.fecha_reg,
+         pre.fecha_mod,
+         pre.id_usuario_mod,
+         pre.estado,
+         pre.id_estado_wf,
+         pre.nro_tramite,
+         pre.id_proceso_wf,
+         ((('('::text || tp.codigo::text) || ') '::text) || tp.nombre::text)::
+           character varying AS desc_tipo_presupuesto,
+         pre.descripcion,
+         tp.movimiento AS movimiento_tipo_pres,
+         vcc.id_gestion
+  FROM pre.tpresupuesto pre
+       JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text
+       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo;
+  
+
+CREATE OR REPLACE VIEW pre.vpresupuesto_cc(
+    id_centro_costo,
+    estado_reg,
+    id_ep,
+    id_gestion,
+    id_uo,
+    id_usuario_reg,
+    fecha_reg,
+    id_usuario_mod,
+    fecha_mod,
+    usr_reg,
+    usr_mod,
+    codigo_uo,
+    nombre_uo,
+    ep,
+    gestion,
+    codigo_cc,
+    nombre_programa,
+    nombre_proyecto,
+    nombre_actividad,
+    nombre_financiador,
+    nombre_regional,
+    tipo_pres,
+    cod_act,
+    cod_fin,
+    cod_prg,
+    cod_pry,
+    estado_pres,
+    estado,
+    id_presupuesto,
+    id_estado_wf,
+    nro_tramite,
+    id_proceso_wf,
+    movimiento_tipo_pres,
+    desc_tipo_presupuesto,
+    sw_oficial,
+    sw_consolidado)
+AS
+  SELECT cec.id_centro_costo,
+         cec.estado_reg,
+         cec.id_ep,
+         cec.id_gestion,
+         cec.id_uo,
+         cec.id_usuario_reg,
+         cec.fecha_reg,
+         cec.id_usuario_mod,
+         cec.fecha_mod,
+         usu1.cuenta AS usr_reg,
+         usu2.cuenta AS usr_mod,
+         uo.codigo AS codigo_uo,
+         uo.nombre_unidad AS nombre_uo,
+         ep.ep,
+         ges.gestion,
+         CASE
+           WHEN cp.descripcion IS NOT NULL THEN (((((COALESCE(uo.codigo, 's/c'::
+             character varying)::text || ' - '::text) || cp.descripcion) ||
+             '- ('::text) || ges.gestion) || ') Id: '::text) ||
+             cec.id_centro_costo::text
+           ELSE (((uo.codigo::text || '-('::text) || ep.ep) || ') Id: '::text)
+             || cec.id_centro_costo::text
+         END AS codigo_cc,
+         ep.nombre_programa,
+         ep.nombre_proyecto,
+         ep.nombre_actividad,
+         ep.nombre_financiador,
+         ep.nombre_regional,
+         pre.tipo_pres,
+         pre.cod_act,
+         pre.cod_fin,
+         pre.cod_prg,
+         pre.cod_pry,
+         pre.estado_pres,
+         pre.estado,
+         pre.id_presupuesto,
+         pre.id_estado_wf,
+         pre.nro_tramite,
+         pre.id_proceso_wf,
+         tp.movimiento AS movimiento_tipo_pres,
+         ((('('::text || tp.codigo::text) || ') '::text) || tp.nombre::text)::
+           character varying AS desc_tipo_presupuesto,
+         tp.sw_oficial,
+         pre.sw_consolidado
+  FROM param.tcentro_costo cec
+       JOIN segu.tusuario usu1 ON usu1.id_usuario = cec.id_usuario_reg
+       LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = cec.id_usuario_mod
+       JOIN param.vep ep ON ep.id_ep = cec.id_ep
+       JOIN param.tgestion ges ON ges.id_gestion = cec.id_gestion
+       JOIN orga.tuo uo ON uo.id_uo = cec.id_uo
+       JOIN pre.tpresupuesto pre ON pre.id_centro_costo = cec.id_centro_costo
+       LEFT JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica
+         = pre.id_categoria_prog
+       JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text
+       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo
+         ;
+
+CREATE OR REPLACE VIEW pre.vestado_presupuesto_por_tramite(
+    id_presup_partida,
+    id_partida,
+    id_presupuesto,
+    desc_partida,
+    id_centro_costo,
+    codigo_cc,
+    id_gestion,
+    id_uo,
+    id_ep,
+    tipo_pres,
+    nro_tramite,
+    comprometido,
+    ejecutado,
+    pagado)
+AS
+  SELECT DISTINCT pp.id_presup_partida,
+         pe.id_partida,
+         pe.id_presupuesto,
+         (('('::text || par.codigo::text) || ') '::text) || par.nombre_partida::
+           text AS desc_partida,
+         cc.id_centro_costo,
+         cc.codigo_cc,
+         cc.id_gestion,
+         cc.id_uo,
+         cc.id_ep,
+         cc.tipo_pres,
+         pe.nro_tramite,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'comprometido'::character varying, pe.nro_tramite) AS comprometido,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'ejecutado'::character varying, pe.nro_tramite) AS ejecutado,
+         pre.f_get_estado_presupuesto_mb(pe.id_presupuesto, pe.id_partida,
+           'pagado'::character varying, pe.nro_tramite) AS pagado
+  FROM pre.tpartida_ejecucion pe
+       JOIN pre.tpartida par ON par.id_partida = pe.id_partida
+       JOIN pre.vpresupuesto_cc cc ON cc.id_centro_costo = pe.id_presupuesto
+       JOIN pre.tpresup_partida pp ON pp.id_partida = pe.id_partida AND
+         pp.id_presupuesto = pe.id_presupuesto;
+           
+/***********************************F-DEP-RAC-PRE-0-14/04/2016*****************************************/
+
+  
+  

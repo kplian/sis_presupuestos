@@ -44,8 +44,61 @@ class MODPresupuesto extends MODbase{
 		$this->captura('movimiento_tipo_pres','varchar');
 		$this->captura('id_gestion','int4');
 		$this->captura('obs_wf','varchar');
+		$this->captura('sw_consolidado','VARCHAR');
 		
 		
+		
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+    function listarPresupuestoCmb(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='pre.ft_presupuesto_sel';
+		$this->transaccion='PRE_CBMPRES_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		
+		      $this->captura('id_centro_costo','int4');
+              $this->captura('estado_reg','VARCHAR');
+              $this->captura('id_ep','int4');
+              $this->captura('id_gestion','int4');
+              $this->captura('id_uo','int4');
+              $this->captura('id_usuario_reg','int4');
+              $this->captura('fecha_reg','timestamp');
+              $this->captura('id_usuario_mod','int4');
+              $this->captura('fecha_mod','timestamp');
+              $this->captura('usr_reg','VARCHAR');
+              $this->captura('usr_mod','VARCHAR');
+              $this->captura('codigo_uo','VARCHAR');
+              $this->captura('nombre_uo','VARCHAR');
+              $this->captura('ep','TEXT');
+              $this->captura('gestion','INTEGER');
+              $this->captura('codigo_cc','text');
+              $this->captura('nombre_programa','VARCHAR');
+              $this->captura('nombre_proyecto','VARCHAR');
+              $this->captura('nombre_actividad','VARCHAR');
+              $this->captura('nombre_financiador','VARCHAR');
+              $this->captura('nombre_regional','VARCHAR');
+              $this->captura('tipo_pres','VARCHAR');
+              $this->captura('cod_act','VARCHAR');
+              $this->captura('cod_fin','VARCHAR');
+              $this->captura('cod_prg','VARCHAR');
+              $this->captura('cod_pry','VARCHAR');
+              $this->captura('estado_pres','VARCHAR');
+              $this->captura('estado','VARCHAR');
+              $this->captura('id_presupuesto','int4');
+              $this->captura('id_estado_wf','int4');
+              $this->captura('nro_tramite','VARCHAR');
+              $this->captura('id_proceso_wf','int4');
+              $this->captura('movimiento_tipo_pres','VARCHAR');
+              $this->captura('desc_tipo_presupuesto','VARCHAR');
+			  $this->captura('sw_oficial','VARCHAR');
+			  $this->captura('sw_consolidado','VARCHAR');
+			
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -85,6 +138,8 @@ class MODPresupuesto extends MODbase{
 		$this->setParametro('id_centro_costo','id_centro_costo','int4');
 		$this->setParametro('tipo_pres','tipo_pres','varchar');
 		$this->setParametro('descripcion','descripcion','varchar');
+		$this->setParametro('sw_consolidado','sw_consolidado','varchar');
+		
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

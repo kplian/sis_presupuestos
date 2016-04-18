@@ -128,6 +128,29 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			form:true
 		},
 		{
+	       		config:{
+	       			name:'sw_consolidado',
+	       			fieldLabel:'Consolidado',
+	       			qtip: 'los presupuestos oficiales y consolidados se formulan a partir de los presupuestos no oficiales',
+	       			allowBlank:false,
+	       			typeAhead: true,
+	       		    triggerAction: 'all',
+	       		    lazyRender:true,
+	       		    mode: 'local',
+	       		    store: ['si','no']
+	       		    
+	       		},
+	       		type:'ComboBox',
+	       		id_grupo:0,
+	       		filters:{	
+	       		         type: 'list',
+	       		         pfiltro:'pre.sw_consolidado',
+	       				 options: ['si','no']
+	       		 	},
+	       		grid:true,
+	       		form:true
+	    },
+		{
 			config:{
 				name: 'nro_tramite',
 				fieldLabel: 'Nro Tramite',
@@ -277,20 +300,21 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 	ActList:'../../sis_presupuestos/control/Presupuesto/listarPresupuesto',
 	id_store:'id_presupuesto',
 	fields: [
-		{name:'id_presupuesto', type: 'numeric'},
-		{name:'id_centro_costo', type: 'numeric'},
-		{name:'codigo_cc', type: 'string'},
-		{name:'tipo_pres', type: 'string'},
-		{name:'estado_pres', type: 'string'},
-		{name:'estado_reg', type: 'string'},
-		{name:'id_usuario_reg', type: 'numeric'},
-		{name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
-		{name:'id_usuario_mod', type: 'numeric'},
-		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},'estado',
+		{ name:'id_presupuesto', type: 'numeric'},
+		{ name:'id_centro_costo', type: 'numeric'},
+		{ name:'codigo_cc', type: 'string'},
+		{ name:'tipo_pres', type: 'string'},
+		{ name:'estado_pres', type: 'string'},
+		{ name:'estado_reg', type: 'string'},
+		{ name:'id_usuario_reg', type: 'numeric'},
+		{ name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+		{ name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
+		{ name:'id_usuario_mod', type: 'numeric'},
+		{ name:'usr_reg', type: 'string'},
+		{ name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
-		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres','id_gestion','obs_wf'
+		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres',
+		'id_gestion','obs_wf','sw_consolidado'
 		
 	],
 	
@@ -388,7 +412,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
           
           Phx.vista.Presupuesto.superclass.preparaMenu.call(this,n);
           
-          if(data['nro_tramite']){
+          if(data['nro_tramite'] && data['nro_tramite']!=''){
           	 if (data['estado']!= 'aprobado'){
               	 this.getBoton('fin_registro').enable();
             }
@@ -414,6 +438,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
            this.getBoton('diagrama_gantt').disable();
            this.getBoton('btnChequeoDocumentosWf').disable();
         }
+        return tb;
     },  
 	bdel: false,
 	bnew: false,
@@ -491,10 +516,9 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
                 config:[{
                           event: 'beforesave',
                           delegate: this.onAntEstado,
-                        }
-                        ],
+                        }],
                scope:this
-             })
+             });
    },
    
    onAntEstado: function(wizard,resp){
@@ -508,11 +532,11 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
                         obs: resp.obs,
                         estado_destino: resp.estado_destino
                  },
-                argument: { wizard:wizard},  
-                success:this.successEstadoSinc,
+                argument: { wizard: wizard },  
+                success: this.successEstadoSinc,
                 failure: this.conexionFailure,
-                timeout:this.timeout,
-                scope:this
+                timeout: this.timeout,
+                scope: this
             });
            
      },

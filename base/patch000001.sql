@@ -470,3 +470,160 @@ IS 'id partida ejecuon referencial';
 /*****************************F-SCP-RAC-PRE-0-04/04/2016*************/
 
 
+
+/*****************************I-SCP-RAC-PRE-0-13/04/2016*************/
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tajuste (
+  id_ajuste SERIAL,
+  nro_tramite VARCHAR(300),
+  justificacion VARCHAR,
+  estado VARCHAR(50),
+  id_proceso_wf INTEGER,
+  id_estado_wf INTEGER,
+  tipo_ajuste VARCHAR(50) DEFAULT 'traspaso' NOT NULL,
+  PRIMARY KEY(id_ajuste)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+COMMENT ON COLUMN pre.tajuste.tipo_ajuste
+IS '(traspaso) - de una partida a la misma de otro presupuesto pero del mismo tipo
+(reformulación) - te permite llevar de una partida a otra diferente, incluso inversión a gasto
+(incremento) - solo aumenta en una partida
+(disminución) -  solo disminuye';
+
+
+  
+--------------- SQL ---------------
+
+CREATE TABLE pre.tajuste_det (
+  id_ajuste_det SERIAL,
+  id_presupuesto INTEGER,
+  id_partida INTEGER,
+  id_partida_ejecucion INTEGER,
+  importe NUMERIC(20,2) DEFAULT 0 NOT NULL,
+  PRIMARY KEY(id_ajuste_det)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tajuste_det
+  OWNER TO postgres;
+
+COMMENT ON COLUMN pre.tajuste_det.importe
+IS 'los ajuste siempre se realizan en siempre en moneda base';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste_det
+  ADD COLUMN tipo_ajuste VARCHAR(30) DEFAULT 'incremento' NOT NULL;
+
+COMMENT ON COLUMN pre.tajuste_det.tipo_ajuste
+IS 'incremento o decremento';
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste
+  ADD COLUMN fecha DATE DEFAULT now() NOT NULL;
+  
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste
+  ADD COLUMN "id_gestion" INTEGER;
+
+/*****************************F-SCP-RAC-PRE-0-13/04/2016*************/
+
+
+
+
+/*****************************I-SCP-RAC-PRE-0-14/04/2016*************/
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste
+  ADD COLUMN importe_ajuste NUMERIC(18,2) DEFAULT 0 NOT NULL;
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste
+  ADD COLUMN movimiento VARCHAR(30) DEFAULT 'gasto' NOT NULL;
+
+COMMENT ON COLUMN pre.tajuste.movimiento
+IS 'recuros o gasto, este campo es para evitar que mexclen lso tipo de presupuesto';
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste_det
+  ADD COLUMN id_ajuste INTEGER NOT NULL;
+
+/*****************************F-SCP-RAC-PRE-0-14/04/2016*************/
+
+
+/*****************************I-SCP-RAC-PRE-0-15/04/2016*************/
+
+ALTER TABLE pre.ttipo_presupuesto
+  ADD COLUMN sw_oficial VARCHAR(4) DEFAULT 'si' NOT NULL;
+
+COMMENT ON COLUMN pre.ttipo_presupuesto.sw_oficial
+IS 'si es oficial o no';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN sw_consolidado VARCHAR(3) DEFAULT 'no' NOT NULL;
+
+COMMENT ON COLUMN pre.tpresupuesto.sw_consolidado
+IS 'si el presupeusto es consolidado se base en presupuestos parte, si el presupuesto no es consolidado  se base en su propia memoria de calculo solamente';
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.trel_pre (
+  id_rel_pre SERIAL,
+  id_presupuesto_padre INTEGER,
+  id_presupuesto_hijo INTEGER,
+  estado VARCHAR(30) DEFAULT 'borrador' NOT NULL,
+  fecha_union DATE,
+  PRIMARY KEY(id_rel_pre)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+COMMENT ON COLUMN pre.trel_pre.estado
+IS 'borrador o procesado';
+
+/*****************************F-SCP-RAC-PRE-0-15/04/2016*************/
+
+
+
+
+
+/*****************************I-SCP-RAC-PRE-0-18/04/2016*************/
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD COLUMN id_memoria_calculo_original INTEGER;
+
+COMMENT ON COLUMN pre.tmemoria_calculo.id_memoria_calculo_original
+IS 'hace referencia a la memoria calculo del presupuesto no oficial consolidado';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD COLUMN id_rel_pre INTEGER;
+
+COMMENT ON COLUMN pre.tmemoria_calculo.id_rel_pre
+IS 'hace referencia al la relacion de consolidado desde la que se origino la memoria consolidada, si es distinto de null sabemos que esta memoria es consolidada';
+
+/*****************************F-SCP-RAC-PRE-0-18/04/2016*************/
+
+
+

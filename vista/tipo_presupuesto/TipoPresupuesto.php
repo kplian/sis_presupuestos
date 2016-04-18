@@ -37,26 +37,23 @@ Phx.vista.TipoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 	       			fieldLabel:'Movimiento',
 	       			allowBlank:false,
 	       			emptyText:'Auten...',
-	       			
 	       			typeAhead: true,
 	       		    triggerAction: 'all',
 	       		    lazyRender:true,
 	       		    mode: 'local',
-	       		    //readOnly:true,
 	       		    valueField: 'autentificacion',
-	       		   // displayField: 'descestilo',
-	       		    store:['recurso','gasto']
+	       		    store:['recurso','gasto','administrativo']
 	       		    
 	       		},
 	       		type:'ComboBox',
 	       		id_grupo:0,
 	       		filters:{	
 	       		         type: 'list',
-	       				 options: ['recurso','gasto'],
+	       				 options: ['recurso','gasto','administrativo'],
 	       		 	},
 	       		grid:true,
 	       		form:true
-	       	},
+	     },
 		{
 			config:{
 				name: 'codigo',
@@ -104,6 +101,28 @@ Phx.vista.TipoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+		{
+	       		config:{
+	       			name:'sw_oficial',
+	       			fieldLabel:'Oficial',
+	       			allowBlank:false,
+	       			typeAhead: true,
+	       		    triggerAction: 'all',
+	       		    lazyRender:true,
+	       		    mode: 'local',
+	       		    store: ['si','no']
+	       		    
+	       		},
+	       		type:'ComboBox',
+	       		id_grupo:0,
+	       		filters:{	
+	       		         type: 'list',
+	       		         pfiltro:'tipr.sw_oficial'
+	       				 options: ['si','no']
+	       		 	},
+	       		grid:true,
+	       		form:true
+	    },
 		{
 			config:{
 				name: 'estado_reg',
@@ -232,7 +251,7 @@ Phx.vista.TipoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},
+		{name:'usr_mod', type: 'string'},'sw_oficial'
 		
 	],
 	sortInfo:{

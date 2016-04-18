@@ -119,10 +119,11 @@ BEGIN
             --Sentencia de la modificacion
 			update pre.tpresupuesto set
 			
-			tipo_pres = v_parametros.tipo_pres,
-			descripcion = v_parametros.descripcion,
-			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario
+              tipo_pres = v_parametros.tipo_pres,
+              descripcion = v_parametros.descripcion,
+              sw_consolidado = v_parametros.sw_consolidado,
+              fecha_mod = now(),
+              id_usuario_mod = p_id_usuario
 			where id_presupuesto=v_parametros.id_presupuesto;
                
 			--Definicion de la respuesta

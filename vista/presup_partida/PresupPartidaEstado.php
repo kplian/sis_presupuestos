@@ -125,7 +125,7 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'formulado',
-				fieldLabel: 'Formulado',
+				fieldLabel: 'Vigente',
 				gwidth: 100,
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
