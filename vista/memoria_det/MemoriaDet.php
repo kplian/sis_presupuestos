@@ -18,6 +18,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.MemoriaDet.superclass.constructor.call(this,config);
 		this.init();
 		this.bloquearMenus();
+		this.iniciarEventos();
 	},
 			
 	Atributos:[
@@ -56,6 +57,67 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
+		{
+		   config : {
+			     name : 'unidad_medida',
+			     fieldLabel : 'Unidad de Medida',
+			     anchor : '90%',
+			     tinit : false,
+			     allowBlank : false,
+			     origen : 'CATALOGO',
+			     gdisplayField : 'unidad_medida',
+			     gwidth : 100,
+			     anchor : '100%',
+			     baseParams : {
+			     cod_subsistema : 'PRE',
+			     catalogo_tipo : 'unidad_medida'},
+			     renderer : function(value, p, record) {
+					return String.format('{0}',record.data['unidad_medida']);
+				}
+		   },
+		   type : 'ComboRec',
+		   id_grupo : 0,
+		   filters : {pfiltro : 'mdt.unidad_medida',type : 'string'},
+		   egrid: true,
+		   grid : true,
+		   form : true
+		},
+		
+		{
+			config:{
+				name: 'cantidad_mem',
+				fieldLabel: 'Cantidad',
+				selectOnFocus: true,
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:1179650
+			},
+				type:'NumberField',
+				filters:{pfiltro:'mdt.cantidad_mem',type:'numeric'},
+				id_grupo:1,
+				egrid: true,
+				grid:true,
+				form:true
+		},
+		
+		{
+			config:{
+				name: 'importe_unitario',
+				fieldLabel: 'Unitario',
+				selectOnFocus: true,
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:1179650
+			},
+				type:'NumberField',
+				filters:{pfiltro:'mdt.importe_unitario',type:'numeric'},
+				id_grupo:1,
+				egrid: true,
+				grid:true,
+				form:true
+		},
 		
 		{
 			config:{
@@ -70,7 +132,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				type:'NumberField',
 				filters:{pfiltro:'mdt.importe',type:'numeric'},
 				id_grupo:1,
-				egrid: true,
+				egrid: false,
 				grid:true,
 				form:true
 		},
@@ -202,7 +264,10 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},'desc_periodo'
+		{name:'usr_mod', type: 'string'},
+		'desc_periodo',
+		{name:'cantidad_mem', type: 'numeric'},
+		{name:'importe_unitario', type: 'numeric'},'unidad_medida'
 		
 	],
 	sortInfo:{
@@ -224,6 +289,21 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     	 Phx.CP.getPagina(this.idContenedorPadre).reload();
     	 
     },
+    
+    iniciarEventos:function(){
+    	
+    	this.grid.on('afteredit',function(e){
+    		 this.calculaTotal(e);
+    	}, this);
+    	
+    },
+    
+    calculaTotal: function(e){
+    	var tot = Number(e.record.data.cantidad_mem) * Number(e.record.data.importe_unitario);
+    	e.record.set( 'importe', tot );
+    	e.record.markDirty();
+    },
+    
     bnew: false,
     bedit: false,
 	bdel: false,

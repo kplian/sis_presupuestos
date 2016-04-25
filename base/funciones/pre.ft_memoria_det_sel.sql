@@ -47,20 +47,23 @@ BEGIN
     	begin
     		--Sentencia de la consulta
 			v_consulta:='select
-						mdt.id_memoria_det,
-						mdt.importe,
-						mdt.estado_reg,
-						mdt.id_periodo,
-						mdt.id_memoria_calculo,
-						mdt.usuario_ai,
-						mdt.fecha_reg,
-						mdt.id_usuario_reg,
-						mdt.id_usuario_ai,
-						mdt.fecha_mod,
-						mdt.id_usuario_mod,
-						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod,
-                        p.periodo as desc_periodo	
+                              mdt.id_memoria_det,
+                              mdt.importe,
+                              mdt.estado_reg,
+                              mdt.id_periodo,
+                              mdt.id_memoria_calculo,
+                              mdt.usuario_ai,
+                              mdt.fecha_reg,
+                              mdt.id_usuario_reg,
+                              mdt.id_usuario_ai,
+                              mdt.fecha_mod,
+                              mdt.id_usuario_mod,
+                              usu1.cuenta as usr_reg,
+                              usu2.cuenta as usr_mod,
+                              p.periodo as desc_periodo,
+                              mdt.cantidad_mem,
+                              mdt.unidad_medida,
+                              mdt.importe_unitario	
 						from pre.tmemoria_det mdt
                         inner join param.tperiodo p on p.id_periodo = mdt.id_periodo
 						inner join segu.tusuario usu1 on usu1.id_usuario = mdt.id_usuario_reg

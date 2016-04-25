@@ -101,10 +101,7 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		    					url: config.url?config.url:'../../sis_presupuestos/control/Presupuesto/listarPresupuestoCmb',
 		    					id: 'id_presupuesto',
 		    					root: 'datos',
-		    					sortInfo:{
-		    						field: 'codigo_cc',
-		    						direction: 'ASC'
-		    					},
+		    					sortInfo:{field: 'codigo_cc',direction: 'ASC'},
 		    					totalProperty: 'total',
 		    					fields: ['id_centro_costo','id_presupuesto','desc_tipo_presupuesto','descripcion','codigo_cc','tipo_pres',
 		    					          'desc_tipo_presupuesto','movimiento_tipo_pres','nro_tramite','id_gestion',
@@ -114,21 +111,21 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		    					baseParams:Ext.apply({tipo_pres:"gasto",par_filtro:'id_centro_costo#codigo_cc#desc_tipo_presupuesto#movimiento_tipo_pres'},config.baseParams)
 		    					
 		    				}), 
-		    				tpl:tpl,		
+		    				tpl: tpl,		
 		    				valueField: 'id_presupuesto',
 		       				displayField: 'codigo_cc',
 		       				gdisplayField: 'desc_presupuesto',
 		       				hiddenName: 'id_presupuesto',
-		       				forceSelection:true,
+		       				forceSelection: true,
 		       				typeAhead: false,
 		           			triggerAction: 'all',
-		           			lazyRender:true,
-		       				mode:'remote',
-		       				pageSize:10,
-		       				queryDelay:1000,
-		       				listWidth:'320',
-		       				width:290,
-		       				minChars:2
+		           			lazyRender: true,
+		       				mode: 'remote',
+		       				pageSize: 10,
+		       				queryDelay: 1000,
+		       				listWidth: '320',
+		       				width: 290,
+		       				minChars: 2
 		    		}
 		    		
 		

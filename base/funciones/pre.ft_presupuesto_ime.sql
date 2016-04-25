@@ -122,6 +122,7 @@ BEGIN
               tipo_pres = v_parametros.tipo_pres,
               descripcion = v_parametros.descripcion,
               sw_consolidado = v_parametros.sw_consolidado,
+              id_categoria_prog = v_parametros.id_categoria_prog,
               fecha_mod = now(),
               id_usuario_mod = p_id_usuario
 			where id_presupuesto=v_parametros.id_presupuesto;

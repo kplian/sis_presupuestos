@@ -38,6 +38,8 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
 
   v_sincronizar=pxp.f_get_variable_global('sincronizar');
   
+  
+  
   IF(v_sincronizar='true')THEN
   	
       --si la sincronizacion esta activa busca lso datos en endesis
@@ -46,7 +48,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
       select into verificado * from dblink(v_conexion,v_consulta,true) as (verificado numeric[]);
     
     
-      --  raise exception '% %',v_consulta,v_conexion;
+        
       
       IF p_resp_com = 'no' THEN
         if verificado[1]=0 then
@@ -98,11 +100,12 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
                                 
            IF p_resp_com = 'no' THEN
                 if v_verif_pres[1]= 'true' then
-                  v_resp:='false';
+                  v_resp:='true';
                 else
-                 v_resp:='true'; 
+                 v_resp:='false'; 
                 end if;
-            ELSE
+          
+           ELSE
             
             
             

@@ -122,7 +122,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			},
 			type:'ComboBox',
 			bottom_filter: true,
-			filters:{pfiltro:'tp.codigo#tp.nombre',type:'string'},
+			filters:{pfiltro:'cp.codigo_categoria#cp.descripcion',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -150,6 +150,51 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 	       		grid:true,
 	       		form:true
 	    },
+		{
+			config:{
+				name: 'id_categoria_prog',
+				fieldLabel: 'Categoria Programatica',
+				qtip: 'la categoria programatica permite la integración de reportes para sigma',
+				allowBlank: true,
+				emptyText : '...',
+				store : new Ext.data.JsonStore({
+							url:'../../sis_presupuestos/control/CategoriaProgramatica/listarCategoriaProgramatica',
+							id : 'id_categoria_programatica',
+							root: 'datos',
+							sortInfo:{
+									field: 'codigo_categoria',
+									direction: 'ASC'
+							},
+							totalProperty: 'total',
+							fields: ['codigo_categoria','id_categoria_programatica','descripcion'],
+							remoteSort: true,
+							baseParams:{par_filtro:'descripcion#codigo_categoria'}
+				}),
+			   valueField: 'id_categoria_programatica',
+			   displayField: 'codigo_categoria',
+			   gdisplayField: 'codigo_categoria',
+			   hiddenName: 'id_categoria_prog',
+			   forceSelection:true,
+			   typeAhead: true,
+			   triggerAction: 'all',
+			   lazyRender:true,
+			   mode:'remote',
+			   pageSize:10,
+			   queryDelay:1000,
+			   width: 150,
+			   listWidth: 280,
+			   gwidth: 150,
+			   minChars:2,
+			   tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo_categoria}</p><p>{descripcion}</p> </div></tpl>',
+		       renderer:function(value, p, record){return String.format('{0}', record.data['codigo_categoria']);}
+			},
+			type:'ComboBox',
+			bottom_filter: true,
+			filters:{pfiltro:'codigo_categoria',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:true
+		},
 		{
 			config:{
 				name: 'nro_tramite',
@@ -314,15 +359,24 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{ name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
 		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres',
-		'id_gestion','obs_wf','sw_consolidado'
+		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog'
 		
 	],
+	
 	
 	sortInfo:{
 		field: 'id_presupuesto',
 		direction: 'ASC'
 	},
 	
+	
+	onButtonEdit : function () {
+        var rec=this.sm.getSelected();
+        Phx.vista.Presupuesto.superclass.onButtonEdit.call(this); 
+        this.Cmp.id_categoria_prog.store.baseParams.id_gestion = rec.data.id_gestion;  
+        this.Cmp.id_categoria_prog.modificado = true; 
+        		   
+    },  
 	
     
 	fin_registro: function(a,b,forzar_fin, paneldoc){                   

@@ -66,7 +66,7 @@ class ACTPresupuesto extends ACTbase{
 		}
 		
 		if($this->objParam->getParametro('codigos_tipo_pres')!=''){
-	    	$this->objParam->addFiltro("(tipo_pres::integer in (".$this->objParam->getParametro('codigos_tipo_pres').") or pre.tipo_pres is null or pre.tipo_pres = '''')");	
+	    	$this->objParam->addFiltro("(tipo_pres::integer in (".$this->objParam->getParametro('codigos_tipo_pres').") or tipo_pres is null or tipo_pres = '''')");	
 		}
 		
 		if($this->objParam->getParametro('movimiento_tipo_pres')!=''){
@@ -88,6 +88,23 @@ class ACTPresupuesto extends ACTbase{
 			$this->objFunc=$this->create('MODPresupuesto');	
 			$this->res=$this->objFunc->listarPresupuestoCmb();
 		}
+
+       if($this->objParam->getParametro('_adicionar')!=''){
+		    
+			$respuesta = $this->res->getDatos();
+			
+			array_unshift ( $respuesta, array(  'id_presupuesto'=>'0',
+		                                'codigo_cc'=>'Todos',
+									    'descripcion'=>'Todos',
+										'desc_tipo_presupuesto'=>'Todos',
+										'estado'=>'Todos',
+										'desc_tipo_presupuesto'=>'Todos',
+										'movimiento_tipo_pres'=>'Todos',
+										'tipo'=>'Todos'));
+		    //var_dump($respuesta);
+			$this->res->setDatos($respuesta);
+		}
+
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 				

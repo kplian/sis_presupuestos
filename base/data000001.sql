@@ -333,3 +333,21 @@ select wf.f_import_testructura_estado ('insert','revision','aprobado','AJUSTE',1
 /*******************************************F-DAT-RAC-PRE-0-13/04/2016***********************************************/
 
 
+
+/*******************************************I-DAT-RAC-PRE-0-21/04/2016***********************************************/
+
+
+select param.f_import_tcatalogo_tipo ('insert','unidad_medida','PRE','tmemoria_calculo');
+select param.f_import_tcatalogo ('insert','PRE','unidad','unidad','unidad_medida');
+select param.f_import_tcatalogo ('insert','PRE','meses','meses','unidad_medida');
+select param.f_import_tcatalogo ('insert','PRE','global','global','unidad_medida');
+select param.f_import_tcatalogo ('insert','PRE','pieza','pieza','unidad_medida');
+
+
+
+/*******************************************F-DAT-RAC-PRE-0-21/04/2016***********************************************/
+
+
+
+
+

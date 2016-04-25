@@ -136,7 +136,9 @@ BEGIN
                               tp.movimiento as movimiento_tipo_pres,
                               vcc.id_gestion,
                               ewf.obs::varchar as obs_wf,
-                              pre.sw_consolidado
+                              pre.sw_consolidado,
+                              pre.id_categoria_prog,
+                              cp.codigo_categoria
 						from pre.tpresupuesto pre
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
                         '||v_join_ewf||' join wf.testado_wf ewf on ewf.id_estado_wf = pre.id_estado_wf
@@ -144,6 +146,7 @@ BEGIN
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
 				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
+                        left join pre.vcategoria_programatica cp on cp.id_categoria_programatica = pre.id_categoria_prog
                         where  ' ||v_filadd;
                        
 			
@@ -236,6 +239,7 @@ BEGIN
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
 				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
+                        left join pre.vcategoria_programatica cp on cp.id_categoria_programatica = pre.id_categoria_prog
                         where  ' ||v_filadd;
 			
 			--Definicion de la respuesta		    

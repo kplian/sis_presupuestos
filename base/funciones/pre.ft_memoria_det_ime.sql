@@ -80,7 +80,10 @@ BEGIN
               fecha_mod = now(),
               id_usuario_mod = p_id_usuario,
               id_usuario_ai = v_parametros._id_usuario_ai,
-              usuario_ai = v_parametros._nombre_usuario_ai
+              usuario_ai = v_parametros._nombre_usuario_ai,
+              cantidad_mem = v_parametros.cantidad_mem,
+              unidad_medida = v_parametros.unidad_medida,
+              importe_unitario = v_parametros.importe_unitario
 			where id_memoria_det = v_parametros.id_memoria_det;
             
             

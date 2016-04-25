@@ -110,6 +110,48 @@ class MODMemoriaCalculo extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+	
+	function listarRepMemoriaCalculo(){
+		  //Definicion de variables para ejecucion del procedimientp
+		  $this->procedimiento='pre.ft_memoria_calculo_sel';
+		  $this->transaccion='PRE_MEMCAL_REP';
+		  $this->tipo_procedimiento='SEL';//tipo de transaccion
+		  $this->setCount(false);	
+		
+		  //captura parametros adicionales para el count
+		  $this->setParametro('id_cp_programa','id_cp_programa','int4');
+		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+		  $this->setParametro('id_presupuesto','id_presupuesto','int4');
+		  $this->setParametro('id_gestion','id_gestion','int4');
+		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+		  $this->setParametro('id_partida','id_partida','int4');
+		
+		  //Definicion de la lista del resultado del query
+		 $this->captura('id_concepto','int4');
+         $this->captura('concepto','VARCHAR');
+		 
+		 $this->captura('id_concepto_ingas','int4');
+         $this->captura('id_partida','int4');
+         $this->captura('codigo_partida','varchar');
+         $this->captura('nombre_partida','varchar');
+         $this->captura('desc_ingas','varchar');
+         $this->captura('justificacion','varchar');
+         $this->captura('unidad_medida','varchar');
+         $this->captura('importe_unitario','NUMERIC');
+         $this->captura('cantidad_mem','NUMERIC');
+         $this->captura('importe','NUMERIC');
+		  
+		              
+		
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 }
 ?>

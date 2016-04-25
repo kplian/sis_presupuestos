@@ -158,7 +158,7 @@ BEGIN
     
     /*********************************    
  	#TRANSACCION:  'PRE_CONREL_IME'
- 	#DESCRIPCION:	Consolida presupeustos no oficiales
+ 	#DESCRIPCION:	Consolida presupuestos no oficiales
  	#AUTOR:		rac (KPLIAN)	
  	#FECHA:		18-04-2016 13:18:06
 	***********************************/
@@ -187,7 +187,8 @@ BEGIN
   			
              
               --listar todas las memorias de calculo del presupuesto hijo
-             FOR v_registros_mem in ( select
+             FOR v_registros_mem in ( 
+               select
                  mc.id_memoria_calculo,
                  mc.id_concepto_ingas,
                  mc.importe_total,
@@ -264,10 +265,14 @@ BEGIN
                      
                     
                        --inserta el detalle de la memoria de calculo
-                      FOR v_registros_memdet in ( select
+                      FOR v_registros_memdet in ( 
+                         select
                            md.id_memoria_det,
                            md.id_periodo,
-                           md.importe
+                           md.importe,
+                           md.cantidad_mem,
+                           md.importe_unitario,
+                           md.unidad_medida
                          from pre.tmemoria_det md
                          where  md.id_memoria_calculo = v_registros_mem.id_memoria_calculo
                                 and md.estado_reg = 'activo' ) LOOP
@@ -281,7 +286,10 @@ BEGIN
                                 usuario_ai,
                                 fecha_reg,
                                 id_usuario_reg,
-                                id_usuario_ai
+                                id_usuario_ai,
+                                cantidad_mem,
+                                importe_unitario,
+                                unidad_medid
                               ) 
                               values
                               (
@@ -292,7 +300,10 @@ BEGIN
                                 v_parametros._nombre_usuario_ai,
                                 now(),
                                 p_id_usuario,
-                                v_parametros._id_usuario_ai);
+                                v_parametros._id_usuario_ai,
+                                v_registros_memdet.cantidad_mem,
+                                v_registros_memdet.importe_unitario,
+                                v_registros_memdet.unidad_medid);
                            
                     
                       END LOOP; 

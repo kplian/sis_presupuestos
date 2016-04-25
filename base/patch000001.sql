@@ -623,4 +623,105 @@ IS 'hace referencia al la relacion de consolidado desde la que se origino la mem
 /*****************************F-SCP-RAC-PRE-0-18/04/2016*************/
 
 
+/*****************************I-SCP-RAC-PRE-0-19/04/2016*************/
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tcp_programa (
+  id_cp_programa SERIAL NOT NULL,
+  codigo VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  id_gestion INTEGER,
+  PRIMARY KEY(id_cp_programa)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tcp_proyecto (
+  id_cp_proyecto SERIAL NOT NULL,
+  codigo VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  id_gestion INTEGER,
+  codigo_sisin VARCHAR(100) NOT NULL,
+  PRIMARY KEY(id_cp_proyecto)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+--------------- SQL ---------------
+
+CREATE TABLE pre.tcp_actividad (
+  id_cp_actividad SERIAL NOT NULL,
+  codigo VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  id_gestion INTEGER,
+  PRIMARY KEY(id_cp_actividad)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+CREATE TABLE pre.tcp_fuente_fin (
+  id_cp_fuente_fin SERIAL NOT NULL,
+  codigo VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  id_gestion INTEGER,
+  PRIMARY KEY(id_cp_fuente_fin)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+
+CREATE TABLE pre.tcp_organismo_fin (
+  id_cp_organismo_fin SERIAL NOT NULL,
+  codigo VARCHAR(100) NOT NULL,
+  descripcion VARCHAR(500) NOT NULL,
+  id_gestion INTEGER,
+  PRIMARY KEY(id_cp_organismo_fin)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+
+
+--------------- SQL ---------------
+ALTER TABLE pre.tcategoria_programatica
+  ADD COLUMN id_cp_programa INTEGER;
+ALTER TABLE pre.tcategoria_programatica
+  ADD COLUMN id_cp_proyecto INTEGER;
+ALTER TABLE pre.tcategoria_programatica
+  ADD COLUMN id_cp_actividad INTEGER;
+ALTER TABLE pre.tcategoria_programatica
+  ADD COLUMN id_cp_fuente_fin INTEGER;
+ALTER TABLE pre.tcategoria_programatica
+  ADD COLUMN id_cp_organismo_fin INTEGER;
+
+/*****************************F-SCP-RAC-PRE-0-19/04/2016*************/
+
+
+/*****************************I-SCP-RAC-PRE-0-20/04/2016*************/
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_det
+  ADD COLUMN unidad_medida VARCHAR(300) DEFAULT 'meses' NOT NULL;
+
+COMMENT ON COLUMN pre.tmemoria_det.unidad_medida
+IS 'unidad de medida variable, revisar catologo para ver posibles valores';
+
+--------------- SQL ---------------
+ALTER TABLE pre.tmemoria_det
+  ADD COLUMN cantidad_mem NUMERIC(18,2) DEFAULT 1 NOT NULL;
+
+
+ALTER TABLE pre.tmemoria_det
+  ADD COLUMN importe_unitario NUMERIC(18,2) DEFAULT 0 NOT NULL;
+
+/*****************************F-SCP-RAC-PRE-0-20/04/2016*************/
 

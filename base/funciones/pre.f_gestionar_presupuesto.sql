@@ -373,7 +373,7 @@ BEGIN
                
                
                      -- raise exception '- % , % , % , % -',v_sw_momento,  p_id_partida_ejecucion[v_cont], p_id_partida[v_cont],p_monto_total[v_cont];
-                     raise exception ' % ',v_resultado_ges;
+                    --raise exception ' % ',v_resultado_ges;
                   
                     IF v_resultado_ges[4] is not null and  v_resultado_ges[4] = 1  THEN
                         raise exception 'el presupuesto no alcanza por diferencia cambiaria, en moneda base tenemos:  % ',v_resultado_ges[3];
@@ -388,7 +388,7 @@ BEGIN
                    
                END IF;
                
-               v_array_resp[v_cont] =  v_resultado_ges[2]; --resultado de array
+               v_array_resp[v_cont] =  v_resultado_ges[2]; -- resultado de array
                
                
       

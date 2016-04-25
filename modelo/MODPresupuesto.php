@@ -44,7 +44,9 @@ class MODPresupuesto extends MODbase{
 		$this->captura('movimiento_tipo_pres','varchar');
 		$this->captura('id_gestion','int4');
 		$this->captura('obs_wf','varchar');
-		$this->captura('sw_consolidado','VARCHAR');
+		$this->captura('sw_consolidado','VARCHAR');		
+		$this->captura('id_categoria_prog','int4');
+		$this->captura('codigo_categoria','varchar');
 		
 		
 		
@@ -139,6 +141,7 @@ class MODPresupuesto extends MODbase{
 		$this->setParametro('tipo_pres','tipo_pres','varchar');
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('sw_consolidado','sw_consolidado','varchar');
+		$this->setParametro('id_categoria_prog','id_categoria_prog','int4');
 		
 
 		//Ejecuta la instruccion

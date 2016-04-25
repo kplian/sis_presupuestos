@@ -29,6 +29,10 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
+    v_filtro			varchar;
+    v_ordenacion		varchar;
+    v_titulares			varchar;
+    v_grupos			varchar;
 			    
 BEGIN
 
@@ -116,7 +120,121 @@ BEGIN
 
 		end;
 					
-	else
+	/*********************************    
+ 	#TRANSACCION:  'PRE_MEMCAL_REP'
+ 	#DESCRIPCION:	Consulta de datos para reporte de memoria
+ 	#AUTOR:		RAC (KPLIAN)	
+ 	#FECHA:		22-04-2016 14:22:24
+	***********************************/
+
+	elseif(p_transaccion='PRE_MEMCAL_REP')then
+     				
+    	begin
+        
+           v_filtro = ' id_gestion =  '||v_parametros.id_gestion;
+           v_ordenacion = '';
+           v_titulares = '';
+           v_grupos = '';
+           
+            IF v_parametros.id_partida != 0 and v_parametros.id_partida is not null THEN
+                v_filtro = v_filtro||'  and id_partida = '||v_parametros.id_partida;
+            END IF;
+            
+            --filtro de por tipo de presupeustos
+            v_filtro = v_filtro||'  and codigo_tipo_pres::integer in ('||v_parametros.tipo_pres||')';
+            
+           
+            
+            IF v_parametros.tipo_reporte = 'presupuesto'  THEN
+                 
+                 IF  v_parametros.id_presupuesto != 0 and v_parametros.id_presupuesto is not null THEN
+                    v_filtro = v_filtro||' and id_presupuesto = '||v_parametros.id_presupuesto;
+                 END IF;              
+            
+                v_titulares = 'id_presupuesto as id_concepto,
+                               codigo_cc::varchar as concepto,';
+                
+                v_grupos = 'id_presupuesto,
+                               codigo_cc,';
+                v_ordenacion = 'id_presupuesto asc,';
+            
+            
+            ELSEIF v_parametros.tipo_reporte = 'categoria'  THEN
+                
+                IF  v_parametros.id_categoria_programatica != 0 and v_parametros.id_categoria_programatica is not null THEN
+                    v_filtro = v_filtro||' and id_categoria_programatica = '||v_parametros.id_categoria_programatica;
+                 END IF;              
+            
+                v_titulares = 'id_categoria_programatica as id_concepto,
+                               codigo_categoria::varchar as concepto,';
+                v_grupos = 'id_categoria_programatica,
+                					codigo_categoria,';
+                v_ordenacion = 'id_categoria_programatica asc,';
+                 
+            
+            ELSEIF v_parametros.tipo_reporte = 'programa'  THEN
+            
+                 IF  v_parametros.id_cp_programa != 0 and v_parametros.id_cp_programa is not null THEN
+                    v_filtro = v_filtro||' and id_cp_programa = '||v_parametros.id_cp_programa;
+                 END IF;
+                 
+                        
+            
+                v_titulares = 'id_cp_programa as id_concepto,
+                               desc_programa::varchar as concepto,';
+                v_grupos = 'id_cp_programa,
+                				desc_programa,';
+                v_ordenacion = 'id_cp_programa asc,';
+            
+            END IF;
+           
+        
+    		--Sentencia de la consulta
+			v_consulta:='SELECT 
+                            '||v_titulares||'                      
+                            
+                            id_concepto_ingas,
+                            id_partida,
+                            codigo_partida,
+                            nombre_partida,
+                            desc_ingas,
+                            justificacion,
+                            unidad_medida,
+                            importe_unitario,
+                            cantidad_mem,
+                            importe
+                          FROM 
+                            pre.vmemoria_por_categoria
+                          WHERE '||v_filtro||'
+                          group by
+                              
+                              '||v_grupos||'
+                                   
+                              id_concepto_ingas,
+                              id_partida,
+                              codigo_partida,
+                              nombre_partida,
+                              desc_ingas,
+                              justificacion,
+                              unidad_medida,
+                              importe_unitario,
+                              cantidad_mem,
+                              importe 
+                          
+                          order by  
+                               
+                              '||v_ordenacion||'     
+                              codigo_partida asc ';
+			
+			raise notice '.. % ..', v_consulta;
+			 --  Devuelve la respuesta
+			return v_consulta;
+						
+		end;
+    
+    
+    
+    else
 					     
 		raise exception 'Transaccion inexistente';
 					         
