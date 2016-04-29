@@ -9,9 +9,31 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
+Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
 		
 		Atributos : [
+		
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'concepto'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'categoria'
+			},
+			type:'Field',
+			form:true 
+		},
+		
 		{
             config:{
                 name:'id_gestion',
@@ -100,35 +122,26 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
                     },
             form:true
         },
+        
+        {
+   			config:{
+   				sysorigen:'sis_presupuestos',
+       		    name:'id_partida',
+   				origen:'PARTIDA',
+   				allowBlank:true,
+   				fieldLabel:'Partida',
+   				gdisplayField:'desc_partida',//mapea al store del grid
+   				baseParams: {_adicionar:'si',sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
+   				anchor: '100%',
+   				listWidth: 350
+       	     },
+   			type:'ComboRec',
+   			id_grupo:0,
+   			form:true
+	   	},
 		
 		
-		{
-			config:{
-				name:'tipo_reporte',
-				fieldLabel:'Filtrar por',
-				typeAhead: true,
-				allowBlank:false,
-	    		triggerAction: 'all',
-	    		emptyText:'Tipo...',
-	    		selectOnFocus:true,
-				mode:'local',
-				store:new Ext.data.ArrayStore({
-	        	fields: ['ID', 'valor'],
-	        	data :	[
-		        	        ['programa','Programa'],
-		        	        ['categoria','Categoría Programática'],	
-							['presupuesto','Presupuesto']
-						]	        				
-	    		}),
-				valueField:'ID',
-				displayField:'valor',
-				width:250,			
-				
-			},
-			type:'ComboBox',
-			id_grupo:1,
-			form:true
-		},
+		
 		{
 			config:{
 				name: 'id_categoria_programatica',
@@ -166,74 +179,10 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			id_grupo:1,
 			form:true
 		},
-		{
-            config:{
-            	sysorigen: 'sis_presupuestos',
-                name: 'id_presupuesto',
-                fieldLabel: 'Presupuesto',
-                allowBlank: true,
-                tinit: false,
-                baseParams: {_adicionar:'si'},
-                origen: 'PRESUPUESTO',
-                width: 350,
-   				listWidth: 350
-            },
-            type: 'ComboRec',
-            id_grupo: 0,
-            form: true
-        },
 		
-		{
-			
-			config: {
-				name: 'id_cp_programa',
-				fieldLabel: 'Programa',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_presupuestos/control/CpPrograma/listarCpPrograma',
-					id: 'id_cp_programa',
-					root: 'datos',
-					sortInfo: {field: 'codigo',direction: 'ASC'},
-					totalProperty: 'total',
-					fields: ['id_cp_programa', 'descripcion', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'codigo#descripcion',_adicionar:'si'}
-				}),
-				valueField: 'id_cp_programa',
-				displayField: 'descripcion',
-				gdisplayField: 'desc_programa',
-				hiddenName: 'id_cp_programa',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				minChars: 2,
-				tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo}-{descripcion}</p> </div></tpl>'
-			},
-			type: 'ComboBox',
-			form: true
-		},
-	   	{
-   			config:{
-   				sysorigen:'sis_presupuestos',
-       		    name:'id_partida',
-   				origen:'PARTIDA',
-   				allowBlank:true,
-   				fieldLabel:'Partida',
-   				gdisplayField:'desc_partida',//mapea al store del grid
-   				baseParams: {_adicionar:'si',sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
-   				anchor: '100%',
-   				listWidth: 350
-       	     },
-   			type:'ComboRec',
-   			id_grupo:0,
-   			form:true
-	   	},
+		
+		
+	   	
 		{
 			config:{
 				name:'formato_reporte',
@@ -257,7 +206,31 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			type:'ComboBox',
 			id_grupo:1,
 			form:true
-		}],
+		},
+		{
+				config:{
+					name: 'fecha_ini',
+					fieldLabel: 'Desde',
+					allowBlank: true,
+					format: 'd/m/Y',
+					width: 150
+				},
+				type: 'DateField',
+				id_grupo: 0,
+				form: true
+		  },
+		  {
+				config:{
+					name: 'fecha_fin',
+					fieldLabel: 'Hasta',
+					allowBlank: true,
+					format: 'd/m/Y',
+					width: 150
+				},
+				type: 'DateField',
+				id_grupo: 0,
+				form: true
+		  }],
 		
 		
 		title : 'Reporte Libro Compras Ventas IVA',		
@@ -269,13 +242,8 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 		tooltipSubmit : '<b>Reporte Proyecto Presupeustario</b>',
 		
 		constructor : function(config) {
-			Phx.vista.FormRepMemoria.superclass.constructor.call(this, config);
+			Phx.vista.FormRepEjecucionPorPartida.superclass.constructor.call(this, config);
 			this.init();
-			
-			this.ocultarComponente(this.Cmp.id_categoria_programatica);
-			this.ocultarComponente(this.Cmp.id_presupuesto);
-			this.ocultarComponente(this.Cmp.id_cp_programa);
-						
 			this.iniciarEventos();
 		},
 		
@@ -287,62 +255,42 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 					this.Cmp.id_categoria_programatica.store.baseParams.id_gestion =c.value;				
 					this.Cmp.id_categoria_programatica.modificado=true;
 					
-					this.Cmp.id_presupuesto.reset();
-					this.Cmp.id_presupuesto.store.baseParams.id_gestion = c.value;				
-					this.Cmp.id_presupuesto.modificado=true;
-					
-					this.Cmp.id_cp_programa.reset();
-					this.Cmp.id_cp_programa.store.baseParams.id_gestion = c.value;				
-					this.Cmp.id_cp_programa.modificado=true;
-					
-					
 					this.Cmp.id_partida.reset();
 					this.Cmp.id_partida.store.baseParams.id_gestion = c.value;				
 					this.Cmp.id_partida.modificado=true;
 					
+					this.Cmp.fecha_ini.setValue('01/01/'+r.data.gestion);
+					this.Cmp.fecha_fin.setValue('31/12/'+r.data.gestion);
+					
+				
+				
+			},this);
+			
+			this.Cmp.id_partida.on('select',function(c,r,n){
+				 
+				 if (r.data.nombre_partida == 'Todos'){
+				 	this.Cmp.concepto.setValue('Todas');
+				 }
+				 else{
+				 	this.Cmp.concepto.setValue('('+r.data.codigo +') '+r.data.nombre_partida);
+				 }
+				 
+				
+			},this);
+			
+			this.Cmp.id_categoria_programatica.on('select',function(c,r,n){
+				 
+				 if (r.data.codigo_categoria == 'Todos'){
+				 	this.Cmp.categoria.setValue('Todas');
+				 }
+				 else{
+				 	this.Cmp.categoria.setValue(r.data.codigo_categoria);
+				 }
+				 
 				
 			},this);
 			
 			
-			this.Cmp.tipo_reporte.on('select',function(combo, record, index){
-				console.log(record, index)
-				
-				this.Cmp.id_categoria_programatica.reset();
-				this.Cmp.id_presupuesto.reset();
-				this.Cmp.id_cp_programa.reset();
-				
-				console.log('--->',record.data.ID)
-				if(record.data.ID == 'programa'){
-					this.ocultarComponente(this.Cmp.id_categoria_programatica);
-					this.ocultarComponente(this.Cmp.id_presupuesto);
-					this.mostrarComponente(this.Cmp.id_cp_programa);
-					
-				}
-				
-				if(record.data.ID == 'categoria'){
-					this.mostrarComponente(this.Cmp.id_categoria_programatica);
-					this.ocultarComponente(this.Cmp.id_presupuesto);
-					this.ocultarComponente(this.Cmp.id_cp_programa);
-					
-				}
-				
-				if(record.data.ID == 'presupuesto'){
-					this.ocultarComponente(this.Cmp.id_categoria_programatica);
-					this.mostrarComponente(this.Cmp.id_presupuesto);
-					this.ocultarComponente(this.Cmp.id_cp_programa);
-					
-				}
-				
-				
-			}, this);
-			
-			this.Cmp.tipo_pres.on('change',function(){
-				 
-				  this.Cmp.id_presupuesto.reset();
-				  this.Cmp.id_presupuesto.store.baseParams.codigos_tipo_pres = this.Cmp.tipo_pres.getValue();				
-				  this.Cmp.id_presupuesto.modificado = true; 
-				   
-			}, this);
 			
 		
 		},
@@ -367,10 +315,10 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			}]
 		}],
 		
-	ActSave:'../../sis_presupuestos/control/MemoriaCalculo/reporteMemoriaCalculo',
+	ActSave:'../../sis_presupuestos/control/PresupPartida/reporteEjecucionPorPartida',
 	
 	onSubmit: function(o, x, force){
-		Phx.vista.FormRepMemoria.superclass.onSubmit.call(this,o, x, force);
+		Phx.vista.FormRepEjecucionPorPartida.superclass.onSubmit.call(this,o, x, force);
 	},
 	
 	successSave :function(resp){

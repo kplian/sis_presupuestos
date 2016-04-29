@@ -350,4 +350,66 @@ select param.f_import_tcatalogo ('insert','PRE','pieza','pieza','unidad_medida')
 
 
 
+/*******************************************I-DAT-RAC-PRE-0-27/04/2016***********************************************/
+
+----------------------------------
+--COPY LINES TO data.sql FILE  
+---------------------------------
+
+select pxp.f_insert_tgui ('<i class="fa fa-line-chart fa-2x"></i> PRESUPUESTOS', '', 'PRE', 'si', 6, '', 1, '', '', 'PRE');
+select pxp.f_insert_tgui ('Catálogos', 'Catálogos varios', 'PRE.1', 'si', 1, '', 2, '', '', 'PRE');
+select pxp.f_insert_tgui ('Presupuestos', 'Presupuestos varios', 'PRE.2', 'si', 2, '', 2, '', '', 'PRE');
+select pxp.f_insert_tgui ('Presupuestos', 'Registro de presupuestos', 'PRE.2.1', 'si', 1, 'sis_presupuestos/vista/presupuesto/PresupuestoInicio.php', 3, '', 'PresupuestoInicio', 'PRE');
+select pxp.f_insert_tgui ('Presupuesto VoBo', 'VoBo de presupuestos', 'PREVB', 'si', 3, 'sis_presupuestos/vista/presupuesto/PresupuestoVb.php', 3, '', 'PresupuestoVb', 'PRE');
+select pxp.f_insert_tgui ('Presupuesto Formulación', 'Formulación de presupuesto ', 'PRESFR', 'si', 2, 'sis_presupuestos/vista/presupuesto/PresupuestoFor.php', 3, '', 'PresupuestoFor', 'PRE');
+select pxp.f_insert_tgui ('Autorización de Presupuesto', 'Autorización de Presupuesto', 'AUTPRE', 'si', 4, 'sis_presupuestos/vista/presupuesto/PresupuestoAprobacion.php', 3, '', 'PresupuestoAprobacion', 'PRE');
+select pxp.f_insert_tgui ('Ajustes Presupuestarios', 'Ajustes al presupuesto', 'AJTPRE', 'si', 1, 'sis_presupuestos/vista/ajuste/AjusteInicio.php', 3, '', 'AjusteInicio', 'PRE');
+select pxp.f_insert_tgui ('Formulación', 'Formulación', 'FORMU', 'si', 1, '', 3, '', '', 'PRE');
+select pxp.f_insert_tgui ('Ajustes', 'Ajustes de presupuesto', 'AJUSTE', 'si', 2, '', 3, '', '', 'PRE');
+select pxp.f_insert_tgui ('VoBo Ajustes', 'VoBo Ajustes', 'VBAJT', 'si', 2, 'sis_presupuestos/vista/ajuste/AjusteVb.php', 4, '', 'AjusteVb', 'PRE');
+select pxp.f_insert_tgui ('Categoría Programatica', 'Categoría Programatica', 'CCTPR', 'si', 20, '', 3, '', '', 'PRE');
+select pxp.f_insert_tgui ('Programa', 'Programa', 'CPP', 'si', 1, 'sis_presupuestos/vista/cp_programa/CpPrograma.php', 4, '', 'CpPrograma', 'PRE');
+select pxp.f_insert_tgui ('Proyecto', 'Proyecto', 'CPPR', 'si', 2, 'sis_presupuestos/vista/cp_proyecto/CpProyecto.php', 4, '', 'CpProyecto', 'PRE');
+select pxp.f_insert_tgui ('Actividad', 'Actividad', 'CPAC', 'si', 3, 'sis_presupuestos/vista/cp_actividad/CpActividad.php', 4, '', 'CpActividad', 'PRE');
+select pxp.f_insert_tgui ('Organismo Financiador', 'Organismo Financiador', 'ORFI', 'si', 4, 'sis_presupuestos/vista/cp_organismo_fin/CpOrganismoFin.php', 4, '', 'CpOrganismoFin', 'PRE');
+select pxp.f_insert_tgui ('Fuentes de Financiamiento', 'Fuentes de Financiamiento', 'CPFF', 'si', 5, 'sis_presupuestos/vista/cp_fuente_fin/CpFuenteFin.php', 4, '', 'CpFuenteFin', 'PRE');
+select pxp.f_insert_tgui ('Categoria Programatica', 'Categoria Programatica', 'CATPRO', 'si', 8, 'sis_presupuestos/vista/categoria_programatica/CategoriaProgramatica.php', 4, '', 'CategoriaProgramatica', 'PRE');
+select pxp.f_insert_tgui ('Reportes', 'Reportes de Presupeustos', 'REPPRE', 'si', 10, '', 2, '', '', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'MEMCAL', 'si', 1, 'sis_presupuestos/vista/memoria_calculo/FormRepMemoria.php', 3, '', 'FormRepMemoria', 'PRE');
+select pxp.f_insert_tgui ('Programación Presupuesto', 'Programación', 'PROGPRE', 'si', 2, 'sis_presupuestos/vista/memoria_calculo/FormRepProgramacion.php', 3, '', 'FormRepProgramacion', 'PRE');
+select pxp.f_insert_tgui ('Ejecución Presupuestaria', 'Ejecución Presupuestaria', 'EJEPRE', 'si', 3, 'sis_presupuestos/vista/presup_partida/FormRepEjecucion.php', 3, '', 'FormRepEjecucion', 'PRE');
+select pxp.f_insert_tgui ('Ejecución por Partida', 'Ejecución por Partida', 'EJEPAR', 'si', 4, 'sis_presupuestos/vista/presup_partida/FormRepEjecucionPorPartida.php', 3, '', 'FormRepEjecucionPorPartida', 'PRE');
+
+----------------------------------
+--COPY LINES TO dependencies.sql FILE  
+---------------------------------
+
+select pxp.f_delete_testructura_gui ('PRE.2.1', 'PRE.2');
+select pxp.f_delete_testructura_gui ('PRESFR', 'PRE.2');
+select pxp.f_delete_testructura_gui ('PREVB', 'PRE.2');
+select pxp.f_delete_testructura_gui ('AUTPRE', 'PRE.2');
+select pxp.f_delete_testructura_gui ('AJTPRE', 'PRE.2');
+select pxp.f_insert_testructura_gui ('FORMU', 'PRE.2');
+select pxp.f_insert_testructura_gui ('PRESFR', 'FORMU');
+select pxp.f_insert_testructura_gui ('PREVB', 'FORMU');
+select pxp.f_insert_testructura_gui ('AUTPRE', 'FORMU');
+select pxp.f_insert_testructura_gui ('AJUSTE', 'PRE.2');
+select pxp.f_insert_testructura_gui ('AJTPRE', 'AJUSTE');
+select pxp.f_insert_testructura_gui ('PRE.2.1', 'FORMU');
+select pxp.f_insert_testructura_gui ('VBAJT', 'AJUSTE');
+select pxp.f_insert_testructura_gui ('CCTPR', 'PRE.1');
+select pxp.f_insert_testructura_gui ('CPP', 'CCTPR');
+select pxp.f_insert_testructura_gui ('CPPR', 'CCTPR');
+select pxp.f_insert_testructura_gui ('CPAC', 'CCTPR');
+select pxp.f_insert_testructura_gui ('ORFI', 'CCTPR');
+select pxp.f_insert_testructura_gui ('CPFF', 'CCTPR');
+select pxp.f_insert_testructura_gui ('CATPRO', 'CCTPR');
+select pxp.f_insert_testructura_gui ('REPPRE', 'PRE');
+select pxp.f_insert_testructura_gui ('MEMCAL', 'REPPRE');
+select pxp.f_insert_testructura_gui ('PROGPRE', 'REPPRE');
+select pxp.f_insert_testructura_gui ('EJEPRE', 'REPPRE');
+select pxp.f_insert_testructura_gui ('EJEPAR', 'REPPRE');
+
+/*******************************************F-DAT-RAC-PRE-0-27/04/2016***********************************************/
+
 

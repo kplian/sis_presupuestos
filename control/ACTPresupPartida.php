@@ -6,7 +6,11 @@
 *@date 29-02-2016 19:40:34
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-
+require_once(dirname(__FILE__).'/../../pxp/pxpReport/DataSource.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucion.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionXls.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionPorPartida.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionPorPartidaXls.php');
 class ACTPresupPartida extends ACTbase{    
 			
 	function listarPresupPartida(){
@@ -138,6 +142,150 @@ class ACTPresupPartida extends ACTbase{
 		
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+	function recuperarDatosGestion(){    	
+		$this->objFunc = $this->create('sis_parametros/MODGestion');
+		$cbteHeader = $this->objFunc->obtenerGestionById($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){				
+			return $cbteHeader;
+		}
+        else{
+		    $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}              
+		
+    }
+
+    function recuperarDatosEmpresa(){    	
+		$this->objFunc = $this->create('sis_parametros/MODEmpresa');
+		$cbteHeader = $this->objFunc->getEmpresa($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){				
+			return $cbteHeader;
+		}
+        else{
+		    $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}              
+	}
+
+	function recuperarEjecucion(){    	
+		$this->objFunc = $this->create('MODPresupPartida');
+		$cbteHeader = $this->objFunc->listarRepEjecucion($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){				
+			return $cbteHeader;
+		}
+        else{
+		    $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}              
+		
+    }
+
+    function reporteEjecucion(){
+		
+			    if($this->objParam->getParametro('formato_reporte')=='pdf'){
+					$nombreArchivo = 'Ejecucion'.uniqid(md5(session_id())).'.pdf'; 
+				}
+				else{
+					$nombreArchivo = 'Ejecucion'.uniqid(md5(session_id())).'.xls'; 
+				}
+				
+				$dataSource = $this->recuperarEjecucion();
+				$dataGestion = $this->recuperarDatosGestion();
+				$dataEmpresa = $this->recuperarDatosEmpresa();
+				
+				
+				//parametros basicos
+				$tamano = 'LETTER';
+				$orientacion = 'L';
+				$titulo = 'Consolidado';
+				
+				
+				$this->objParam->addParametro('orientacion',$orientacion);
+				$this->objParam->addParametro('tamano',$tamano);		
+				$this->objParam->addParametro('titulo_archivo',$titulo);        
+				$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+				
+				//Instancia la clase de pdf
+				if($this->objParam->getParametro('formato_reporte')=='pdf'){
+				    $reporte = new REjecucion($this->objParam);
+					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+				    $reporte->generarReporte();
+				    $reporte->output($reporte->url_archivo,'F');  
+				}
+				else{
+					$reporte = new REjecucionXls($this->objParam); 
+					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+				    $reporte->generarReporte(); 
+				}
+		         
+				
+				
+				$this->mensajeExito=new Mensaje();
+				$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+				$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+				$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+		
+	}
+
+   function recuperarEjecucionPorPartida(){    	
+		$this->objFunc = $this->create('MODPresupPartida');
+		$cbteHeader = $this->objFunc->listarRepEjecucionPorPartida($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){				
+			return $cbteHeader;
+		}
+        else{
+		    $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}              
+		
+    }
+
+   function reporteEjecucionPorPartida(){
+		
+			    if($this->objParam->getParametro('formato_reporte')=='pdf'){
+					$nombreArchivo = 'EjecucionPorPartida'.uniqid(md5(session_id())).'.pdf'; 
+				}
+				else{
+					$nombreArchivo = 'EjecucionPorPartida'.uniqid(md5(session_id())).'.xls'; 
+				}
+				
+				$dataSource = $this->recuperarEjecucionPorPartida();
+				$dataGestion = $this->recuperarDatosGestion();
+				$dataEmpresa = $this->recuperarDatosEmpresa();
+				
+				
+				//parametros basicos
+				$tamano = 'LETTER';
+				$orientacion = 'L';
+				$titulo = 'Consolidado';
+				
+				
+				$this->objParam->addParametro('orientacion',$orientacion);
+				$this->objParam->addParametro('tamano',$tamano);		
+				$this->objParam->addParametro('titulo_archivo',$titulo);        
+				$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+				
+				//Instancia la clase de pdf
+				if($this->objParam->getParametro('formato_reporte')=='pdf'){
+				    $reporte = new REjecucionPorPartida($this->objParam);
+					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+				    $reporte->generarReporte();
+				    $reporte->output($reporte->url_archivo,'F');  
+				}
+				else{
+					$reporte = new REjecucionPorPartidaXls($this->objParam); 
+					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+				    $reporte->generarReporte(); 
+				}
+		         
+				$this->mensajeExito=new Mensaje();
+				$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+				$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+				$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+		
+	}
+	
 			
 }
 

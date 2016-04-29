@@ -117,7 +117,7 @@ Phx.vista.TipoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 	       		id_grupo:0,
 	       		filters:{	
 	       		         type: 'list',
-	       		         pfiltro:'tipr.sw_oficial'
+	       		         pfiltro:'tipr.sw_oficial',
 	       				 options: ['si','no']
 	       		 	},
 	       		grid:true,

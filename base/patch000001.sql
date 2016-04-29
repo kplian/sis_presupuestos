@@ -722,6 +722,14 @@ ALTER TABLE pre.tmemoria_det
 
 ALTER TABLE pre.tmemoria_det
   ADD COLUMN importe_unitario NUMERIC(18,2) DEFAULT 0 NOT NULL;
+  
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD COLUMN id_partida INTEGER;
+
+COMMENT ON COLUMN pre.tmemoria_calculo.id_partida
+IS 'se llena con el triguer de memoria de calculo';  
 
 /*****************************F-SCP-RAC-PRE-0-20/04/2016*************/
 

@@ -358,21 +358,19 @@ class RMemoriaCalculo extends  ReportePDF {
   }
 
   function cerrarCuadroTotal(){
-  	
-	   
-	   	    //si noes inicio termina el cuardro anterior
-	   	  
-			$this->tablewidths=array(10+30+80+15+20+15,25);
-	        $this->tablealigns=array('C','R');
-	        $this->tablenumbers=array(0,2);	
-	        $this->tableborders=array('TB','LRTB');
-	        $this->SetFont('','B',10);
-	        $RowArray = array( 
-	                    'espacio' => 'TOTAL GENERAL: ',
-	                    'tg1' => $this->tg1
-	                  );     
-	                     
-	        $this-> MultiRow($RowArray,false,1);
+   	    	
+   	    //si noes inicio termina el cuardro anterior	   	  
+		$this->tablewidths=array(10+30+80+15+20+15,25);
+        $this->tablealigns=array('C','R');
+        $this->tablenumbers=array(0,2);	
+        $this->tableborders=array('TB','LRTB');
+        $this->SetFont('','B',10);
+        $RowArray = array( 
+                    'espacio' => 'TOTAL GENERAL: ',
+                    'tg1' => $this->tg1
+                  );     
+                     
+        $this-> MultiRow($RowArray,false,1);
 	
   }
   

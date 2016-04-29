@@ -26,6 +26,19 @@ class ACTCpPrograma extends ACTbase{
 			
 			$this->res=$this->objFunc->listarCpPrograma($this->objParam);
 		}
+		
+		if($this->objParam->getParametro('_adicionar')!=''){
+		    
+			$respuesta = $this->res->getDatos();
+			
+										
+		    array_unshift ( $respuesta, array(  'id_cp_programa'=>'0',
+		                                'descripcion'=>'Todos',
+									    'codigo'=>'Todos'));
+		    //var_dump($respuesta);
+			$this->res->setDatos($respuesta);
+		}
+		
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 				

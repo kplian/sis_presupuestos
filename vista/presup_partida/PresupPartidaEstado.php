@@ -124,6 +124,28 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'ajustado',
+				fieldLabel: 'Ajustes',
+				gwidth: 100,
+				sortable: false,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', value);
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', value);
+						}
+						
+					}
+			},
+				type: 'NumberField',
+				//filters: { pfiltro:'prpa.formulado', type: 'numeric' },
+				id_grupo: 1,
+				grid: true,
+				form: false
+		},
+		{
+			config:{
 				name: 'formulado',
 				fieldLabel: 'Vigente',
 				gwidth: 100,
@@ -202,6 +224,30 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 			},
 				type: 'NumberField',
 				filters: { pfiltro:'prpa.pagado', type: 'numeric' },
+				id_grupo: 1,
+				grid: true,
+				form: false
+		},
+		{
+			config:{
+				name: 'porc_ejecucion',
+				fieldLabel: '% Ejecución',
+				gwidth: 100,
+				sortable: false,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0} %', Math.round(value*100)/100);
+						}
+						else{
+							
+							var tmp = (record.data['ejecutado'] /record.data['formulado'])*100
+							
+							return  String.format('<b><font size=2 >{0} %</font><b>', Math.round(tmp*100)/100);
+						}
+						
+					}
+			},
+				type: 'NumberField',
 				id_grupo: 1,
 				grid: true,
 				form: false
@@ -339,7 +385,7 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},'desc_partida','desc_gestion','importe_aprobado','tipo_reg',
-		'formulado','comprometido','ejecutado','pagado'
+		'formulado','comprometido','ejecutado','pagado','ajustado','porc_ejecucion'
 		
 	],
 	
@@ -354,6 +400,9 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 		field: 'id_presup_partida',
 		direction: 'ASC'
 	},
+	
+	
+
 	bdel: false,
 	bedit: false,
 	bsave: false,

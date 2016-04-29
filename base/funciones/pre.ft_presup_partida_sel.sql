@@ -139,7 +139,14 @@ BEGIN
                           formulado,
                           comprometido,
                           ejecutado,
-                          pagado
+                          pagado,
+                          (formulado - importe_aprobado) as ajustado, 
+                          CASE 
+                            WHEN formulado != 0 THEN
+                           ((ejecutado/formulado)*100) 
+                          ELSE
+                            0::numeric 
+                          END as porc_ejecucio
                         FROM 
                           pre.vpresup_partida prpa
 				        where  ';

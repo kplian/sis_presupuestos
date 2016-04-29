@@ -247,7 +247,8 @@ BEGIN
                         usuario_ai,
                         id_usuario_reg,
                         id_memoria_calculo_original,
-                        id_rel_pre
+                        id_rel_pre,
+                        id_partida
                       ) values(
                         v_registros_mem.id_concepto_ingas,
                         v_registros_mem.importe_total,  
@@ -259,7 +260,8 @@ BEGIN
                         v_parametros._nombre_usuario_ai,
                         p_id_usuario,
                         v_registros_mem.id_memoria_calculo,
-                        v_parametros.id_rel_pre
+                        v_parametros.id_rel_pre,
+                        v_registros_mem.id_partida
           							
           			 )RETURNING id_memoria_calculo into v_id_memoria_calculo;
                      

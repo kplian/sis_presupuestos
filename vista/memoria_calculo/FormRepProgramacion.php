@@ -9,9 +9,21 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
+Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 		
 		Atributos : [
+		
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'concepto'
+			},
+			type:'Field',
+			form:true 
+		},
+		
 		{
             config:{
                 name:'id_gestion',
@@ -218,22 +230,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			type: 'ComboBox',
 			form: true
 		},
-	   	{
-   			config:{
-   				sysorigen:'sis_presupuestos',
-       		    name:'id_partida',
-   				origen:'PARTIDA',
-   				allowBlank:true,
-   				fieldLabel:'Partida',
-   				gdisplayField:'desc_partida',//mapea al store del grid
-   				baseParams: {_adicionar:'si',sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
-   				anchor: '100%',
-   				listWidth: 350
-       	     },
-   			type:'ComboRec',
-   			id_grupo:0,
-   			form:true
-	   	},
+	   	
 		{
 			config:{
 				name:'formato_reporte',
@@ -257,6 +254,37 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			type:'ComboBox',
 			id_grupo:1,
 			form:true
+		},
+		
+		
+		{
+			config:{
+				name:'nivel',
+				fieldLabel:'Nivel',
+				typeAhead: true,
+				allowBlank:false,
+	    		triggerAction: 'all',
+	    		emptyText:'Tipo...',
+	    		selectOnFocus:true,
+				mode:'local',
+				store:new Ext.data.ArrayStore({
+	        	fields: ['ID', 'valor'],
+	        	data :	[
+		        	        ['1',' <= 1'],
+		        	        ['2',' <= 2'],	
+							['3',' <= 3'],
+							['4',' Todo'],
+							['5','Solo movimiento']
+						]	        				
+	    		}),
+				valueField:'ID',
+				displayField:'valor',
+				width:250,			
+				
+			},
+			type:'ComboBox',
+			id_grupo:1,
+			form:true
 		}],
 		
 		
@@ -269,7 +297,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 		tooltipSubmit : '<b>Reporte Proyecto Presupeustario</b>',
 		
 		constructor : function(config) {
-			Phx.vista.FormRepMemoria.superclass.constructor.call(this, config);
+			Phx.vista.FormRepProgramacion.superclass.constructor.call(this, config);
 			this.init();
 			
 			this.ocultarComponente(this.Cmp.id_categoria_programatica);
@@ -295,11 +323,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 					this.Cmp.id_cp_programa.store.baseParams.id_gestion = c.value;				
 					this.Cmp.id_cp_programa.modificado=true;
 					
-					
-					this.Cmp.id_partida.reset();
-					this.Cmp.id_partida.store.baseParams.id_gestion = c.value;				
-					this.Cmp.id_partida.modificado=true;
-					
+				
 				
 			},this);
 			
@@ -367,10 +391,21 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			}]
 		}],
 		
-	ActSave:'../../sis_presupuestos/control/MemoriaCalculo/reporteMemoriaCalculo',
+	ActSave:'../../sis_presupuestos/control/MemoriaCalculo/reporteProgramacion',
 	
 	onSubmit: function(o, x, force){
-		Phx.vista.FormRepMemoria.superclass.onSubmit.call(this,o, x, force);
+		
+		if(this.Cmp.tipo_reporte.getValue()=='categoria'){
+			this.Cmp.concepto.setValue(this.Cmp.id_categoria_programatica.getRawValue());
+		}
+		if(this.Cmp.tipo_reporte.getValue()=='programa'){
+			this.Cmp.concepto.setValue(this.Cmp.id_cp_programa.getRawValue());
+		}
+		if(this.Cmp.tipo_reporte.getValue()=='presupuesto'){
+			this.Cmp.concepto.setValue(this.Cmp.id_presupuesto.getRawValue());
+		}
+		
+		Phx.vista.FormRepProgramacion.superclass.onSubmit.call(this,o, x, force);
 	},
 	
 	successSave :function(resp){

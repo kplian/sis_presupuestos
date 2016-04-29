@@ -1330,3 +1330,164 @@ AS
  
  
 
+/***********************************I-DEP-RAC-PRE-0-26/04/2016*****************************************/
+ 
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_det
+  ADD CONSTRAINT tmemoria_det_fk FOREIGN KEY (id_periodo)
+    REFERENCES param.tperiodo(id_periodo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_det
+  ADD CONSTRAINT tmemoria_det_fk1 FOREIGN KEY (id_memoria_calculo)
+    REFERENCES pre.tmemoria_calculo(id_memoria_calculo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD CONSTRAINT tmemoria_calculo_fk FOREIGN KEY (id_presupuesto)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;    
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD CONSTRAINT tmemoria_calculo_fk1 FOREIGN KEY (id_concepto_ingas)
+    REFERENCES param.tconcepto_ingas(id_concepto_ingas)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+    
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ADD CONSTRAINT tpresup_partida_fk FOREIGN KEY (id_centro_costo)
+    REFERENCES param.tcentro_costo(id_centro_costo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;    
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresupuesto
+  ADD CONSTRAINT tpresupuesto_fk FOREIGN KEY (id_categoria_prog)
+    REFERENCES pre.tcategoria_programatica(id_categoria_programatica)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE; 
+    
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk FOREIGN KEY (id_cp_programa)
+    REFERENCES pre.tcp_programa(id_cp_programa)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE; 
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk1 FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk2 FOREIGN KEY (id_cp_proyecto)
+    REFERENCES pre.tcp_proyecto(id_cp_proyecto)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+ 
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk3 FOREIGN KEY (id_cp_actividad)
+    REFERENCES pre.tcp_actividad(id_cp_actividad)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;    
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk4 FOREIGN KEY (id_cp_fuente_fin)
+    REFERENCES pre.tcp_fuente_fin(id_cp_fuente_fin)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tcategoria_programatica
+  ADD CONSTRAINT tcategoria_programatica_fk5 FOREIGN KEY (id_cp_organismo_fin)
+    REFERENCES pre.tcp_organismo_fin(id_cp_organismo_fin)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE; 
+    
+--------------- SQL ---------------
+
+CREATE INDEX tpartida_idx ON pre.tpartida
+  USING btree (id_partida_fk);  
+  
+  --------------- SQL ---------------
+
+CREATE INDEX tmemoria_calculo_idx ON pre.tmemoria_calculo
+  USING btree (id_presupuesto);
+  
+--------------- SQL ---------------
+
+CREATE INDEX tmemoria_calculo_idx1 ON pre.tmemoria_calculo
+  USING btree (id_concepto_ingas);
+  
+--------------- SQL ---------------
+
+CREATE INDEX tpresupuesto_idx ON pre.tpresupuesto
+  USING btree (id_centro_costo); 
+  
+--------------- SQL ---------------
+
+CREATE INDEX tmemoria_det_idx ON pre.tmemoria_det
+  USING btree (id_periodo);
+  
+--------------- SQL ---------------
+
+CREATE INDEX tmemoria_det_idx1 ON pre.tmemoria_det
+  USING btree (id_memoria_calculo);
+    
+--------------- SQL ---------------
+
+CREATE UNIQUE INDEX tmemoria_det_idx2 ON pre.tmemoria_det
+  USING btree (id_periodo, id_memoria_calculo);
+  
+--------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD CONSTRAINT tmemoria_calculo_fk2 FOREIGN KEY (id_partida)
+    REFERENCES pre.tpartida(id_partida)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;    
+    
+/***********************************F-DEP-RAC-PRE-0-26/04/2016*****************************************/
+ 
+ 
+ 

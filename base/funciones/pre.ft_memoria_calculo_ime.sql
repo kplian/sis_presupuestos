@@ -36,6 +36,7 @@ DECLARE
     v_registros				record;
     v_estado				varchar;
     v_gestion				integer;
+    v_id_partida			integer;
 			    
 BEGIN
 
@@ -72,6 +73,27 @@ BEGIN
                raise exception 'No puede agregar concepto en un presupuesto aprobado';
             END IF;
             
+            --recuperar gestion de lpresupeusto
+            
+            SELECT 
+                par.id_partida
+            into
+               v_id_partida
+            FROM pre.tpresupuesto pre 
+               JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_centro_costo
+               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas =
+                 mca.id_concepto_ingas
+               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas =
+                 mca.id_concepto_ingas
+               JOIN param.tgestion ges ON ges.id_gestion = cc.id_gestion
+               JOIN pre.tpartida par ON par.id_partida = cp.id_partida AND
+                 par.id_gestion = cc.id_gestion
+           where pre.id_presupuesto = v_parametros.id_presupuesto
+                 and cig.id_concepto_ingas  = v_parametros.id_concepto_ingas;
+            
+            
+          
+            
         	--Sentencia de la insercion
         	insert into pre.tmemoria_calculo(
               id_concepto_ingas,
@@ -84,7 +106,8 @@ BEGIN
               usuario_ai,
               id_usuario_reg,
               fecha_mod,
-              id_usuario_mod
+              id_usuario_mod,
+              id_partida
           	) values(
               v_parametros.id_concepto_ingas,
               0,
@@ -96,9 +119,8 @@ BEGIN
               v_parametros._nombre_usuario_ai,
               p_id_usuario,
               null,
-              null
-							
-			
+              null,
+              v_id_partida
 			
 			)RETURNING id_memoria_calculo into v_id_memoria_calculo;
             
@@ -111,8 +133,6 @@ BEGIN
                                 where per.id_gestion = v_id_gestion 
                                       and per.estado_reg = 'activo'
                                 order by per.fecha_ini) LOOP
-                            
-                            
                             
                             insert into pre.tmemoria_det(
                                 importe,
@@ -167,8 +187,20 @@ BEGIN
            
         
             IF v_registros.estado = 'aprobado' THEN            
-              raise exception 'no puede editar  conceptos de un presupuesto aprobado';
+              --raise exception 'no puede editar  conceptos de un presupuesto aprobado';
             END IF;
+            
+            SELECT 
+                par.id_partida
+            into
+               v_id_partida
+            FROM pre.vpresupuesto pre 
+               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = v_parametros.id_concepto_ingas                
+               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas = v_parametros.id_concepto_ingas
+             JOIN pre.tpartida par ON par.id_partida = cp.id_partida AND
+                 par.id_gestion = pre.id_gestion
+           where pre.id_presupuesto = v_parametros.id_presupuesto
+                 and cig.id_concepto_ingas  = v_parametros.id_concepto_ingas;
         
         
 			--Sentencia de la modificacion
@@ -179,8 +211,9 @@ BEGIN
               fecha_mod = now(),
               id_usuario_mod = p_id_usuario,
               id_usuario_ai = v_parametros._id_usuario_ai,
-              usuario_ai = v_parametros._nombre_usuario_ai
-			where id_memoria_calculo=v_parametros.id_memoria_calculo;
+              usuario_ai = v_parametros._nombre_usuario_ai,
+              id_partida = v_id_partida
+			where id_memoria_calculo = v_parametros.id_memoria_calculo;
                
 			--Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','MEMCAL modificado(a)'); 

@@ -152,6 +152,54 @@ class MODMemoriaCalculo extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function listarRepProgramacion(){
+		  //Definicion de variables para ejecucion del procedimientp
+		  $this->procedimiento='pre.f_rep_programacion';
+		  $this->transaccion='PRE_PROGR_REP';
+		  $this->tipo_procedimiento='SEL';//tipo de transaccion
+		  $this->setCount(false);
+		  $this->setTipoRetorno('record');	
+		
+		  //captura parametros adicionales para el count
+		  $this->setParametro('id_cp_programa','id_cp_programa','int4');
+		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+		  $this->setParametro('id_presupuesto','id_presupuesto','int4');
+		  $this->setParametro('id_gestion','id_gestion','int4');
+		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+		  $this->setParametro('nivel','nivel','int4');
+		  
+		 
+		
+		//Definicion de la lista del resultado del query
+		$this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+		$this->captura('c1','NUMERIC');
+		$this->captura('c2','NUMERIC');
+		$this->captura('c3','NUMERIC');
+		$this->captura('c4','NUMERIC');
+		$this->captura('c5','NUMERIC');
+		$this->captura('c6','NUMERIC');
+		$this->captura('c7','NUMERIC');
+		$this->captura('c8','NUMERIC');
+		$this->captura('c9','NUMERIC');
+		$this->captura('c10','NUMERIC');
+		$this->captura('c11','NUMERIC');
+		$this->captura('c12','NUMERIC');
+		  
+		              
+		
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 }
 ?>

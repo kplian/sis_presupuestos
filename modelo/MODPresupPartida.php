@@ -87,6 +87,11 @@ class MODPresupPartida extends MODbase{
 			$this->captura('ejecutado','numeric');
 			$this->captura('pagado','numeric');
 			
+			$this->captura('ajustado','numeric');
+			$this->captura('porc_ejecucion','numeric');
+			
+			
+			
 			
 			
 			//Ejecuta la instruccion
@@ -210,6 +215,93 @@ class MODPresupPartida extends MODbase{
 			
 			//Devuelve la respuesta
 			return $this->respuesta;
+	}
+
+    function listarRepEjecucion(){
+		  	
+		  //Definicion de variables para ejecucion del procedimientp
+		  $this->procedimiento='pre.f_rep_ejecucion';
+		  $this->transaccion='PRE_EJECUCION_REP';
+		  $this->tipo_procedimiento='SEL';//tipo de transaccion
+		  $this->setCount(false);
+		  $this->setTipoRetorno('record');	
+		
+		  //captura parametros adicionales para el count
+		  $this->setParametro('id_cp_programa','id_cp_programa','int4');
+		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+		  $this->setParametro('id_presupuesto','id_presupuesto','int4');
+		  $this->setParametro('id_gestion','id_gestion','int4');
+		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+		  $this->setParametro('nivel','nivel','int4');
+		  $this->setParametro('fecha_ini','fecha_ini','date');
+		  $this->setParametro('fecha_fin','fecha_fin','date');
+		  
+		 
+		
+		//Definicion de la lista del resultado del query
+		$this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+       
+        $this->captura('importe','NUMERIC');
+        $this->captura('importe_aprobado','NUMERIC');
+        $this->captura('formulado','NUMERIC');
+        $this->captura('comprometido','NUMERIC');
+        $this->captura('ejecutado','NUMERIC');
+        $this->captura('pagado','NUMERIC');
+        $this->captura('ajustado','NUMERIC');
+        $this->captura('porc_ejecucion','NUMERIC');
+		  
+		              
+		
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+    function listarRepEjecucionPorPartida(){
+		  	
+		  //Definicion de variables para ejecucion del procedimientp
+		  $this->procedimiento='pre.f_rep_ejecucion';
+		  $this->transaccion='PRE_EJEXPAR_REP';
+		  $this->tipo_procedimiento='SEL';//tipo de transaccion
+		  $this->setCount(false);
+		  $this->setTipoRetorno('record');	
+		
+		  //captura parametros adicionales para el count
+		 
+		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+		  $this->setParametro('id_partida','id_partida','int4');
+		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+		  $this->setParametro('fecha_ini','fecha_ini','date');
+		  $this->setParametro('fecha_fin','fecha_fin','date');
+		  
+		  //Definicion de la lista del resultado del query
+		  $this->captura('id_presupuesto','int4');
+	      $this->captura('codigo_cc','text');
+	      $this->captura('importe','NUMERIC');
+	      $this->captura('importe_aprobado','NUMERIC');
+	      $this->captura('formulado','NUMERIC');
+	      $this->captura('comprometido','NUMERIC');
+	      $this->captura('ejecutado','NUMERIC');
+	      $this->captura('pagado','NUMERIC');
+        
+		              
+		
+
+		 //Ejecuta la instruccion
+		 $this->armarConsulta();
+		 $this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
 	}
 			
 }
