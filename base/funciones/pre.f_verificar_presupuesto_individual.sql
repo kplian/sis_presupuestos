@@ -52,528 +52,576 @@ DECLARE
   
   
   v_respuesta				varchar[];
+  v_pre_verificar_categoria		varchar;
+  v_id_categoria_programatica		integer;
   
 BEGIN
 
 
 
-      v_nombre_funcion = 'pre.f_verificar_presupuesto_individual';
-
-      -- si tenemos partida ejecucion  obtener partida y presupuesto
-  
-      IF p_monto_total_mb >= 0 THEN
-             -- si el monto es positivo
-             
-             
-                   ----------------------
-                   --  si es formulado
-                   ----------------------
-                   
-                  IF p_sw_momento  = 'formulado' THEN 
-                  
-                       -- como es positivo no necesita verificaciones
-                       
-                       --  sumamos el formulado para esta partida y presupuesto
-                       select 
-                          sum(pe.monto_mb)
-                       into 
-                         v_total_formulado_mb
-                       from pre.tpartida_ejecucion pe
-                       where pe.id_presupuesto = p_id_presupuesto
-                             and pe.id_partida = p_id_partida
-                             and pe.estado_reg = 'activo'
-                             and pe.tipo_movimiento = 'formulado';
-                      
-                       v_respuesta[1] = 'true';
-                       v_respuesta[2] = COALESCE(v_total_formulado_mb,0);
-                     
-                  -------------------------
-                  --  si es comprometer
-                  -------------------------
-                  
-                  ELSEIF p_sw_momento  = 'comprometido' THEN 
-                  
-                         --  verificar que el monto formulado - comprometido sea suficiente
-                         
-                         IF p_id_partida is null or p_id_presupuesto is null THEN
-                            raise exception 'para verificar el comprometido tiene que indicar la partida y el presupeusto';
-                         END IF;
-                         
-                         --  sumamos el formulado para esta partida y presupuesto
-                         select 
-                            sum(pe.monto_mb)
-                         into 
-                           v_total_formulado_mb
-                         from pre.tpartida_ejecucion pe
-                         where pe.id_presupuesto = p_id_presupuesto
-                               and pe.id_partida = p_id_partida
-                               and pe.estado_reg = 'activo'
-                               and pe.tipo_movimiento = 'formulado';
-                               
-                        --sumamos el comprometido      
-                        select 
-                            sum(pe.monto_mb)
-                        into 
-                           v_total_comprometido_mb
-                        from pre.tpartida_ejecucion pe
-                        where pe.id_presupuesto = p_id_presupuesto
-                               and pe.id_partida = p_id_partida
-                               and pe.estado_reg = 'activo'
-                               and pe.tipo_movimiento = 'comprometido';       
-                     
-                        v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
-                        
-                        IF p_monto_total_mb <= v_saldo_mb THEN
-                          v_respuesta[1] = 'true';
-                        ELSE  
-                          v_respuesta[1] = 'false';
-                        END IF;
-                        
-                       v_respuesta[2] = v_saldo_mb::varchar;
-                     
-                  
-                  ------------------------
-                  --  SI ES EJECUTAR
-                  -----------------------
-                  
-                  ELSEIF  p_sw_momento  = 'ejecutado' THEN                  
-                           --verficar que el monto comprometido - ejecutado sea suficiente
-                           
-                           IF p_nro_tramite is null  THEN
-                                  raise exception 'para ejecutar necesitamos el número de tramite';
-                           END IF;
-                          
-                           --recuperar la partida y el presupuesto
-                           IF p_id_partida is null or p_id_presupuesto is null THEN
-                            
-                                 IF  p_id_partida_ejecucion is NULL  THEN
-                                     raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
-                                 END IF;
-                               
-                                select
-                                  pe.id_partida,
-                                  pe.id_presupuesto
-                                into
-                                  p_id_partida,
-                                  p_id_presupuesto
-                                from pre.tpartida_ejecucion pe
-                                
-                                
-                                where pe.id_partida_ejecucion = p_id_partida_ejecucion;
-                           END IF;
-                
-                          --listamos el monto comprometido 
-                          
-                           select
-                             sum(pe.monto_mb),
-                             sum(pe.monto)
-                           into
-                             v_total_comprometido_mb,
-                             v_total_comprometido
-                           from pre.tpartida_ejecucion pe
-                           where pe.estado_reg = 'activo'
-                                 and pe.id_partida = p_id_partida
-                                 and pe.id_presupuesto = p_id_presupuesto
-                                 and pe.nro_tramite = p_nro_tramite
-                                 and pe.tipo_movimiento = 'comprometido';      
-                                 
-                                 
-                        --listamso el monto ejectuado
-                        
-                         select
-                             sum(pe.monto_mb),
-                             sum(pe.monto)
-                           into
-                             v_total_ejecutado_mb,
-                             v_total_ejecutado
-                           from pre.tpartida_ejecucion pe
-                           where pe.estado_reg = 'activo'
-                                 and pe.id_partida = p_id_partida
-                                 and pe.id_presupuesto = p_id_presupuesto
-                                 and pe.nro_tramite = p_nro_tramite
-                                 and pe.tipo_movimiento = 'ejecutado';
-                        
-                        v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
-                        v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
-                                 
-                        IF p_monto_total_mb <= v_saldo_mb THEN
-                          v_respuesta[1] = 'true';
-                          v_respuesta[2] = v_saldo_mb::varchar;
-                        ELSE  
-                          v_respuesta[1] = 'false';
-                          v_respuesta[2] = v_saldo_mb::varchar;
-                        END IF; 
-                        
-                        IF p_monto_total <= v_saldo THEN
-                          v_respuesta[3] = 'true';
-                          v_respuesta[4] = v_saldo::varchar;
-                        ELSE  
-                          v_respuesta[3] = 'false';
-                          v_respuesta[4] = v_saldo::varchar;
-                        END IF;        
-                  
-                  
-                  -------------------
-                  -- SI ES PAGADO
-                  --------------------
-                  
-                  ELSEIF  p_sw_momento  = 'pagado' THEN
-                           
-                            -- si es pagar verificar que el monto ejecutado sea suficiente
-                              IF p_nro_tramite is null  THEN
-                                  raise exception 'para pagar necesitamos el número de tramite';
-                               END IF;
-                              
-                               --recuperar la partida y el presupuesto
-                               IF p_id_partida is null or p_id_presupuesto is null THEN
-                                
-                                     IF  p_id_partida_ejecucion is NULL  THEN
-                                         raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
-                                     END IF;
-                                   
-                                    select
-                                      pe.id_partida,
-                                      pe.id_presupuesto
-                                    into
-                                      p_id_partida,
-                                      p_id_presupuesto
-                                    from pre.tpartida_ejecucion pe 
-                                    
-                                    where pe.id_partida_ejecucion = p_id_partida_ejecucion;
-                               END IF;
-                    
-                              --listamos el monto comprometido 
-                              
-                               select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_ejecutado_mb,
-                                 v_total_ejecutado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'ejecutado';       
-                                     
-                                     
-                            --listamso el monto ejectuado
-                            
-                             select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_pagado_mb,
-                                 v_total_pagado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'pagado'; 
-                            
-                            v_saldo_mb =    COALESCE(v_total_ejecutado_mb,0) -   COALESCE(v_total_pagado_mb,0);
-                            v_saldo =    COALESCE(v_total_ejecutado,0) -   COALESCE(v_total_pagado,0);       
-                                     
-                            IF p_monto_total_mb <= v_saldo_mb THEN
-                              v_respuesta[1] = 'true';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            ELSE  
-                              v_respuesta[1] = 'false';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            END IF; 
-                            
-                            IF p_monto_total <= v_saldo THEN
-                              v_respuesta[3] = 'true';
-                              v_respuesta[4] = v_saldo::varchar;
-                            ELSE  
-                              v_respuesta[3] = 'false';
-                              v_respuesta[4] = v_saldo::varchar;
-                            END IF;        
-                  
-                  ELSE
-                     raise exception 'momento desconocido % ', p_sw_momento;
-                  END IF;
-        
-           
-           ---------------------------- 
-           -- si el monto es negativo 
-           -----------------------------
+            v_nombre_funcion = 'pre.f_verificar_presupuesto_individual';
             
-           ELSE
-           
-                  -----------------------------------      
-                  --  SI ES REVERSION DEL FORMULADO,
-                  -----------------------------------
-                  
-                  IF p_sw_momento  = 'formulado' THEN 
-                  
-                         --  verifica que el monto sea menor que el formulado - el comprometido
-                         IF p_id_partida is null or p_id_presupuesto is null THEN
-                            raise exception 'para verificar la reversion del formulado tiene que indicar la partida y el presupeusto';
-                         END IF;
-                         
-                         --  sumamos el formulado para esta partida y presupuesto
-                         select 
-                            sum(pe.monto_mb)
-                         into 
-                           v_total_formulado_mb
-                         from pre.tpartida_ejecucion pe
-                         where pe.id_presupuesto = p_id_presupuesto
-                               and pe.id_partida = p_id_partida
-                               and pe.estado_reg = 'activo'
-                               and pe.tipo_movimiento = 'formulado';
-                               
-                        --sumamos el comprometido      
-                        select 
-                            sum(pe.monto_mb)
-                        into 
-                           v_total_comprometido_mb
-                        from pre.tpartida_ejecucion pe
-                        where pe.id_presupuesto = p_id_presupuesto
-                               and pe.id_partida = p_id_partida
-                               and pe.estado_reg = 'activo'
-                               and pe.tipo_movimiento = 'comprometido';       
-                     
-                        v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
-                        
-                        IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
-                          v_respuesta[1] = 'true';
-                        ELSE  
-                          v_respuesta[1] = 'false';
-                       END IF;
-                        
-                       v_respuesta[2] = v_saldo_mb::varchar;
-                     
-                    -------------------------------------
-                    --  SI ES REVERSION DEL COMPROMETIDO 
-                    -------------------------------------
-                    
-                   ELSEIF p_sw_momento  = 'comprometido' THEN 
-                      -- verificar que el monto sea menor que el comprometido - el ejecutado
-                     
-                                IF p_nro_tramite is null  THEN
-                                      raise exception 'para revertir el comprometido necesitamos el número de tramite';
-                                END IF;
-                              
-                               --recuperar la partida y el presupuesto
-                               IF p_id_partida is null or p_id_presupuesto is null THEN
-                                
-                                     IF  p_id_partida_ejecucion is NULL  THEN
-                                         raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
-                                     END IF;
-                                   
-                                    select
-                                      pe.id_partida,
-                                      pe.id_presupuesto
-                                    into
-                                      p_id_partida,
-                                      p_id_presupuesto
-                                    from pre.tpartida_ejecucion pe 
-                                    
-                                    where pe.id_partida_ejecucion = p_id_partida_ejecucion;
-                               END IF;
-                    
-                              --listamos el monto comprometido 
-                              
-                               select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_comprometido_mb,
-                                 v_total_comprometido
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'comprometido';       
-                                     
-                                     
-                            --listamso el monto ejectuado
-                            
-                             select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_ejecutado_mb,
-                                 v_total_ejecutado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'ejecutado';
-                            
-                            v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
-                            v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
-                                     
-                            IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
-                              v_respuesta[1] = 'true';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            ELSE  
-                              v_respuesta[1] = 'false';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            END IF; 
-                            
-                            IF (p_monto_total*-1) <= v_saldo THEN
-                              v_respuesta[3] = 'true';
-                              v_respuesta[4] = v_saldo::varchar;
-                            ELSE  
-                              v_respuesta[3] = 'false';
-                              v_respuesta[4] = v_saldo::varchar;
-                            END IF;        
-                         
-                   -----------------------------------
-                   --  SI ES REVERSION DEL EJECUTADO
-                   ------------------------------------ 
-                   ELSEIF  p_sw_momento  = 'ejecutado' THEN
-                          --verficar que el monto sea menor que  el ejecutado - pagado
-                          
-                              IF p_nro_tramite is null  THEN
-                                  raise exception 'para revertir el ejecutado necesitamos el número de tramite';
-                               END IF;
-                              
-                               --recuperar la partida y el presupuesto
-                               IF p_id_partida is null or p_id_presupuesto is null THEN
-                                
-                                     IF  p_id_partida_ejecucion is NULL  THEN
-                                         raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
-                                     END IF;
-                                   
-                                    select
-                                      pe.id_partida,
-                                      pe.id_presupuesto
-                                    into
-                                      p_id_partida,
-                                      p_id_presupuesto
-                                    from pre.tpartida_ejecucion pe 
-                                    
-                                    where pe.id_partida_ejecucion = p_id_partida_ejecucion;
-                               END IF;
-                    
-                              --listamos el monto ejecutado 
-                              
-                               select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_ejecutado_mb,
-                                 v_total_ejecutado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'ejecutado';       
-                                     
-                                     
-                            --listamso el monto pagado
-                            
-                             select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_pagado_mb,
-                                 v_total_pagado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'pagado';
-                            
-                            v_saldo_mb =   COALESCE(v_total_ejecutado_mb,0) -  COALESCE(v_total_pagado_mb,0);
-                            v_saldo =   COALESCE(v_total_ejecutado,0) -  COALESCE(v_total_pagado,0);       
-                                     
-                            IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
-                              v_respuesta[1] = 'true';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            ELSE  
-                              v_respuesta[1] = 'false';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                            END IF; 
-                            
-                            IF (p_monto_total*-1) <= v_saldo THEN
-                              v_respuesta[3] = 'true';
-                              v_respuesta[4] = v_saldo::varchar;
-                            ELSE  
-                              v_respuesta[3] = 'false';
-                              v_respuesta[4] = v_saldo::varchar;
-                            END IF; 
-                  
-                   ------------------------------------------
-                   -- SI ES REVERSION DEL PAGO
-                   ------------------------------------------
-                   ELSEIF  p_sw_momento  = 'pagado' THEN
-                        --verifica que el monto no sea menor que el pagado
-                        
-                        
-                        IF p_nro_tramite is null  THEN
-                                  raise exception 'para revertir el pagado  necesitamos el número de tramite';
-                               END IF;
-                              
-                               --recuperar la partida y el presupuesto
-                               IF p_id_partida is null or p_id_presupuesto is null THEN
-                                
-                                     IF  p_id_partida_ejecucion is NULL  THEN
-                                         raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
-                                     END IF;
-                                   
-                                    select
-                                      pe.id_partida,
-                                      pe.id_presupuesto
-                                    into
-                                      p_id_partida,
-                                      p_id_presupuesto
-                                    from pre.tpartida_ejecucion pe 
-                                    
-                                    where pe.id_partida_ejecucion = p_id_partida_ejecucion;
-                              END IF;
-                    
-                            --listamso el monto pagado
-                            
-                            select
-                                 sum(pe.monto_mb),
-                                 sum(pe.monto)
-                               into
-                                 v_total_pagado_mb,
-                                 v_total_pagado
-                               from pre.tpartida_ejecucion pe
-                               where pe.estado_reg = 'activo'
-                                     and pe.id_partida = p_id_partida
-                                     and pe.id_presupuesto = p_id_presupuesto
-                                     and pe.nro_tramite = p_nro_tramite
-                                     and pe.tipo_movimiento = 'pagado';
-                            
-                           v_saldo_mb =  COALESCE(v_total_pagado_mb,0);
-                           v_saldo =   COALESCE(v_total_pagado,0);       
-                                     
-                           IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
-                              v_respuesta[1] = 'true';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                           ELSE  
-                              v_respuesta[1] = 'false';
-                              v_respuesta[2] = v_saldo_mb::varchar;
-                           END IF; 
-                            
-                           IF (p_monto_total*-1) <= v_saldo THEN
-                              v_respuesta[3] = 'true';
-                              v_respuesta[4] = v_saldo::varchar;
-                           ELSE  
-                              v_respuesta[3] = 'false';
-                              v_respuesta[4] = v_saldo::varchar;
-                           END IF; 
-                        
-                   
-                   ELSE
-                     raise exception 'momento desconocido % ', p_sw_momento;
-                  END IF;
-           
+            v_pre_verificar_categoria = pxp.f_get_variable_global('pre_verificar_categoria');
+            
+            IF v_pre_verificar_categoria = 'si' THEN
+               -- obtener categoria a partir del presupuesto
+               select 
+                  p.id_categoria_prog
+               into
+                 v_id_categoria_programatica  
+               from pre.tpresupuesto p
+               where  p.id_presupuesto = p_id_presupuesto;
+               
             END IF;
+     
+            -- si tenemos partida ejecucion  obtener partida y presupuesto
+        
+            IF p_monto_total_mb >= 0 THEN
+                   -- si el monto es positivo
+                   
+                   
+                         ----------------------
+                         --  si es formulado
+                         ----------------------
+                         
+                        IF p_sw_momento  = 'formulado' THEN 
+                        
+                             -- como es positivo no necesita verificaciones
+                             
+                             --  sumamos el formulado para esta partida y presupuesto
+                             select 
+                                sum(pe.monto_mb)
+                             into 
+                               v_total_formulado_mb
+                             from pre.tpartida_ejecucion pe
+                             inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                             where 
+                                   pe.id_partida = p_id_partida
+                                   and pe.estado_reg = 'activo'
+                                   and pe.tipo_movimiento = 'formulado'
+                                   and  (
+                                            CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
+                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                            ELSE
+                                                  pe.id_presupuesto = p_id_presupuesto 
+                                            END);
+                                   
+                                   
+                            
+                             v_respuesta[1] = 'true';
+                             v_respuesta[2] = COALESCE(v_total_formulado_mb,0);
+                           
+                        -------------------------
+                        --  si es comprometer
+                        -------------------------
+                        
+                        ELSEIF p_sw_momento  = 'comprometido' THEN 
+                        
+                               --  verificar que el monto formulado - comprometido sea suficiente
+                               
+                               IF p_id_partida is null or p_id_presupuesto is null THEN
+                                  raise exception 'para verificar el comprometido tiene que indicar la partida y el presupeusto';
+                               END IF;
+                               
+                               --  sumamos el formulado para esta partida y presupuesto
+                               select 
+                                  sum(pe.monto_mb)
+                               into 
+                                 v_total_formulado_mb
+                               from pre.tpartida_ejecucion pe
+                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                               where pe.id_partida = p_id_partida
+                                     and pe.estado_reg = 'activo'
+                                     and pe.tipo_movimiento = 'formulado'
+                                     and  (
+                                            CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
+                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                            ELSE
+                                                  pe.id_presupuesto = p_id_presupuesto 
+                                            END);
+                                     
+                              --sumamos el comprometido      
+                              select 
+                                  sum(pe.monto_mb)
+                              into 
+                                 v_total_comprometido_mb
+                              from pre.tpartida_ejecucion pe
+                              inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                              where pe.id_partida = p_id_partida
+                                     and pe.estado_reg = 'activo'
+                                     and pe.tipo_movimiento = 'comprometido'
+                                     and  (
+                                            CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
+                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                            ELSE
+                                                  pe.id_presupuesto = p_id_presupuesto 
+                                            END);       
+                           
+                              v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
+                              
+                              IF p_monto_total_mb <= v_saldo_mb THEN
+                                v_respuesta[1] = 'true';
+                              ELSE  
+                                v_respuesta[1] = 'false';
+                              END IF;
+                              
+                             v_respuesta[2] = v_saldo_mb::varchar;
+                           
+                        
+                        ------------------------
+                        --  SI ES EJECUTAR
+                        -----------------------
+                        
+                        ELSEIF  p_sw_momento  = 'ejecutado' THEN                  
+                                 --verficar que el monto comprometido - ejecutado sea suficiente
+                                 
+                                 IF p_nro_tramite is null  THEN
+                                        raise exception 'para ejecutar necesitamos el número de tramite';
+                                 END IF;
+                                
+                                 --recuperar la partida y el presupuesto
+                                 IF p_id_partida is null or p_id_presupuesto is null THEN
+                                  
+                                       IF  p_id_partida_ejecucion is NULL  THEN
+                                           raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
+                                       END IF;
+                                     
+                                      select
+                                        pe.id_partida,
+                                        pe.id_presupuesto
+                                      into
+                                        p_id_partida,
+                                        p_id_presupuesto
+                                      from pre.tpartida_ejecucion pe
+                                      where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                                      
+                                 END IF;
+                      
+                                --listamos el monto comprometido 
+                                
+                                 select
+                                   sum(pe.monto_mb),
+                                   sum(pe.monto)
+                                 into
+                                   v_total_comprometido_mb,
+                                   v_total_comprometido
+                                 from pre.tpartida_ejecucion pe
+                                 where pe.estado_reg = 'activo'
+                                       and pe.id_partida = p_id_partida
+                                       and pe.id_presupuesto = p_id_presupuesto
+                                       and pe.nro_tramite = p_nro_tramite
+                                       and pe.tipo_movimiento = 'comprometido';      
+                                       
+                                       
+                              --listamso el monto ejectuado
+                              
+                               select
+                                   sum(pe.monto_mb),
+                                   sum(pe.monto)
+                                 into
+                                   v_total_ejecutado_mb,
+                                   v_total_ejecutado
+                                 from pre.tpartida_ejecucion pe
+                                 where pe.estado_reg = 'activo'
+                                       and pe.id_partida = p_id_partida
+                                       and pe.id_presupuesto = p_id_presupuesto
+                                       and pe.nro_tramite = p_nro_tramite
+                                       and pe.tipo_movimiento = 'ejecutado';
+                              
+                              v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
+                              v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
+                                       
+                              IF p_monto_total_mb <= v_saldo_mb THEN
+                                v_respuesta[1] = 'true';
+                                v_respuesta[2] = v_saldo_mb::varchar;
+                              ELSE  
+                                v_respuesta[1] = 'false';
+                                v_respuesta[2] = v_saldo_mb::varchar;
+                              END IF; 
+                              
+                              IF p_monto_total <= v_saldo THEN
+                                v_respuesta[3] = 'true';
+                                v_respuesta[4] = v_saldo::varchar;
+                              ELSE  
+                                v_respuesta[3] = 'false';
+                                v_respuesta[4] = v_saldo::varchar;
+                              END IF;        
+                        
+                        
+                        -------------------
+                        -- SI ES PAGADO
+                        --------------------
+                        
+                        ELSEIF  p_sw_momento  = 'pagado' THEN
+                                 
+                                  -- si es pagar verificar que el monto ejecutado sea suficiente
+                                    IF p_nro_tramite is null  THEN
+                                        raise exception 'para pagar necesitamos el número de tramite';
+                                     END IF;
+                                    
+                                     --recuperar la partida y el presupuesto
+                                     IF p_id_partida is null or p_id_presupuesto is null THEN
+                                      
+                                           IF  p_id_partida_ejecucion is NULL  THEN
+                                               raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
+                                           END IF;
+                                         
+                                          select
+                                            pe.id_partida,
+                                            pe.id_presupuesto
+                                          into
+                                            p_id_partida,
+                                            p_id_presupuesto
+                                          from pre.tpartida_ejecucion pe 
+                                          
+                                          where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                                     END IF;
+                          
+                                    --listamos el monto comprometido 
+                                    
+                                     select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_ejecutado_mb,
+                                       v_total_ejecutado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'ejecutado';       
+                                           
+                                           
+                                  --listamso el monto ejectuado
+                                  
+                                   select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_pagado_mb,
+                                       v_total_pagado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'pagado'; 
+                                  
+                                  v_saldo_mb =    COALESCE(v_total_ejecutado_mb,0) -   COALESCE(v_total_pagado_mb,0);
+                                  v_saldo =    COALESCE(v_total_ejecutado,0) -   COALESCE(v_total_pagado,0);       
+                                           
+                                  IF p_monto_total_mb <= v_saldo_mb THEN
+                                    v_respuesta[1] = 'true';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  ELSE  
+                                    v_respuesta[1] = 'false';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  END IF; 
+                                  
+                                  IF p_monto_total <= v_saldo THEN
+                                    v_respuesta[3] = 'true';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  ELSE  
+                                    v_respuesta[3] = 'false';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  END IF;        
+                        
+                        ELSE
+                           raise exception 'momento desconocido % ', p_sw_momento;
+                        END IF;
+              
+                 
+                 ---------------------------- 
+                 -- si el monto es negativo 
+                 -----------------------------
+                  
+                 ELSE
+                 
+                        -----------------------------------      
+                        --  SI ES REVERSION DEL FORMULADO,
+                        -----------------------------------
+                        
+                        IF p_sw_momento  = 'formulado' THEN 
+                        
+                               --  verifica que el monto sea menor que el formulado - el comprometido
+                               IF p_id_partida is null or p_id_presupuesto is null THEN
+                                  raise exception 'para verificar la reversion del formulado tiene que indicar la partida y el presupeusto';
+                               END IF;
+                               
+                               --  sumamos el formulado para esta partida y presupuesto
+                               select 
+                                  sum(pe.monto_mb)
+                               into 
+                                 v_total_formulado_mb
+                               from pre.tpartida_ejecucion pe
+                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                               where pe.id_partida = p_id_partida
+                                     and pe.estado_reg = 'activo'
+                                     and pe.tipo_movimiento = 'formulado'
+                                     and  (
+                                            CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
+                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                            ELSE
+                                                  pe.id_presupuesto = p_id_presupuesto 
+                                            END);
+                                     
+                                     
+                              --sumamos el comprometido      
+                              select 
+                                  sum(pe.monto_mb)
+                              into 
+                                 v_total_comprometido_mb
+                              from pre.tpartida_ejecucion pe
+                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                              where pe.id_partida = p_id_partida
+                                     and pe.estado_reg = 'activo'
+                                     and pe.tipo_movimiento = 'comprometido'
+                                     and  (
+                                            CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
+                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                            ELSE
+                                                  pe.id_presupuesto = p_id_presupuesto 
+                                            END);       
+                           
+                              v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
+                              
+                              IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                v_respuesta[1] = 'true';
+                              ELSE  
+                                v_respuesta[1] = 'false';
+                             END IF;
+                              
+                             v_respuesta[2] = v_saldo_mb::varchar;
+                           
+                          -------------------------------------
+                          --  SI ES REVERSION DEL COMPROMETIDO 
+                          -------------------------------------
+                          
+                         ELSEIF p_sw_momento  = 'comprometido' THEN 
+                            -- verificar que el monto sea menor que el comprometido - el ejecutado
+                           
+                                      IF p_nro_tramite is null  THEN
+                                            raise exception 'para revertir el comprometido necesitamos el número de tramite';
+                                      END IF;
+                                    
+                                     --recuperar la partida y el presupuesto
+                                     IF p_id_partida is null or p_id_presupuesto is null THEN
+                                      
+                                           IF  p_id_partida_ejecucion is NULL  THEN
+                                               raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
+                                           END IF;
+                                         
+                                          select
+                                            pe.id_partida,
+                                            pe.id_presupuesto
+                                          into
+                                            p_id_partida,
+                                            p_id_presupuesto
+                                          from pre.tpartida_ejecucion pe 
+                                          
+                                          where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                                     END IF;
+                          
+                                    --listamos el monto comprometido 
+                                    
+                                     select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_comprometido_mb,
+                                       v_total_comprometido
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'comprometido';       
+                                           
+                                           
+                                  --listamso el monto ejectuado
+                                  
+                                   select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_ejecutado_mb,
+                                       v_total_ejecutado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'ejecutado';
+                                  
+                                  v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
+                                  v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
+                                           
+                                  IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                    v_respuesta[1] = 'true';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  ELSE  
+                                    v_respuesta[1] = 'false';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  END IF; 
+                                  
+                                  IF (p_monto_total*-1) <= v_saldo THEN
+                                    v_respuesta[3] = 'true';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  ELSE  
+                                    v_respuesta[3] = 'false';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  END IF;        
+                               
+                         -----------------------------------
+                         --  SI ES REVERSION DEL EJECUTADO
+                         ------------------------------------ 
+                         ELSEIF  p_sw_momento  = 'ejecutado' THEN
+                                --verficar que el monto sea menor que  el ejecutado - pagado
+                                
+                                    IF p_nro_tramite is null  THEN
+                                        raise exception 'para revertir el ejecutado necesitamos el número de tramite';
+                                     END IF;
+                                    
+                                     --recuperar la partida y el presupuesto
+                                     IF p_id_partida is null or p_id_presupuesto is null THEN
+                                      
+                                           IF  p_id_partida_ejecucion is NULL  THEN
+                                               raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
+                                           END IF;
+                                         
+                                          select
+                                            pe.id_partida,
+                                            pe.id_presupuesto
+                                          into
+                                            p_id_partida,
+                                            p_id_presupuesto
+                                          from pre.tpartida_ejecucion pe 
+                                          
+                                          where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                                     END IF;
+                          
+                                    --listamos el monto ejecutado 
+                                    
+                                     select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_ejecutado_mb,
+                                       v_total_ejecutado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'ejecutado';       
+                                           
+                                           
+                                  --listamso el monto pagado
+                                  
+                                   select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_pagado_mb,
+                                       v_total_pagado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'pagado';
+                                  
+                                  v_saldo_mb =   COALESCE(v_total_ejecutado_mb,0) -  COALESCE(v_total_pagado_mb,0);
+                                  v_saldo =   COALESCE(v_total_ejecutado,0) -  COALESCE(v_total_pagado,0);       
+                                           
+                                  IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                    v_respuesta[1] = 'true';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  ELSE  
+                                    v_respuesta[1] = 'false';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                  END IF; 
+                                  
+                                  IF (p_monto_total*-1) <= v_saldo THEN
+                                    v_respuesta[3] = 'true';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  ELSE  
+                                    v_respuesta[3] = 'false';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                  END IF; 
+                        
+                         ------------------------------------------
+                         -- SI ES REVERSION DEL PAGO
+                         ------------------------------------------
+                         ELSEIF  p_sw_momento  = 'pagado' THEN
+                              --verifica que el monto no sea menor que el pagado
+                              
+                              
+                              IF p_nro_tramite is null  THEN
+                                        raise exception 'para revertir el pagado  necesitamos el número de tramite';
+                                     END IF;
+                                    
+                                     --recuperar la partida y el presupuesto
+                                     IF p_id_partida is null or p_id_presupuesto is null THEN
+                                      
+                                           IF  p_id_partida_ejecucion is NULL  THEN
+                                               raise exception 'si no especifica la partida y presupuesto es necesario al menos la partida ejecución';
+                                           END IF;
+                                         
+                                          select
+                                            pe.id_partida,
+                                            pe.id_presupuesto
+                                          into
+                                            p_id_partida,
+                                            p_id_presupuesto
+                                          from pre.tpartida_ejecucion pe 
+                                          
+                                          where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+                                    END IF;
+                          
+                                  --listamso el monto pagado
+                                  
+                                  select
+                                       sum(pe.monto_mb),
+                                       sum(pe.monto)
+                                     into
+                                       v_total_pagado_mb,
+                                       v_total_pagado
+                                     from pre.tpartida_ejecucion pe
+                                     where pe.estado_reg = 'activo'
+                                           and pe.id_partida = p_id_partida
+                                           and pe.id_presupuesto = p_id_presupuesto
+                                           and pe.nro_tramite = p_nro_tramite
+                                           and pe.tipo_movimiento = 'pagado';
+                                  
+                                 v_saldo_mb =  COALESCE(v_total_pagado_mb,0);
+                                 v_saldo =   COALESCE(v_total_pagado,0);       
+                                           
+                                 IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                    v_respuesta[1] = 'true';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                 ELSE  
+                                    v_respuesta[1] = 'false';
+                                    v_respuesta[2] = v_saldo_mb::varchar;
+                                 END IF; 
+                                  
+                                 IF (p_monto_total*-1) <= v_saldo THEN
+                                    v_respuesta[3] = 'true';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                 ELSE  
+                                    v_respuesta[3] = 'false';
+                                    v_respuesta[4] = v_saldo::varchar;
+                                 END IF; 
+                              
+                         
+                         ELSE
+                           raise exception 'momento desconocido % ', p_sw_momento;
+                        END IF;
+                 
+                  END IF;
             
-            
+      
 
      return v_respuesta;
 
