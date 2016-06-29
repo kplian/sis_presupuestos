@@ -23,8 +23,8 @@ Phx.vista.PresupuestoInicio = {
 	
 	swEstado : 'borrador',
     gruposBarraTareas:[{name:'borrador',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Borradores</h1>', grupo:0,height:0},
-                        {name:'en_proceso',title:'<H1 align="center"><i class="fa fa-eye"></i> En Proceso</h1>', grupo:1,height:0},
-                        {name:'finalizados',title:'<H1 align="center"><i class="fa fa-file-o"></i> Finalizados</h1>', grupo:2,height:0}],
+                       {name:'en_proceso',title:'<H1 align="center"><i class="fa fa-eye"></i> En Proceso</h1>', grupo:1,height:0},
+                       {name:'finalizados',title:'<H1 align="center"><i class="fa fa-file-o"></i> Finalizados</h1>', grupo:2,height:0}],
 	
      beditGroups: [0,1,2],     
      bactGroups:  [0,1,2],
@@ -144,9 +144,6 @@ Phx.vista.PresupuestoInicio = {
         this.load({params:{start:0, limit:50}});
 		
 		
-		
-			
-			
 	},
 	
 	actualizarSegunTab: function(name, indice){

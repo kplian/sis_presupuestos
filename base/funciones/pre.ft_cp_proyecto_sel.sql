@@ -1,7 +1,13 @@
-CREATE OR REPLACE FUNCTION "pre"."ft_cp_proyecto_sel"(	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
+--------------- SQL ---------------
+
+CREATE OR REPLACE FUNCTION pre.ft_cp_proyecto_sel (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
 /**************************************************************************
  SISTEMA:		Sistema de Presupuesto
  FUNCION: 		pre.ft_cp_proyecto_sel
@@ -30,13 +36,13 @@ BEGIN
     v_parametros = pxp.f_get_record(p_tabla);
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_CPPR_SEL'
+ 	#TRANSACCION:  'PRE_CPPROY_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:		admin	
  	#FECHA:		19-04-2016 14:40:49
 	***********************************/
 
-	if(p_transaccion='PRE_CPPR_SEL')then
+	if(p_transaccion='PRE_CPPROY_SEL')then
      				
     	begin
     		--Sentencia de la consulta
@@ -70,13 +76,13 @@ BEGIN
 		end;
 
 	/*********************************    
- 	#TRANSACCION:  'PRE_CPPR_CONT'
+ 	#TRANSACCION:  'PRE_CPPROY_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:		admin	
  	#FECHA:		19-04-2016 14:40:49
 	***********************************/
 
-	elsif(p_transaccion='PRE_CPPR_CONT')then
+	elsif(p_transaccion='PRE_CPPROY_CONT')then
 
 		begin
 			--Sentencia de la consulta de conteo de registros
@@ -109,7 +115,9 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
 COST 100;
-ALTER FUNCTION "pre"."ft_cp_proyecto_sel"(integer, integer, character varying, character varying) OWNER TO postgres;

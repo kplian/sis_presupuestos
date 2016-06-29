@@ -16,7 +16,7 @@ class MODCpProyecto extends MODbase{
 	function listarCpProyecto(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='pre.ft_cp_proyecto_sel';
-		$this->transaccion='PRE_CPPR_SEL';
+		$this->transaccion='PRE_CPPROY_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 				
 		//Definicion de la lista del resultado del query
@@ -46,7 +46,7 @@ class MODCpProyecto extends MODbase{
 	function insertarCpProyecto(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_cp_proyecto_ime';
-		$this->transaccion='PRE_CPPR_INS';
+		$this->transaccion='PRE_CPPROY_INS';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
@@ -67,7 +67,7 @@ class MODCpProyecto extends MODbase{
 	function modificarCpProyecto(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_cp_proyecto_ime';
-		$this->transaccion='PRE_CPPR_MOD';
+		$this->transaccion='PRE_CPPROY_MOD';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
@@ -89,7 +89,7 @@ class MODCpProyecto extends MODbase{
 	function eliminarCpProyecto(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_cp_proyecto_ime';
-		$this->transaccion='PRE_CPPR_ELI';
+		$this->transaccion='PRE_CPPROY_ELI';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion

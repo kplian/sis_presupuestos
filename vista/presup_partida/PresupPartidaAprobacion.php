@@ -61,22 +61,22 @@ Phx.vista.PresupPartidaAprobacion = {
 				    
 				}while(  sw  || parseInt(selection, 10) > 200 || parseInt(selection, 10) < 1);
    	        	
-   	        	   	 if(selection){
-   	        	   	 	Phx.CP.loadingShow(); 
-				   	        Ext.Ajax.request({
-								url: '../../sis_presupuestos/control/PresupPartida/verificarPresupuesto',
-							  	params: {
-							  		  id_presupuesto: this.maestro.id_presupuesto,
-							  		  porcentaje_aprobado: parseInt(selection)
-							      },
-							      success: this.successRep,
-							      failure: this.conexionFailure,
-							      timeout: this.timeout,
-							      scope: this
-							});
-   	        	   	
-   	        	   	 }
-		   	        	   	
+        	   	 if(selection){
+        	   	 	Phx.CP.loadingShow(); 
+			   	        Ext.Ajax.request({
+							url: '../../sis_presupuestos/control/PresupPartida/verificarPresupuesto',
+						  	params: {
+						  		  id_presupuesto: this.maestro.id_presupuesto,
+						  		  porcentaje_aprobado: parseInt(selection)
+						      },
+						      success: this.successRep,
+						      failure: this.conexionFailure,
+						      timeout: this.timeout,
+						      scope: this
+						});
+        	   	
+        	   	 }
+	   	        	   	
    	        	    
 		}
     },
