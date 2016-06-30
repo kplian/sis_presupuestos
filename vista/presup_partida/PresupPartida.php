@@ -43,14 +43,14 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 		},
 	   	{
    			config:{
-   				sysorigen:'sis_presupuestos',
-       		    name:'id_partida',
-   				origen:'PARTIDA',
-   				allowBlank:false,
-   				fieldLabel:'Partida',
-   				gdisplayField:'desc_partida',//mapea al store del grid
-   				baseParams: {sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
-   				renderer:function(value, p, record){
+   				sysorigen: 'sis_presupuestos',
+       		    name: 'id_partida',
+   				origen: 'PARTIDA',
+   				allowBlank: false,
+   				fieldLabel: 'Partida',
+   				gdisplayField: 'desc_partida',//mapea al store del grid
+   				baseParams: { sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
+   				renderer: function(value, p, record){
    					
    					 if(record.data.tipo_reg != 'summary'){
 	            	   return String.format('{0} - ({1})', record.data['desc_partida'],   record.data['desc_gestion']);
@@ -267,9 +267,24 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
 	],
 	onReloadPage:function(m){
 		this.maestro=m;
+        
         this.store.baseParams={id_presupuesto:this.maestro.id_presupuesto};
+        
+        
         this.load({ params: { start: 0, limit: 50 }});
-        this.Cmp.id_partida.store.baseParams.tipo = this.maestro.movimiento_tipo_pres;
+        
+        console.log('xxxxxx', this.maestro, this.maestro.movimiento_tipo_pres)
+        if(this.maestro.movimiento_tipo_pres == "administrativo"){
+        	 this.Cmp.id_partida.store.baseParams.partida_tipo =  'flujo';
+        	 delete this.Cmp.id_partida.store.baseParams.tipo;
+        }
+        else{
+        	 this.Cmp.id_partida.store.baseParams.partida_tipo =  'presupuestaria';
+        	 this.Cmp.id_partida.store.baseParams.tipo = this.maestro.movimiento_tipo_pres;
+        }
+       
+        
+       
         this.Cmp.id_partida.store.baseParams.id_gestion = this.maestro.id_gestion;        
         this.Cmp.id_partida.modificado = true;
     },
