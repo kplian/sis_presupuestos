@@ -81,10 +81,8 @@ BEGIN
                v_id_partida
             FROM pre.tpresupuesto pre 
                JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_centro_costo
-               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas =
-                 mca.id_concepto_ingas
-               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas =
-                 mca.id_concepto_ingas
+               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = v_parametros.id_concepto_ingas
+               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas = v_parametros.id_concepto_ingas
                JOIN param.tgestion ges ON ges.id_gestion = cc.id_gestion
                JOIN pre.tpartida par ON par.id_partida = cp.id_partida AND
                  par.id_gestion = cc.id_gestion
