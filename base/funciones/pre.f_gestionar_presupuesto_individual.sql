@@ -133,7 +133,7 @@ BEGIN
                     v_monto, 
                     p_sw_momento);
                     
-            
+            --raise exception '%-%-%-%-%-%-%', p_nro_tramite, p_id_partida_ejecucion, p_id_presupuesto , p_id_partida, v_monto_mb, v_monto, p_sw_momento;
             
             --evaluar error permitido
             

@@ -250,13 +250,17 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
 	
 	preparaMenu: function(n) {
 		var tb = Phx.vista.ConceptoPartida.superclass.preparaMenu.call(this);
-	   	this.getBoton('clonarConf').setDisabled(false);
+	   	if( this.getBoton('clonarConf')){
+	   	   this.getBoton('clonarConf').setDisabled(false);
+	   	}
   		return tb;
 	},
 	liberaMenu: function() {
 		var tb = Phx.vista.ConceptoPartida.superclass.liberaMenu.call(this);
-		this.getBoton('clonarConf').setDisabled(false);
-		return tb;
+		if( this.getBoton('clonarConf')){
+		   this.getBoton('clonarConf').setDisabled(false);
+		   return tb;
+		}
 	},
 	
 	clonarConf:function(){
@@ -289,9 +293,11 @@ Phx.vista.ConceptoPartida=Ext.extend(Phx.gridInterfaz,{
     },
 	loadValoresIniciales:function()
 	{
+		
+		console.log(this.maestro)
 		Phx.vista.ConceptoPartida.superclass.loadValoresIniciales.call(this);
 		this.getComponente('id_concepto_ingas').setValue(this.maestro.id_concepto_ingas);
-		var tipo = this.maestro.tipo=='ingreso'?'recurso':'gasto';
+		var tipo = this.maestro.movimiento=='recurso'?'recurso':'gasto';
 		this.getComponente('id_partida').store.baseParams.tipo=tipo;		
 	},
 	sortInfo:{
