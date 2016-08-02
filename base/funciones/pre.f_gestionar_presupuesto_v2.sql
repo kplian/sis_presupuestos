@@ -144,6 +144,9 @@ BEGIN
                                   
                          
                      END IF;
+                    
+                     
+                       
                    
                 ELSIF  p_sw_ejecutar = 'si' and v_sw_momento in ('ejecutado','pagado') THEN 
                
@@ -192,6 +195,8 @@ BEGIN
                            
                          
                       END IF;
+                      
+                      
                     
                     
                 ELSE
@@ -216,7 +221,7 @@ BEGIN
                                      
                 END IF;
                 
-        ELSE  
+        ELSEIF    p_monto_total < 0 THEN
             
             ----------------------------------
             --  SI SON REVERSIONES
@@ -328,8 +333,11 @@ BEGIN
     raise notice 'no se integra con presupuestos';
 
  END IF;
+ 
+  
 
   return v_array_resp;
+  
 
 EXCEPTION
 					
