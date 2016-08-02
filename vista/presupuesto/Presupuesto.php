@@ -70,8 +70,23 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'descripcion',
+				fieldLabel: 'Nombre Presupuesto',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:200
+			},
+			type:'TextArea',
+			filters: { pfiltro:'pre.descripcion',type:'string' },
+			id_grupo:1,
+			grid: true,
+			form: true
+		},
+		{
+			config:{
 				name: 'codigo_cc',
-				fieldLabel: 'Centro Costo',
+				fieldLabel: 'Centro de Costo',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 300,
@@ -228,21 +243,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			form: false
 		},
 		
-		{
-			config:{
-				name: 'descripcion',
-				fieldLabel: 'Descripcion',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 200,
-				maxLength:30
-			},
-			type:'TextArea',
-			filters: { pfiltro:'pre.descripcion',type:'string' },
-			id_grupo:1,
-			grid: true,
-			form: true
-		},
+		
 		
 		{
 			config:{
