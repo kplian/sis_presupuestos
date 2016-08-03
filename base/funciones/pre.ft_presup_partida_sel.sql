@@ -64,7 +64,7 @@ BEGIN
                             prpa.fecha_mod,
                             usu1.cuenta as usr_reg,
                             usu2.cuenta as usr_mod,
-                            (''(''||par.codigo||'') ''|| par.nombre_partida)::varchar as desc_partida,
+                            (par.codigo||'' - ''|| par.nombre_partida)::varchar as desc_partida,
                             ges.gestion::varchar as desc_gestion,
                             importe_aprobado
 						from pre.tpresup_partida prpa
