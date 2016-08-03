@@ -294,7 +294,7 @@ Phx.vista.PresupPartida=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.id_presupuesto.setValue(this.maestro.id_presupuesto);       
     },
 	sortInfo:{
-		field: 'id_presup_partida',
+		field: 'par.codigo',
 		direction: 'ASC'
 	},
 	preparaMenu:function(){

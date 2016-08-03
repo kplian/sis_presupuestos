@@ -688,3 +688,40 @@ IS 'se llena con el triguer de memoria de calculo';
 
 /*****************************F-SCP-RAC-PRE-0-20/04/2016*************/
 
+
+/*****************************I-SCP-GVC-PRE-0-03/08/2016*************/
+CREATE TABLE pre.tobjetivo (
+  id_objetivo SERIAL, 
+  id_objetivo_fk INTEGER, 
+  id_gestion INTEGER, 
+  id_parametros INTEGER, 
+  codigo VARCHAR(30), 
+  descripcion VARCHAR(1000), 
+  nivel_objetivo INTEGER, 
+  tipo_objetivo VARCHAR(100), 
+  sw_transaccional VARCHAR(20), 
+  indicador_logro VARCHAR(1000), 
+  periodo_ejecucion VARCHAR(100), 
+  ponderacion NUMERIC(19,2), 
+  producto VARCHAR(500), 
+  linea_base VARCHAR(500), 
+  unidad_verificacion VARCHAR(100), 
+  cantidad_verificacion NUMERIC(19,2), 
+  fecha_inicio DATE, 
+  fecha_fin DATE, 
+  CONSTRAINT tobjetivo_pk_tobjetivo__id_objetivo PRIMARY KEY(id_objetivo), 
+  CONSTRAINT fk_tobjetivo__id_objetivo_fk FOREIGN KEY (id_objetivo_fk)
+    REFERENCES pre.tobjetivo(id_objetivo)
+    MATCH PARTIAL
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+CREATE INDEX tobjetivo_idx ON pre.tobjetivo
+  USING btree (id_objetivo_fk);
+
+/*****************************F-SCP-GVC-PRE-0-03/08/2016*************/
+
