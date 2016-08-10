@@ -18,7 +18,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		
 		
-        this.Cmp.id_concepto_ingas.store.baseParams.id_presupuesto = this.id_presupuesto;
+        this.Cmp.id_concepto_ingas.store.baseParams.id_gestion = this.id_gestion;
         this.Cmp.id_concepto_ingas.store.baseParams.movimiento = this.movimiento_tipo_pres;
         
         
@@ -59,7 +59,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
                 allowBlank: false,
                 emptyText : 'Concepto...',
                 store : new Ext.data.JsonStore({
-                            url:'../../sis_parametros/control/ConceptoIngas/listarConceptoIngasPresupuesto',
+                            url:'../../sis_parametros/control/ConceptoIngas/listarConceptoIngasMasPartida',
                             id : 'id_concepto_ingas',
                             root: 'datos',
                             sortInfo:{
