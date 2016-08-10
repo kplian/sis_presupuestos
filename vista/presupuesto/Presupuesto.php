@@ -80,6 +80,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			type:'TextArea',
 			filters: { pfiltro:'pre.descripcion',type:'string' },
 			id_grupo:1,
+			bottom_filter: true,
 			grid: true,
 			form: true
 		},

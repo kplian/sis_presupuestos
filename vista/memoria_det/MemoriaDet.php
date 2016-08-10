@@ -49,13 +49,38 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4
+				maxLength:4,
+				sortable: false,
+				renderer:function (value, p, record){
+                	    var dato='';
+                        dato = (value=='1')?'Enero':dato;
+                        dato = (dato==''&&value=='2')?'Febrero':dato;
+                        dato = (dato==''&&value=='3')?'Marzo':dato;
+                        dato = (dato==''&&value=='4')?'Abril':dato;
+                        dato = (dato==''&&value=='5')?'Mayo':dato;
+                        dato = (dato==''&&value=='6')?'Junio':dato;
+                        dato = (dato==''&&value=='7')?'Julio':dato;
+						dato = (dato==''&&value=='8')?'Agosto':dato;
+						dato = (dato==''&&value=='9')?'Septiembre':dato;
+						dato = (dato==''&&value=='10')?'Octubre':dato;
+						dato = (dato==''&&value=='11')?'Noviembre':dato;
+						dato = (dato==''&&value=='12')?'Diciembre':dato;
+                        return String.format('{0}', dato);
+                    },
+                
+                store:new Ext.data.ArrayStore({
+                            fields :['variable','valor'],
+                            data :  []}),
+               
+                valueField: 'variable',
+                displayField: 'valor'
 			},
 				type:'Field',
 				filters:{pfiltro:'p.periodo',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false
+				
 		},
 		{
 		   config : {
@@ -68,6 +93,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 			     gdisplayField : 'unidad_medida',
 			     gwidth : 100,
 			     anchor : '100%',
+				 sortable: false,
 			     baseParams : {
 			     cod_subsistema : 'PRE',
 			     catalogo_tipo : 'unidad_medida'},
@@ -91,6 +117,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
+				sortable: false,
 				maxLength:1179650
 			},
 				type:'NumberField',
@@ -104,11 +131,12 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'importe_unitario',
-				fieldLabel: 'Unitario',
+				fieldLabel: 'P. Unitario',
 				selectOnFocus: true,
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
+				sortable: false,
 				maxLength:1179650
 			},
 				type:'NumberField',
@@ -122,12 +150,22 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'importe',
-				fieldLabel: 'importe',
+				fieldLabel: 'TOTAL',
 				selectOnFocus: true,
 				allowBlank: false,
 				anchor: '80%',
+				sortable: false,
 				gwidth: 100,
-				maxLength:1179650
+				maxLength:1179650,				
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', value);
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', value);
+						}
+						
+					}
 			},
 				type:'NumberField',
 				filters:{pfiltro:'mdt.importe',type:'numeric'},
@@ -144,12 +182,13 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
+				sortable: false,
 				maxLength:10
 			},
 				type:'TextField',
 				filters:{pfiltro:'mdt.estado_reg',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
 		{
@@ -173,6 +212,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Fecha creación',
 				allowBlank: true,
 				anchor: '80%',
+				sortable: false,
 				gwidth: 100,
 							format: 'd/m/Y', 
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
@@ -187,6 +227,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'usr_reg',
 				fieldLabel: 'Creado por',
+				sortable: false,
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -218,6 +259,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				name: 'fecha_mod',
 				fieldLabel: 'Fecha Modif.',
 				allowBlank: true,
+				sortable: false,
 				anchor: '80%',
 				gwidth: 100,
 							format: 'd/m/Y', 
@@ -235,6 +277,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Modificado por',
 				allowBlank: true,
 				anchor: '80%',
+				sortable: false,
 				gwidth: 100,
 				maxLength:4
 			},
@@ -267,7 +310,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		'desc_periodo',
 		{name:'cantidad_mem', type: 'numeric'},
-		{name:'importe_unitario', type: 'numeric'},'unidad_medida'
+		{name:'importe_unitario', type: 'numeric'},'unidad_medida','tipo_reg'
 		
 	],
 	sortInfo:{

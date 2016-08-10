@@ -95,7 +95,8 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
                	}
             },
             type:'ComboBox',
-            filters:{pfiltro:'cig.desc_ingas',type:'string'},
+			bottom_filter: true,
+            filters:{pfiltro:'cig.desc_ingas#par.codigo',type:'string'},
             id_grupo:1,
             grid:true,
             form:true
@@ -104,7 +105,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'importe_total',
-				fieldLabel: 'importe_total',
+				fieldLabel: 'Importe Total',
 				allowBlank: false,
 				allowNegative: false,
 				anchor: '80%',
@@ -124,10 +125,11 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 				qtip:  'Justifique la necesidad del item',
 				allowBlank: false,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 300,
 				maxLength:400
 			},
 				type:'TextArea',
+				bottom_filter: true,
 				filters:{pfiltro:'mca.obs',type:'string'},
 				id_grupo:1,
 				grid:true,
@@ -145,7 +147,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'mca.estado_reg',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
 				form:false
 		},
 		
@@ -267,7 +269,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 	],
 	sortInfo:{
 		field: 'id_memoria_calculo',
-		direction: 'ASC'
+		direction: 'DESC'
 	},
 	bdel:  true,
 	bsave: false,

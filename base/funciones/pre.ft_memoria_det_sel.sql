@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_memoria_det_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -90,7 +88,8 @@ BEGIN
 
 		begin
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_memoria_det)
+			v_consulta:='select count(id_memoria_det),
+            			COALESCE(sum(mdt.importe),0)::numeric  as total_importe
 					    from pre.tmemoria_det mdt
                         inner join param.tperiodo p on p.id_periodo = mdt.id_periodo
 						inner join segu.tusuario usu1 on usu1.id_usuario = mdt.id_usuario_reg
