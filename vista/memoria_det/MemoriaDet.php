@@ -17,7 +17,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.MemoriaDet.superclass.constructor.call(this,config);
 		this.init();
-		this.bloquearMenus();
+		this.bloquearMenus();   
 		this.iniciarEventos();
 	},
 			
@@ -137,7 +137,31 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				anchor: '80%',
 				gwidth: 100,
 				sortable: false,
-				maxLength:1179650
+				maxLength:1179650,
+				renderer:function (value,p,record){
+
+					Number.prototype.formatDinero = function(c, d, t){
+						var n = this,
+							c = isNaN(c = Math.abs(c)) ? 2 : c,
+							d = d == undefined ? "." : d,
+							t = t == undefined ? "," : t,
+							s = n < 0 ? "-" : "",
+							i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+							j = (j = i.length) > 3 ? j % 3 : 0;
+						return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+					};
+
+					if(record.data.tipo_reg != 'summary'){
+
+						return  String.format('<div style="vertical-align:middle;text-align:right;"><span >{0}</span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
+					}
+					else{
+
+						//return  String.format('<div style="vertical-align:middle;text-align:right;"><span ><b>{0}</b></span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
+
+					}
+
+				}
 			},
 				type:'NumberField',
 				filters:{pfiltro:'mdt.importe_unitario',type:'numeric'},
@@ -156,16 +180,31 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				anchor: '80%',
 				sortable: false,
 				gwidth: 100,
-				maxLength:1179650,				
+				maxLength:1179650,
 				renderer:function (value,p,record){
-						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
-						}
-						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
-						}
-						
+
+					Number.prototype.formatDinero = function(c, d, t){
+						var n = this,
+							c = isNaN(c = Math.abs(c)) ? 2 : c,
+							d = d == undefined ? "." : d,
+							t = t == undefined ? "," : t,
+							s = n < 0 ? "-" : "",
+							i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+							j = (j = i.length) > 3 ? j % 3 : 0;
+						return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+					};
+
+					if(record.data.tipo_reg != 'summary'){
+
+						return  String.format('<div style="vertical-align:middle;text-align:right;"><span >{0}</span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
 					}
+					else{
+
+						return  String.format('<div style="vertical-align:middle;text-align:right;"><span ><b>{0}</b></span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
+
+					}
+
+				}
 			},
 				type:'NumberField',
 				filters:{pfiltro:'mdt.importe',type:'numeric'},

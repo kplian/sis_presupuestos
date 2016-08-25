@@ -87,7 +87,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
                width: 250,
                gwidth:350,
                minChars:2,
-               qtip:'Si el conceto de gasto que necesita no existe por favor  comuniquese con el área de presupuestos para solictar la creación',
+               qtip:'Si el concepto de gasto que necesita no existe por favor  comuniquese con el área de presupuestos para solicitar la creación.',
                tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>{desc_ingas}</b></p><strong>{tipo}</strong><p>PARTIDA: {desc_partida} - ({desc_gestion})</p></div></tpl>',
                renderer:function(value, p, record){
                	return String.format('{0} <br/><b>{1} - ({2}) </b>', record.data['desc_ingas'],  record.data['desc_partida'], record.data['desc_gestion']);
@@ -110,7 +110,22 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 				allowNegative: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:1179650
+				maxLength:1179650,
+				renderer:function (value,p,record){
+
+					Number.prototype.formatDinero = function(c, d, t){
+						var n = this,
+							c = isNaN(c = Math.abs(c)) ? 2 : c,
+							d = d == undefined ? "." : d,
+							t = t == undefined ? "," : t,
+							s = n < 0 ? "-" : "",
+							i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+							j = (j = i.length) > 3 ? j % 3 : 0;
+						return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+					};
+
+					return  String.format('<div style="vertical-align:middle;text-align:right;"><span >{0}</span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
+				}
 			},
 				type:'NumberField',
 				filters:{pfiltro:'mca.importe_total',type:'numeric'},

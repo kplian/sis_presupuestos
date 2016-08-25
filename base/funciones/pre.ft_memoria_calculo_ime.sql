@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_memoria_calculo_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -131,7 +129,7 @@ BEGIN
           	) values(
               v_parametros.id_concepto_ingas,
               0,
-              v_parametros.obs,
+              replace(v_parametros.obs, '\n', ' '),
               v_parametros.id_presupuesto,
               'activo',
               v_parametros._id_usuario_ai,
@@ -226,7 +224,7 @@ BEGIN
 			--Sentencia de la modificacion
 			update pre.tmemoria_calculo set
               id_concepto_ingas = v_parametros.id_concepto_ingas,
-              obs = v_parametros.obs,
+              obs = replace(v_parametros.obs, '\n', ' '),
               id_presupuesto = v_parametros.id_presupuesto,
               fecha_mod = now(),
               id_usuario_mod = p_id_usuario,

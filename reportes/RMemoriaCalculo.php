@@ -20,13 +20,17 @@ class RMemoriaCalculo extends  ReportePDF {
 	
 	
 	function datosHeader ( $detalle, $totales, $gestion,$dataEmpresa) {
+        $this->SetHeaderMargin(8);
+        $this->SetAutoPageBreak(TRUE, 12);
 		$this->ancho_hoja = $this->getPageWidth()-PDF_MARGIN_LEFT-PDF_MARGIN_RIGHT-10;
 		$this->datos_detalle = $detalle;
 		$this->datos_titulo = $totales;
 		$this->datos_entidad = $dataEmpresa;
 		$this->datos_gestion = $gestion;
 		$this->subtotal = 0;
-		$this->SetMargins(7, 55, 5);
+		$this->SetMargins(7, 45, 5);
+
+
 	}
 	
 	function Header() {
@@ -43,7 +47,7 @@ class RMemoriaCalculo extends  ReportePDF {
 		$this->ln(5);
 		
 		
-	    $this->SetFont('','BU',11);		
+	    $this->SetFont('','B',11);
 		$this->Cell(0,5,"MEMORIA DE CÁLCULO Y CRONOGRAMA DE REQUERIMIENTOS",0,1,'C');
 		$this->Cell(0,5,mb_strtoupper($this->datos_entidad['nombre'],'UTF-8'),0,1,'C');
 		$this->Cell(0,5,"ANTEPROYECTO PRESUPUESTO GESTION ".$this->datos_gestion['anho'],0,1,'C');		
@@ -62,18 +66,58 @@ class RMemoriaCalculo extends  ReportePDF {
         $width3 = 40;
         $width4 = 75;
 		
-		
-		
-		$this->Ln();
+
 		
 		$this->SetFont('','B',7);
-		$this->generarCabecera();
+		//$this->generarCabecera();
+        //armca caecera de la tabla
+        $conf_par_tablewidths=array(10,50,50,80,15,20,15,25);
+        $conf_par_tablealigns=array('C','C','C','C','C','C','C','C');
+        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0);
+        $conf_tableborders=array();
+        $conf_tabletextcolor=array();
+
+        //$this->tablewidths=$conf_par_tablewidths;
+        //$this->tablealigns=$conf_par_tablealigns;
+        //$this->tablenumbers=$conf_par_tablenumbers;
+        //$this->tableborders=$conf_tableborders;
+        //$this->tabletextcolor=$conf_tabletextcolor;
+        $this->Cell(10,3,"Nº","LT",0,'C');
+        $this->Cell(50,3,"DEPARTAMENTO","LT",0,'C');
+        $this->Cell(50,3,"CONCEPTO DE GASTO","LT",0,'C');
+        $this->Cell(80,3,"JUSTIFICACION","LT",0,'C');
+        $this->Cell(15,3,"UNIDAD DE","LT",0,'C');
+        $this->Cell(20,3,"COSTO","LT",0,'C');
+        $this->Cell(15,3,"CANT. REQ.","LT",0,'C');
+        $this->Cell(25,3,"TOTAL","LTR",1,'C');
+
+        $this->Cell(10,3,"","LB",0,'C');
+        $this->Cell(50,3,"","LB",0,'C');
+        $this->Cell(50,3,"","LB",0,'C');
+        $this->Cell(80,3,"","LB",0,'C');
+        $this->Cell(15,3,"MEDIDA","LB",0,'C');
+        $this->Cell(20,3,"UNITARIO","LB",0,'C');
+        $this->Cell(15,3,"","LB",0,'C');
+        $this->Cell(25,3,"ESTACIONALIDAD","LBR",0,'C');
+
+
+        $RowArray = array(
+            's0'  => 'Nº',
+            's1' => 'DEPARTAMENTO',
+            's2' => 'CONCEPTO DE GASTO',
+            's3' => 'JUSTIFICACION',
+            's4' => 'UNIDAD DE MEDIDA',
+            's5' => 'COSTO UNITARIO',
+            's6' => 'CANT. REQ.',
+            's7' => 'TOTAL ESTACIONALIDAD');
+
+        //$this-> MultiRow($RowArray,false,1);
 		
 		
 	}
    
    function generarReporte() {
-		$this->setFontSubsetting(false);
+		//$this->setFontSubsetting(false);
 		$this->AddPage();
 		
 	    $sw = false;
@@ -82,7 +126,7 @@ class RMemoriaCalculo extends  ReportePDF {
 		$this->generarCuerpo($this->datos_detalle);
 		
 		
-		$this->cerrarCuadro();	
+		$this->cerrarCuadro();
 		$this->Ln(4);
 		$this->cerrarConcepto();
 		$this->Ln(4);
@@ -90,7 +134,7 @@ class RMemoriaCalculo extends  ReportePDF {
 		
 		
 		
-		$this->Ln(4);
+		//$this->Ln(4);
 		
 		
 	} 
@@ -121,13 +165,13 @@ class RMemoriaCalculo extends  ReportePDF {
                         's6' => 'CANT. REQ.',  
                         's7' => 'TOTAL ESTACIONALIDAD');
                          
-        $this-> MultiRow($RowArray,false,1);
+        //$this-> MultiRow($RowArray,false,1);
 		
 		
     }
 	
-	function generarCuerpo($detalle){
-		
+	function generarCuerpo($detalle) {
+
 		$count = 1;
 		$sw = 0;
 		$sw1 = 0;
@@ -150,7 +194,7 @@ class RMemoriaCalculo extends  ReportePDF {
 					$count = 1;
 					$this->cerrarCuadro();
 					$this->Ln(4);
-					$this->revisarfinPagina();
+					//$this->revisarfinPagina();
 				}				
 			}	
 				
@@ -159,13 +203,13 @@ class RMemoriaCalculo extends  ReportePDF {
 					$sw1 = 0;
 					$this->cerrarConcepto();
 					$this->Ln(4);
-					$this->revisarfinPagina();
+					//$this->revisarfinPagina();
 				}				
 			}	
 				
 				
 			
-			
+
 			if($sw1 == 0){
 				$fill = 0;
 				$this->imprimirConcepto($val["concepto"],$fill);
@@ -182,7 +226,7 @@ class RMemoriaCalculo extends  ReportePDF {
 				$sw = 1;
 				$this->ult_codigo_partida = $val["codigo_partida"];
 			}
-			
+
 			
 			
 			
@@ -190,7 +234,7 @@ class RMemoriaCalculo extends  ReportePDF {
 			$fill = !$fill;
 			$count = $count + 1;
 			$this->total = $this->total -1;
-			$this->revisarfinPagina();
+			//$this->revisarfinPagina();
 			
 		}
 		
@@ -241,9 +285,9 @@ class RMemoriaCalculo extends  ReportePDF {
 		$startY = $this->GetY();
 		$this->getNumLines($row['cell1data'], 80);
 		
-		if (($startY + 4 * 10) + $dimensions['bm'] > ($dimensions['hk'])) {
-		    	
-			
+		if ($startY > 180) {
+
+
 			$k = 	($startY + 4 * 6) + $dimensions['bm'] - ($dimensions['hk']);
 			/*
 			for($i=0;$i<=k;$i++){
@@ -254,14 +298,14 @@ class RMemoriaCalculo extends  ReportePDF {
 				$this->ln();
 				$this->ln();
 			}*/
-			
+
 			if($this->total!= 0){
 				$this->AddPage();
 			}
-			
-			
-		    
-		} 
+
+
+
+		}
 		 
 		
 	}
