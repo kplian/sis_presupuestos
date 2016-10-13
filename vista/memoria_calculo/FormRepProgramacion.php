@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  *@package pXP
  *@file    GenerarLibroBancos.php
@@ -73,7 +73,7 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
         {
             config:{
             	name: 'tipo_pres',
-				fieldLabel: 'Tipo',
+				fieldLabel: 'Tipo de Presupuesto',
 				grupo: [0, 1, 2],
 				allowBlank: false,
 				emptyText:'Filtro...',
@@ -260,21 +260,21 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 		{
 			config:{
 				name:'nivel',
-				fieldLabel:'Nivel',
+				fieldLabel:'Nivel Partida',
 				typeAhead: true,
 				allowBlank:false,
 	    		triggerAction: 'all',
-	    		emptyText:'Tipo...',
+	    		emptyText:'Nivel...',
 	    		selectOnFocus:true,
 				mode:'local',
 				store:new Ext.data.ArrayStore({
 	        	fields: ['ID', 'valor'],
 	        	data :	[
-		        	        ['1',' <= 1'],
-		        	        ['2',' <= 2'],	
-							['3',' <= 3'],
-							['4',' Todo'],
-							['5','Solo movimiento']
+	        				['4','Todos los Niveles'],
+							['5','Solo Partidas de Movimiento'],
+		        			['1','Hasta el Nivel 1'],
+		        			['2','Hasta el Nivel 2'],
+							['3','Hasta el Nivel 3']
 						]	        				
 	    		}),
 				valueField:'ID',

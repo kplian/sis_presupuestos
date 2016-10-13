@@ -105,7 +105,7 @@ class ACTMemoriaCalculo extends ACTbase{
 				
 				//parametros basicos
 				$tamano = 'LETTER';
-				$orientacion = 'P';
+				$orientacion = 'L';
 				$titulo = 'Consolidado';
 				
 				

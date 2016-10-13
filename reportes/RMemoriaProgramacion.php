@@ -26,7 +26,10 @@ class RMemoriaProgramacion extends  ReportePDF {
 		$this->datos_entidad = $dataEmpresa;
 		$this->datos_gestion = $gestion;
 		$this->subtotal = 0;
-		$this->SetMargins(7, 55, 5);
+		$this->SetMargins(7, 41, 5);
+
+        $this->SetHeaderMargin(4);
+        $this->SetAutoPageBreak(TRUE, -15);
 	}
 	
 	function Header() {
@@ -40,17 +43,17 @@ class RMemoriaProgramacion extends  ReportePDF {
 		
 		//cabecera del reporte
 		$this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/logo.jpg', 10,5,35,20);
-		$this->ln(5);
+		//$this->ln(5);
 		
 		
-	    $this->SetFont('','BU',12);		
-		$this->Cell(0,5,"PROGRAMACIÓN PRESUPUESTARIO",0,1,'C');
+	    $this->SetFont('','B',12);		
+		$this->Cell(0,5,"PROGRAMACIÓN PRESUPUESTARIA",0,1,'C');
 		$this->Cell(0,5,mb_strtoupper($this->datos_entidad['nombre'],'UTF-8'),0,1,'C');
 		$this->Cell(0,5,"GESTIÓN ".$this->datos_gestion['anho'],0,1,'C');		
 		//$this->Ln();
 		$this->SetFont('','B',7);
 		$this->Cell(0,5,"(Expresado en Bolivianos)",0,1,'C');		
-		$this->Ln(2);
+		//$this->Ln(2);
 		
 		$this->SetFont('','',10);
 		
@@ -81,11 +84,11 @@ class RMemoriaProgramacion extends  ReportePDF {
 		$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $this->Cell($width_c1, $height, $tmp.": ", 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $this->SetFont('', '');
-        $this->SetFillColor(192,192,192, true);
-        $this->Cell($width_c2, $height, $this->objParam->getParametro('concepto'), $black, 0, 'L', true, '', 0, false, 'T', 'C');
+        //$this->SetFillColor(192,192,192, true);
+        $this->Cell($width_c2, $height, $this->objParam->getParametro('concepto'), 0, 0, 'L', false, '', 0, false, 'T', 'C');
         
         
-		$this->Ln();
+		//$this->Ln();
 		$this->Ln();
 		
 		$this->SetFont('','B',6);
@@ -104,7 +107,7 @@ class RMemoriaProgramacion extends  ReportePDF {
 	} 
     function generarCabecera(){
     	
-		//armca caecera de la tabla
+		//arma cabecera de la tabla
 		$conf_par_tablewidths=array(12,1,43,16,16,16,16,16,16,16,16,16,16,16,16,20);
         $conf_par_tablealigns=array('C','C','C','C','C','C','C','C','C','C','C','C','C','C','C','C');
         $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -131,7 +134,7 @@ class RMemoriaProgramacion extends  ReportePDF {
                         's9' => 'AGOSTO',  
                         's10' => 'SEPTIEMBRE',  
                         's11' => 'OCTUBRE',  
-                        's12'=> 'NOVIEMBRE',  
+                        's12' => 'NOVIEMBRE',
                         's13' => 'DICIEMBRE',    
                         's14' => 'TOTAL');
                          
@@ -259,7 +262,7 @@ class RMemoriaProgramacion extends  ReportePDF {
 			
 		}
        if ($val['nivel_partida'] == 3){
-			 $this->SetFont('','',4.5);
+			 $this->SetFont('','',5);
 		      $this->tableborders=array('LR','L','R','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR');
 			  $this->tablewidths=array(10,3,42,16,16,16,16,16,16,16,16,16,16,16,16,20);
 		      $this->tablealigns=array('L','L','L','R','R','R','R','R','R','R','R','R','R','R','R','R');
@@ -286,13 +289,13 @@ class RMemoriaProgramacion extends  ReportePDF {
 			 
 		}
       if ($val['nivel_partida'] > 3){
-			 $this->SetFont('','',4);
+			 $this->SetFont('','',5);
 		      $this->tableborders=array('LR','L','R','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR');
 			  $this->tablewidths=array(10,4,41,16,16,16,16,16,16,16,16,16,16,16,16,20);
 		      $this->tablealigns=array('L','L','L','R','R','R','R','R','R','R','R','R','R','R','R','R');
 		      $this->tablenumbers=array(0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2);
 			 
-		     $tab = "\t\t\t\t";
+		     $tab = "\t\t\t";
 			 $RowArray = array(
             			's1' =>  $tab.$val['codigo_partida'],
             			's2.0' => '',

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -72,7 +70,12 @@ BEGIN
             
            IF v_parametros.tipo_interfaz = 'PresupuestoFor' THEN
                   IF p_administrador !=1 THEN
-                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                      --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                  	  v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+                      
+                      v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                  	  	
+                  
                   ELSE
                       v_filadd = ' (lower(pre.estado)  in (''formulacion'')) and ';
                   END IF;            

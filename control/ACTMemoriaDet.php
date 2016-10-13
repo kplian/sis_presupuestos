@@ -31,14 +31,9 @@ class ACTMemoriaDet extends ACTbase{
 		$temp = Array();
 		$temp['importe'] = $this->res->extraData['total_importe'];
 		$temp['tipo_reg'] = 'summary';
-		$temp['id_memoria_det'] = 0;	
-		
-		
-		
+        $temp['id_memoria_det'] = 0;	
 		$this->res->total++;
-		
-		$this->res->addLastRecDatos($temp);
-		
+		$this->res->addLastRecDatos($temp);		
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 				

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_memoria_calculo_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -74,23 +72,45 @@ BEGIN
             END IF;
             
             --recuperar gestion de lpresupeusto
-            
+            /*
             SELECT 
                 par.id_partida
             into
                v_id_partida
             FROM pre.tpresupuesto pre 
                JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_centro_costo
-               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = v_parametros.id_concepto_ingas
-               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas = v_parametros.id_concepto_ingas
+               JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas =
+                 mca.id_concepto_ingas
+               JOIN pre.tconcepto_partida cp ON cp.id_concepto_ingas =
+                 mca.id_concepto_ingas
                JOIN param.tgestion ges ON ges.id_gestion = cc.id_gestion
                JOIN pre.tpartida par ON par.id_partida = cp.id_partida AND
                  par.id_gestion = cc.id_gestion
            where pre.id_presupuesto = v_parametros.id_presupuesto
                  and cig.id_concepto_ingas  = v_parametros.id_concepto_ingas;
-            
-            
-          
+            */     
+           --recupera partida a partir del presupuesto y concepto de gasto
+           SELECT 
+           		par.id_partida
+           into
+           		v_id_partida
+           FROM pre.tpresupuesto pre
+               JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_centro_costo
+               JOIN param.tgestion ges ON ges.id_gestion = cc.id_gestion
+               JOIN pre.tpartida par ON par.id_gestion = cc.id_gestion
+               JOIN pre.tconcepto_partida cp ON cp.id_partida = par.id_partida
+              JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = cp.id_concepto_ingas
+           where pre.id_presupuesto = v_parametros.id_presupuesto and
+                cig.id_concepto_ingas = v_parametros.id_concepto_ingas;
+                
+           IF NOT EXISTS (select 1 from pre.tpresup_partida 
+           			where id_partida=v_id_partida and id_presupuesto = v_parametros.id_presupuesto) THEN
+           		INSERT INTO pre.tpresup_partida
+                (id_presupuesto, id_partida, id_centro_costo,id_usuario_reg)
+                VALUES
+                (v_parametros.id_presupuesto, v_id_partida, v_parametros.id_presupuesto,p_id_usuario); 
+             
+           END IF;          
             
         	--Sentencia de la insercion
         	insert into pre.tmemoria_calculo(
@@ -109,7 +129,7 @@ BEGIN
           	) values(
               v_parametros.id_concepto_ingas,
               0,
-              v_parametros.obs,
+              replace(v_parametros.obs, '\n', ' '),
               v_parametros.id_presupuesto,
               'activo',
               v_parametros._id_usuario_ai,
@@ -204,7 +224,7 @@ BEGIN
 			--Sentencia de la modificacion
 			update pre.tmemoria_calculo set
               id_concepto_ingas = v_parametros.id_concepto_ingas,
-              obs = v_parametros.obs,
+              obs = replace(v_parametros.obs, '\n', ' '),
               id_presupuesto = v_parametros.id_presupuesto,
               fecha_mod = now(),
               id_usuario_mod = p_id_usuario,

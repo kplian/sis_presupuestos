@@ -45,6 +45,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
                 queryDelay:1000,
                 listWidth:600,
                 resizable:true,
+				width:250,
                 anchor:'100%'
                 
             },
@@ -86,7 +87,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 				lazyRender : true,
 				mode : 'remote',
 				pageSize : 20,
-				width : 150,
+				width : 250,
 				anchor : '80%',
 				listWidth : '280',
 				resizable : true,
@@ -133,7 +134,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			config:{
 				name: 'id_categoria_programatica',
 				fieldLabel: 'Categoria Programatica',
-				qtip: 'la categoria programatica permite la integración de reportes para sigma',
+				qtip: 'La categoria programatica permite la integración de reportes para sigma',
 				allowBlank: false,
 				emptyText : '...',
 				store : new Ext.data.JsonStore({
@@ -260,13 +261,13 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 		}],
 		
 		
-		title : 'Reporte Libro Compras Ventas IVA',		
+		title : 'Memoria de Calculo',		
 		ActSave : '../../sis_presupuestos/control/MemoriaCalculo/reporteMemoriaCalculo',
 		
 		topBar : true,
 		botones : false,
 		labelSubmit : 'Generar',
-		tooltipSubmit : '<b>Reporte Proyecto Presupeustario</b>',
+		tooltipSubmit : '<b>Reporte Memoria de Calculo Presupuestario</b>',
 		
 		constructor : function(config) {
 			Phx.vista.FormRepMemoria.superclass.constructor.call(this, config);

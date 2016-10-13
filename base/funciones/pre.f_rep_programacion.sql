@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_rep_programacion (
   p_administrador integer,
   p_id_usuario integer,
@@ -30,6 +28,7 @@ v_tipo_cuenta		varchar;
 v_incluir_cierre	varchar;
 va_id_presupuesto	INTEGER[];
 va_id_periodo		integer[];
+v_nivel				integer;
  
 
 BEGIN
@@ -48,9 +47,9 @@ BEGIN
 	IF(p_transaccion='PRE_PROGR_REP')then
     
         --raise exception 'error';
-    
+    	 
         -- 1) Crea una tabla temporal con los datos que se utilizaran 
-
+		
         CREATE TEMPORARY TABLE temp_prog (
                                 id_presupuesto integer,
                                 id_categoria_programatica integer,
@@ -76,6 +75,8 @@ BEGIN
                                 c12 NUMERIC,
                                 total	numeric,
                                 procesado varchar) ON COMMIT DROP;
+        
+        
     
     
           
@@ -175,10 +176,14 @@ BEGIN
           
              
                   -- inserta en tabla temporal
-                     IF v_registros.c1 > 0 and   v_registros.c2 > 0 and  v_registros.c3 >0 and v_registros.c4 > 0 and
+                     /*IF v_registros.c1 > 0 and   v_registros.c2 > 0 and  v_registros.c3 >0 and v_registros.c4 > 0 and
                         v_registros.c5 > 0 and   v_registros.c6 > 0 and  v_registros.c7 >0 and v_registros.c8 > 0 and
                         v_registros.c9 > 0 and   v_registros.c10 > 0 and  v_registros.c11 >0 and v_registros.c12 > 0  THEN
-                           
+                     */
+                     
+                     IF (v_registros.c1 + v_registros.c2 + v_registros.c3 + v_registros.c4 +
+                          v_registros.c5 + v_registros.c6 + v_registros.c7 + v_registros.c8 +
+                          v_registros.c9 + v_registros.c10 + v_registros.c11 + v_registros.c12) > 0  THEN      
                            insert into temp_prog(
                                       id_presupuesto,
                                       id_categoria_programatica,
@@ -232,9 +237,15 @@ BEGIN
          
          END LOOP;
          
+        select max(nivel_partida) into v_nivel
+        from temp_prog;
+        
+         
          -- recursivamente busca los padres de las partida y consolida
         IF v_parametros.nivel != 5 THEN
-            PERFORM pre.f_rep_programacion_recursivo(v_parametros.id_gestion);
+        
+            PERFORM pre.f_rep_programacion_recursivo(v_parametros.id_gestion,v_nivel -1);
+        
         END IF;
         --listado consolidado segun parametros 
    
