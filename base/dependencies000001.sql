@@ -1850,3 +1850,13 @@ FROM pre.tpartida_ejecucion pe
 	   
 
 /***********************************F-DEP-GVC-PRE-0-10/08/2016*****************************************/
+
+/***********************************I-DEP-GVC-PRE-0-10/08/2016*****************************************/
+ALTER TABLE pre.tmemoria_calculo
+  ADD CONSTRAINT fk_tobjetivo__id_objetivo_fk FOREIGN KEY (id_objetivo_fk)
+    REFERENCES pre.tobjetivo(id_objetivo)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+/***********************************F-DEP-GVC-PRE-0-10/08/2016*****************************************/

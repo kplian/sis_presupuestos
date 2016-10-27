@@ -709,13 +709,7 @@ CREATE TABLE pre.tobjetivo (
   cantidad_verificacion NUMERIC(19,2), 
   fecha_inicio DATE, 
   fecha_fin DATE, 
-  CONSTRAINT tobjetivo_pk_tobjetivo__id_objetivo PRIMARY KEY(id_objetivo), 
-  CONSTRAINT fk_tobjetivo__id_objetivo_fk FOREIGN KEY (id_objetivo_fk)
-    REFERENCES pre.tobjetivo(id_objetivo)
-    MATCH PARTIAL
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE
+  CONSTRAINT tobjetivo_pk_tobjetivo__id_objetivo PRIMARY KEY(id_objetivo)
 ) INHERITS (pxp.tbase)
 
 WITH (oids = false);

@@ -17,9 +17,10 @@ class ACTPresupuesto extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_presupuesto');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
-		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
-		
-		if(strtolower($this->objParam->getParametro('estado'))=='borrador'){
+		$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
+        $this->objParam->addParametro('tipo_interfaz',$this->objParam->getParametro('tipo_interfaz'));
+
+        if(strtolower($this->objParam->getParametro('estado'))=='borrador'){
              $this->objParam->addFiltro("(pre.estado in (''borrador''))");
         }
 		if(strtolower($this->objParam->getParametro('estado'))=='en_proceso'){
