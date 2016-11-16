@@ -413,5 +413,7 @@ select pxp.f_insert_testructura_gui ('EJEPAR', 'REPPRE');
 /*******************************************F-DAT-RAC-PRE-0-27/04/2016***********************************************/
 
 
+/*******************************************I-DAT-RAC-PRE-0-16/11/2016***********************************************/
+select pxp.f_insert_tgui ('Partida Ejecucion', 'Partida Ejecucion', 'PAREJE', 'si', 6, 'sis_presupuestos/vista/partida_ejecucion/FormFiltro.php', 3, '', 'FormFiltro', 'PRE');
 
-
+/*******************************************F-DAT-RAC-PRE-0-16/11/2016***********************************************/
