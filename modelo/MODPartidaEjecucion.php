@@ -23,8 +23,13 @@ class MODPartidaEjecucion extends MODbase{
 		$this->captura('id_partida_ejecucion','int4');
 		$this->captura('id_int_comprobante','int4');
 		$this->captura('id_moneda','int4');
+        $this->captura('moneda','varchar');
 		$this->captura('id_presupuesto','int4');
+        $this->captura('desc_pres','varchar');
+        $this->captura('codigo_categoria','varchar');
 		$this->captura('id_partida','int4');
+        $this->captura('codigo','varchar');
+        $this->captura('nombre_partida','varchar');
 		$this->captura('nro_tramite','varchar');
 		$this->captura('tipo_cambio','numeric');
 		$this->captura('columna_origen','varchar');

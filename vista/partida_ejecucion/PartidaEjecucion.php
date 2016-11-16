@@ -16,8 +16,10 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.PartidaEjecucion.superclass.constructor.call(this,config);
+		this.grid.getTopToolbar().disable();
+		this.grid.getBottomToolbar().disable();
 		this.init();
-		this.load({params:{start:0, limit:this.tam_pag}})
+		//this.load({params:{start:0, limit:this.tam_pag}})
 	},
 			
 	Atributos:[
@@ -26,182 +28,251 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
+					fieldLabel: 'ID Partida Ejecucion',
 					name: 'id_partida_ejecucion'
 			},
 			type:'Field',
+			grid: true,
 			form:true 
 		},
 		{
-			config: {
-				name: 'id_int_comprobante',
-				fieldLabel: 'id_int_comprobante',
+			config:{
+				name: 'fecha_reg',
+				fieldLabel: 'Fecha Creación',
 				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_int_comprobante',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
+				anchor: '80%',
+				gwidth: 120,
+				format: 'd/m/Y',
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
+			type:'DateField',
+			filters:{pfiltro:'pareje.fecha_reg',type:'date'},
+			id_grupo:1,
+			grid:true,
+			form:false
 		},
 		{
-			config: {
-				name: 'id_moneda',
-				fieldLabel: 'id_moneda',
+			config:{
+				name: 'usr_reg',
+				fieldLabel: 'Creado por',
 				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_moneda',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:4
 			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
+			type:'Field',
+			filters:{pfiltro:'usu1.cuenta',type:'string'},
+			bottom_filter: true,
+			id_grupo:1,
+			grid:true,
+			form:false
 		},
 		{
-			config: {
+			config:{
+				name: 'tipo_movimiento',
+				fieldLabel: 'Tipo Movimiento',
+				allowBlank: false,
+
+				renderer:function (value, p, record){
+					var dato='';
+					dato = (value=='1')?'Comprometido':dato;
+					dato = (dato==''&&value=='2')?'Revertido':dato;
+					dato = (dato==''&&value=='3')?'Devengado':dato;
+					dato = (dato==''&&value=='4')?'Pagado':dato;
+					dato = (dato==''&&value=='5')?'Traspaso':dato;
+					dato = (dato==''&&value=='6')?'Reformulacion':dato;
+					dato = (dato==''&&value=='7')?'Incremento':dato;
+					return String.format('{0}', dato);
+				},
+
+				store:new Ext.data.ArrayStore({
+					fields :['variable','valor'],
+					data :  []}),
+
+				valueField: 'variable',
+				displayField: 'valor',
+				forceSelection: true,
+				triggerAction: 'all',
+				lazyRender: true,
+				resizable:true,
+				gwidth: 100,
+				listWidth:'500',
+				mode: 'local',
+				wisth: 380
+			},
+			type:'ComboBox',
+			filters:{pfiltro:'pareje.tipo_movimiento',type:'string'},
+			id_grupo:0,
+			grid:true,
+			form:false
+		},
+
+		{
+			config:{
+				name: 'monto_mb',
+				fieldLabel: 'Monto Moneda Base',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:-5
+			},
+			type:'NumberField',
+			filters:{pfiltro:'pareje.monto_mb',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:true
+		},
+		/*{
+			config:{
+				name: 'monto',
+				fieldLabel: 'Monto',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:-5
+			},
+			type:'NumberField',
+			filters:{pfiltro:'pareje.monto',type:'numeric'},
+			bottom_filter: true,
+			id_grupo:1,
+			grid:true,
+			form:true
+		},*/
+		{
+			config:{
+				name: 'monto',
+				fieldLabel: 'Monto',
+				allowBlank: false,
+				allowNegative: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:1179650,
+				renderer:function (value,p,record){
+
+					Number.prototype.formatDinero = function(c, d, t){
+						var n = this,
+							c = isNaN(c = Math.abs(c)) ? 2 : c,
+							d = d == undefined ? "." : d,
+							t = t == undefined ? "," : t,
+							s = n < 0 ? "-" : "",
+							i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+							j = (j = i.length) > 3 ? j % 3 : 0;
+						return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+					};
+
+					return  String.format('<div style="vertical-align:middle;text-align:right;"><span >{0}</span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
+				}
+			},
+			type:'NumberField',
+			filters:{pfiltro:'pareje.monto',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
+		{
+			config:{
+				name: 'moneda',
+				fieldLabel: 'Moneda',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 80
+			},
+			type:'TextField',
+			filters:{pfiltro:'mon.moneda',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:true
+		},
+		{
+			//configuracion del componente
+			config:{
+				labelSeparator:'',
+				inputType:'hidden',
+				fieldLabel: 'ID Presupuesto',
 				name: 'id_presupuesto',
-				fieldLabel: 'id_presupuesto',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_presupuesto',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
+				gwidth: 50
 			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
+			type:'Field',
 			grid: true,
-			form: true
+			filters:{pfiltro:'pre.id_presupuesto',type:'string'},
+			bottom_filter: true,
+			form:true
+		},
+		{
+			config:{
+				name: 'desc_pres',
+				fieldLabel: 'Desc. Presupuesto',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200
+			},
+			type:'TextField',
+			filters:{pfiltro:'pre.descripcion',type:'string'},
+			id_grupo:1,
+			bottom_filter: true,
+			grid:true,
+			form:true
+		},
+		{
+			config:{
+				name: 'codigo_categoria',
+				fieldLabel: 'Código Categoría',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:-5
+			},
+			type:'TextField',
+			filters:{pfiltro:'pareje.nro_tramite',type:'string'},
+			bottom_filter: true,
+			id_grupo:1,
+			grid:true,
+			form:true
 		},
 		{
 			config: {
 				name: 'id_partida',
-				fieldLabel: 'id_partida',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_partida',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
+				fieldLabel: 'ID Partida'
+
 			},
-			type: 'ComboBox',
+			type: 'TextField',
 			id_grupo: 0,
 			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
+			grid: false,
+			gwidth: 50,
 			form: true
+		},
+		{
+			config:{
+				name: 'codigo',
+				fieldLabel: 'Codigo Partida',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 80,
+				maxLength:-5
+			},
+			type:'TextField',
+			filters:{pfiltro:'par.codigo',type:'string'},
+			bottom_filter: true,
+			id_grupo:1,
+			grid:true,
+			form:true
+		},
+		{
+			config:{
+				name: 'nombre_partida',
+				fieldLabel: 'Nombre Partida',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:-5
+			},
+			type:'TextField',
+			filters:{pfiltro:'par.nombre_partida',type:'string'},
+			bottom_filter: true,
+			id_grupo:1,
+			grid:true,
+			form:true
 		},
 		{
 			config:{
@@ -209,14 +280,45 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Nro Tramite',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 150,
 				maxLength:-5
 			},
 				type:'TextField',
 				filters:{pfiltro:'pareje.nro_tramite',type:'string'},
+				bottom_filter: true,
 				id_grupo:1,
 				grid:true,
 				form:true
+		},
+		{
+			config:{
+				name: 'fecha',
+				fieldLabel: 'Fecha Ejecucion',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				format: 'd/m/Y',
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+			},
+			type:'DateField',
+			filters:{pfiltro:'pareje.fecha',type:'date'},
+			id_grupo:1,
+			grid:true,
+			form:true
+		},
+
+
+		{
+			config: {
+				name: 'id_int_comprobante',
+				fieldLabel: 'ID Int Comprobante',
+
+			},
+			type: 'TextField',
+			id_grupo: 0,
+			filters: {pfiltro: 'pareje.id_int_comprobante',type: 'string'},
+			grid: true,
+			form: true
 		},
 		{
 			config:{
@@ -227,150 +329,16 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 100,
 				maxLength:-5
 			},
-				type:'NumberField',
-				filters:{pfiltro:'pareje.tipo_cambio',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'columna_origen',
-				fieldLabel: 'Columna Origen',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:-5
-			},
-				type:'TextField',
-				filters:{pfiltro:'pareje.columna_origen',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'tipo_movimiento',
-				fieldLabel: 'Tipo Movimiento',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:30
-			},
-				type:'TextField',
-				filters:{pfiltro:'pareje.tipo_movimiento',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config: {
-				name: 'id_partida_ejecucion_fk',
-				fieldLabel: 'id_partida_ejecucion_fk',
-				allowBlank: true,
-				emptyText: 'Elija una opción...',
-				store: new Ext.data.JsonStore({
-					url: '../../sis_/control/Clase/Metodo',
-					id: 'id_',
-					root: 'datos',
-					sortInfo: {
-						field: 'nombre',
-						direction: 'ASC'
-					},
-					totalProperty: 'total',
-					fields: ['id_', 'nombre', 'codigo'],
-					remoteSort: true,
-					baseParams: {par_filtro: 'movtip.nombre#movtip.codigo'}
-				}),
-				valueField: 'id_',
-				displayField: 'nombre',
-				gdisplayField: 'desc_',
-				hiddenName: 'id_partida_ejecucion_fk',
-				forceSelection: true,
-				typeAhead: false,
-				triggerAction: 'all',
-				lazyRender: true,
-				mode: 'remote',
-				pageSize: 15,
-				queryDelay: 1000,
-				anchor: '100%',
-				gwidth: 150,
-				minChars: 2,
-				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
-				}
-			},
-			type: 'ComboBox',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
-			grid: true,
-			form: true
-		},
-		{
-			config:{
-				name: 'estado_reg',
-				fieldLabel: 'Estado Reg.',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:10
-			},
-				type:'TextField',
-				filters:{pfiltro:'pareje.estado_reg',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:false
-		},
-		{
-			config:{
-				name: 'fecha',
-				fieldLabel: 'Fecha',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'pareje.fecha',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'monto_mb',
-				fieldLabel: 'Monto Moneda Base',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:-5
-			},
-				type:'NumberField',
-				filters:{pfiltro:'pareje.monto_mb',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'monto',
-				fieldLabel: 'Monto',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:-5
-			},
-				type:'NumberField',
-				filters:{pfiltro:'pareje.monto',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
+			type:'NumberField',
+			filters:{pfiltro:'pareje.tipo_cambio',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:true
 		},
 		{
 			config:{
 				name: 'valor_id_origen',
-				fieldLabel: 'valor_id_origen',
+				fieldLabel: 'Valor Id Origen',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -382,36 +350,36 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+
 		{
 			config:{
-				name: 'usr_reg',
-				fieldLabel: 'Creado por',
+				name: 'columna_origen',
+				fieldLabel: 'Columna Origen',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4
+				maxLength:-5
 			},
-				type:'Field',
-				filters:{pfiltro:'usu1.cuenta',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:false
+			type:'TextField',
+			filters:{pfiltro:'pareje.columna_origen',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:true
 		},
 		{
 			config:{
-				name: 'fecha_reg',
-				fieldLabel: 'Fecha creación',
+				name: 'estado_reg',
+				fieldLabel: 'Estado Reg.',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
+				maxLength:10
 			},
-				type:'DateField',
-				filters:{pfiltro:'pareje.fecha_reg',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:false
+			type:'TextField',
+			filters:{pfiltro:'pareje.estado_reg',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
 		},
 		{
 			config:{
@@ -504,15 +472,37 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'},
+		{name:'usr_mod', type: 'string'},'moneda','desc_pres','codigo_categoria','codigo','nombre_partida',
 		
 	],
+	arrayDefaultColumHidden:['id_partida_ejecucion','columna_origen','valor_id_origen',
+		'tipo_cambio','monto_mb','fecha_mod', 'id_usuario_ai','usr_mod','estado_reg'],
+
+
 	sortInfo:{
-		field: 'id_partida_ejecucion',
-		direction: 'ASC'
+		field: 'fecha_reg',
+		direction: 'DESC'
 	},
-	bdel:true,
-	bsave:true
+
+	loadValoresIniciales:function(){
+		Phx.vista.PartidaEjecucion.superclass.loadValoresIniciales.call(this);
+		//this.getComponente('id_int_comprobante').setValue(this.maestro.id_int_comprobante);
+	},
+	onReloadPage:function(param){
+		//Se obtiene la gestión en función de la fecha del comprobante para filtrar partidas, cuentas, etc.
+		var me = this;
+		this.initFiltro(param);
+	},
+
+	initFiltro: function(param){
+		this.store.baseParams=param;
+		this.load( { params: { start:0, limit: this.tam_pag } });
+	},
+
+	bdel:false,
+	bsave:false,
+	bedit:false,
+	bnew:false
 	}
 )
 </script>
