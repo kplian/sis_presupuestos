@@ -161,7 +161,7 @@ class REjecucionPorPartidaXls
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['comprometido']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['ejecutado']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['pagado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,"=F".$fila."-F".$fila);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,"=F".$fila."-G".$fila);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,"=G".$fila."-H".$fila);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,"=H".$fila."-I".$fila);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(12,$fila,$por_eje);

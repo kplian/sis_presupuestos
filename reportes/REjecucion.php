@@ -167,7 +167,7 @@ class REjecucion extends  ReportePDF {
         $this->SetTextColor(0);
         $tab = '';
 		$this->tabletextcolor=$conf_tabletextcolor;
-		$sal_comprometido = $val['formulado'] - $val['ejecutado'];
+		$sal_comprometido = $val['formulado'] - $val['comprometido'];
 		$sal_ejecutado = $val['comprometido'] - $val['ejecutado'];
 		$sal_pagado = $val['ejecutado'] - $val['pagado'];
 		

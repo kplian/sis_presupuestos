@@ -173,7 +173,7 @@ class REjecucionPorPartida extends  ReportePDF {
 			$por_eje = number_format((float)$por_eje, 2, '.', '');
 			
 			
-			$sal_comprometido = $val['formulado'] - $val['ejecutado'];
+			$sal_comprometido = $val['formulado'] - $val['comprometido'];
 			$sal_ejecutado = $val['comprometido'] - $val['ejecutado'];
 			$sal_pagado = $val['ejecutado'] - $val['pagado'];
 		
