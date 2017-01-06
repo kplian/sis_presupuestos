@@ -89,11 +89,11 @@ BEGIN
                             SELECT 
                                       prpa.id_partida,
                                       sum(COALESCE(prpa.importe, 0::numeric)) AS importe,
-                                      sum(prpa.importe_aprobado) as importe_aprobado,
+                                      sum(COALESCE(prpa.importe_aprobado, 0::numeric)) as importe_aprobado,
                                       sum(pre.f_get_estado_presupuesto_mb_x_fechas(prpa.id_presupuesto, prpa.id_partida,'formulado',p_fecha_ini,p_fecha_fin)) AS formulado,
                                       sum(pre.f_get_estado_presupuesto_mb_x_fechas(prpa.id_presupuesto, prpa.id_partida,'comprometido',p_fecha_ini,p_fecha_fin)) AS comprometido,
                                       sum(pre.f_get_estado_presupuesto_mb_x_fechas(prpa.id_presupuesto, prpa.id_partida,'ejecutado',p_fecha_ini,p_fecha_fin)) AS ejecutado,
-                                      sum(pre.f_get_estado_presupuesto_mb_x_fechas(prpa.id_presupuesto, prpa.id_partida, 'pagado',p_fecha_ini,p_fecha_fin)) AS pagado
+                                      sum(pre.f_get_estado_presupuesto_mb_x_fechas(prpa.id_presupuesto, prpa.id_partida,'pagado',p_fecha_ini,p_fecha_fin)) AS pagado
                                                       
                             into
                                v_reg_mov

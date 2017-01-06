@@ -5,7 +5,8 @@ CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_partida (
   p_id_partida integer,
   p_id_moneda integer,
   p_monto_total numeric,
-  p_resp_com varchar = 'no'::character varying
+  p_resp_com varchar = 'no'::character varying,
+  p_tipo_cambio numeric = NULL::numeric
 )
 RETURNS varchar AS
 $body$
@@ -31,6 +32,7 @@ DECLARE
   v_monto_mb  		numeric;
   v_verif_pres      varchar[];
   v_disponible		numeric;
+  v_gestion			integer;
   
 BEGIN
 
@@ -39,8 +41,16 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   v_sincronizar=pxp.f_get_variable_global('sincronizar');
   
   
+  select 
+    p.gestion::integer
+  into
+    v_gestion
+  from pre.vpresupuesto_cc p
+  where p.id_presupuesto = p_id_presupuesto::integer ;
   
-  IF(v_sincronizar='true')THEN
+  
+  
+  IF(v_sincronizar='true' and v_gestion::integer <= 2016::integer)THEN
   	
       --si la sincronizacion esta activa busca lso datos en endesis
       v_conexion:=migra.f_obtener_cadena_conexion();
@@ -71,7 +81,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
     --  si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
       
            v_id_moneda_base = param.f_get_moneda_base();
-           
+            
            IF  v_id_moneda_base != p_id_moneda THEN
                   -- tenemos tipo de cambio
                   -- si el tipo de cambio es null utilza el cambio oficial para la fecha
@@ -88,6 +98,8 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
            END IF;
       
       
+         
+    
             v_verif_pres  =  pre.f_verificar_presupuesto_individual(
                                 NULL, 
                                 NULL, 
@@ -106,8 +118,6 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
                 end if;
           
            ELSE
-            
-            
             
                  IF  v_id_moneda_base != p_id_moneda THEN
                   
@@ -136,7 +146,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   
   END IF;
 
-  
+   -- raise exception '...verifica %', v_monto_mb;
   
   return v_resp;
 

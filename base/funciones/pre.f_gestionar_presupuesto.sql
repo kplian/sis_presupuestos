@@ -60,10 +60,10 @@ BEGIN
   
   
   v_id_moneda_base = param.f_get_moneda_base();
-  -- 
+ 
   
  IF v_pre_integrar_presupuestos = 'true' THEN  
-     IF(v_sincronizar='true')THEN
+     IF(v_sincronizar='true' and p_fecha[1] <= '31/12/2016'::date)THEN
 
           /*
         PARAMETROS DE ENTRADA
@@ -127,7 +127,7 @@ BEGIN
          END IF; 
           
           
-    
+
            
            v_consulta:='select presto."f_i_pr_gestionarpresupuesto_array" ('||v_str_id_presupuesto ||',		
                                                                              '||v_str_id_partida||',   
@@ -143,12 +143,12 @@ BEGIN
                                                                               '||COALESCE(('array['|| array_to_string(p_fk_llave, ',')||']')::varchar,'NULL::integer[]')||',
                                                                               '||COALESCE(p_id_int_comprobante::varchar,'NULL') ||') ';	
 
-             
+
            
             --    raise exception '%',v_consulta; 
             select * into resultado from dblink(v_conexion,v_consulta,true) as (res numeric[]);
             
-            
+
               
             v_array_resp= resultado.res;
               
@@ -210,6 +210,10 @@ BEGIN
           
           
           -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
+          
+            IF p_nro_tramite is null THEN
+               raise exception 'La gestion de presupeusto en KERP necesita un nro de tramite de forma obligatoria';
+            END IF;
       
             --recorrer array y llamar a la funcion de ejecucion 
             FOR v_cont IN 1..array_length(p_monto_total, 1 ) LOOP
@@ -397,7 +401,7 @@ BEGIN
       END IF;
       
      
-      
+    
       
  ELSE
 

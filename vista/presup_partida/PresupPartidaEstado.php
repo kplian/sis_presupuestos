@@ -83,13 +83,14 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
+				galign: 'right ',
 				maxLength:1179650,
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -106,12 +107,13 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'importe_aprobado',
 				fieldLabel: 'Aprobado',
 				gwidth: 100,
+				galign: 'right ',
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -127,13 +129,15 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'ajustado',
 				fieldLabel: 'Ajustes',
 				gwidth: 100,
+				galign: 'right ',
 				sortable: false,
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							var tmp = record.data.importe_aprobado -  record.data.formulado;
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(tmp,'0,000.00'));
 						}
 						
 					}
@@ -149,12 +153,13 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'formulado',
 				fieldLabel: 'Vigente',
 				gwidth: 100,
+				galign: 'right ',
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -170,12 +175,13 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'comprometido',
 				fieldLabel: 'Comprometido',
 				gwidth: 100,
+				galign: 'right ',
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -191,12 +197,13 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'ejecutado',
 				fieldLabel: 'Ejecutado',
 				gwidth: 100,
+				galign: 'right ',
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -212,12 +219,13 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'pagado',
 				fieldLabel: 'Pagado',
 				gwidth: 100,
+				galign: 'right ',
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){
-							return  String.format('{0}', value);
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 						}
 						else{
-							return  String.format('<b><font size=2 >{0}</font><b>', value);
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 						}
 						
 					}
@@ -233,6 +241,7 @@ Phx.vista.PresupPartidaEstado=Ext.extend(Phx.gridInterfaz,{
 				name: 'porc_ejecucion',
 				fieldLabel: '% Ejecución',
 				gwidth: 100,
+				galign: 'right ',
 				sortable: false,
 				renderer:function (value,p,record){
 						if(record.data.tipo_reg != 'summary'){

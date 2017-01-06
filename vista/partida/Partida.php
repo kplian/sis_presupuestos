@@ -214,14 +214,14 @@ Phx.vista.Partida=Ext.extend(Phx.arbGridInterfaz,{
 	       		    lazyRender:true,
 	       		    mode: 'local',
 	       		    gwidth: 100,
-	       		    store:['presupuestario','flujo']
+	       		    store:['presupuestaria','flujo']
 	       		},
 	       		type:'ComboBox',
 	       		id_grupo:0,
 	       		filters:{	
 	       		         type: 'list',
 	       		         pfiltro:'par.sw_movimiento',
-	       				 options: ['fresupuestario','flujo'],	
+	       				 options: ['fresupuestaria','flujo'],	
 	       		 	},
 	       		grid:true,
 	       		form:true

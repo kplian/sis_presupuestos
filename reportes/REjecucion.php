@@ -126,7 +126,7 @@ class REjecucion extends  ReportePDF {
                         's11' => 'SALDO POR PAGAR',   
                         's12' => '% EJE');
                          
-        $this-> MultiRow($RowArray,false,1);
+        $this-> MultiRow2($RowArray,false,1);
 		
 		
     }
@@ -305,7 +305,7 @@ class REjecucion extends  ReportePDF {
         
        
 						
-		$this-> MultiRow($RowArray,$fill,1);
+		$this-> MultiRow2($RowArray,$fill,1);
 		
 	}
 
@@ -338,7 +338,7 @@ class REjecucion extends  ReportePDF {
             $this->tablenumbers=array(0,);
             $this->tableborders=array('T');		
 	        $RowArray = array('espacio' => '');     
-	        $this-> MultiRow($RowArray,false,1);			
+	        $this-> MultiRow2($RowArray,false,1);			
 			
 	
   }

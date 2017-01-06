@@ -67,6 +67,11 @@ BEGIN
      
           --  verificar que el presupuesto este  aprobado
           
+         
+          IF p_nro_tramite is null THEN
+               raise exception 'La gestión de presupuesto en KERP necesita un nro de tramite de forma obligatoria';
+          END IF;
+          
           IF p_id_partida_ejecucion is not null THEN
           
              select 
@@ -77,6 +82,8 @@ BEGIN
                p_id_partida
              from pre.tpartida_ejecucion pe
              where pe.id_partida_ejecucion = p_id_partida_ejecucion;
+         
+            
           
           END IF;
           
@@ -103,8 +110,9 @@ BEGIN
                   -- si el tipo de cambio es null utilza el cambio oficial para la fecha
                   IF  p_monto_total_mb is null THEN
                   v_monto_mb  =   param.f_convertir_moneda (
-                             v_id_moneda_base, 
-                             p_id_moneda,   
+                             
+                             p_id_moneda, 
+                             v_id_moneda_base,  
                              p_monto_total, 
                              p_fecha,
                              'CUS',50, 
@@ -117,6 +125,7 @@ BEGIN
               v_monto_mb = p_monto_total;
            END IF;
            
+             --raise exception '...verifica %', v_monto_mb;
            
            --TODO , ....  que ahcer cuando queremos pagar directamente ... pero no tenemos comprometido ni ejecutado?
             

@@ -61,6 +61,7 @@ BEGIN
   v_id_moneda_base = param.f_get_moneda_base();
   -- 
   
+  
  IF v_pre_integrar_presupuestos = 'true' THEN  
               
           
@@ -229,9 +230,15 @@ BEGIN
             ---------------------------------
             
             --  para revertirn es requerido el id partida ejeucion ????
-             IF p_id_partida_ejecucion is null THEN
-                raise exception 'para revertir es necesario indicar el id partida ejecucion original';
-             END IF;
+            --  RESP 02/12/2016  no deberia ser necesario el id partida ejecucion por que en comprobantes manuales
+            --  de serlo  no es posible identificarlo
+            --  TODO ... hacerlo no obligatorio ...
+            --   la reversion  funciona  sin partida ejecucion en el nuevo sistema de presupesutos
+            --   aparentemente el id es requerido para trabajar con la primera  version de ENDESIS
+            
+            --  IF p_id_partida_ejecucion is null THEN
+            --    raise exception 'para revertir es necesario indicar el id partida ejecucion original';
+            -- END IF;
             
             
              IF  p_sw_ejecutar = 'si'  and v_sw_momento in ('ejecutado','pagado') THEN

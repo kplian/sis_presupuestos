@@ -67,7 +67,7 @@ BEGIN
 
 						from pre.tagrupador_presupuesto agrpre
                         inner join pre.vpresupuesto_cc pre on pre.id_presupuesto = agrpre.id_presupuesto
-						inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
+						left join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
                         inner join segu.tusuario usu1 on usu1.id_usuario = agrpre.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = agrpre.id_usuario_mod
 				        where  ';
@@ -95,7 +95,7 @@ BEGIN
 			v_consulta:='select count(id_agrupador_presupuesto)
 					    from pre.tagrupador_presupuesto agrpre
                         inner join pre.vpresupuesto_cc pre on pre.id_presupuesto = agrpre.id_presupuesto
-						inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
+						left join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
                         inner join segu.tusuario usu1 on usu1.id_usuario = agrpre.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = agrpre.id_usuario_mod
 					    where ';
