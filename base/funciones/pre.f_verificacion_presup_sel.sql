@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_verificacion_presup_sel (
   p_administrador integer,
   p_id_usuario integer,

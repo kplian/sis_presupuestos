@@ -44,6 +44,7 @@ DECLARE
   v_id_moneda					integer;
   id_partida_ejecucion_raiz		integer;
   v_registros					record;
+  v_gestion						integer;
   
   
 BEGIN
@@ -57,7 +58,16 @@ BEGIN
   IF v_pre_integrar_presupuestos = 'true' THEN 
   
       
-      IF(v_sincronizar='true')THEN
+     select
+       cc.gestion::integer
+     into
+       v_gestion
+     from pre.tpartida_ejecucion p
+     inner join pre.vpresupuesto_cc cc on cc.id_presupuesto = p.id_presupuesto
+     where p.id_partida_ejecucion = p_id_partida_ejecucion;
+     
+  
+      IF(v_sincronizar='true' and v_gestion <= 2016 )THEN
       	
             --si la sincronizacion esta activa busca lso datos en endesis
             v_conexion:=migra.f_obtener_cadena_conexion();
