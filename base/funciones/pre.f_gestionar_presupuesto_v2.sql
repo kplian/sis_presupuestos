@@ -61,6 +61,7 @@ BEGIN
   v_id_moneda_base = param.f_get_moneda_base();
   -- 
   
+  raise notice 'ENTRA EN LA EJECUCION PRESUPUESTARIA';
   
  IF v_pre_integrar_presupuestos = 'true' THEN  
               
@@ -73,78 +74,82 @@ BEGIN
  
           IF    p_monto_total > 0 THEN 
           
-          
+                
+                raise notice '---- % ----- %',p_sw_comprometer , v_sw_momento;
+                
                 --, si no tenemos comprometido, ...y queremos pagar directamente o ejecutar ????????
                 IF  p_sw_comprometer = 'si' and v_sw_momento in ('ejecutado','pagado') THEN
                  
-                     --comprometemos
-                     --ejecutamos por defecto solo lo solicitado
-                     v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                              p_id_usuario, 
-                                              p_tipo_cambio, 
-                                              p_id_presupuesto, 
-                                              p_id_partida, 
-                                              p_id_moneda, 
-                                              p_monto_total, 
-                                              p_fecha, 
-                                              'comprometido'::varchar, --traducido a varchar
-                                              p_id_partida_ejecucion::integer, 
-                                              p_columna_relacion, 
-                                              p_fk_llave, 
-                                              p_nro_tramite, 
-                                              p_id_int_comprobante,
-                                              p_monto_total_mb);
-                                              
-                     --si tiene error retornamos  
-                     IF v_resultado_ges[1] = 0 THEN
-                        return v_resultado_ges;
-                     END IF;              
-                                              
-                     --ejecutamos
-                     
-                     
-                     
-                     v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                              p_id_usuario, 
-                                              p_tipo_cambio, 
-                                              p_id_presupuesto, 
-                                              p_id_partida, 
-                                              p_id_moneda, 
-                                              p_monto_total, 
-                                              p_fecha, 
-                                              'ejecutado'::varchar, --traducido a varchar
-                                              v_resultado_ges[2]::integer,   --partida ejecucion
-                                              p_columna_relacion, 
-                                              p_fk_llave, 
-                                              p_nro_tramite, 
-                                              p_id_int_comprobante,
-                                              p_monto_total_mb);
-                     
-                  
-                      
-                     IF  v_sw_momento = 'pagado' THEN
-                     
-                         -- pagamos
-                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                              p_id_usuario, 
-                                              p_tipo_cambio, 
-                                              p_id_presupuesto, 
-                                              p_id_partida, 
-                                              p_id_moneda, 
-                                              p_monto_total, 
-                                              p_fecha, 
-                                              'pagado'::varchar, --traducido a varchar
-                                              v_resultado_ges[2]::integer,   --partida ejecucion
-                                              p_columna_relacion, 
-                                              p_fk_llave, 
-                                              p_nro_tramite, 
-                                              p_id_int_comprobante,
-                                              p_monto_total_mb);
-                        
-                                              
-                                  
+                         --comprometemos
+                          raise notice '-> COMRPOMETEMOS  PRESUPUESTO ... MB %, IDP %, TOTAL %, FECHA %',p_monto_total_mb, p_id_presupuesto, p_monto_total, p_fecha;
+                 
+                         --ejecutamos por defecto solo lo solicitado
+                         v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                                  p_id_usuario, 
+                                                  p_tipo_cambio, 
+                                                  p_id_presupuesto, 
+                                                  p_id_partida, 
+                                                  p_id_moneda, 
+                                                  p_monto_total, 
+                                                  p_fecha, 
+                                                  'comprometido'::varchar, --traducido a varchar
+                                                  p_id_partida_ejecucion::integer, 
+                                                  p_columna_relacion, 
+                                                  p_fk_llave, 
+                                                  p_nro_tramite, 
+                                                  p_id_int_comprobante,
+                                                  p_monto_total_mb);
+                                                  
+                         --si tiene error retornamos  
+                         IF v_resultado_ges[1] = 0 THEN
+                            return v_resultado_ges;
+                         END IF;              
+                                                  
+                         --ejecutamos
                          
-                     END IF;
+                         raise notice '-> EJECUTAMOS PRESUPUESTO ... MB %, IDP %, TOTAL %, FECHA %',p_monto_total_mb, p_id_presupuesto, p_monto_total, p_fecha;
+                         
+                         v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                                  p_id_usuario, 
+                                                  p_tipo_cambio, 
+                                                  p_id_presupuesto, 
+                                                  p_id_partida, 
+                                                  p_id_moneda, 
+                                                  p_monto_total, 
+                                                  p_fecha, 
+                                                  'ejecutado'::varchar, --traducido a varchar
+                                                  v_resultado_ges[2]::integer,   --partida ejecucion
+                                                  p_columna_relacion, 
+                                                  p_fk_llave, 
+                                                  p_nro_tramite, 
+                                                  p_id_int_comprobante,
+                                                  p_monto_total_mb);
+                         
+                      
+                          
+                         IF  v_sw_momento = 'pagado' THEN
+                         
+                             -- pagamos
+                              v_resultado_ges = pre.f_gestionar_presupuesto_individual(
+                                                  p_id_usuario, 
+                                                  p_tipo_cambio, 
+                                                  p_id_presupuesto, 
+                                                  p_id_partida, 
+                                                  p_id_moneda, 
+                                                  p_monto_total, 
+                                                  p_fecha, 
+                                                  'pagado'::varchar, --traducido a varchar
+                                                  v_resultado_ges[2]::integer,   --partida ejecucion
+                                                  p_columna_relacion, 
+                                                  p_fk_llave, 
+                                                  p_nro_tramite, 
+                                                  p_id_int_comprobante,
+                                                  p_monto_total_mb);
+                            
+                                                  
+                                      
+                             
+                         END IF;
                     
                      
                        
@@ -152,6 +157,10 @@ BEGIN
                 ELSIF  p_sw_ejecutar = 'si' and v_sw_momento in ('ejecutado','pagado') THEN 
                
                      --ejecutamos
+                     
+                      raise notice '-> EJECUTAMOS PRESUPUESTO ... MB %, IDP %, TOTAL %, FECHA %',p_monto_total_mb, p_id_presupuesto, p_monto_total, p_fecha;
+                         
+                     
                       v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario, 
                                               p_tipo_cambio, 
@@ -172,11 +181,15 @@ BEGIN
                      IF v_resultado_ges[1] = 0 THEN
                         return v_resultado_ges;
                      END IF; 
+                     
+                     raise notice' RESULTADO EJECUCION %',v_resultado_ges; 
                                                
                           
                      IF  v_sw_momento = 'pagado' THEN
                                           
                          -- pagamos
+                         raise notice '-> PAGAMOS PRESUPUESTO ... MB %, IDP %, TOTAL %, FECHA %',p_monto_total_mb, p_id_presupuesto, p_monto_total, p_fecha;
+                      
                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario, 
                                               p_tipo_cambio, 
@@ -185,15 +198,18 @@ BEGIN
                                               p_id_moneda, 
                                               p_monto_total, 
                                               p_fecha, 
-                                              'pagado', --traducido a varchar
-                                              v_resultado_ges[2],   --partida ejecucion
+                                              'pagado'::varchar, --traducido a varchar
+                                              v_resultado_ges[2]::integer,   --partida ejecucion
                                               p_columna_relacion, 
                                               p_fk_llave, 
                                               p_nro_tramite, 
                                               p_id_int_comprobante,
                                               p_monto_total_mb);
                                               
-                           
+                                              
+                          raise notice 'respuesta pago: %' ,v_resultado_ges;
+                                              
+                            
                          
                       END IF;
                       
