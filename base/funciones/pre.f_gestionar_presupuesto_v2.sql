@@ -160,148 +160,148 @@ BEGIN
                                               p_id_moneda, 
                                               p_monto_total, 
                                               p_fecha, 
-                                              'ejecutado', --traducido a varchar
-                                              p_id_partida_ejecucion,   --partida ejecucion
-                                              p_columna_relacion, 
-                                              p_fk_llave, 
-                                              p_nro_tramite, 
+                                              'ejecutado'::varchar, --traducido a varchar
+                                              p_id_partida_ejecucion::integer,   --partida ejecucion
+                                              p_columna_relacion,
+                                              p_fk_llave,
+                                              p_nro_tramite,
                                               p_id_int_comprobante,
                                               p_monto_total_mb);
-                                              
+
                       --si tiene error retornamos
                      IF v_resultado_ges[1] = 0 THEN
                         return v_resultado_ges;
-                     END IF; 
-                                               
-                          
+                     END IF;
+
+
                      IF  v_sw_momento = 'pagado' THEN
-                                          
+
                          -- pagamos
                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                              p_id_usuario, 
-                                              p_tipo_cambio, 
-                                              p_id_presupuesto, 
-                                              p_id_partida, 
-                                              p_id_moneda, 
-                                              p_monto_total, 
-                                              p_fecha, 
-                                              'pagado', --traducido a varchar
-                                              v_resultado_ges[2],   --partida ejecucion
-                                              p_columna_relacion, 
-                                              p_fk_llave, 
-                                              p_nro_tramite, 
+                                              p_id_usuario,
+                                              p_tipo_cambio,
+                                              p_id_presupuesto,
+                                              p_id_partida,
+                                              p_id_moneda,
+                                              p_monto_total,
+                                              p_fecha,
+                                              'pagado'::varchar, --traducido a varchar
+                                              v_resultado_ges[2]::integer,   --partida ejecucion
+                                              p_columna_relacion,
+                                              p_fk_llave,
+                                              p_nro_tramite,
                                               p_id_int_comprobante,
                                               p_monto_total_mb);
-                                              
-                           
-                         
+
+
+
                       END IF;
-                      
-                      
-                    
-                    
+
+
+
+
                 ELSE
-                   
+
                    --  ejecutamos por defecto solo lo solicitado
                    v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                            p_id_usuario, 
-                                            p_tipo_cambio, 
-                                            p_id_presupuesto, 
-                                            p_id_partida, 
-                                            p_id_moneda, 
-                                            p_monto_total, 
-                                            p_fecha, 
+                                            p_id_usuario,
+                                            p_tipo_cambio,
+                                            p_id_presupuesto,
+                                            p_id_partida,
+                                            p_id_moneda,
+                                            p_monto_total,
+                                            p_fecha,
                                             v_sw_momento, --traducido a varchar
-                                            p_id_partida_ejecucion, 
-                                            p_columna_relacion, 
-                                            p_fk_llave, 
-                                            p_nro_tramite, 
+                                            p_id_partida_ejecucion,
+                                            p_columna_relacion,
+                                            p_fk_llave,
+                                            p_nro_tramite,
                                             p_id_int_comprobante,
                                             p_monto_total_mb);
-                                            
-                                     
+
+
                 END IF;
-                
+
         ELSEIF    p_monto_total < 0 THEN
-            
+
             ----------------------------------
             --  SI SON REVERSIONES
-            --  
+            --
             ---------------------------------
-            
+
             --  para revertirn es requerido el id partida ejeucion ????
             --  RESP 02/12/2016  no deberia ser necesario el id partida ejecucion por que en comprobantes manuales
             --  de serlo  no es posible identificarlo
             --  TODO ... hacerlo no obligatorio ...
             --   la reversion  funciona  sin partida ejecucion en el nuevo sistema de presupesutos
             --   aparentemente el id es requerido para trabajar con la primera  version de ENDESIS
-            
+
             --  IF p_id_partida_ejecucion is null THEN
             --    raise exception 'para revertir es necesario indicar el id partida ejecucion original';
             -- END IF;
-            
-            
+
+
              IF  p_sw_ejecutar = 'si'  and v_sw_momento in ('ejecutado','pagado') THEN
                    -- revertir el pagado , ejecutado y comprometido
-                   
+
                    IF  v_sw_momento = 'pagado' THEN
-                      
+
                          v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                                p_id_usuario, 
-                                                p_tipo_cambio, 
-                                                p_id_presupuesto, 
-                                                p_id_partida, 
-                                                p_id_moneda, 
-                                                p_monto_total, 
-                                                p_fecha, 
-                                                'pagado', --traducido a varchar
-                                                p_id_partida_ejecucion, 
-                                                p_columna_relacion, 
-                                                p_fk_llave, 
-                                                p_nro_tramite, 
+                                                p_id_usuario,
+                                                p_tipo_cambio,
+                                                p_id_presupuesto,
+                                                p_id_partida,
+                                                p_id_moneda,
+                                                p_monto_total,
+                                                p_fecha,
+                                                'pagado'::varchar, --traducido a varchar
+                                                p_id_partida_ejecucion::integer,
+                                                p_columna_relacion,
+                                                p_fk_llave,
+                                                p_nro_tramite,
                                                 p_id_int_comprobante,
                                                 p_monto_total_mb);
-                                                
-                                                
-                         --si tiene error retornamos  
+
+
+                         --si tiene error retornamos
                          IF v_resultado_ges[1] = 0 THEN
                             return v_resultado_ges;
                          END IF;
                    END IF;
-                   
+
                    --revertimos el ejecutado
                    v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                            p_id_usuario, 
-                                            p_tipo_cambio, 
-                                            p_id_presupuesto, 
-                                            p_id_partida, 
-                                            p_id_moneda, 
-                                            p_monto_total, 
-                                            p_fecha, 
-                                            'ejecutado', --traducido a varchar
-                                            p_id_partida_ejecucion, 
-                                            p_columna_relacion, 
-                                            p_fk_llave, 
-                                            p_nro_tramite, 
+                                            p_id_usuario,
+                                            p_tipo_cambio,
+                                            p_id_presupuesto,
+                                            p_id_partida,
+                                            p_id_moneda,
+                                            p_monto_total,
+                                            p_fecha,
+                                            'ejecutado'::varchar, --traducido a varchar
+                                            p_id_partida_ejecucion::integer,
+                                            p_columna_relacion,
+                                            p_fk_llave,
+                                            p_nro_tramite,
                                             p_id_int_comprobante,
                                             p_monto_total_mb);
-                   
-                   --si tiene error retornamos  
+
+                   --si tiene error retornamos
                    IF v_resultado_ges[1] = 0 THEN
                       return v_resultado_ges;
                    END IF;
-                          
+
                    --ejecutado o pagado siempre revertimso el comprometido
                    v_resultado_ges = pre.f_gestionar_presupuesto_individual(
-                                            p_id_usuario, 
-                                            p_tipo_cambio, 
-                                            p_id_presupuesto, 
-                                            p_id_partida, 
-                                            p_id_moneda, 
-                                            p_monto_total, 
-                                            p_fecha, 
-                                            'comprometido', --traducido a varchar
-                                            p_id_partida_ejecucion, 
+                                            p_id_usuario,
+                                            p_tipo_cambio,
+                                            p_id_presupuesto,
+                                            p_id_partida,
+                                            p_id_moneda,
+                                            p_monto_total,
+                                            p_fecha,
+                                            'comprometido'::varchar, --traducido a varchar
+                                            p_id_partida_ejecucion::integer,
                                             p_columna_relacion, 
                                             p_fk_llave, 
                                             p_nro_tramite, 
