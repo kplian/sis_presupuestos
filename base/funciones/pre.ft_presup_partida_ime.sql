@@ -33,6 +33,8 @@ DECLARE
     v_registros				record;
     v_factor				numeric;
     v_resp_presu		    varchar;
+    v_registro_partidas  	record;
+    v_id_partida 			integer;
 
 BEGIN
 
@@ -147,32 +149,55 @@ BEGIN
 
 		begin
 
-            select
-              pre.estado,
+        select	pres.id_partida
+					into
+                    v_id_partida
+            		from pre.tpartida_ejecucion prj
+            		inner join pre.tpresup_partida pres on pres.id_presupuesto = prj.id_presupuesto
+                    where pres.id_presup_partida = v_parametros.id_presup_partida;
+        select
+              pa.tipo_movimiento,
+              pa.monto_mb,
+              pa.monto
+             	into
+                v_registro_partidas
+            from pre.tpresupuesto pr
+            inner join pre.tpresup_partida pp on pr.id_presupuesto = pp.id_presupuesto
+            inner join pre.tpartida_ejecucion pa on pa.id_presupuesto = pr.id_presupuesto
+            where pp.id_presup_partida = v_parametros.id_presup_partida and pa.id_partida = v_id_partida;
+
+        select
+              pr.estado,
               pp.importe
-            into
-             v_registros
-            from pre.tpresupuesto pre
-            inner join pre.tpresup_partida pp on pre.id_presupuesto = pp.id_presupuesto
-            where pp.id_presup_partida = v_parametros.id_presup_partida;
+              into
+            v_registros
+            from pre.tpresupuesto pr
+            inner join pre.tpresup_partida pp on pr.id_presupuesto = pp.id_presupuesto
+           	where pp.id_presup_partida = v_parametros.id_presup_partida;
 
 
-            --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
-            /*IF  v_registros.estado != 'borrador' THEN
-            raise exception 'Solo puede elimnar partidas en presupuesto en estado borrador';
-            END IF;*/
+             --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
 
-            IF v_registros.estado = 'aprobado' and v_registros.importe = 0 or v_registros.estado = 'borrador'  THEN
+            IF  v_registros.estado = 'formulacion' or v_registros.estado = 'aprobado' and v_registros.importe > 0
+            	or v_registros.estado = 'vobopre' or v_registros.estado = 'revision' THEN
 
-            else
-             raise exception 'Solo puede elimnar partidas en presupuesto en estado borrador';
-            end IF;
+                raise exception 'Solo puede elimnar partidas en presupuesto en estado borrador';
+
+            ELSIF  v_registros.estado = 'aprobado' THEN
+            	IF  v_registro_partidas.tipo_movimiento = 'formulado' and v_registro_partidas.monto <> 0 THEN
+            		raise exception 'Tiene un monto de % %',v_registro_partidas.monto ||' tipo Movimiento ',v_registro_partidas.tipo_movimiento;
+			ELSE
+                IF v_registros.importe = 0 and v_registro_partidas.tipo_movimiento != 'formulado' and v_registro_partidas.monto <> 0 THEN
+            		raise exception 'Tiene un monto de % %',v_registro_partidas.monto ||' tipo Movimiento ',v_registro_partidas.tipo_movimiento;
+				END IF;
+            END IF;
+            END IF;
+
             IF v_registros.importe > 0 THEN
                raise exception 'Tiene que eliminar primero las memorias de calculo asociadas a esta partida';
             END IF;
 
-
-            --Sentencia de la eliminacion
+           --Sentencia de la eliminacion
 			delete from pre.tpresup_partida
             where id_presup_partida=v_parametros.id_presup_partida;
 

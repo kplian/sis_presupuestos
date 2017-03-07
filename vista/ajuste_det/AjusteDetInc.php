@@ -51,6 +51,25 @@ Phx.vista.AjusteDetInc = {
         
          this.load({params:{start:0, limit:50}});
    },
+
+    iniciarEventos : function() {
+
+        this.Cmp.id_presupuesto.on('select', function (c, r, i) {
+
+            //this.Cmp.id_partida.store.setBaseParam('id_presupuesto',r.data.id_presupuesto);
+            //this.Cmp.id_partida.modificado = true;
+            //this.Cmp.id_partida.reset();
+
+
+        }, this);
+    },
+    onButtonEdit : function () {
+        var selected = this.sm.getSelected().data;
+        //Phx.vista.AjusteDet.superclass.onButtonEdit.call(this);
+        //this.Cmp.id_partida.store.setBaseParam('id_presupuesto',selected.id_presupuesto);
+        //this.Cmp.id_partida.enable();
+        //this.Cmp.id_partida.modificado = true;
+    },
    
    loadValoresIniciales:function(){
         Phx.vista.AjusteDetInc.superclass.loadValoresIniciales.call(this);
