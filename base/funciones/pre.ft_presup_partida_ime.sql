@@ -17,8 +17,8 @@ $body$
  HISTORIAL DE MODIFICACIONES:
 
  DESCRIPCION:
- AUTOR:
- FECHA:
+ AUTOR: Admin
+ FECHA: 07/03/2017
 ***************************************************************************/
 
 DECLARE
@@ -174,7 +174,7 @@ BEGIN
             from pre.tpresupuesto pr
             inner join pre.tpresup_partida pp on pr.id_presupuesto = pp.id_presupuesto
            	where pp.id_presup_partida = v_parametros.id_presup_partida;
-
+            --Validar
 
              --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
 
