@@ -34,7 +34,7 @@ Phx.vista.AjusteDetInc = {
         }
        
    },
-   //llegas
+   //ll
    onReloadPage:function(m){
 		this.maestro=m;
         this.store.baseParams={id_ajuste: this.maestro.id_ajuste, tipo_ajuste: 'incremento'};
