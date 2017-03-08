@@ -18,7 +18,7 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
 		this.iniciarEventos();
 		
 	},
-			
+			//llegas
 	Atributos:[
 		{
 			//configuracion del componente

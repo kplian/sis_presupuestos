@@ -47,7 +47,7 @@ BEGIN
  	#AUTOR:		admin
  	#FECHA:		29-02-2016 19:40:34
 	***********************************/
-
+--llega
 	if(p_transaccion='PRE_PRPA_INS')then
 
         begin
