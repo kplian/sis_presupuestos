@@ -153,8 +153,9 @@ class MODPresupPartida extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_presup_partida','id_presup_partida','int4');
+       // $this->setParametro('id_partida','id_partida','int4');
 
-		//Ejecuta la instruccion
+        //Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
 
@@ -215,6 +216,43 @@ class MODPresupPartida extends MODbase{
 			
 			//Devuelve la respuesta
 			return $this->respuesta;
+	}
+
+	function listarPresupPartidaComprometidoXNroTramiteRendicion(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='pre.ft_presup_partida_sel';
+		$this->transaccion='PRE_PRENROREN_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->setParametro('nro_tramite','nro_tramite','varchar');
+
+		$this->capturaCount('total_importe_comprometido','numeric');
+		$this->capturaCount('total_importe_ejecutado','numeric');
+		$this->capturaCount('total_importe_pagado','numeric');
+
+
+		$this->captura('id_presup_partida','int4');
+		$this->captura('id_partida','int4');
+		$this->captura('id_presupuesto','int4');
+		$this->captura('desc_partida','text');
+		$this->captura('id_centro_costo','int4');
+		$this->captura('codigo_cc','TEXT');
+		$this->captura('id_gestion','int4');
+		$this->captura('id_uo','int4');
+		$this->captura('id_ep','int4');
+		$this->captura('tipo_pres','varchar');
+		$this->captura('nro_tramite','varchar');
+		$this->captura('comprometido','numeric');
+		$this->captura('ejecutado','numeric');
+		$this->captura('pagado','numeric');
+
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
 	}
 
     function listarRepEjecucion(){

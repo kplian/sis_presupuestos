@@ -143,6 +143,39 @@ class ACTPresupPartida extends ACTbase{
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 
+	function listarPresupPartidaComprometidoXNroTramiteRendicion(){
+		$this->objParam->defecto('ordenacion','id_presup_partida');
+		$this->objParam->defecto('dir_ordenacion','asc');
+		/*
+		if($this->objParam->getParametro('nro_tramite')!=''){
+			$this->objParam->addFiltro("prpa.nro_tramite = ''".$this->objParam->getParametro('nro_tramite')."''");
+		}
+		*/
+
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODPresupPartida','listarPresupPartidaComprometidoXNroTramiteRendicion');
+		} else{
+			$this->objFunc=$this->create('MODPresupPartida');
+
+			$this->res=$this->objFunc->listarPresupPartidaComprometidoXNroTramiteRendicion($this->objParam);
+		}
+
+		$temp = Array();
+		$temp['comprometido'] = $this->res->extraData['total_importe_comprometido'];
+		$temp['ejecutado'] = $this->res->extraData['total_importe_ejecutado'];
+		$temp['pagado'] = $this->res->extraData['total_importe_pagado'];
+		$temp['tipo_reg'] = 'summary';
+		$temp['id_presup_partida'] = 0;
+
+		$this->res->total++;
+
+		$this->res->addLastRecDatos($temp);
+
+
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
 	function recuperarDatosGestion(){    	
 		$this->objFunc = $this->create('sis_parametros/MODGestion');
 		$cbteHeader = $this->objFunc->obtenerGestionById($this->objParam);
