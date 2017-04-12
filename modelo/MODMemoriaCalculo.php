@@ -142,10 +142,8 @@ class MODMemoriaCalculo extends MODbase{
          $this->captura('importe_unitario','NUMERIC');
          $this->captura('cantidad_mem','NUMERIC');
          $this->captura('importe','NUMERIC');
-		  
-		              
-		
-
+		 
+		 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
