@@ -58,6 +58,26 @@ class MODPresupuesto extends MODbase{
 		return $this->respuesta;
 	}
 
+    function listarPresupuestoRest(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.ft_presupuesto_sel';
+        $this->transaccion='PRE_PREREST_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->setCount(false);
+        $this->setParametro('gestion','gestion','varchar');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_centro_costo','int4');
+        $this->captura('descripcion','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
     function listarPresupuestoCmb(){
 		//Definicion de variables para ejecucion del procedimientp
 		$this->procedimiento='pre.ft_presupuesto_sel';

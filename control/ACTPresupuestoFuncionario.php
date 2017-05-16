@@ -28,6 +28,12 @@ class ACTPresupuestoFuncionario extends ACTbase{
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+	function listarCentroCostoFuncionarios(){
+		$this->objFunc=$this->create('MODPresupuestoFuncionario');
+		$this->res=$this->objFunc->listarCentroCostoFuncionarios($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 				
 	function insertarPresupuestoFuncionario(){
 		$this->objFunc=$this->create('MODPresupuestoFuncionario');	
