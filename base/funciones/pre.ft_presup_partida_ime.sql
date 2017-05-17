@@ -63,7 +63,7 @@ BEGIN
 
 
            --TODO aumentar una bnadera de correccion al presupuesto para añadir partidas
-           IF  v_registros.estado not in  ('borrador','finalizado') THEN
+           IF  v_registros.estado not in  ('borrador','aprobado') THEN
              raise exception 'Solo puede añadir partidas en presupuesto en estado borrador';
            END IF;
 
