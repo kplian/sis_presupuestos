@@ -133,17 +133,19 @@ class MODMemoriaCalculo extends MODbase{
 		 
 		 $this->captura('id_concepto_ingas','int4');
          $this->captura('id_partida','int4');
-         $this->captura('codigo_partida','varchar');
-         $this->captura('nombre_partida','varchar');
+		 
+         $this->captura('codigo_partida','varchar');		 	 
+         $this->captura('nombre_partida','varchar');		 
 		 $this->captura('descripcion_pres','varchar');
-         $this->captura('desc_ingas','varchar');
+        
+		 $this->captura('desc_ingas','varchar');
          $this->captura('justificacion','varchar');
          $this->captura('unidad_medida','varchar');
          $this->captura('importe_unitario','NUMERIC');
          $this->captura('cantidad_mem','NUMERIC');
          $this->captura('importe','NUMERIC');
 		 
-		 
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

@@ -128,7 +128,7 @@ class MODObjetivo extends MODbase{
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('id_objetivo_fk','id_objetivo_fk','int4');
+		$this->setParametro('id_objetivo_fk','id_objetivo_fk','varchar');
 		$this->setParametro('nivel_objetivo','nivel_objetivo','int4');
 		$this->setParametro('sw_transaccional','sw_transaccional','varchar');
 		$this->setParametro('cantidad_verificacion','cantidad_verificacion','numeric');
@@ -163,7 +163,7 @@ class MODObjetivo extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_objetivo','id_objetivo','int4');
-		$this->setParametro('id_objetivo_fk','id_objetivo_fk','int4');
+		$this->setParametro('id_objetivo_fk','id_objetivo_fk','varchar');
 		$this->setParametro('nivel_objetivo','nivel_objetivo','int4');
 		$this->setParametro('sw_transaccional','sw_transaccional','varchar');
 		$this->setParametro('cantidad_verificacion','cantidad_verificacion','numeric');

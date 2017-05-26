@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_objetivo_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -29,7 +31,8 @@ DECLARE
 	v_resp		            varchar;
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
-	v_id_objetivo	integer;
+	v_id_objetivo			integer;
+    v_id_objetivo_fk		integer;
 			    
 BEGIN
 
@@ -46,6 +49,23 @@ BEGIN
 	if(p_transaccion='PRE_OBJ_INS')then
 					
         begin
+        
+        
+           IF v_parametros.id_objetivo_fk != 'id' and v_parametros.id_objetivo_fk != '' THEN
+                   v_id_objetivo_fk  = v_parametros.id_objetivo_fk::integer;
+              END IF;
+              
+              -- buscamos que el codigo  no se repita
+              
+              IF exists(SELECT 1
+                        from pre.tobjetivo c 
+                        where trim(c.codigo) = trim(v_parametros.codigo)                      
+                        and c.estado_reg = 'activo') THEN
+                  
+                  raise exception 'El código   % ya existe', v_parametros.codigo;
+              
+              END IF;
+            
         	--Sentencia de la insercion
         	insert into pre.tobjetivo(
 			id_objetivo_fk,
@@ -73,7 +93,7 @@ BEGIN
 			fecha_mod,
 			id_usuario_mod
           	) values(
-			v_parametros.id_objetivo_fk,
+			v_id_objetivo_fk,
 			v_parametros.nivel_objetivo,
 			v_parametros.sw_transaccional,
 			v_parametros.cantidad_verificacion,
@@ -121,29 +141,45 @@ BEGIN
 	elsif(p_transaccion='PRE_OBJ_MOD')then
 
 		begin
+        
+              IF v_parametros.id_objetivo_fk != 'id' and v_parametros.id_objetivo_fk != '' THEN
+                   v_id_objetivo_fk  = v_parametros.id_objetivo_fk::integer;
+              END IF;
+              
+              -- buscamos que el codigo  no se repita
+              
+              IF exists(SELECT 1
+                        from pre.tobjetivo c 
+                        where trim(c.codigo) = trim(v_parametros.codigo)                      
+                        and c.estado_reg = 'activo')
+                        and c.id_objetivo != v_parametros.id_objetivo  THEN
+                  
+                  raise exception 'El código   % ya existe', v_parametros.codigo;
+              
+              END IF;
 			--Sentencia de la modificacion
 			update pre.tobjetivo set
-			id_objetivo_fk = v_parametros.id_objetivo_fk,
-			nivel_objetivo = v_parametros.nivel_objetivo,
-			sw_transaccional = v_parametros.sw_transaccional,
-			cantidad_verificacion = v_parametros.cantidad_verificacion,
-			unidad_verificacion = v_parametros.unidad_verificacion,
-			ponderacion = v_parametros.ponderacion,
-			fecha_inicio = v_parametros.fecha_inicio,
-			tipo_objetivo = v_parametros.tipo_objetivo,
-			descripcion = v_parametros.descripcion,
-			linea_base = v_parametros.linea_base,
-			id_parametros = v_parametros.id_parametros,
-			indicador_logro = v_parametros.indicador_logro,
-			id_gestion = v_parametros.id_gestion,
-			codigo = v_parametros.codigo,
-			periodo_ejecucion = v_parametros.periodo_ejecucion,
-			producto = v_parametros.producto,
-			fecha_fin = v_parametros.fecha_fin,
-			fecha_mod = now(),
-			id_usuario_mod = p_id_usuario,
-			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+                id_objetivo_fk = v_id_objetivo_fk,
+                nivel_objetivo = v_parametros.nivel_objetivo,
+                sw_transaccional = v_parametros.sw_transaccional,
+                cantidad_verificacion = v_parametros.cantidad_verificacion,
+                unidad_verificacion = v_parametros.unidad_verificacion,
+                ponderacion = v_parametros.ponderacion,
+                fecha_inicio = v_parametros.fecha_inicio,
+                tipo_objetivo = v_parametros.tipo_objetivo,
+                descripcion = v_parametros.descripcion,
+                linea_base = v_parametros.linea_base,
+                id_parametros = v_parametros.id_parametros,
+                indicador_logro = v_parametros.indicador_logro,
+                id_gestion = v_parametros.id_gestion,
+                codigo = v_parametros.codigo,
+                periodo_ejecucion = v_parametros.periodo_ejecucion,
+                producto = v_parametros.producto,
+                fecha_fin = v_parametros.fecha_fin,
+                fecha_mod = now(),
+                id_usuario_mod = p_id_usuario,
+                id_usuario_ai = v_parametros._id_usuario_ai,
+                usuario_ai = v_parametros._nombre_usuario_ai
 			where id_objetivo=v_parametros.id_objetivo;
                
 			--Definicion de la respuesta
