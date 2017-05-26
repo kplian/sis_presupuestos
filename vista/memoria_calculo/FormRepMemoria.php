@@ -369,7 +369,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 		}],
 		
 	ActSave:'../../sis_presupuestos/control/MemoriaCalculo/reporteMemoriaCalculo',
-	timeout : 1500000,
+	timeout : 2500000,
 	
 	onSubmit: function(o, x, force){
 		Phx.vista.FormRepMemoria.superclass.onSubmit.call(this,o, x, force);

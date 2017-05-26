@@ -197,36 +197,38 @@ BEGIN
                             id_partida,
                             codigo_partida,
                             nombre_partida,
+                            descripcion_pres,
                             desc_ingas,
                             justificacion,
                             unidad_medida,
                             importe_unitario,
                             cantidad_mem,
                             importe
-                          FROM 
+                          FROM
                             pre.vmemoria_por_categoria
                           WHERE '||v_filtro||'
                           group by
-                              
+
                               '||v_grupos||'
-                                   
+
                               id_concepto_ingas,
                               id_partida,
                               codigo_partida,
                               nombre_partida,
+                              descripcion_pres,
                               desc_ingas,
                               justificacion,
                               unidad_medida,
                               importe_unitario,
                               cantidad_mem,
-                              importe 
-                          
-                          order by  
-                               
-                              '||v_ordenacion||'     
+                              importe
+
+                          order by
+
+                              '||v_ordenacion||'
                               codigo_partida asc ';
-			
-			raise notice '.. % ..', v_consulta;
+
+			raise notice '..... % ......', v_consulta;
 			 --  Devuelve la respuesta
 			return v_consulta;
 						

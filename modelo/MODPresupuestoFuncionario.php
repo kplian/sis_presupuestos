@@ -43,6 +43,25 @@ class MODPresupuestoFuncionario extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+	function listarCentroCostoFuncionarios(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='pre.f_get_funcionarios_x_cc';
+		$this->transaccion='PRE_FUNCCC_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+
+		$this->setParametro('id_cc','id_cc','integer');
+		$this->setParametro('gestion','gestion','integer');
+		//Definicion de la lista del resultado del query
+		$this->captura('id_funcionario','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 	function insertarPresupuestoFuncionario(){
 		//Definicion de variables para ejecucion del procedimiento

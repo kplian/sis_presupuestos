@@ -28,7 +28,20 @@ class REjecucionPorPartidaXls
 	var $datos_entidad;
 	var $datos_periodo;
 	var $ult_codigo_partida;
-	var $ult_concepto;	
+	var $ult_concepto;
+
+	//Variables para el calculo de totales por columna.
+    var $totales_segun_memoria = 0;
+    var $totales_aprobado = 0;
+    var $totales_ajustado = 0;
+    var $totales_vigente = 0;
+    var $totales_comprometido = 0;
+    var $totales_ejecutado = 0;
+    var $totales_pagado = 0;
+    var $totales_saldoXcomprometer = 0;
+    var $totales_saldoXdevengar = 0;
+    var $totales_saldoXpagar = 0;
+    var $totales_porcentaje_ejecucion = 0;
 	
 	
 	
@@ -69,7 +82,7 @@ class REjecucionPorPartidaXls
 	}
 	
 	function datosHeader ( $detalle, $totales, $gestion,$dataEmpresa) {
-		
+		//var_dump($detalle);exit;
 		$this->datos_detalle = $detalle;
 		$this->datos_titulo = $totales;
 		$this->datos_entidad = $dataEmpresa;
@@ -105,7 +118,7 @@ class REjecucionPorPartidaXls
 								         )
 								     ));
 
-       $this->docexcel->getActiveSheet()->getStyle('A1:M1')->applyFromArray($styleTitulos);
+       $this->docexcel->getActiveSheet()->getStyle('B1:M1')->applyFromArray($styleTitulos);
 		
 		//*************************************Cabecera*****************************************
 		//$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[0])->setWidth(20);		
@@ -117,7 +130,7 @@ class REjecucionPorPartidaXls
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[3])->setWidth(20);
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,1,'Aprobado');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[4])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,1,'Ajustado');		
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,1,'Modificado');//Ajustado
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[5])->setWidth(20);
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,1,'Vigente');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[6])->setWidth(20);
@@ -150,27 +163,89 @@ class REjecucionPorPartidaXls
 				$por_eje = 0;
 			}
 			$por_eje = number_format((float)$por_eje, 2, '.', '');
-				
-							
+
+            $ajustado = $value['formulado'] - $value['importe_aprobado'];
+            $sal_comprometido = $value['formulado'] - $value['comprometido'];
+            $sal_ejecutado = $value['comprometido'] - $value['ejecutado'];
+            $sal_pagado = $value['ejecutado'] - $value['pagado'];
+
+            $styleTitulos = array(
+                'font'  => array(
+                    'bold'  => true,
+                    'size'  => 8,
+                    'name'  => 'Arial'
+                ),
+                'borders' => array(
+                    'allborders' => array(
+                        'style' => PHPExcel_Style_Border::BORDER_THIN
+                    )
+                ));
+
+            $this->docexcel->getActiveSheet()->getStyle('B'.$fila.':'.'M'.$fila)->applyFromArray($styleTitulos);
+
 			//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(0,$fila,$value['codigo_partida']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,$fila,$value['codigo_cc']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,$fila,$value['importe']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,$fila,$value['importe_aprobado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,$fila,"=F".$fila."-D".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$value['formulado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['comprometido']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['ejecutado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['pagado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,"=F".$fila."-G".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,"=G".$fila."-H".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,"=H".$fila."-I".$fila);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,$fila,$value['importe_aprobado']);//D
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,$fila,$ajustado);//"=F".$fila."-D".$fila
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$value['formulado']);//F
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['comprometido']);//G
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['ejecutado']);//H
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['pagado']);//I
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,$sal_comprometido);//"=F".$fila."-G".$fila
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,$sal_ejecutado);//"=G".$fila."-H".$fila
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,$sal_pagado);//"=H".$fila."-I".$fila
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(12,$fila,$por_eje);
+
+            $this->totales_segun_memoria += $value['importe'];
+            $this->totales_aprobado += $value['importe_aprobado'];
+            $this->totales_ajustado += $ajustado;
+            $this->totales_vigente += $value['formulado'];
+            $this->totales_comprometido += $value['comprometido'];
+            $this->totales_ejecutado += $value['ejecutado'];
+            $this->totales_pagado += $value['pagado'];
+            $this->totales_saldoXcomprometer += $sal_comprometido;
+            $this->totales_saldoXdevengar += $sal_ejecutado;
+            $this->totales_saldoXpagar += $sal_pagado;
+            $this->totales_porcentaje_ejecucion += $por_eje;
 						
 			//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(14,$fila,"=SUM(C".$fila.":N".$fila.")");
 			
 			$fila++;
 			$contador++;
 		}
+
+        $styleTitulos = array(
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 8,
+                'name'  => 'Arial'
+            ),
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => 'FACC2E')
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            ));
+
+        $this->docexcel->getActiveSheet()->getStyle('B'.$fila.':'.'M'.$fila)->applyFromArray($styleTitulos);
+
+        $por_eje = number_format((float)$this->totales_porcentaje_ejecucion, 2, '.', '');
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,$fila,'TOTALES');
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,$fila,$this->totales_segun_memoria);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,$fila,$this->totales_aprobado);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,$fila,$this->totales_ajustado);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$this->totales_vigente);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$this->totales_comprometido);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$this->totales_ejecutado);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$this->totales_pagado);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,$this->totales_saldoXcomprometer);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,$this->totales_saldoXdevengar);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,$this->totales_saldoXpagar);
+        $this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(12,$fila,$por_eje);
 		//************************************************Fin Detalle***********************************************
 		
 	}
