@@ -17,8 +17,9 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
 		this.initButtons=[this.cmbGestion];
     	//llama al constructor de la clase padre
 		Phx.vista.Objetivo.superclass.constructor.call(this,config);
-		this.init();
 		this.loaderTree.baseParams={id_gestion:0};
+		this.init();
+		
 		//this.load({params:{start:0, limit:this.tam_pag}})
 		this.cmbGestion.on('select',this.capturaFiltros,this);
 		
