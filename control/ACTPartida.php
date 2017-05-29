@@ -6,7 +6,7 @@
 *@date 23-11-2012 20:06:53
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-
+require_once(dirname(__FILE__).'/../reportes/RPartidaEjecutadoXls.php');
 class ACTPartida extends ACTbase{    
 			
 	function listarPartida(){
@@ -200,6 +200,55 @@ class ACTPartida extends ACTbase{
 		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
 		
 	}
+	function listarPartidaEjecutados(){
+		$this->objFunc = $this->create('MODPartida');
+		$cbteHeader = $this->objFunc->listarPartidaEjecutado($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){
+			return $cbteHeader;
+		}
+		else{
+			$cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}
+
+	}
+	function listarPartidaEjecutadoTotal(){
+		$this->objFunc = $this->create('MODPartida');
+		$cbteHeader = $this->objFunc->listarPartidaEjecutadoTotal($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){
+			return $cbteHeader;
+		}
+		else{
+			$cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}
+
+	}
+    function listarPartidaEjecutado (){
+        //if($this->objParam->getParametro('tipo_movimiento')=='comprometido' or $this->objParam->getParametro('tipo_movimiento')=='ejecutado'){
+		$dataSource = $this->listarPartidaEjecutados();
+        //}
+        //else
+        //{
+            $dataSourceTotal = $this->listarPartidaEjecutadoTotal();
+
+        //}
+       // var_dump($dataSourceTotal);exit;
+		$nombreArchivo = uniqid(md5(session_id()).'Partidas').'.xls';
+		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+		$reporte = new RPartidaEjecutadoXls($this->objParam);
+		$reporte->datosHeader($dataSource->getDatos(),$dataSource->extraData,$dataSourceTotal->getDatos());
+		$reporte->generarReporte();
+		$this->mensajeExito=new Mensaje();
+		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
+
+
+
+    }
+
 			
 }
 

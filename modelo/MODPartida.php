@@ -181,6 +181,157 @@ class MODPartida extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+    function listarPartidaEjecutado(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.f_rep_evaluacion_de_partidas';
+        $this->transaccion='REP_PAR_EJE';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this-> setCount(false);
+        $this->setTipoRetorno('record');
+
+        $this->setParametro('id_cp_programa','id_cp_programa','int4');
+        $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+        $this->setParametro('id_partida','id_partida','int4');//nuevo
+        $this->setParametro('id_presupuesto','id_presupuesto','int4');
+        $this->setParametro('id_gestion','id_gestion','int4');
+        $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+        $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+        $this->setParametro('nivel','nivel','int4');
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+        $this->setParametro('tipo_movimiento','tipo_movimiento','varchar');
+
+        $this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+        $this->captura('cod_prg','varchar');
+
+
+        $this->captura('c1','NUMERIC');
+        $this->captura('c2','NUMERIC');
+        $this->captura('c3','NUMERIC');
+        $this->captura('c4','NUMERIC');
+        $this->captura('c5','NUMERIC');
+        $this->captura('c6','NUMERIC');
+        $this->captura('c7','NUMERIC');
+        $this->captura('c8','NUMERIC');
+        $this->captura('c9','NUMERIC');
+        $this->captura('c10','NUMERIC');
+        $this->captura('c11','NUMERIC');
+        $this->captura('c12','NUMERIC');
+
+        $this->captura('b1', 'NUMERIC');
+        $this->captura('b2', 'NUMERIC');
+        $this->captura('b3', 'NUMERIC');
+        $this->captura('b4', 'NUMERIC');
+        $this->captura('b5', 'NUMERIC');
+        $this->captura('b6', 'NUMERIC');
+        $this->captura('b7', 'NUMERIC');
+        $this->captura('b8', 'NUMERIC');
+        $this->captura('b9', 'NUMERIC');
+        $this->captura('b10', 'NUMERIC');
+        $this->captura('b11', 'NUMERIC');
+        $this->captura('b12', 'NUMERIC');
+
+        $this->captura('total_programado', 'NUMERIC');
+        $this->captura('importe_aprobado', 'NUMERIC');
+        $this->captura('modificaciones', 'NUMERIC');
+        $this->captura('total_comp_ejec', 'NUMERIC');
+
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+       //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function listarPartidaEjecutadoTotal(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.f_rep_evaluacion_de_partidas';
+        $this->transaccion='REP_PAR_CE';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this-> setCount(false);
+        $this->setTipoRetorno('record');
+        $this->setParametro('id_cp_programa','id_cp_programa','int4');
+        $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+        $this->setParametro('id_partida','id_partida','int4');//nuevo
+        $this->setParametro('id_presupuesto','id_presupuesto','int4');
+        $this->setParametro('id_gestion','id_gestion','int4');
+        $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
+        $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
+        $this->setParametro('nivel','nivel','int4');
+        $this->setParametro('fecha_ini','fecha_ini','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
+        $this->setParametro('tipo_movimiento','tipo_movimiento','varchar');
+
+        $this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+        $this->captura('cod_prg','varchar');
+        $this->captura('c1','NUMERIC');
+        $this->captura('c2','NUMERIC');
+        $this->captura('c3','NUMERIC');
+        $this->captura('c4','NUMERIC');
+        $this->captura('c5','NUMERIC');
+        $this->captura('c6','NUMERIC');
+        $this->captura('c7','NUMERIC');
+        $this->captura('c8','NUMERIC');
+        $this->captura('c9','NUMERIC');
+        $this->captura('c10','NUMERIC');
+        $this->captura('c11','NUMERIC');
+        $this->captura('c12','NUMERIC');
+        $this->captura('b1', 'NUMERIC');
+        $this->captura('b2', 'NUMERIC');
+        $this->captura('b3', 'NUMERIC');
+        $this->captura('b4', 'NUMERIC');
+        $this->captura('b5', 'NUMERIC');
+        $this->captura('b6', 'NUMERIC');
+        $this->captura('b7', 'NUMERIC');
+        $this->captura('b8', 'NUMERIC');
+        $this->captura('b9', 'NUMERIC');
+        $this->captura('b10', 'NUMERIC');
+        $this->captura('b11', 'NUMERIC');
+        $this->captura('b12', 'NUMERIC');
+        $this->captura('f1','NUMERIC');
+        $this->captura('f2','NUMERIC');
+        $this->captura('f3','NUMERIC');
+        $this->captura('f4','NUMERIC');
+        $this->captura('f5','NUMERIC');
+        $this->captura('f6','NUMERIC');
+        $this->captura('f7','NUMERIC');
+        $this->captura('f8','NUMERIC');
+        $this->captura('f9','NUMERIC');
+        $this->captura('f10','NUMERIC');
+        $this->captura('f11','NUMERIC');
+        $this->captura('f12','NUMERIC');
+
+        $this->captura('total_programado', 'NUMERIC');
+        $this->captura('importe_aprobado', 'NUMERIC');
+        $this->captura('modificaciones', 'NUMERIC');
+        $this->captura('total_comprometido', 'NUMERIC');
+        $this->captura('total_ejecutado', 'NUMERIC');
+
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+        return $this->respuesta;
+   }
+
+
 }
 ?>
+
+
+
+
+
+
+
+
