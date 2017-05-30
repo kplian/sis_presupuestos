@@ -235,10 +235,38 @@ class MODPartida extends MODbase{
         $this->captura('b11', 'NUMERIC');
         $this->captura('b12', 'NUMERIC');
 
+        $this->captura('diferencia1', 'NUMERIC');
+        $this->captura('diferencia2', 'NUMERIC');
+        $this->captura('diferencia3', 'NUMERIC');
+        $this->captura('diferencia4', 'NUMERIC');
+        $this->captura('diferencia5', 'NUMERIC');
+        $this->captura('diferencia6', 'NUMERIC');
+        $this->captura('diferencia7', 'NUMERIC');
+        $this->captura('diferencia8', 'NUMERIC');
+        $this->captura('diferencia9', 'NUMERIC');
+        $this->captura('diferencia10', 'NUMERIC');
+        $this->captura('diferencia11', 'NUMERIC');
+        $this->captura('diferencia12', 'NUMERIC');
+
+        $this->captura('acumulado1', 'NUMERIC');
+        $this->captura('acumulado2', 'NUMERIC');
+        $this->captura('acumulado3', 'NUMERIC');
+        $this->captura('acumulado4', 'NUMERIC');
+        $this->captura('acumulado5', 'NUMERIC');
+        $this->captura('acumulado6', 'NUMERIC');
+        $this->captura('acumulado7', 'NUMERIC');
+        $this->captura('acumulado8', 'NUMERIC');
+        $this->captura('acumulado9', 'NUMERIC');
+        $this->captura('acumulado10', 'NUMERIC');
+        $this->captura('acumulado11', 'NUMERIC');
+        $this->captura('acumulado12', 'NUMERIC');
+
+
         $this->captura('total_programado', 'NUMERIC');
         $this->captura('importe_aprobado', 'NUMERIC');
         $this->captura('modificaciones', 'NUMERIC');
         $this->captura('total_comp_ejec', 'NUMERIC');
+
 
 
         $this->armarConsulta();

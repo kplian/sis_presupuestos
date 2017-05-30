@@ -2034,7 +2034,7 @@ class RPartidaEjecutadoXls
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(129, $fila,$value['total_comp_ejec']);
                     $difereicaTotal = $value['total_programado'] - $value['total_comp_ejec'];
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(133, $fila,$difereicaTotal);
-                    $saldoPresupuestoComprometido = $value['total_comp_ejec'] - $presupuestoVigente;
+                    $saldoPresupuestoComprometido =  $presupuestoVigente - $value['total_comp_ejec'];
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(131, $fila,$saldoPresupuestoComprometido);
                     $totalDiferenciaVigente = $presupuestoVigente - $value['total_comp_ejec'];
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(135, $fila,$totalDiferenciaVigente);
@@ -2056,63 +2056,36 @@ class RPartidaEjecutadoXls
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(108, $fila, $value['b11']);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(118, $fila, $value['b12']);
 
-                    $diferecia1 = $value['c1'] - $value['b1'];
-                    $diferecia2 = $value['c2'] - $value['b2'];
-                    $diferecia3 = $value['c3'] - $value['b3'];
-                    $diferecia4 = $value['c4'] - $value['b4'];
-                    $diferecia5 = $value['c5'] - $value['b5'];
-                    $diferecia6 = $value['c6'] - $value['b6'];
-                    $diferecia7 = $value['c7'] - $value['b7'];
-                    $diferecia8 = $value['c8'] - $value['b8'];
-                    $diferecia9 = $value['c9'] - $value['b9'];
-                    $diferecia10 = $value['c10'] - $value['b10'];
-                    $diferecia11 = $value['c11'] - $value['b11'];
-                    $diferecia12 = $value['c12'] - $value['b12'];
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['diferencia1']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(20, $fila, $value['diferencia2']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(30, $fila, $value['diferencia3']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(40, $fila, $value['diferencia4']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(50, $fila, $value['diferencia5']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(60, $fila, $value['diferencia6']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(70, $fila, $value['diferencia7']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(80, $fila, $value['diferencia8']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(90, $fila, $value['diferencia9']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(100, $fila,$value['diferencia10']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(110, $fila,$value['diferencia11']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(120, $fila,$value['diferencia12']);
 
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $diferecia1);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(20, $fila, $diferecia2);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(30, $fila, $diferecia3);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(40, $fila, $diferecia4);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(50, $fila, $diferecia5);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(60, $fila, $diferecia6);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(70, $fila, $diferecia7);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(80, $fila, $diferecia8);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(90, $fila, $diferecia9);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(100, $fila, $diferecia10);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(110, $fila, $diferecia11);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(120, $fila, $diferecia12);
-
-                    $acumulado1 = $value['b1'];
-                    $acumulado2 = $value['b1'] + $value['b2'];
-                    $acumulado3 = $value['b1'] + $value['b2'] + $value['b3'] ;
-                    $acumulado4 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'];
-                    $acumulado5 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'];
-                    $acumulado6 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] ;
-                    $acumulado7 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'];
-                    $acumulado8 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'] + $value['b8'];
-                    $acumulado9 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'] + $value['b8'] + $value['b9'];
-                    $acumulado10 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'] + $value['b8'] + $value['b9'] + $value['b10'];
-                    $acumulado11 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'] + $value['b8'] + $value['b9'] + $value['b10'] + $value['b11'];
-                    $acumulado12 = $value['b1'] + $value['b2'] + $value['b3'] + $value['b4'] + $value['b5'] + $value['b6'] + $value['b7'] + $value['b8'] + $value['b9'] + $value['b10'] + $value['b11'] + $value['b12'];
-
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila,$acumulado1);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(22, $fila,$acumulado2);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(32, $fila,$acumulado3);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(42, $fila,$acumulado4);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(52, $fila,$acumulado5);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(62, $fila,$acumulado6);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(72, $fila,$acumulado7);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(82, $fila,$acumulado8);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(92, $fila,$acumulado9);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(102, $fila,$acumulado10);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(112, $fila,$acumulado11);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(122, $fila,$acumulado12);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['acumulado1']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(22, $fila, $value['acumulado2']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(32, $fila, $value['acumulado3']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(42, $fila, $value['acumulado4']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(52, $fila, $value['acumulado5']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(62, $fila, $value['acumulado6']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(72, $fila, $value['acumulado7']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(82, $fila, $value['acumulado8']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(92, $fila, $value['acumulado9']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(102, $fila,$value['acumulado10']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(112, $fila,$value['acumulado11']);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(122, $fila,$value['acumulado12']);
                     if($value['c1']!=0){
                         $por_eje = ($value['b1']/$value['c1']*100);
                     }
                     else{
                         $por_eje = 0;
-
                     }
                     if($value['c2']!=0){
                         $por_eje2 = ($value['b2']/$value['c2']*100);
@@ -2180,22 +2153,6 @@ class RPartidaEjecutadoXls
                     else{
                         $por_eje12 = 0;
                     }
-                    if($value['total_programado']!=0){
-                        $por_total = ($value['total_comp_ejec']/$value['total_programado']*100);
-                    }
-                    else{
-                        $por_total = 0;
-                    }
-                    if($presupuestoVigente!=0){
-                        $por_total_eje_vigente = ($value['total_comp_ejec']/$presupuestoVigente*100);
-                    }
-                    else{
-                        $por_total_eje_vigente  = 0;
-                    }
-                    $por_total_eje_vigente = number_format((float)$por_total_eje_vigente, 2, '.', '');
-
-
-
 
                     $por_eje = number_format((float)$por_eje, 2, '.', '');
                     $por_eje2 = number_format((float)$por_eje2, 2, '.', '');
@@ -2209,7 +2166,6 @@ class RPartidaEjecutadoXls
                     $por_eje10 = number_format((float)$por_eje10, 2, '.', '');
                     $por_eje11 = number_format((float)$por_eje11, 2, '.', '');
                     $por_eje12 = number_format((float)$por_eje12, 2, '.', '');
-                    $por_total = number_format((float)$por_total, 2, '.', '');
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila,$por_eje );
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(24, $fila,$por_eje2 );
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(34, $fila,$por_eje3 );
@@ -2222,15 +2178,17 @@ class RPartidaEjecutadoXls
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(104, $fila,$por_eje10);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(114, $fila,$por_eje11);
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(124, $fila,$por_eje12);
+
+
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(130, $fila,$value['total_comp_ejec']);
                     $difereicaTotal = $value['total_programado'] - $value['total_comp_ejec'];
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(134, $fila,$difereicaTotal);
-                    $saldoPresupuestoComprometido = $value['total_comp_ejec'] - $presupuestoVigente;
+                    $saldoPresupuestoComprometido =  $presupuestoVigente - $value['total_comp_ejec'] ;
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(132, $fila,$saldoPresupuestoComprometido);
                     $totalDiferenciaVigente = $presupuestoVigente - $value['total_comp_ejec'];
                     $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(136, $fila,$totalDiferenciaVigente);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(138, $fila,$por_total);
-                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(140, $fila,$por_total_eje_vigente);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(138, $fila,$por_total);
+                    //$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(140, $fila,$por_total_eje_vigente);
 
                 }
                 $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(125, $fila,$value['total_programado']);
@@ -2243,8 +2201,11 @@ class RPartidaEjecutadoXls
                 $fila++;
                 $this->columna++;
             }
-        }else{   ///TODO
-            $fila = 7;
+        }
+        else
+            {   ///TODO
+
+            /*$fila = 7;
             $dato2 = $this->datos_total;
             $this->cat = $dato2[0]['cod_prg'];
             $this->titulo= [0,1,2];
@@ -2576,7 +2537,7 @@ class RPartidaEjecutadoXls
                 $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(129, $fila,$value['total_comprometido']);
                 $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(130, $fila,$value['total_ejecutado']);
                 $saldoPresupuestoComprometido = $value['total_comprometido'] - $presupuestoVigente;
-                $saldoPresupuestoEjecucion= $value['total_ejecutado'] - $presupuestoVigente;
+                $saldoPresupuestoEjecucion=  $presupuestoVigente - $value['total_ejecutado'];
                 $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(131, $fila,$saldoPresupuestoComprometido);
                 $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(132, $fila,$saldoPresupuestoEjecucion);
 
@@ -2624,10 +2585,10 @@ class RPartidaEjecutadoXls
                 $this->docexcel->getActiveSheet()->getStyle("C$fila:EI$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
                 $fila++;
                 $this->columna++;
-            }
+            }*/
 
         }
-            /*$TotalMemoria = $dato2[0];
+           /* $TotalMemoria = $dato2[0];
 
              if (!array_key_exists($TotalMemoria['c1'],$this->sumaTotal)){
                  $this->sumaTotal[$TotalMemoria['c1']][$TotalMemoria['c2']][$TotalMemoria['c3']][$TotalMemoria['c4']][$TotalMemoria['c5']]
@@ -2643,9 +2604,9 @@ class RPartidaEjecutadoXls
             foreach ($this->sumaTotal as $hey => $hr){
                         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow($col,$fila,$hey);
                         $col++;
-            }*/
-
-            $fil = 6;
+            }
+            */
+           /* $fil = 6;
             $fils = $fila - 1;
             $this->docexcel->getActiveSheet()->getStyle("A$fil:E$fils")->applyFromArray($styleBordes);
             $this->docexcel->getActiveSheet()->getStyle("G$fil:O$fils")->applyFromArray($styleBordes);
@@ -2668,7 +2629,7 @@ class RPartidaEjecutadoXls
             $this->docexcel->getActiveSheet()->getStyle("EF$fil:EG$fils")->applyFromArray($styleBordes);
             $this->docexcel->getActiveSheet()->getStyle("EH$fil:EI$fils")->applyFromArray($styleBordes);
             $this->docexcel->getActiveSheet()->getStyle("EJ$fil:EJ$fils")->applyFromArray($styleBordes);
-            $this->docexcel->getActiveSheet()->getStyle("EK$fil:EK$fils")->applyFromArray($styleBordes);
+            $this->docexcel->getActiveSheet()->getStyle("EK$fil:EK$fils")->applyFromArray($styleBordes);*/
 
 
        /* $categoria= $this->objParam->getParametro('id_categoria_programatica');
