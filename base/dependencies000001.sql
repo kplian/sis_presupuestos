@@ -1865,3 +1865,175 @@ ALTER TABLE pre.tmemoria_calculo
 select pxp.f_insert_testructura_gui ('PAREJE', 'REPPRE');
 
 /***********************************F-DEP-GVC-PRE-0-16/11/2016*****************************************/
+/***********************************I-DEP-MMV-PRE-0-31/05/2017*****************************************/
+CREATE VIEW pre.vprogramando_memoria_por_periodo (
+    id_presup_partida,
+    id_partida,
+    id_presupuesto,
+    descripcion,
+    id_categoria_programatica,
+    id_cp_programa,
+    importe_enero,
+    importe_febrero,
+    importe_marzo,
+    importe_abril,
+    importe_mayo,
+    importe_junio,
+    importe_julio,
+    importe_agosto,
+    importe_septiembre,
+    importe_octubre,
+    importe_noviembre,
+    importe_diciembre)
+AS
+SELECT pp.id_presup_partida,
+    pp.id_partida,
+    pp.id_presupuesto,
+    p.descripcion,
+    cp.id_categoria_programatica,
+    cp.id_cp_programa,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 120::numeric)) AS importe_enero,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 121::numeric)) AS importe_febrero,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 122::numeric)) AS importe_marzo,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 123::numeric)) AS importe_abril,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 124::numeric)) AS importe_mayo,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 125::numeric)) AS importe_junio,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 126::numeric)) AS importe_julio,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 127::numeric)) AS importe_agosto,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 128::numeric)) AS importe_septiembre,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 129::numeric)) AS importe_octubre,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 130::numeric)) AS importe_noviembre,
+    sum(pre.f_get_total_programado_memoria_x_periodo(pp.id_partida,
+        pp.id_presupuesto, 131::numeric)) AS importe_diciembre
+FROM pre.tpresup_partida pp
+     JOIN pre.tpresupuesto p ON p.id_presupuesto = pp.id_presupuesto
+     JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica =
+         p.id_categoria_prog
+GROUP BY pp.id_partida, pp.id_presup_partida, pp.id_presupuesto, p.descripcion,
+    cp.id_categoria_programatica, cp.id_cp_programa;
+
+    CREATE VIEW pre.vpartida_comprometido_por_periodos (
+    id_presup_partida,
+    id_partida,
+    id_presupuesto,
+    descripcion,
+    id_categoria_programatica,
+    id_cp_programa,
+    importe_enero,
+    importe_febrero,
+    importe_marzo,
+    importe_abril,
+    importe_mayo,
+    importe_junio,
+    importe_julio,
+    importe_agosto,
+    importe_septiembre,
+    importe_octubre,
+    importe_noviembre,
+    importe_diciembre)
+AS
+SELECT pp.id_presup_partida,
+    pp.id_partida,
+    pp.id_presupuesto,
+    p.descripcion,
+    cp.id_categoria_programatica,
+    cp.id_cp_programa,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        1, 'comprometido'::character varying)) AS importe_enero,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        2, 'comprometido'::character varying)) AS importe_febrero,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        3, 'comprometido'::character varying)) AS importe_marzo,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        4, 'comprometido'::character varying)) AS importe_abril,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        5, 'comprometido'::character varying)) AS importe_mayo,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        6, 'comprometido'::character varying)) AS importe_junio,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        7, 'comprometido'::character varying)) AS importe_julio,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        8, 'comprometido'::character varying)) AS importe_agosto,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        9, 'comprometido'::character varying)) AS importe_septiembre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        10, 'comprometido'::character varying)) AS importe_octubre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        11, 'comprometido'::character varying)) AS importe_noviembre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        12, 'comprometido'::character varying)) AS importe_diciembre
+FROM pre.tpresup_partida pp
+     JOIN pre.tpresupuesto p ON p.id_presupuesto = pp.id_presupuesto
+     JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica =
+         p.id_categoria_prog
+GROUP BY pp.id_partida, pp.id_presup_partida, pp.id_presupuesto, p.descripcion,
+    cp.id_categoria_programatica, cp.id_cp_programa;
+
+    CREATE VIEW pre.vpartida_ejecutado_por_periodos (
+    id_presup_partida,
+    id_partida,
+    id_presupuesto,
+    descripcion,
+    id_categoria_programatica,
+    id_cp_programa,
+    importe_enero,
+    importe_febrero,
+    importe_marzo,
+    importe_abril,
+    importe_mayo,
+    importe_junio,
+    importe_julio,
+    importe_agosto,
+    importe_septiembre,
+    importe_octubre,
+    importe_noviembre,
+    importe_diciembre)
+AS
+SELECT pp.id_presup_partida,
+    pp.id_partida,
+    pp.id_presupuesto,
+    p.descripcion,
+    cp.id_categoria_programatica,
+    cp.id_cp_programa,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        1, 'ejecutado'::character varying)) AS importe_enero,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        2, 'ejecutado'::character varying)) AS importe_febrero,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        3, 'ejecutado'::character varying)) AS importe_marzo,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        4, 'ejecutado'::character varying)) AS importe_abril,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        5, 'ejecutado'::character varying)) AS importe_mayo,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        6, 'ejecutado'::character varying)) AS importe_junio,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        7, 'ejecutado'::character varying)) AS importe_julio,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        8, 'ejecutado'::character varying)) AS importe_agosto,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        9, 'ejecutado'::character varying)) AS importe_septiembre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        10, 'ejecutado'::character varying)) AS importe_octubre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        11, 'ejecutado'::character varying)) AS importe_noviembre,
+    sum(pre.f_get_ejecutado_por_periodo(pp.id_partida, pp.id_presupuesto, 15,
+        12, 'ejecutado'::character varying)) AS importe_diciembre
+FROM pre.tpresup_partida pp
+     JOIN pre.tpresupuesto p ON p.id_presupuesto = pp.id_presupuesto
+     JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica =
+         p.id_categoria_prog
+GROUP BY pp.id_partida, pp.id_presup_partida, pp.id_presupuesto, p.descripcion,
+    cp.id_categoria_programatica, cp.id_cp_programa;
+/***********************************F-DEP-MMV-PRE-0-31/05/2017*****************************************/

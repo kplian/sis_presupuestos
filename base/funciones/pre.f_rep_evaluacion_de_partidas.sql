@@ -16,7 +16,7 @@ v_resp				varchar;
 
 v_consulta varchar;
 v_registros  record;
-
+v_inner 		varchar;
 
 
 va_id_presupuesto	INTEGER[];
@@ -45,9 +45,6 @@ BEGIN
    begin
    IF v_parametros.tipo_movimiento = 'comprometido' or v_parametros.tipo_movimiento = 'ejecutado' then
     	 CREATE TEMPORARY TABLE temp_prog (
-                                --id_presupuesto integer,
-                                id_categoria_programatica integer,
-                                id_cp_programa integer,
                                 id_gestion integer,
                                 id_partida integer,
                                 codigo_partida varchar,
@@ -81,11 +78,11 @@ BEGIN
                                 b10 NUMERIC,
                                 b11 NUMERIC,
                                 b12 NUMERIC,
-
                                 total_programado numeric,
                                 importe_aprobado numeric,
                                 modificaciones numeric,
                                 total_comp_ejec numeric
+
                                 ) ON COMMIT DROP;
 
 
@@ -140,151 +137,77 @@ BEGIN
                     from param.tperiodo per
                     where per.id_gestion =  v_parametros.id_gestion
                     order by per.periodo asc) periodo;
-   select   pxp.aggarray(date_part)
-         INTO
-            v_per_eje
-		from ( select DISTINCT
-			date_part('month', per.fecha)
 
-		from pre.tpartida_ejecucion per
-        where 	per.tipo_movimiento = v_parametros.tipo_movimiento
-        		and  date_part('month',per.fecha) <= date_part('month',v_parametros.fecha_ini) and date_part('month',per.fecha)>=date_part('month',v_parametros.fecha_fin)
-		order by date_part  asc)perd;
+
+
+
+
 
    -- lista las partida basicas de cada presupuesto
+   IF v_parametros.tipo_movimiento = 'comprometido' THEN
          FOR v_registros in (
-                 select
-                                   pp.id_partida,
-                                   par.id_partida_fk,
-                                   par.codigo as codigo_partida,
-                                   par.nombre_partida,
-                                  -- pp.id_presupuesto,
-                                   cp.id_categoria_programatica,
-                                   cp.id_cp_programa,
-                                   par.nivel_partida,
-                                   par.sw_transaccional,
-                                   (CASE
-                                   WHEN
-                                   v_parametros.tipo_reporte = 'programa' THEN
-                                   'PROGRAMA '|| ma.codigo::varchar
-                                   WHEN
-                                   v_parametros.tipo_reporte = 'categoria' THEN
-                                   cp.descripcion::varchar
-                                   WHEN v_parametros.tipo_reporte = 'presupuesto' THEN
-                                   p.codigo||' - '||p.descripcion::varchar
-                                   END::varchar )as cod_prg,
-                                     (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 1 and date_part('month',v_parametros.fecha_ini)<= 1 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[1])
-                                    end) as c1,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 2 and date_part('month',v_parametros.fecha_ini)<= 2 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[2])
-                                 	end) as c2,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 3 and date_part('month',v_parametros.fecha_ini)<= 3 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[3])
-                                   end) as c3,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 4 and date_part('month',v_parametros.fecha_ini)<= 4 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[4])
-                                   end) as c4,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 5 and date_part('month',v_parametros.fecha_ini)<= 5 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[5])
-                                   end) as c5,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 6 and date_part('month',v_parametros.fecha_ini)<= 6 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[6])
-                                   end) as c6,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 7 and date_part('month',v_parametros.fecha_ini)<= 7 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[7])
-                                   end) as c7,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 8 and date_part('month',v_parametros.fecha_ini)<= 8 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[8])
-                                   end) as c8,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 9 and date_part('month',v_parametros.fecha_ini)<= 9 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[9])
-                                   end) as c9,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 10 and date_part('month',v_parametros.fecha_ini)<= 10 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[10])
-                                   end) as c10,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 11 and date_part('month',v_parametros.fecha_ini)<= 11 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[11])
-                                   end) as c11,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 12 and date_part('month',v_parametros.fecha_ini)<= 12 then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[12])
-                                   end) as c12,
-                                  --Ejecucion compro
-                                   (case
-                                  when date_part('month',v_parametros.fecha_fin)>= 1 and date_part('month',v_parametros.fecha_ini)<= 1 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,1,v_parametros.tipo_movimiento)
-                                    end) as b1,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 2 and date_part('month',v_parametros.fecha_ini)<= 2 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,2,v_parametros.tipo_movimiento)
-                                 end) as b2,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 3 and date_part('month',v_parametros.fecha_ini)<= 3 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,3,v_parametros.tipo_movimiento)
-                                   end) as b3,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 4 and date_part('month',v_parametros.fecha_ini)<= 4 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,4,v_parametros.tipo_movimiento)
-                                   end) as b4,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 5 and date_part('month',v_parametros.fecha_ini)<= 5 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,5,v_parametros.tipo_movimiento)
-                                   end) as b5,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 6 and date_part('month',v_parametros.fecha_ini)<= 6 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,6,v_parametros.tipo_movimiento)
-                                   end) as b6,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 7 and date_part('month',v_parametros.fecha_ini)<= 7 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,7,v_parametros.tipo_movimiento)
-                                   end) as b7,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 8 and date_part('month',v_parametros.fecha_ini)<= 8then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,8,v_parametros.tipo_movimiento)
-                                   end) as b8,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 9 and date_part('month',v_parametros.fecha_ini)<= 9 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,9,v_parametros.tipo_movimiento)
-                                   end) as b9,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 10 and date_part('month',v_parametros.fecha_ini)<= 10 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,10,v_parametros.tipo_movimiento)
-                                   end) as b10,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 11 and date_part('month',v_parametros.fecha_ini)<= 11 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,11,v_parametros.tipo_movimiento)
-                                   end) as b11,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 12 and date_part('month',v_parametros.fecha_ini)<= 12 then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,12,v_parametros.tipo_movimiento)
-                                   end) as b12,
-                                   pre.f_get_ejecucion_programa_memoria_total(pp.id_partida, pp.id_presupuesto,v_parametros.id_gestion) as total_programado,
-                                   round( pre.f_get_presupuesto_aprobado_por_gestion(pp.id_partida,pp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(pp.id_partida,pp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
-                   				   pre.f_presupuesto_ajuste_de_por_gestion(pp.id_partida,pp.id_presupuesto,v_parametros.id_gestion) modificaciones,
-                                   pre.f_get_estado_presupuesto_mb_x_fechas(pp.id_presupuesto, pp.id_partida,v_parametros.tipo_movimiento,v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comp_ejec
-  							      from pre.tpresup_partida pp
-                                  inner join pre.tpartida par on par.id_partida = pp.id_partida
-                                  inner join pre.tpresupuesto p on p.id_presupuesto = pp.id_presupuesto
-                                  inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = p.id_categoria_prog
-                                  inner join pre.tcp_programa ma on ma.id_cp_programa = cp.id_cp_programa
-                                  where pp.id_presupuesto = ANY(va_id_presupuesto)) LOOP
+                  select	pp.id_partida,
+                            pp.codigo as codigo_partida,
+                            pp.nombre_partida,
+                            pp.id_partida_fk,
+                            pp.nivel_partida,
+                            pp.sw_transaccional,
+                  			(CASE
+                             WHEN
+                             v_parametros.tipo_reporte = 'programa' THEN
+                             'PROGRAMA '|| ma.codigo::varchar
+                             WHEN
+                             v_parametros.tipo_reporte = 'categoria' THEN
+                             cp.descripcion::varchar
+                             WHEN v_parametros.tipo_reporte = 'presupuesto' THEN
+                             e.descripcion::varchar
+                             END::varchar )as cod_prg,
+
+                            (md.importe_enero) as c1,
+                            (md.importe_febrero) as c2,
+                            (md.importe_marzo) as  c3,
+                            (md.importe_abril) as  c4,
+                            (md.importe_mayo) as  c5,
+                            (md.importe_junio) as  c6,
+                            (md.importe_julio) as  c7,
+                            (md.importe_agosto) as  c8,
+                            (md.importe_septiembre) as c9,
+                            (md.importe_octubre) as c10,
+                            (md.importe_noviembre) as c11,
+                            (md.importe_diciembre) as c12,
+
+                            (e.importe_enero) as b1,
+                            (e.importe_febrero) as b2,
+                            (e.importe_marzo) as  b3,
+                            (e.importe_abril) as  b4,
+                            (e.importe_mayo) as  b5,
+                            (e.importe_junio) as  b6,
+                            (e.importe_julio) as  b7,
+                            (e.importe_agosto) as  b8,
+                            (e.importe_septiembre) as  b9,
+                            (e.importe_octubre) as  b10,
+                            (e.importe_noviembre) as  b11,
+                            (e.importe_diciembre) as  b12,
+                            pre.f_get_ejecucion_programa_memoria_total(prp.id_partida, prp.id_presupuesto,v_parametros.id_gestion) as total_programado,
+                            round( pre.f_get_presupuesto_aprobado_por_gestion(prp.id_partida,prp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
+							pre.f_presupuesto_ajuste_de_por_gestion(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) modificaciones,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,v_parametros.tipo_movimiento,v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comp_ejec
+                            from pre.tpartida pp
+                            inner join pre.tpresup_partida prp on prp.id_partida = pp.id_partida
+                           	inner join pre.vpartida_comprometido_por_periodos  e on e.id_presup_partida = prp.id_presup_partida
+                            inner join pre.vprogramando_memoria_por_periodo md on md.id_presup_partida = prp.id_presup_partida  and md.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = e.id_categoria_programatica
+                            inner join pre.tcp_programa ma on ma.id_cp_programa = e.id_cp_programa
+                            where e.id_presupuesto = ANY(va_id_presupuesto)  and
+                                                  CASE
+                                                         WHEN COALESCE(v_parametros.id_partida,0) = 0  THEN   -- todos
+                                                             0 = 0
+                                                        ELSE
+                                                            pp.id_partida = v_parametros.id_partida
+                                                        END
+                            ) LOOP
 
                            insert into temp_prog(
-                                      --id_presupuesto,
-                                      id_categoria_programatica,
-                                      id_cp_programa,
                                       id_gestion,
                                       id_partida,
                                       codigo_partida,
@@ -293,6 +216,7 @@ BEGIN
                                       nivel_partida,
                                       sw_transaccional,
                                       cod_prg,
+
                                       c1,
                                       c2,
                                       c3,
@@ -305,6 +229,7 @@ BEGIN
                                       c10,
                                       c11,
                                       c12,
+
                                        b1,
                                        b2,
                                        b3,
@@ -317,15 +242,12 @@ BEGIN
                                        b10,
                                        b11,
                                        b12,
-                           			   total_programado,
-                                	   importe_aprobado,
-                                	   modificaciones,
-                                       total_comp_ejec)
-
+                                      total_programado,
+                                      importe_aprobado,
+                                      modificaciones,
+                                      total_comp_ejec
+                                       )
                                      values   (
-                                      --v_registros.id_presupuesto,
-                                      v_registros.id_categoria_programatica,
-                                      v_registros.id_cp_programa,
                                       v_parametros.id_gestion,
                                       v_registros.id_partida,
                                       v_registros.codigo_partida,
@@ -334,6 +256,7 @@ BEGIN
                                       v_registros.nivel_partida,
                                       v_registros.sw_transaccional,
                                       v_registros.cod_prg,
+
                                       v_registros.c1,
                                       v_registros.c2,
                                       v_registros.c3,
@@ -346,6 +269,7 @@ BEGIN
                                       v_registros.c10,
                                       v_registros.c11,
                                       v_registros.c12,
+
                                       v_registros.b1,
                                       v_registros.b2,
                                       v_registros.b3,
@@ -359,8 +283,155 @@ BEGIN
                                       v_registros.b11,
                                       v_registros.b12,
                                       v_registros.total_programado,
-                                	  v_registros.importe_aprobado,
-                                	  v_registros.modificaciones,
+                                      v_registros.importe_aprobado,
+                                      v_registros.modificaciones,
+                                      v_registros.total_comp_ejec
+                                      );
+
+
+
+         END LOOP;
+          ELSIF v_parametros.tipo_movimiento = 'ejecutado'THEN
+          FOR v_registros in (
+                  select	pp.id_partida,
+                            pp.codigo as codigo_partida,
+                            pp.nombre_partida,
+                            pp.id_partida_fk,
+                            pp.nivel_partida,
+                            pp.sw_transaccional,
+                  			(CASE
+                             WHEN
+                             v_parametros.tipo_reporte = 'programa' THEN
+                             'PROGRAMA '|| ma.codigo::varchar
+                             WHEN
+                             v_parametros.tipo_reporte = 'categoria' THEN
+                             cp.descripcion::varchar
+                             WHEN v_parametros.tipo_reporte = 'presupuesto' THEN
+                             e.descripcion::varchar
+                             END::varchar )as cod_prg,
+
+                            (md.importe_enero) as c1,
+                            (md.importe_febrero) as c2,
+                            (md.importe_marzo) as  c3,
+                            (md.importe_abril) as  c4,
+                            (md.importe_mayo) as  c5,
+                            (md.importe_junio) as  c6,
+                            (md.importe_julio) as  c7,
+                            (md.importe_agosto) as  c8,
+                            (md.importe_septiembre) as c9,
+                            (md.importe_octubre) as c10,
+                            (md.importe_noviembre) as c11,
+                            (md.importe_diciembre) as c12,
+
+                            (e.importe_enero) as b1,
+                            (e.importe_febrero) as b2,
+                            (e.importe_marzo) as  b3,
+                            (e.importe_abril) as  b4,
+                            (e.importe_mayo) as  b5,
+                            (e.importe_junio) as  b6,
+                            (e.importe_julio) as  b7,
+                            (e.importe_agosto) as  b8,
+                            (e.importe_septiembre) as  b9,
+                            (e.importe_octubre) as  b10,
+                            (e.importe_noviembre) as  b11,
+                            (e.importe_diciembre) as  b12,
+                            pre.f_get_ejecucion_programa_memoria_total(prp.id_partida, prp.id_presupuesto,v_parametros.id_gestion) as total_programado,
+                            round( pre.f_get_presupuesto_aprobado_por_gestion(prp.id_partida,prp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
+							pre.f_presupuesto_ajuste_de_por_gestion(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) modificaciones,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,v_parametros.tipo_movimiento,v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comp_ejec
+                            from pre.tpartida pp
+                            inner join pre.tpresup_partida prp on prp.id_partida = pp.id_partida
+                           	inner join pre.vpartida_ejecutado_por_periodos e on e.id_presup_partida = prp.id_presup_partida
+                            inner join pre.vprogramando_memoria_por_periodo md on md.id_presup_partida = prp.id_presup_partida  and md.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = e.id_categoria_programatica
+                            inner join pre.tcp_programa ma on ma.id_cp_programa = e.id_cp_programa
+                            where e.id_presupuesto = ANY(va_id_presupuesto)and
+                                                  CASE
+                                                         WHEN COALESCE(v_parametros.id_partida,0) = 0  THEN   -- todos
+                                                             0 = 0
+                                                        ELSE
+                                                            pp.id_partida = v_parametros.id_partida
+                                                        END
+                            ) LOOP
+
+                           insert into temp_prog(
+                                      id_gestion,
+                                      id_partida,
+                                      codigo_partida,
+                                      nombre_partida,
+                                      id_partida_fk,
+                                      nivel_partida,
+                                      sw_transaccional,
+                                      cod_prg,
+
+                                      c1,
+                                      c2,
+                                      c3,
+                                      c4,
+                                      c5,
+                                      c6,
+                                      c7,
+                                      c8,
+                                      c9,
+                                      c10,
+                                      c11,
+                                      c12,
+
+                                       b1,
+                                       b2,
+                                       b3,
+                                       b4,
+                                       b5,
+                                       b6,
+                                       b7,
+                                       b8,
+                                       b9,
+                                       b10,
+                                       b11,
+                                       b12,
+                                      total_programado,
+                                      importe_aprobado,
+                                      modificaciones,
+                                      total_comp_ejec
+                                       )
+                                     values   (
+                                      v_parametros.id_gestion,
+                                      v_registros.id_partida,
+                                      v_registros.codigo_partida,
+                                      v_registros.nombre_partida,
+                                      v_registros.id_partida_fk,
+                                      v_registros.nivel_partida,
+                                      v_registros.sw_transaccional,
+                                      v_registros.cod_prg,
+
+                                      v_registros.c1,
+                                      v_registros.c2,
+                                      v_registros.c3,
+                                      v_registros.c4,
+                                      v_registros.c5,
+                                      v_registros.c6,
+                                      v_registros.c7,
+                                      v_registros.c8,
+                                      v_registros.c9,
+                                      v_registros.c10,
+                                      v_registros.c11,
+                                      v_registros.c12,
+
+                                      v_registros.b1,
+                                      v_registros.b2,
+                                      v_registros.b3,
+                                      v_registros.b4,
+                                      v_registros.b5,
+                                      v_registros.b6,
+                                      v_registros.b7,
+                                      v_registros.b8,
+                                      v_registros.b9,
+                                      v_registros.b10,
+                                      v_registros.b11,
+                                      v_registros.b12,
+                                      v_registros.total_programado,
+                                      v_registros.importe_aprobado,
+                                      v_registros.modificaciones,
                                       v_registros.total_comp_ejec
                                       );
 
@@ -368,6 +439,7 @@ BEGIN
 
          END LOOP;
 
+		END IF;
         select max(nivel_partida) into v_nivel
         from temp_prog;
 
@@ -385,39 +457,62 @@ BEGIN
                                   nombre_partida,
                                   nivel_partida,
                                   cod_prg,
-                                 sum (c1) as c1,
-                                 sum (c2) as c2,
-                                 sum (c3) as c3,
-                                 sum (c4) as c4,
-                                 sum (c5) as c5,
-                                 sum (c6) as c6,
-                                 sum (c7) as c7,
-                                 sum (c8) as c8,
-                                 sum (c9) as c9,
-                                 sum (c10) as c10,
-                                 sum (c11) as c11,
-                                 sum (c12) as c12,
-                                 sum (b1) as b1,
-                                 sum (b2) as b2,
-                                 sum (b3) as b3,
-                                 sum (b4) as b4,
-                                 sum (b5) as b5,
-                                 sum (b6) as b6,
-                                 sum (b7) as b7,
-                                 sum (b8) as b8,
-                                 sum (b9) as b9,
-                                 sum (b10) as b10,
-                                 sum (b11) as b11,
-                                 sum (b12) as b12,
-                                 sum (total_programado) as total_programado,
-                                 sum (importe_aprobado) as importe_aprobado,
-                                 sum (modificaciones) as modificaciones,
-        						 sum (total_comp_ejec) as total_comp_ejec
-                          FROM temp_prog
-                       WHERE
+                                  sum(c1) as c1,
+                                  sum(c2) as c2,
+                                  sum(c3) as c3,
+                                  sum(c4) as c4,
+                                  sum(c5) as c5,
+                                  sum(c6) as c6,
+                                  sum(c7) as c7,
+                                  sum(c8) as c8,
+                                  sum(c9) as c9,
+                                  sum(c10) as c10,
+                                  sum(c11) as c11,
+                                  sum(c12) as c12,
+                                  sum(b1) as b1,
+                                  sum(b2) as b2,
+                                  sum(b3) as b3,
+                                  sum(b4) as b4,
+                                  sum(b5) as b5,
+                                  sum(b6) as b6,
+                                  sum(b7) as b7,
+                                  sum(b8) as b8,
+                                  sum(b9) as b9,
+                                  sum(b10) as b10,
+                                  sum(b11) as b11,
+                                  sum(b12) as b12,
+                                  round(sum(c1)-sum (b1) )::numeric as diferencia1,
+                                  round(sum(c2)-sum (b2) )::numeric as diferencia2,
+                                  round(sum(c3)-sum (b3) )::numeric as diferencia3,
+                                  round(sum(c4)-sum (b4) )::numeric as diferencia4,
+                                  round(sum(c5)-sum (b5) )::numeric as diferencia5,
+                                  round(sum(c6)-sum (b6) )::numeric as diferencia6,
+                                  round(sum(c7)-sum (b7) )::numeric as diferencia7,
+                                  round(sum(c8)-sum (b8) )::numeric as diferencia8,
+                                  round(sum(c9)-sum (b9) )::numeric as diferencia9,
+                                  round(sum(c10)-sum (b10) )::numeric as diferencia10,
+                                  round(sum(c11)-sum (b11) )::numeric as diferencia11,
+                                  round(sum(c12)-sum (b12) )::numeric as diferencia12,
+                                  sum(b1)::numeric as acumulado1,
+                                  round(sum(b1) + sum(b2))::numeric as acumulado2,
+                                  round(sum(b1)+sum(b2)+sum(b3))::numeric as acumulado3,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4))::numeric as acumulado4,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5))::numeric as acumulado5,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6))::numeric as acumulado6,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7))::numeric as acumulado7,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8))::numeric as acumulado8,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9))::numeric as acumulado9,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10))::numeric as acumulado10,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11))::numeric as acumulado11,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11)+sum(b12) )::numeric as acumulado12,
+                                  sum (total_programado) as total_programado,
+                               	  sum(importe_aprobado) as importe_aprobado,
+                                  sum(modificaciones) as modificaciones,
+                                  sum(total_comp_ejec) as total_comp_ejec
 
-                              CASE WHEN v_parametros.nivel = 4  THEN
-                             	   0=0
+                                FROM temp_prog
+                      			WHERE CASE WHEN v_parametros.nivel = 4  THEN
+                             	   		0=0
                                    WHEN v_parametros.nivel = 5  THEN
                                    0=0 and nivel_partida != 1 and nivel_partida != 2
                                  	WHEN v_parametros.nivel = 0  THEN
@@ -425,12 +520,13 @@ BEGIN
                                  ELSE
                                     nivel_partida <= v_parametros.nivel
                                  END
-                       	  group by
-                             id_partida,
-                             codigo_partida,
-                             nombre_partida,
-                             nivel_partida,
-                             cod_prg
+                         GROUP BY
+                                  id_partida,
+                                  codigo_partida,
+                                  nombre_partida,
+                                  nivel_partida,
+                                  cod_prg
+
                          order by cod_prg,codigo_partida) LOOP
 
                RETURN NEXT v_registros;
@@ -444,9 +540,6 @@ BEGIN
     begin
      IF v_parametros.tipo_movimiento = 'todos' then
      CREATE TEMPORARY TABLE temp_prog (
-                                id_presupuesto integer,
-                                id_categoria_programatica integer,
-                                id_cp_programa integer,
                                 id_gestion integer,
                                 id_partida integer,
                                 codigo_partida varchar,
@@ -455,6 +548,7 @@ BEGIN
                                 nivel_partida integer,
                                 sw_transaccional varchar,
                                 cod_prg varchar,
+
                                 c1	numeric,
                                 c2 NUMERIC,
                                 c3 NUMERIC,
@@ -565,190 +659,82 @@ BEGIN
 
    -- lista las partida basicas de cada presupuesto
          FOR v_registros in (
-                 select
-                                   pp.id_partida,
-                                   par.id_partida_fk,
-                                   par.codigo as codigo_partida,
-                                   par.nombre_partida,
-                                   pp.id_presupuesto,
-                                   cp.id_categoria_programatica,
-                                   cp.id_cp_programa,
-                                   par.nivel_partida,
-                                   par.sw_transaccional,
-                                   (CASE
-                                   WHEN
-                                   v_parametros.tipo_reporte = 'programa' THEN
-                                   'PROGRAMA '|| ma.codigo::varchar
-                                   WHEN
-                                   v_parametros.tipo_reporte = 'categoria' THEN
-                                   cp.descripcion::varchar
-                                   WHEN v_parametros.tipo_reporte = 'presupuesto' THEN
-                                   p.codigo||' - '||p.descripcion::varchar
-                                   END::varchar )as cod_prg,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 1then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[1])
-                              		  end) as c1,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 2then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[2])
-                             	   end) as c2,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 3then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[3])
-                                   end) as c3,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 4then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[4])
-                                   end) as c4,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 5then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[5])
-                                   end) as c5,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 6then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[6])
-                                   end) as c6,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 7then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[7])
-                                   end) as c7,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 8then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[8])
-                                   end) as c8,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 9then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[9])
-                                   end) as c9,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 10then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[10])
-                                   end) as c10,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 11then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[11])
-                                   end) as c11,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)= 12then
-                                   pre.f_get_total_programado_memoria_x_periodo(pp.id_partida, pp.id_presupuesto, va_id_periodo[12])
-                                   end) as c12,
-                                  ---comp
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 1then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,1,'comprometido')
-                              		  end) as b1,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 2then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,2,'comprometido')
-                             	   end) as b2,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 3then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,3,'comprometido')
-                                   end) as b3,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 4then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,4,'comprometido')
-                                   end) as b4,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 5then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,5,'comprometido')
-                                   end) as b5,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 6then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,6,'comprometido')
-                                   end) as b6,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 7then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,7,'comprometido')
-                                   end) as b7,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 8then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,8,'comprometido')
-                                   end) as b8,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 9then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,9,'comprometido')
-                                   end) as b9,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 10then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,10,'comprometido')
-                                   end) as b10,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 11then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,11,'comprometido')
-                                   end) as b11,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)= 12then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,12,'comprometido')
-                                   end) as b12,
-                                   ----
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 1then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,1,'ejecutado')
-                              		  end) as f1,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 2then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,2,'ejecutado')
-                             	   end) as f2,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 3then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,3,'ejecutado')
-                                   end) as f3,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 4then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,4,'ejecutado')
-                                   end) as f4,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 5then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,5,'ejecutado')
-                                   end) as f5,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 6then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,6,'ejecutado')
-                                   end) as f6,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 7then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,7,'ejecutado')
-                                   end) as f7,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 8then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,8,'ejecutado')
-                                   end) as f8,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 9then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,9,'ejecutado')
-                                   end) as f9,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 10then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,10,'ejecutado')
-                                   end) as f10,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)>= 11then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,11,'ejecutado')
-                                   end) as f11,
-                                   (case
-                                   when date_part('month',v_parametros.fecha_fin)= 12then
-                                   pre.f_get_ejecutado_por_periodo (pp.id_partida,pp.id_presupuesto, v_parametros.id_gestion,12,'ejecutado')
-                                   end) as f12,
-                                   pre.f_get_ejecucion_programa_memoria_total(pp.id_partida, pp.id_presupuesto,v_parametros.id_gestion) as total_programado,
-                                   round( pre.f_get_presupuesto_aprobado_por_gestion(pp.id_partida,pp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(pp.id_partida,pp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
-								   pre.f_presupuesto_ajuste_de_por_gestion(pp.id_partida,pp.id_presupuesto,v_parametros.id_gestion) modificaciones,
-                                   pre.f_get_estado_presupuesto_mb_x_fechas(pp.id_presupuesto, pp.id_partida,'comprometido',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comprometido,
-                                    pre.f_get_estado_presupuesto_mb_x_fechas(pp.id_presupuesto, pp.id_partida,'ejecutado',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_ejecutado
+         select	pp.id_partida,
+                            pp.codigo as codigo_partida,
+                            pp.nombre_partida,
+                            pp.id_partida_fk,
+                            pp.nivel_partida,
+                            pp.sw_transaccional,
+                            (CASE
+                             WHEN
+                             v_parametros.tipo_reporte = 'programa' THEN
+                             'PROGRAMA '|| ma.codigo::varchar
+                             WHEN
+                             v_parametros.tipo_reporte = 'categoria' THEN
+                             cp.descripcion::varchar
+                             WHEN v_parametros.tipo_reporte = 'presupuesto' THEN
+                             e.descripcion::varchar
+                             END::varchar )as cod_prg,
 
+                             (md.importe_enero) as c1,
+                            (md.importe_febrero) as c2,
+                            (md.importe_marzo) as  c3,
+                            (md.importe_abril) as  c4,
+                            (md.importe_mayo) as  c5,
+                            (md.importe_junio) as  c6,
+                            (md.importe_julio) as  c7,
+                            (md.importe_agosto) as  c8,
+                            (md.importe_septiembre) as c9,
+                            (md.importe_octubre) as c10,
+                            (md.importe_noviembre) as c11,
+                            (md.importe_diciembre) as c12,
 
-                               from pre.tpresup_partida pp
-                               inner join pre.tpartida par on par.id_partida = pp.id_partida
-                               inner join pre.tpresupuesto p on p.id_presupuesto = pp.id_presupuesto
-                               inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = p.id_categoria_prog
-                               inner join pre.tcp_programa ma on ma.id_cp_programa = cp.id_cp_programa
-                               where pp.id_presupuesto = ANY(va_id_presupuesto)) LOOP
+                            (cm.importe_enero) as b1,
+                            (cm.importe_febrero) as b2,
+                            (cm.importe_marzo) as  b3,
+                            (cm.importe_abril) as  b4,
+                            (cm.importe_mayo) as  b5,
+                            (cm.importe_junio) as  b6,
+                            (cm.importe_julio) as  b7,
+                            (cm.importe_agosto) as  b8,
+                            (cm.importe_septiembre) as  b9,
+                            (cm.importe_octubre) as  b10,
+                            (cm.importe_noviembre) as  b11,
+                            (cm.importe_diciembre) as  b12,
+
+                            (e.importe_enero) as f1,
+                            (e.importe_febrero) as f2,
+                            (e.importe_marzo) as  f3,
+                            (e.importe_abril) as  f4,
+                            (e.importe_mayo) as  f5,
+                            (e.importe_junio) as  f6,
+                            (e.importe_julio) as  f7,
+                            (e.importe_agosto) as  f8,
+                            (e.importe_septiembre) as  f9,
+                            (e.importe_octubre) as  f10,
+                            (e.importe_noviembre) as  f11,
+                            (e.importe_diciembre) as  f12,
+                            pre.f_get_ejecucion_programa_memoria_total(prp.id_partida, prp.id_presupuesto,v_parametros.id_gestion) as total_programado,
+                            round( pre.f_get_presupuesto_aprobado_por_gestion(prp.id_partida,prp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
+							pre.f_presupuesto_ajuste_de_por_gestion(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) modificaciones,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,'comprometido',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comprometido,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,'ejecutado',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_ejecutado
+                            from pre.tpartida pp
+                            inner join pre.tpresup_partida prp on prp.id_partida = pp.id_partida
+                           	inner join pre.vpartida_ejecutado_por_periodos e on e.id_presup_partida = prp.id_presup_partida
+                            inner join pre.vpartida_comprometido_por_periodos cm on cm.id_presup_partida = prp.id_presup_partida and cm.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.vprogramando_memoria_por_periodo md on md.id_presup_partida = prp.id_presup_partida  and md.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = e.id_categoria_programatica
+                            inner join pre.tcp_programa ma on ma.id_cp_programa = e.id_cp_programa
+                            where e.id_presupuesto = ANY(va_id_presupuesto) and
+                                                  CASE
+                                                         WHEN COALESCE(v_parametros.id_partida,0) = 0  THEN   -- todos
+                                                             0 = 0
+                                                        ELSE
+                                                            pp.id_partida = v_parametros.id_partida
+                                                        END  ) LOOP
 
                            insert into temp_prog(
-                                      id_presupuesto,
-                                      id_categoria_programatica,
-                                      id_cp_programa,
                                       id_gestion,
                                       id_partida,
                                       codigo_partida,
@@ -757,6 +743,7 @@ BEGIN
                                       nivel_partida,
                                       sw_transaccional,
                                       cod_prg,
+
                                       c1,
                                       c2,
                                       c3,
@@ -804,10 +791,7 @@ BEGIN
                                       procesado)
 
                                      values   (
-                                      v_registros.id_presupuesto,
-                                      v_registros.id_categoria_programatica,
-                                      v_registros.id_cp_programa,
-                                      v_parametros.id_gestion,
+                              		  v_parametros.id_gestion,
                                       v_registros.id_partida,
                                       v_registros.codigo_partida,
                                       v_registros.nombre_partida,
@@ -923,6 +907,55 @@ BEGIN
                                   sum(f10) as f10,
                                   sum(f11) as f11,
                                   sum(f12) as f12,
+                                  round(sum(c1)-sum (b1) )::numeric as diferencia_compremetido1,
+                                  round(sum(c2)-sum (b2) )::numeric as diferencia_compremetido2,
+                                  round(sum(c3)-sum (b3) )::numeric as diferencia_compremetido3,
+                                  round(sum(c4)-sum (b4) )::numeric as diferencia_compremetido4,
+                                  round(sum(c5)-sum (b5) )::numeric as diferencia_compremetido5,
+                                  round(sum(c6)-sum (b6) )::numeric as diferencia_compremetido6,
+                                  round(sum(c7)-sum (b7) )::numeric as diferencia_compremetido7,
+                                  round(sum(c8)-sum (b8) )::numeric as diferencia_compremetido8,
+                                  round(sum(c9)-sum (b9) )::numeric as diferencia_compremetido9,
+                                  round(sum(c10)-sum (b10) )::numeric as diferencia_compremetido10,
+                                  round(sum(c11)-sum (b11) )::numeric as diferencia_compremetido11,
+                                  round(sum(c12)-sum (b12) )::numeric as diferencia_compremetido12,
+
+                                  round(sum(c1)-sum (f1) )::numeric as diferencia_ejecutado1,
+                                  round(sum(c2)-sum (f2) )::numeric as diferencia_ejecutado2,
+                                  round(sum(c3)-sum (f3) )::numeric as diferencia_ejecutado3,
+                                  round(sum(c4)-sum (f4) )::numeric as diferencia_ejecutado4,
+                                  round(sum(c5)-sum (f5) )::numeric as diferencia_ejecutado5,
+                                  round(sum(c6)-sum (f6) )::numeric as diferencia_ejecutado6,
+                                  round(sum(c7)-sum (f7) )::numeric as diferencia_ejecutado7,
+                                  round(sum(c8)-sum (f8) )::numeric as diferencia_ejecutado8,
+                                  round(sum(c9)-sum (f9) )::numeric as diferencia_ejecutado9,
+                                  round(sum(c10)-sum (f10) )::numeric as diferencia_ejecutado10,
+                                  round(sum(c11)-sum (f11) )::numeric as diferencia_ejecutado11,
+                                  round(sum(c12)-sum (f12) )::numeric as diferencia_ejecutado12,
+                                  sum(b1)::numeric as acumulado_comprendido1,
+                                  round(sum(b1) + sum(b2))::numeric as acumulado_comprendido2,
+                                  round(sum(b1)+sum(b2)+sum(b3))::numeric as acumulado_comprendido3,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4))::numeric as acumulado_comprendido4,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5))::numeric as acumulado_comprendido5,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6))::numeric as acumulado_comprendido6,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7))::numeric as acumulado_comprendido7,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8))::numeric as acumulado_comprendido8,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9))::numeric as acumulado_comprendido9,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10))::numeric as acumulado_comprendido10,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11))::numeric as acumulado_comprendido11,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11)+sum(b12) )::numeric as acumulado_comprendido12,
+                         		  sum(f1)::numeric as acumulado_ejecutado1,
+                                  round(sum(f1) + sum(f2))::numeric as acumulado_ejecutado2,
+                                  round(sum(f1)+sum(f2)+sum(f3))::numeric as acumulado_ejecutado3,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4))::numeric as acumulado_ejecutado4,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5))::numeric as acumulado_ejecutado5,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6))::numeric as acumulado_ejecutado6,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7))::numeric as acumulado_ejecutado7,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8))::numeric as acumulado_ejecutado8,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9))::numeric as acumulado_ejecutado9,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10))::numeric as acumulado_ejecutado10,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10)+sum(f11))::numeric as acumulado_ejecutado11,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10)+sum(f11)+sum(f12) )::numeric as acumulado_ejecutado12,
                                   sum (total_programado) as total_programado,
                                	  sum(importe_aprobado) as importe_aprobado,
                                   sum(modificaciones) as modificaciones,
@@ -952,6 +985,388 @@ BEGIN
        END LOOP;
        end if;
   	end;
+    ---institucional
+
+      elsif(p_transaccion='REP_PAR_INST')then
+    begin
+    if v_parametros.id_cp_programa = 0 or v_parametros.id_categoria_programatica = 0 or  v_parametros.id_presupuesto = 0 THEN
+     --raise EXCEPTION 'llega';
+     CREATE TEMPORARY TABLE temp_prog (
+                                id_gestion integer,
+                                id_partida integer,
+                                codigo_partida varchar,
+                                nombre_partida varchar,
+                                id_partida_fk integer,
+                                nivel_partida integer,
+                                sw_transaccional varchar,
+
+                                c1	numeric,
+                                c2 NUMERIC,
+                                c3 NUMERIC,
+                                c4 NUMERIC,
+                                c5 NUMERIC,
+                                c6 NUMERIC,
+                                c7 NUMERIC,
+                                c8 NUMERIC,
+                                c9 NUMERIC,
+                                c10 NUMERIC,
+                                c11 NUMERIC,
+                                c12 NUMERIC,
+
+                                b1 numeric,
+                                b2 NUMERIC,
+                                b3 NUMERIC,
+                                b4 NUMERIC,
+                                b5 NUMERIC,
+                                b6 NUMERIC,
+                                b7 NUMERIC,
+                                b8 NUMERIC,
+                                b9 NUMERIC,
+                                b10 NUMERIC,
+                                b11 NUMERIC,
+                                b12 NUMERIC,
+
+                                f1 numeric,
+                                f2 NUMERIC,
+                                f3 NUMERIC,
+                                f4 NUMERIC,
+                                f5 NUMERIC,
+                                f6 NUMERIC,
+                                f7 NUMERIC,
+                                f8 NUMERIC,
+                                f9 NUMERIC,
+                                f10 NUMERIC,
+                                f11 NUMERIC,
+                                f12 NUMERIC,
+                                total_programado numeric,
+                                importe_aprobado numeric,
+                                modificaciones numeric,
+                                total_comprometido numeric,
+                                total_ejecutado numeric,
+                                procesado varchar) ON COMMIT DROP;
+
+
+                   SELECT
+                       pxp.aggarray(p.id_presupuesto)
+                   into
+                      va_id_presupuesto
+                   FROM pre.vpresupuesto p
+                   where p.id_gestion = v_parametros.id_gestion
+                   and p.tipo_pres  = ANY (string_to_array(v_parametros.tipo_pres::text,','));
+
+         FOR v_registros in (
+         select	pp.id_partida,
+                            pp.codigo as codigo_partida,
+                            pp.nombre_partida,
+                            pp.id_partida_fk,
+                            pp.nivel_partida,
+                            pp.sw_transaccional,
+
+                            (md.importe_enero) as c1,
+                            (md.importe_febrero) as c2,
+                            (md.importe_marzo) as  c3,
+                            (md.importe_abril) as  c4,
+                            (md.importe_mayo) as  c5,
+                            (md.importe_junio) as  c6,
+                            (md.importe_julio) as  c7,
+                            (md.importe_agosto) as  c8,
+                            (md.importe_septiembre) as c9,
+                            (md.importe_octubre) as c10,
+                            (md.importe_noviembre) as c11,
+                            (md.importe_diciembre) as c12,
+
+                            (cm.importe_enero) as b1,
+                            (cm.importe_febrero) as b2,
+                            (cm.importe_marzo) as  b3,
+                            (cm.importe_abril) as  b4,
+                            (cm.importe_mayo) as  b5,
+                            (cm.importe_junio) as  b6,
+                            (cm.importe_julio) as  b7,
+                            (cm.importe_agosto) as  b8,
+                            (cm.importe_septiembre) as  b9,
+                            (cm.importe_octubre) as  b10,
+                            (cm.importe_noviembre) as  b11,
+                            (cm.importe_diciembre) as  b12,
+
+                            (e.importe_enero) as f1,
+                            (e.importe_febrero) as f2,
+                            (e.importe_marzo) as  f3,
+                            (e.importe_abril) as  f4,
+                            (e.importe_mayo) as  f5,
+                            (e.importe_junio) as  f6,
+                            (e.importe_julio) as  f7,
+                            (e.importe_agosto) as  f8,
+                            (e.importe_septiembre) as  f9,
+                            (e.importe_octubre) as  f10,
+                            (e.importe_noviembre) as  f11,
+                            (e.importe_diciembre) as  f12,
+                            pre.f_get_ejecucion_programa_memoria_total(prp.id_partida, prp.id_presupuesto,v_parametros.id_gestion) as total_programado,
+                            round( pre.f_get_presupuesto_aprobado_por_gestion(prp.id_partida,prp.id_presupuesto ,v_parametros.id_gestion) +  pre.f_presupuesto_ajuste_prueba(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) )as importe_aprobado,
+							pre.f_presupuesto_ajuste_de_por_gestion(prp.id_partida,prp.id_presupuesto,v_parametros.id_gestion) modificaciones,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,'comprometido',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_comprometido,
+                            pre.f_get_estado_presupuesto_mb_x_fechas(prp.id_presupuesto, prp.id_partida,'ejecutado',v_parametros.fecha_ini,v_parametros.fecha_fin) as total_ejecutado
+                            from pre.tpartida pp
+                            inner join pre.tpresup_partida prp on prp.id_partida = pp.id_partida
+                           	inner join pre.vpartida_ejecutado_por_periodos e on e.id_presup_partida = prp.id_presup_partida
+                            inner join pre.vpartida_comprometido_por_periodos cm on cm.id_presup_partida = prp.id_presup_partida and cm.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.vprogramando_memoria_por_periodo md on md.id_presup_partida = prp.id_presup_partida  and md.id_presupuesto = ANY(va_id_presupuesto)
+                            inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = e.id_categoria_programatica
+                            inner join pre.tcp_programa ma on ma.id_cp_programa = e.id_cp_programa
+                            where e.id_presupuesto = ANY(va_id_presupuesto) and
+                                                  CASE
+                                                         WHEN COALESCE(v_parametros.id_partida,0) = 0  THEN   -- todos
+                                                             0 = 0
+                                                        ELSE
+                                                            pp.id_partida = v_parametros.id_partida
+                                                        END  ) LOOP
+
+                           insert into temp_prog(
+                                      id_gestion,
+                                      id_partida,
+                                      codigo_partida,
+                                      nombre_partida,
+                                      id_partida_fk,
+                                      nivel_partida,
+                                      sw_transaccional,
+
+                                      c1,
+                                      c2,
+                                      c3,
+                                      c4,
+                                      c5,
+                                      c6,
+                                      c7,
+                                      c8,
+                                      c9,
+                                      c10,
+                                      c11,
+                                      c12,
+
+                                       b1,
+                                       b2,
+                                       b3,
+                                       b4,
+                                       b5,
+                                       b6,
+                                       b7,
+                                       b8,
+                                       b9,
+                                       b10,
+                                       b11,
+                                       b12,
+
+                                       f1,
+                                       f2,
+                                       f3,
+                                       f4,
+                                       f5,
+                                       f6,
+                                       f7,
+                                       f8,
+                                       f9,
+                                       f10,
+                                       f11,
+                                       f12,
+                                       total_programado,
+                                      importe_aprobado,
+                                      modificaciones,
+                                      total_comprometido,
+                                      total_ejecutado,
+
+                                      procesado)
+
+                                     values   (
+                              		  v_parametros.id_gestion,
+                                      v_registros.id_partida,
+                                      v_registros.codigo_partida,
+                                      v_registros.nombre_partida,
+                                      v_registros.id_partida_fk,
+                                      v_registros.nivel_partida,
+                                      v_registros.sw_transaccional,
+
+                                      v_registros.c1,
+                                      v_registros.c2,
+                                      v_registros.c3,
+                                      v_registros.c4,
+                                      v_registros.c5,
+                                      v_registros.c6,
+                                      v_registros.c7,
+                                      v_registros.c8,
+                                      v_registros.c9,
+                                      v_registros.c10,
+                                      v_registros.c11,
+                                      v_registros.c12,
+
+                                      v_registros.b1,
+                                      v_registros.b2,
+                                      v_registros.b3,
+                                      v_registros.b4,
+                                      v_registros.b5,
+                                      v_registros.b6,
+                                      v_registros.b7,
+                                      v_registros.b8,
+                                      v_registros.b9,
+                                      v_registros.b10,
+                                      v_registros.b11,
+                                      v_registros.b12,
+
+                                      v_registros.f1,
+                                       v_registros.f2,
+                                       v_registros.f3,
+                                       v_registros.f4,
+                                       v_registros.f5,
+                                       v_registros.f6,
+                                       v_registros.f7,
+                                       v_registros.f8,
+                                       v_registros.f9,
+                                       v_registros.f10,
+                                       v_registros.f11,
+                                       v_registros.f12,
+                                      v_registros.total_programado,
+                                      v_registros.importe_aprobado,
+                                      v_registros.modificaciones,
+                                      v_registros.total_comprometido,
+                                      v_registros.total_ejecutado,
+                                      'no');
+
+
+
+         END LOOP;
+
+        select max(nivel_partida) into v_nivel
+        from temp_prog;
+
+
+         -- recursivamente busca los padres de las partida y consolida
+        IF v_parametros.nivel != 5 THEN
+
+            PERFORM pre.f_rep_evaluacion_recursivo_institucional(v_parametros.id_gestion,v_nivel -1);
+
+
+        END IF;
+        --raise exception 'llega';
+
+        FOR v_registros in (
+                              SELECT
+       							  id_partida,
+                                  codigo_partida,
+                                  nombre_partida,
+                                  nivel_partida,
+                                  sum(c1) as c1,
+                                  sum(c2) as c2,
+                                  sum(c3) as c3,
+                                  sum(c4) as c4,
+                                  sum(c5) as c5,
+                                  sum(c6) as c6,
+                                  sum(c7) as c7,
+                                  sum(c8) as c8,
+                                  sum(c9) as c9,
+                                  sum(c10) as c10,
+                                  sum(c11) as c11,
+                                  sum(c12) as c12,
+                                  sum(b1) as b1,
+                                  sum(b2) as b2,
+                                  sum(b3) as b3,
+                                  sum(b4) as b4,
+                                  sum(b5) as b5,
+                                  sum(b6) as b6,
+                                  sum(b7) as b7,
+                                  sum(b8) as b8,
+                                  sum(b9) as b9,
+                                  sum(b10) as b10,
+                                  sum(b11) as b11,
+                                  sum(b12) as b12,
+                                  sum(f1) as f1,
+                                  sum(f2) as f2,
+                                  sum(f3) as f3,
+                                  sum(f4) as f4,
+                                  sum(f5) as f5,
+                                  sum(f6) as f6,
+                                  sum(f7) as f7,
+                                  sum(f8) as f8,
+                                  sum(f9) as f9,
+                                  sum(f10) as f10,
+                                  sum(f11) as f11,
+                                  sum(f12) as f12,
+                                  round(sum(c1)-sum (b1) )::numeric as diferencia_compremetido1,
+                                  round(sum(c2)-sum (b2) )::numeric as diferencia_compremetido2,
+                                  round(sum(c3)-sum (b3) )::numeric as diferencia_compremetido3,
+                                  round(sum(c4)-sum (b4) )::numeric as diferencia_compremetido4,
+                                  round(sum(c5)-sum (b5) )::numeric as diferencia_compremetido5,
+                                  round(sum(c6)-sum (b6) )::numeric as diferencia_compremetido6,
+                                  round(sum(c7)-sum (b7) )::numeric as diferencia_compremetido7,
+                                  round(sum(c8)-sum (b8) )::numeric as diferencia_compremetido8,
+                                  round(sum(c9)-sum (b9) )::numeric as diferencia_compremetido9,
+                                  round(sum(c10)-sum (b10) )::numeric as diferencia_compremetido10,
+                                  round(sum(c11)-sum (b11) )::numeric as diferencia_compremetido11,
+                                  round(sum(c12)-sum (b12) )::numeric as diferencia_compremetido12,
+
+                                  round(sum(c1)-sum (f1) )::numeric as diferencia_ejecutado1,
+                                  round(sum(c2)-sum (f2) )::numeric as diferencia_ejecutado2,
+                                  round(sum(c3)-sum (f3) )::numeric as diferencia_ejecutado3,
+                                  round(sum(c4)-sum (f4) )::numeric as diferencia_ejecutado4,
+                                  round(sum(c5)-sum (f5) )::numeric as diferencia_ejecutado5,
+                                  round(sum(c6)-sum (f6) )::numeric as diferencia_ejecutado6,
+                                  round(sum(c7)-sum (f7) )::numeric as diferencia_ejecutado7,
+                                  round(sum(c8)-sum (f8) )::numeric as diferencia_ejecutado8,
+                                  round(sum(c9)-sum (f9) )::numeric as diferencia_ejecutado9,
+                                  round(sum(c10)-sum (f10) )::numeric as diferencia_ejecutado10,
+                                  round(sum(c11)-sum (f11) )::numeric as diferencia_ejecutado11,
+                                  round(sum(c12)-sum (f12) )::numeric as diferencia_ejecutado12,
+                                  sum(b1)::numeric as acumulado_comprendido1,
+                                  round(sum(b1) + sum(b2))::numeric as acumulado_comprendido2,
+                                  round(sum(b1)+sum(b2)+sum(b3))::numeric as acumulado_comprendido3,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4))::numeric as acumulado_comprendido4,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5))::numeric as acumulado_comprendido5,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6))::numeric as acumulado_comprendido6,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7))::numeric as acumulado_comprendido7,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8))::numeric as acumulado_comprendido8,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9))::numeric as acumulado_comprendido9,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10))::numeric as acumulado_comprendido10,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11))::numeric as acumulado_comprendido11,
+                                  round(sum(b1)+sum(b2)+sum(b3)+sum(b4)+sum(b5)+sum(b6)+sum(b7)+sum(b8)+sum(b9)+sum(b10)+sum(b11)+sum(b12) )::numeric as acumulado_comprendido12,
+                         		  sum(f1)::numeric as acumulado_ejecutado1,
+                                  round(sum(f1) + sum(f2))::numeric as acumulado_ejecutado2,
+                                  round(sum(f1)+sum(f2)+sum(f3))::numeric as acumulado_ejecutado3,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4))::numeric as acumulado_ejecutado4,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5))::numeric as acumulado_ejecutado5,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6))::numeric as acumulado_ejecutado6,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7))::numeric as acumulado_ejecutado7,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8))::numeric as acumulado_ejecutado8,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9))::numeric as acumulado_ejecutado9,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10))::numeric as acumulado_ejecutado10,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10)+sum(f11))::numeric as acumulado_ejecutado11,
+                                  round(sum(f1)+sum(f2)+sum(f3)+sum(f4)+sum(f5)+sum(f6)+sum(f7)+sum(f8)+sum(f9)+sum(f10)+sum(f11)+sum(f12) )::numeric as acumulado_ejecutado12,
+                                  sum (total_programado) as total_programado,
+                               	  sum(importe_aprobado) as importe_aprobado,
+                                  sum(modificaciones) as modificaciones,
+        						  sum(total_comprometido) as total_comprometido,
+                                  sum(total_ejecutado) as total_ejecutado
+                          FROM temp_prog
+                          WHERE
+
+                              CASE WHEN v_parametros.nivel = 4  THEN
+                             	   0=0
+                                   WHEN v_parametros.nivel = 5  THEN
+                                   0=0 and nivel_partida != 1 and nivel_partida != 2
+                                 	WHEN v_parametros.nivel = 0  THEN
+                                   0=0 and nivel_partida != 2 and nivel_partida != 3
+                                 ELSE
+                                    nivel_partida <= v_parametros.nivel
+                                 END
+                          group by
+                             id_partida,
+                             codigo_partida,
+                             nombre_partida,
+                             nivel_partida
+                         order by codigo_partida) LOOP
+
+               RETURN NEXT v_registros;
+       END LOOP;
+       end if ;
+  	end;
+
+
    else
 
     	raise exception 'Transaccion inexistente: %',p_transaccion;

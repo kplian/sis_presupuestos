@@ -224,20 +224,28 @@ class ACTPartida extends ACTbase{
 		}
 
 	}
-    function listarPartidaEjecutado (){
-        //if($this->objParam->getParametro('tipo_movimiento')=='comprometido' or $this->objParam->getParametro('tipo_movimiento')=='ejecutado'){
-		$dataSource = $this->listarPartidaEjecutados();
-        //}
-        //else
-        //{
-            $dataSourceTotal = $this->listarPartidaEjecutadoTotal();
+    function listarPartidaInstitucional(){
+        $this->objFunc = $this->create('MODPartida');
+        $cbteHeader = $this->objFunc->listarPartidaInstitucional($this->objParam);
+        if($cbteHeader->getTipo() == 'EXITO'){
+            return $cbteHeader;
+        }
+        else{
+            $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+            exit;
+        }
 
-        //}
-       // var_dump($dataSourceTotal);exit;
+    }
+    function listarPartidaEjecutado (){
+		$dataSource = $this->listarPartidaEjecutados();
+
+        $dataSourceTotal = $this->listarPartidaEjecutadoTotal();
+        $dateSourseInstitucional = $this->listarPartidaInstitucional();
+
 		$nombreArchivo = uniqid(md5(session_id()).'Partidas').'.xls';
 		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
 		$reporte = new RPartidaEjecutadoXls($this->objParam);
-		$reporte->datosHeader($dataSource->getDatos(),$dataSource->extraData,$dataSourceTotal->getDatos());
+		$reporte->datosHeader($dataSource->getDatos(),$dataSource->extraData,$dataSourceTotal->getDatos(),$dateSourseInstitucional->getDatos());
 		$reporte->generarReporte();
 		$this->mensajeExito=new Mensaje();
 		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
