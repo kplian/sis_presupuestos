@@ -49,6 +49,13 @@ class ACTPresupuesto extends ACTbase{
 	}
 
 
+	function listarPresupuestoRest(){
+		$this->objParam->addParametro('gestion',$this->objParam->getParametro('gestion'));
+		$this->objFunc=$this->create('MODPresupuesto');
+		$this->res=$this->objFunc->listarPresupuestoRest();
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
     function listarPresupuestoCmb(){
 		$this->objParam->defecto('ordenacion','id_presupuesto');
 

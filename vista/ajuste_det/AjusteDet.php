@@ -18,7 +18,7 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
 		this.iniciarEventos();
 		
 	},
-			
+			//ll
 	Atributos:[
 		{
 			//configuracion del componente
@@ -79,7 +79,7 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
    				allowBlank:false,
    				fieldLabel:'Partida',
    				gdisplayField:'desc_partida',//mapea al store del grid
-   				baseParams: {sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria', sw_oficial: 'si'},
+   				baseParams: {sw_transaccional: 'movimiento', sw_oficial: 'si'},
    				gwidth:200,
    				width: 350,
    				listWidth: 350

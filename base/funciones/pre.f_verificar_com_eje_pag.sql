@@ -66,8 +66,8 @@ BEGIN
      inner join pre.vpresupuesto_cc cc on cc.id_presupuesto = p.id_presupuesto
      where p.id_partida_ejecucion = p_id_partida_ejecucion;
      
-  
-      IF(v_sincronizar='true' and v_gestion <= 2016 )THEN
+    --raise exception 'entra % , %',v_gestion, p_id_partida_ejecucion;
+      IF(v_sincronizar='true' and (v_gestion <= 2016 or v_gestion is null))THEN
       	
             --si la sincronizacion esta activa busca lso datos en endesis
             v_conexion:=migra.f_obtener_cadena_conexion();
@@ -88,6 +88,7 @@ BEGIN
       
       
       ELSE 
+     
             -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
             IF  1=0 THEN
                -- esta aprte funciona bien con nro de tramite 

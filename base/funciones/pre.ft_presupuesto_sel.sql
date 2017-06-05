@@ -156,13 +156,33 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-             raise notice '%',v_consulta ;
-             
-           
+             raise notice 'v_consulta %',v_consulta ;
+
+
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
+
+    /*********************************
+ 	#TRANSACCION:  'PRE_PREREST_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento
+ 	#FECHA:		11-05-2017
+	***********************************/
+
+	elsif(p_transaccion='PRE_PREREST_SEL')then
+
+    	begin
+
+        v_consulta := 'select id_centro_costo,
+                     descripcion
+                     from pre.vpresupuesto_cc
+                     where gestion='||v_parametros.gestion||
+                     ' and tipo_pres=''2''';
+
+        return v_consulta;
+        end;
 
 	/*********************************    
  	#TRANSACCION:  'PRE_PRE_CONT'

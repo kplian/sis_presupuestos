@@ -136,7 +136,7 @@ class MODMemoriaCalculo extends MODbase{
 		 
          $this->captura('codigo_partida','varchar');		 	 
          $this->captura('nombre_partida','varchar');		 
-		 //$this->captura('descripcion_pres','varchar');
+		 $this->captura('descripcion_pres','varchar');
         
 		 $this->captura('desc_ingas','varchar');
          $this->captura('justificacion','varchar');
@@ -145,12 +145,6 @@ class MODMemoriaCalculo extends MODbase{
          $this->captura('cantidad_mem','NUMERIC');
          $this->captura('importe','NUMERIC');
 		 
-		
-  
-  
-  
-		              
-		
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
