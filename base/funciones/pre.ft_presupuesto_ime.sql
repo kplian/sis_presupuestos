@@ -120,7 +120,7 @@ BEGIN
 			update pre.tpresupuesto set
 			
               tipo_pres = v_parametros.tipo_pres,
-              descripcion = v_parametros.descripcion,
+              --descripcion = v_parametros.descripcion,  RAC 05/06/2017 la descriocn ya no se registra es sutituida por la descr del TIPO_CC
               sw_consolidado = v_parametros.sw_consolidado,
               id_categoria_prog = v_parametros.id_categoria_prog,
               fecha_mod = now(),
