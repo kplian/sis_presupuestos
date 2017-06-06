@@ -42,14 +42,14 @@ Phx.vista.TipoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 	       		    lazyRender:true,
 	       		    mode: 'local',
 	       		    valueField: 'autentificacion',
-	       		    store:['recurso','gasto','administrativo']
+	       		    store:['recurso','gasto','administrativo','ingreso_egreso']
 	       		    
 	       		},
 	       		type:'ComboBox',
 	       		id_grupo:0,
 	       		filters:{	
 	       		         type: 'list',
-	       				 options: ['recurso','gasto','administrativo'],
+	       				 options: ['recurso','gasto','administrativo','ingreso_egreso'],
 	       		 	},
 	       		grid:true,
 	       		form:true

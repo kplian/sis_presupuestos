@@ -47,6 +47,18 @@ class MODPresupuesto extends MODbase{
 		$this->captura('sw_consolidado','VARCHAR');		
 		$this->captura('id_categoria_prog','int4');
 		$this->captura('codigo_categoria','varchar');
+		$this->captura('mov_pres','varchar');
+		$this->captura('momento_pres','varchar');		
+		$this->captura('id_uo','int4');
+		$this->captura('codigo_uo','varchar');		
+		$this->captura('nombre_uo','varchar');
+		$this->captura('id_tipo_cc','int4');
+		$this->captura('desc_tcc','varchar');
+		
+	
+) 
+		
+		
 		
 		
 		

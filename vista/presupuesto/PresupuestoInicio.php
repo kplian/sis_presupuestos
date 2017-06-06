@@ -13,7 +13,7 @@ header("content-type: text/javascript; charset=UTF-8");
 <script>
 Phx.vista.PresupuestoInicio = {
     bedit:true,
-    bnew:false,
+    bnew:true,
     bsave:false,
     bdel:true,
 	require:'../../../sis_presupuestos/vista/presupuesto/Presupuesto.php',
@@ -53,7 +53,42 @@ Phx.vista.PresupuestoInicio = {
 		this.init();
 		this.TabPanelEast.get(2).disable();
         this.finCons = true; 
+        
+        
+        this.iniciarEventos();
    },
+   
+   iniciarEventos: function(){
+   	      this.id_tipo_cc.on('select',function(cmp, rec, ind){
+   	      	   this.descripcion.setValue('('+rec.data.codigo+') ' + rec.data.descripcion);
+   	      }, this)
+		
+   },
+	
+	onButtonEdit:function(){
+	         if(this.validarFiltros()){  
+			         var rec = this.sm.getSelected().data;
+			         Phx.vista.PresupuestoInicio.superclass.onButtonEdit.call(this);			         
+			         this.Cmp.id_tipo_cc.store.baseParams.gestion = this.cmbGestion.getRawValue();
+					 this.Cmp.id_tipo_cc.modificado = true;
+	         }
+	       
+       },
+       
+   onButtonNew: function(){
+           if(this.validarFiltros()){           	
+	           	Phx.vista.PresupuestoInicio.superclass.onButtonNew.call(this);          
+	            this.Cmp.id_gestion.setValue(this.cmbGestion.getValue());
+			 	this.Cmp.id_tipo_cc.reset();
+			    this.Cmp.id_tipo_cc.store.baseParams.gestion = this.cmbGestion.getRawValue();
+			    this.Cmp.id_tipo_cc.modificado = true;
+		      
+		 }
+          
+    },
+	
+	
+	
    
   
    cmbGestion: new Ext.form.ComboBox({

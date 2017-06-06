@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -72,10 +74,7 @@ BEGIN
                   IF p_administrador !=1 THEN
                       --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
                   	  v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-                      
                       v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
-                  	  	
-                  
                   ELSE
                       v_filadd = ' (lower(pre.estado)  in (''formulacion'')) and ';
                   END IF;            
@@ -99,21 +98,14 @@ BEGIN
             
             
             IF v_parametros.tipo_interfaz = 'PresupuestoReporte' THEN
-                
                 IF p_administrador !=1 THEN
-                 
-                  
                       v_sw_distinc = ' DISTINCT ';
                       -- si noes adminsitrador solo funcionarios autorizados pueden visualizar
                       v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
                       
-                  END IF;
-                  
+                  END IF;                  
                   v_filadd = ' (lower(pre.estado)  in (''aprobado'')) and ';
-            
              END IF;
-            
-            
             
             --Sentencia de la consulta
 			v_consulta:='select
@@ -135,21 +127,28 @@ BEGIN
                               pre.nro_tramite,
                               pre.id_proceso_wf,
                               (''(''||tp.codigo||'') ''||tp.nombre||'' Ofc: ''|| upper(tp.sw_oficial))::varchar as desc_tipo_presupuesto,
-                              pre.descripcion	,
+                              pre.descripcion,
                               tp.movimiento as movimiento_tipo_pres,
                               vcc.id_gestion,
                               ewf.obs::varchar as obs_wf,
                               pre.sw_consolidado,
                               pre.id_categoria_prog,
-                              cp.codigo_categoria
+                              cp.codigo_categoria,
+                              array_to_string(vcc.mov_pres,'','')::varchar as mov_pres,
+                              array_to_string(vcc.momento_pres,'','')::varchar as momento_pres,
+                              vcc.id_uo,
+                              vcc.codigo_uo,
+                              vcc.nombre_uo,
+                              vcc.id_tipo_cc,
+                              (''(''||vcc.codigo_tcc ||'') '' ||vcc.descripcion_tcc)::varchar AS desc_tcc
 						from pre.tpresupuesto pre
+                        inner join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo                        
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
                         '||v_join_ewf||' join wf.testado_wf ewf on ewf.id_estado_wf = pre.id_estado_wf
                         '||v_join_responsables||'
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
-				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
-                        left join pre.vcategoria_programatica cp on cp.id_categoria_programatica = pre.id_categoria_prog
+				        left join pre.vcategoria_programatica cp on cp.id_categoria_programatica = pre.id_categoria_prog
                         where  ' ||v_filadd;
                        
 			
@@ -164,25 +163,7 @@ BEGIN
 
 		end;
 
-    /*********************************
- 	#TRANSACCION:  'PRE_PREREST_SEL'
- 	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		Gonzalo Sarmiento
- 	#FECHA:		11-05-2017
-	***********************************/
-
-	elsif(p_transaccion='PRE_PREREST_SEL')then
-
-    	begin
-
-        v_consulta := 'select id_centro_costo,
-                     descripcion
-                     from pre.vpresupuesto_cc
-                     where gestion='||v_parametros.gestion||
-                     ' and tipo_pres=''2''';
-
-        return v_consulta;
-        end;
+   
 
 	/*********************************    
  	#TRANSACCION:  'PRE_PRE_CONT'
@@ -255,16 +236,18 @@ BEGIN
             
 			--Sentencia de la consulta de conteo de registros
 			v_consulta:='select count('||v_sw_distinc||' pre.id_presupuesto)
-					    from pre.tpresupuesto pre
+					    from pre.tpresupuesto pre                        
+				        inner join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
                         '||v_join_ewf||' join wf.testado_wf ewf on ewf.id_estado_wf = pre.id_estado_wf
                         '||v_join_responsables||'
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
-						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
-				        left join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
+						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod                        
                         left join pre.vcategoria_programatica cp on cp.id_categoria_programatica = pre.id_categoria_prog
                         where  ' ||v_filadd;
-			
+                        
+                        
+                       
 			--Definicion de la respuesta		    
 			v_consulta:=v_consulta||v_parametros.filtro;
 
@@ -272,6 +255,33 @@ BEGIN
 			return v_consulta;
 
 		end;
+    /*********************************
+ 	#TRANSACCION:  'PRE_PREREST_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento
+ 	#FECHA:		11-05-2017
+	***********************************/
+
+	elsif(p_transaccion='PRE_PREREST_SEL')then
+
+    	begin
+
+        v_consulta := 'select id_centro_costo,
+                     descripcion
+                     from pre.vpresupuesto_cc
+                     where gestion='||v_parametros.gestion||
+                     ' and tipo_pres=''2''';
+
+        return v_consulta;
+        end; 
+        
+     /*********************************
+ 	#TRANSACCION:  'PRE_SALPRE_SEL'
+ 	#DESCRIPCION:	Consulta de datos
+ 	#AUTOR:		Gonzalo Sarmiento
+ 	#FECHA:		11-05-2017
+	***********************************/       
+        
         
     elsif(p_transaccion='PRE_SALPRE_SEL')then
      				

@@ -68,16 +68,69 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			form:true 
 		},
 		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'ig_gestion',
+					gwidth: 50
+			},
+			type:'Field',
+			grid: false,
+			form:true 
+		},
+		
+		{
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tcc',	   				
+	   				allowBlank:false,
+	   				width:350,
+	   				gwidth:200
+	   				
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			filters:{pfiltro:'vcc.codigo_tcc#vcc.descripcion_tcc',type:'string'},
+   		    grid:true,
+   			form:true
+	    },
+	    
+		{
+	   		config:{
+	   				name:'id_uo',
+	   				qtip:'La unidad dueña del presupeusto (no es necesiramente la que aplique el costo)',
+	   				origen:'UO',
+	   				fieldLabel:'Unidad',
+	   				allowBlank:false,
+	   				gdisplayField:'nombre_uo',//mapea al store del grid
+	   			    gwidth:200,
+	   			    width:250,
+	   			    baseParams:{presupuesta:'si'},
+	      			renderer:function (value, p, record){return String.format('{0} {1}' , record.data['codigo_uo'], record.data['nombre_uo']);}
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			filters:{pfiltro:'nombre_uo',type:'string'},
+   		    grid:true,
+   			form:true
+	    },
+		
+		
+		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'Nombre Presupuesto',
+				fieldLabel: 'Descripcion',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 200,
 				maxLength:200
 			}, 
 			type:'TextArea',
-			filters: { pfiltro:'pre.descripcion',type:'string' },
+			filters: { pfiltro:'vcc.descripcion_tcc#vcc.codigo_tcc',type:'string' },
 			id_grupo:1,
 			bottom_filter: true,
 			grid: true,
@@ -362,7 +415,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{ name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
 		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres',
-		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog'
+		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog','mov_pres','momento_pres','id_uo','codigo_uo','nombre_uo','id_tipo_cc','desc_tcc'
 		
 	],
 	
