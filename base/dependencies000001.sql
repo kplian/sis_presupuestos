@@ -2142,8 +2142,12 @@ AS
        JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo
          ;
          
---------------- SQL ---------------
-
+     
+/***********************************F-DEP-RAC-PRE-0-05/06/2017*****************************************/
+         
+   
+/***********************************I-DEP-RAC-PRE-0-09/06/2017*****************************************/
+    
 CREATE OR REPLACE  VIEW pre.vpresupuesto
 AS
   SELECT pre.id_presupuesto,
@@ -2160,15 +2164,14 @@ AS
          pre.id_estado_wf,
          pre.nro_tramite,
          pre.id_proceso_wf,
+         ((('('::text || tp.codigo::text) || ') '::text) || tp.nombre::text)::
+           character varying AS desc_tipo_presupuesto,
          ('('|| vcc.codigo_tcc || ') ' ||vcc.descripcion_tcc)::character varying AS descripcion,        
          tp.movimiento AS movimiento_tipo_pres,
          vcc.id_gestion
   FROM pre.tpresupuesto pre
        JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text
-       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo;         
-         
-         
- /***********************************F-DEP-RAC-PRE-0-05/06/2017*****************************************/
-         
-         
+       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo;      
 
+/***********************************F-DEP-RAC-PRE-0-09/06/2017*****************************************/
+   
