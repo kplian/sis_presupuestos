@@ -59,8 +59,12 @@ Phx.vista.PresupuestoInicio = {
    },
    
    iniciarEventos: function(){
-   	      this.id_tipo_cc.on('select',function(cmp, rec, ind){
-   	      	   this.descripcion.setValue('('+rec.data.codigo+') ' + rec.data.descripcion);
+   	      this.Cmp.id_tipo_cc.on('select',function(cmp, rec, ind){
+   	      	   this.Cmp.descripcion.setValue('('+rec.data.codigo+') ' + rec.data.descripcion);
+   	      	   this.Cmp.tipo_pres.store.baseParams.mov_pres = rec.data.mov_pres;
+   	      	   this.Cmp.tipo_pres.store.modificado = true;
+   	      	   
+   	      	   
    	      }, this)
 		
    },

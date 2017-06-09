@@ -72,7 +72,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'ig_gestion',
+					name: 'id_gestion',
 					gwidth: 50
 			},
 			type:'Field',
