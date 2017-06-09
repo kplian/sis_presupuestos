@@ -56,7 +56,7 @@ class MODPresupuesto extends MODbase{
 		$this->captura('desc_tcc','varchar');
 		
 	
-) 
+
 		
 		
 		
@@ -149,9 +149,15 @@ class MODPresupuesto extends MODbase{
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('id_centro_costo','id_centro_costo','int4');
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('id_uo','id_uo','int4');
+		$this->setParametro('id_gestion','id_gestion','int4');		
 		$this->setParametro('tipo_pres','tipo_pres','varchar');
-		$this->setParametro('estado_pres','estado_pres','varchar');
+		$this->setParametro('descripcion','descripcion','varchar');
+		$this->setParametro('sw_consolidado','sw_consolidado','varchar');
+		$this->setParametro('id_categoria_prog','id_categoria_prog','int4');
+		
+	
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -169,7 +175,11 @@ class MODPresupuesto extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_presupuesto','id_presupuesto','int4');
-		$this->setParametro('id_centro_costo','id_centro_costo','int4');
+		
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('id_uo','id_uo','int4');
+		$this->setParametro('id_gestion','id_gestion','int4');	
+		
 		$this->setParametro('tipo_pres','tipo_pres','varchar');
 		$this->setParametro('descripcion','descripcion','varchar');
 		$this->setParametro('sw_consolidado','sw_consolidado','varchar');

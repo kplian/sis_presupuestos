@@ -73,19 +73,101 @@ BEGIN
 	/*********************************    
  	#TRANSACCION:  'PRE_PRE_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		Gonzalo Sarmiento Sejas	
- 	#FECHA:		27-02-2013 00:30:39
+ 	#AUTOR:		RAC  	
+ 	#FECHA:		08-06-2017 00:30:39
 	***********************************/
 
 	if(p_transaccion='PRE_PRE_INS')then
 					
         begin
+        	-------------------------------------------------------------------------
+            --  EL ID de centro de costo siempre sera igual al id de presupeusto
+            -------------------------------------------------------------------------
+            
+             --  validar que el el id_tipo_cc sea un nodo hoja y tenga un techo presupeustario definidio
+             
+             select 
+               tcc.movimiento,
+               tcc.id_ep,
+               tcc.codigo,
+               tcc.descripcion
+              into
+               v_registros
+             from param.ttipo_cc tcc
+             where tcc.id_tipo_cc = v_parametros.id_tipo_cc;
+            
+            IF  v_registros.movimiento != 'si' THEN
+               raise exception 'solo puede crear centro de costos para tipos que sean de  movimiento';
+            END IF;
+            
+            --  validar que cada id_tipo_cc solo se use para una vez en cada gestion
+            IF  EXISTS (select 1
+                        from param.tcentro_costo cc 
+                        where    cc.id_tipo_cc = v_parametros.id_tipo_cc 
+                             and cc.id_gestion = v_parametros.id_gestion 
+                             and cc.estado_reg = 'activo') THEN
+                 raise exception 'este tipo ya tiene un centro de costo registrado para esta gestión';
+            END IF;
+            
+        
         	--Sentencia de la insercion
-        	raise exception 'Para insertar presupuesto inserte un centro de costo';
+        	insert into param.tcentro_costo(
+              estado_reg,
+              id_ep,
+              id_gestion,
+              id_uo,
+              id_usuario_reg,
+              fecha_reg,
+              id_usuario_mod,
+              fecha_mod,
+              id_tipo_cc
+          	) values(
+              'activo',
+              v_registros.id_ep,  --RAC 05/06/2017 la ep se origina en el tipo de centro
+              v_parametros.id_gestion,
+              v_parametros.id_uo,
+              p_id_usuario,
+              now(),
+              null,
+              null,
+              v_parametros.id_tipo_cc							
+			)RETURNING id_centro_costo into v_id_centro_costo;
+            
+           
+          
+            
+            --Sentencia de la insercion
+           insert into pre.tpresupuesto(
+                    id_presupuesto,
+                    id_centro_costo,
+                    estado,
+                    estado_reg,
+                    id_usuario_reg,
+                    fecha_reg,
+                    descripcion,
+                    tipo_pres,
+                    sw_consolidado,
+                    id_categoria_prog
+            ) values(
+                    v_id_centro_costo,
+                    v_id_centro_costo,
+                    'borrador', --crea el presupeusto en estado borrador
+                    'activo',
+                    p_id_usuario,
+                    now(),
+                    v_parametros.descripcion,
+                    v_parametros.tipo_pres,
+                    v_parametros.sw_consolidado,
+                    v_parametros.id_categoria_prog
+      							
+             );
+            
+            
+        	
 			
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Presupuestos almacenado(a) con exito (id_presupuesto'||v_id_presupuesto||')'); 
-            v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto',v_id_presupuesto::varchar);
+            v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto',v_id_centro_costo::varchar);
 
             --Devuelve la respuesta
             return v_resp;
@@ -102,6 +184,8 @@ BEGIN
 	elsif(p_transaccion='PRE_PRE_MOD')then
 
 		begin
+        
+           
 			
             select
               p.estado,
@@ -115,12 +199,47 @@ BEGIN
               raise exception 'Solo puede editar el tipo de presupuesto  en estado borrador';
             END IF;
             
+            select 
+               tcc.movimiento,
+               tcc.id_ep
+              into
+               v_registros
+             from param.ttipo_cc tcc
+             where tcc.id_tipo_cc = v_parametros.id_tipo_cc;
+            
+            IF  v_registros.movimiento != 'si' THEN
+               raise exception 'solo puede crear centro de costos para tipos que sean de  movimiento';
+            END IF;
+            
+            
+             --  validar que cada id_tipo_cc solo se use para una vez en cada gestion
+            IF  EXISTS (select 1
+                        from param.tcentro_costo cc 
+                        where    cc.id_tipo_cc = v_parametros.id_tipo_cc 
+                             and cc.id_gestion = v_parametros.id_gestion 
+                             and cc.estado_reg = 'activo'
+                             and cc.id_centro_costo !=  v_parametros.id_presupuesto) THEN
+                             
+                 raise exception 'este tipo ya tiene un centro de costo registrado para esta gestión';
+            END IF;
+            
+            
             
             --Sentencia de la modificacion
-			update pre.tpresupuesto set
-			
+			update param.tcentro_costo set
+                id_ep =   v_registros.id_ep,  --RAC 05/06/"017 la ep se origina en el tipo de centro
+                id_gestion = v_parametros.id_gestion,
+                id_uo = v_parametros.id_uo,
+                id_usuario_mod = p_id_usuario,
+                fecha_mod = now(),
+                id_tipo_cc = v_parametros.id_tipo_cc
+			where id_centro_costo=v_parametros.id_presupuesto;
+            
+            
+            --Sentencia de la modificacion
+			update pre.tpresupuesto set			
               tipo_pres = v_parametros.tipo_pres,
-              --descripcion = v_parametros.descripcion,  RAC 05/06/2017 la descriocn ya no se registra es sutituida por la descr del TIPO_CC
+              descripcion = v_parametros.descripcion,  
               sw_consolidado = v_parametros.sw_consolidado,
               id_categoria_prog = v_parametros.id_categoria_prog,
               fecha_mod = now(),

@@ -13,6 +13,23 @@ class ACTTipoPresupuesto extends ACTbase{
 		$this->objParam->defecto('ordenacion','id_tipo_presupuesto');
 
 		$this->objParam->defecto('dir_ordenacion','asc');
+		
+		
+		if($this->objParam->getParametro('mov_pres')!=''){
+			
+			if($this->objParam->getParametro('mov_pres') =='{ingreso,egreso}' || $this->objParam->getParametro('mov_pres') =='{egreso,ingreso}'){
+				$this->objParam->addFiltro("tipr.movimiento in (''ingreso_egreso'', ''administrativo'')");	
+			}
+			if($this->objParam->getParametro('mov_pres') =='{ingreso}'){
+				$this->objParam->addFiltro("tipr.movimiento in (''recurso'')");	
+			}
+			if($this->objParam->getParametro('mov_pres') =='{egreso}'){
+				$this->objParam->addFiltro("tipr.movimiento in (''gasto'')");	
+			}
+	    	
+		}
+		
+		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODTipoPresupuesto','listarTipoPresupuesto');
