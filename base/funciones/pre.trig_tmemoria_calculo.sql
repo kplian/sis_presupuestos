@@ -1,5 +1,7 @@
+--------------- SQL ---------------
 
-CREATE OR REPLACE FUNCTION pre.trig_tmemoria_calculo ()
+CREATE OR REPLACE FUNCTION pre.trig_tmemoria_calculo (
+)
 RETURNS trigger AS
 $body$
 DECLARE
@@ -8,6 +10,10 @@ DECLARE
      v_reg						record;
      v_id_partida_new			integer;
      v_id_partida_old			integer;
+     v_id_presupuesto			integer;
+     v_id_presupuesto_new		integer;
+     v_importe_total_segun_memoria	numeric;
+     v_importe_total_segun_memoria_new	numeric;
 BEGIN
    --     select (current_database()::text)||'_'||NEW.cuenta into g_new_login;
    --   select (current_database()::text)||'_'||OLD.cuenta into g_old_login;
@@ -19,11 +25,22 @@ BEGIN
     IF TG_OP = 'INSERT' THEN
     
            select 
-                mc.id_partida
+                mc.id_partida,
+                mc.id_presupuesto
            into
-               v_id_partida_new
+               v_id_partida_new,
+               v_id_presupuesto
            FROM pre.vmemoria_calculo mc where mc.id_memoria_calculo = NEW.id_memoria_calculo;
-    
+           
+           --RAC 22/06/2017 
+           --cadaa vez que insertemos uan memoria de calculo vamos a recalcular el monto para la partida
+            select 
+                 sum(mc.importe_total)
+              into
+                 v_importe_total_segun_memoria
+             from pre.vmemoria_calculo mc
+             where mc.id_partida = v_id_partida_new and mc.id_presupuesto = v_id_presupuesto;
+            --fin 
    
            select 
              pp.importe,
@@ -34,16 +51,18 @@ BEGIN
            where pp.id_presupuesto = NEW.id_presupuesto and pp.id_partida = v_id_partida_new;
        
            update pre.tpresup_partida pp set      
-              importe = COALESCE(importe,0)  + NEW.importe_total        
+              importe = COALESCE(v_importe_total_segun_memoria ,0)       
            where id_presup_partida = v_reg_pres_par.id_presup_partida;
    
    
    ELSIF TG_OP = 'UPDATE' THEN
    
             select 
-                mc.id_partida
+                mc.id_partida,
+                mc.id_presupuesto
            into
-               v_id_partida_new
+               v_id_partida_new,
+               v_id_presupuesto_new
            FROM pre.vmemoria_calculo mc where mc.id_memoria_calculo = NEW.id_memoria_calculo;
            
            
@@ -52,9 +71,11 @@ BEGIN
            END IF;
            
            select 
-                mc.id_partida
+                mc.id_partida,
+                mc.id_presupuesto
            into
-               v_id_partida_old
+               v_id_partida_old,
+               v_id_presupuesto
            FROM pre.vmemoria_calculo mc where mc.id_memoria_calculo = OLD.id_memoria_calculo;
            
             IF v_id_partida_old is null THEN
@@ -81,13 +102,39 @@ BEGIN
              v_reg_pres_par_new
            from pre.tpresup_partida pp
            where pp.id_presupuesto = NEW.id_presupuesto and pp.id_partida = v_id_partida_new;
+           
+           
+           
+           --RAC 22/06/2017 OLD partida
+           --cadaa vez que insertemos una  memoria de calculo vamos a recalcular el monto para la partida
+            select 
+                 sum(mc.importe_total)
+              into
+                 v_importe_total_segun_memoria
+             from pre.vmemoria_calculo mc
+             where mc.id_partida = v_id_partida_old and mc.id_presupuesto = v_id_presupuesto;
+            --fin 
+           
+           --RAC 22/06/2017 NEW PARTIDA
+           --cadaa vez que insertemos uan memoria de calculo vamos a recalcular el monto para la partida
+            select 
+                 sum(mc.importe_total)
+              into
+                 v_importe_total_segun_memoria_new
+             from pre.vmemoria_calculo mc
+             where mc.id_partida = v_id_partida_new and mc.id_presupuesto = v_id_presupuesto_new;
+            --fin 
        
+   
+          --vieja partida
           update pre.tpresup_partida pp set      
-            importe = COALESCE(importe,0) - COALESCE(OLD.importe_total,0)       
+            importe = COALESCE(v_importe_total_segun_memoria,0)       
           where id_presup_partida = v_reg_pres_par.id_presup_partida;
           
+          
+          --nueva partida
           update pre.tpresup_partida pp set      
-            importe = COALESCE(importe,0) + COALESCE(NEW.importe_total,0)       
+            importe = COALESCE(v_importe_total_segun_memoria_new,0)       
           where id_presup_partida = v_reg_pres_par_new.id_presup_partida;
       
         
@@ -95,9 +142,11 @@ BEGIN
    
    ELSEIF TG_OP = 'DELETE' THEN
     
-  
+          --solo con presupuesto y el concepto de gasto recuperamos la partida
+            
           SELECT pre.id_centro_costo,
-                 par.id_partida
+                 par.id_partida,
+                 pre.id_presupuesto
            into
                 v_reg
           FROM pre.tpresupuesto pre 
@@ -127,8 +176,23 @@ BEGIN
              raise exception 'no se encontro a relacion partida presupuesto ';
            END IF;
            
+           
+           
+           --RAC 22/06/2017 
+           --cadaa vez que insertemos uan memoria de calculo vamos a recalcular el monto para la partida
+          select 
+                 sum(mc.importe_total)
+              into
+                 v_importe_total_segun_memoria
+          from pre.vmemoria_calculo mc
+          where mc.id_partida = v_reg.id_partida and mc.id_presupuesto = v_reg.id_presupuesto;
+          --fin 
+           
+          
+           
+           
           update pre.tpresup_partida pp set      
-            importe = COALESCE(importe,0) - COALESCE(OLD.importe_total,0)       
+            importe = COALESCE(v_importe_total_segun_memoria,0)      
           where id_presup_partida = v_reg_pres_par.id_presup_partida;
          
    END IF;   

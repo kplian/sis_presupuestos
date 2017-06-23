@@ -6,7 +6,7 @@
 *@date 23-11-2012 20:06:53
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-require_once(dirname(__FILE__).'/../reportes/RPartidaEjecutadoXls.php');
+//require_once(dirname(__FILE__).'/../reportes/RPartidaEjecutadoXls.php');
 class ACTPartida extends ACTbase{    
 			
 	function listarPartida(){
