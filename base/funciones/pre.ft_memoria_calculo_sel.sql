@@ -203,7 +203,7 @@ BEGIN
                             unidad_medida,
                             importe_unitario,
                             cantidad_mem,
-                            importe
+                            sum(importe) as importe
                           FROM
                             pre.vmemoria_por_categoria
                           WHERE '||v_filtro||'

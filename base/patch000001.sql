@@ -719,3 +719,36 @@ CREATE INDEX tobjetivo_idx ON pre.tobjetivo
 
 /*****************************F-SCP-GVC-PRE-0-27/10/2016*************/
 
+
+
+
+/*****************************I-SCP-RAC-PRE-0-27/06/2017*************/
+--------------- SQL ---------------
+
+CREATE TABLE pre.tformulacion_tmp (
+  id_formulacion_tmp SERIAL,
+  gestion INTEGER,
+  codigo_presupuesto VARCHAR,
+  partida VARCHAR,
+  m1 NUMERIC,
+  m2 NUMERIC,
+  m3 NUMERIC,
+  m4 NUMERIC,
+  m5 NUMERIC,
+  m6 INTEGER,
+  m7 NUMERIC,
+  m8 NUMERIC,
+  m9 NUMERIC,
+  m10 NUMERIC,
+  m11 NUMERIC,
+  m12 NUMERIC,
+  id_memoria_calculo INTEGER,
+  migrado VARCHAR(3) DEFAULT 'no'::character varying NOT NULL,
+  obs VARCHAR,
+  CONSTRAINT tformulacion_tmp_pkey PRIMARY KEY(id_formulacion_tmp)
+) 
+WITH (oids = false);
+
+
+/*****************************F-SCP-RAC-PRE-0-27/06/2017*************/
+

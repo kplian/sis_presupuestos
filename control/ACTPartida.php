@@ -22,7 +22,14 @@ class ACTPartida extends ACTbase{
 	    	$this->objParam->addFiltro("par.id_partida in (select id_partida from pre.tconcepto_partida cp where cp.id_concepto_ingas = " . $this->objParam->getParametro('id_concepto_ingas') . ")");	
 		}
 		if($this->objParam->getParametro('tipo')!=''){
-	    	$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
+			
+			if($this->objParam->getParametro('tipo') == 'ingreso_egreso'){
+				$this->objParam->addFiltro("par.tipo in (''recurso'',''gasto'')");	
+			}
+			else{
+				$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
+			}
+	    	
 		}
 		if($this->objParam->getParametro('sw_transaccional')!=''){
 	    	$this->objParam->addFiltro("par.sw_transaccional = ''".$this->objParam->getParametro('sw_transaccional')."''");	
