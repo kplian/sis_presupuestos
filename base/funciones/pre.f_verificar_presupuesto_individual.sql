@@ -17,12 +17,20 @@ $body$
  DESCRIPCION:   funcion que verifica si el monto puede procesarce
  
                 se asume que la moneda no puede varia entre comprometido ejecutado y pagado
-                apra hacer el calculo en moneda base y moneda de trasaccion            
+                para  hacer el calculo en moneda base y moneda de trasaccion            
  
   
  AUTOR: 		Rensi Arteaga Copari
  FECHA:	        24/03/2016
  COMENTARIOS:	
+ -------------------------------
+ MODIFICACIONES
+ AUTOR: 		Rensi Arteaga Copari
+ FECHA:	        29/06/2017
+ COMENTARIOS:	SE agrega la opcion para permitir selecionar la logica de verifiaciones 
+                es permitido  por presupeusto , por categoria programatica y se adiciona 
+                la logica para arboles en tipo_cc  ,
+                tambien opcionalmente la logica para controlar por partida o no
 ***************************************************************************/
 
 
@@ -51,9 +59,12 @@ DECLARE
   v_total_pagado_mb			numeric;
   
   
-  v_respuesta				varchar[];
-  v_pre_verificar_categoria		varchar;
+  v_respuesta						varchar[];
+  v_pre_verificar_categoria			varchar;
   v_id_categoria_programatica		integer;
+  v_pre_verificar_tipo_cc			varchar;
+  v_id_tipo_cc_techo 				integer;
+  v_control_partida					varchar;
   
 BEGIN
 
@@ -62,6 +73,8 @@ BEGIN
             v_nombre_funcion = 'pre.f_verificar_presupuesto_individual';
             
             v_pre_verificar_categoria = pxp.f_get_variable_global('pre_verificar_categoria');
+            v_pre_verificar_tipo_cc = pxp.f_get_variable_global('pre_verificar_tipo_cc');
+            v_control_partida = 'si'; --por defeto controlamos los monstos por partidas
             
             IF v_pre_verificar_categoria = 'si' THEN
                -- obtener categoria a partir del presupuesto
@@ -72,9 +85,30 @@ BEGIN
                from pre.tpresupuesto p
                where  p.id_presupuesto = p_id_presupuesto;
                
+            ELSE
+            
+                IF v_pre_verificar_tipo_cc = 'si' THEN
+                     -- obtener el tipo_cc techo  a partir del presupuesto
+                     
+                     select 
+                        tcc.id_tipo_cc_techo,
+                        tcc.control_partida
+                     into
+                       v_id_tipo_cc_techo ,
+                       v_control_partida 
+                     from pre.tpresupuesto p
+                     inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                     inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                     where  p.id_presupuesto = p_id_presupuesto;
+               
+                 END IF;
+            
+            
             END IF;
      
-            -- si tenemos partida ejecucion  obtener partida y presupuesto
+           -- si tenemos partida ejecucion  obtener partida y presupuesto
+            
+           -- raise exception 'monto total.. %',p_monto_total_mb;
         
             IF p_monto_total_mb >= 0 THEN
                    -- si el monto es positivo
@@ -95,13 +129,23 @@ BEGIN
                                v_total_formulado_mb
                              from pre.tpartida_ejecucion pe
                              inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                             inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                             inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
                              where 
-                                   pe.id_partida = p_id_partida
+                                   
+                                   ( CASE WHEN v_control_partida = 'si'  THEN 
+                                         pe.id_partida = p_id_partida
+                                     ELSE
+                                         0=0
+                                     END)
+                                   
                                    and pe.estado_reg = 'activo'
                                    and pe.tipo_movimiento = 'formulado'
                                    and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
+                                            WHEN v_pre_verificar_tipo_cc = 'si'  THEN
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo       
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -130,12 +174,20 @@ BEGIN
                                  v_total_formulado_mb
                                from pre.tpartida_ejecucion pe
                                inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
-                               where pe.id_partida = p_id_partida
+                               inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                               inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                               where ( CASE WHEN v_control_partida = 'si'  THEN 
+                                         pe.id_partida = p_id_partida
+                                     ELSE
+                                         0=0
+                                     END)
                                      and pe.estado_reg = 'activo'
                                      and pe.tipo_movimiento = 'formulado'
                                      and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
-                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                                  p.id_categoria_prog = v_id_categoria_programatica
+                                            WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo           
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -147,12 +199,20 @@ BEGIN
                                  v_total_comprometido_mb
                               from pre.tpartida_ejecucion pe
                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
-                              where pe.id_partida = p_id_partida
+                              inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                              inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                              where ( CASE WHEN v_control_partida = 'si'  THEN 
+                                         pe.id_partida = p_id_partida
+                                     ELSE
+                                         0=0
+                                     END)
                                      and pe.estado_reg = 'activo'
                                      and pe.tipo_movimiento = 'comprometido'
                                      and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
-                                                  p.id_categoria_prog = v_id_categoria_programatica 
+                                                  p.id_categoria_prog = v_id_categoria_programatica
+                                            WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo     
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);       
@@ -207,7 +267,7 @@ BEGIN
                                    v_total_comprometido
                                  from pre.tpartida_ejecucion pe
                                  where pe.estado_reg = 'activo'
-                                       and pe.id_partida = p_id_partida
+                                       and pe.id_partida = p_id_partida            
                                        and pe.id_presupuesto = p_id_presupuesto
                                        and pe.nro_tramite = p_nro_tramite
                                        and pe.tipo_movimiento = 'comprometido';      
@@ -356,12 +416,20 @@ BEGIN
                                  v_total_formulado_mb
                                from pre.tpartida_ejecucion pe
                                inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
-                               where pe.id_partida = p_id_partida
+                               inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                               inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                               where ( CASE WHEN v_control_partida = 'si'  THEN 
+                                         pe.id_partida = p_id_partida
+                                     ELSE
+                                         0=0
+                                     END)
                                      and pe.estado_reg = 'activo'
                                      and pe.tipo_movimiento = 'formulado'
                                      and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
+                                     		WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -373,13 +441,21 @@ BEGIN
                               into 
                                  v_total_comprometido_mb
                               from pre.tpartida_ejecucion pe
-                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
-                              where pe.id_partida = p_id_partida
+                              inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
+                              inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                              inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                              where ( CASE WHEN v_control_partida = 'si'  THEN 
+                                         pe.id_partida = p_id_partida
+                                     ELSE
+                                         0=0
+                                     END)
                                      and pe.estado_reg = 'activo'
                                      and pe.tipo_movimiento = 'comprometido'
                                      and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
+                                            WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);       
@@ -402,7 +478,7 @@ BEGIN
                             -- verificar que el monto sea menor que el comprometido - el ejecutado
                            
                                       IF p_nro_tramite is null  THEN
-                                            raise exception 'para revertir el comprometido necesitamos el número de tramite';
+                                           raise exception 'para revertir el comprometido necesitamos el número de tramite';
                                       END IF;
                                     
                                      --recuperar la partida y el presupuesto
