@@ -417,3 +417,18 @@ select pxp.f_insert_testructura_gui ('EJEPAR', 'REPPRE');
 select pxp.f_insert_tgui ('Partida Ejecucion', 'Partida Ejecucion', 'PAREJE', 'si', 6, 'sis_presupuestos/vista/partida_ejecucion/FormFiltro.php', 3, '', 'FormFiltro', 'PRE');
 
 /*******************************************F-DAT-RAC-PRE-0-16/11/2016***********************************************/
+
+
+/*******************************************I-DAT-RAC-PRE-0-29/06/2017***********************************************/
+
+/* Data for the 'pxp.variable_global' table  (Records 1 - 1) */
+
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
+VALUES 
+  (E'pre_verificar_tipo_cc', E'no', E'si o no, verificacion presupeustaria por el arbol de tipo_cc, el valor depende del valor de  pre_verificar_categoria, solo se osnidera si es igual a no');
+
+
+/*******************************************F-DAT-RAC-PRE-0-29/06/2017***********************************************/
+
+
+
