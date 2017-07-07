@@ -75,12 +75,12 @@ class MODPresupuesto extends MODbase{
         $this->procedimiento='pre.ft_presupuesto_sel';
         $this->transaccion='PRE_PREREST_SEL';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
-        $this->setCount(false);
+        //$this->setCount(false);
         $this->setParametro('gestion','gestion','varchar');
 
         //Definicion de la lista del resultado del query
         $this->captura('id_centro_costo','int4');
-        $this->captura('descripcion','varchar');
+        $this->captura('descripcion','text');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
