@@ -10,7 +10,7 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.ChkPresupuesto=Ext.extend(Phx.gridInterfaz,{
-
+    tam_pag:200,
 	constructor:function(config){
 		this.maestro=config.maestro;
 		console.log('.............',config)
