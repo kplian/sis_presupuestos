@@ -719,3 +719,61 @@ CREATE INDEX tobjetivo_idx ON pre.tobjetivo
 
 /*****************************F-SCP-GVC-PRE-0-27/10/2016*************/
 
+
+/*****************************I-SCP-RAC-PRE-0-24/07/2017*************/
+
+
+
+CREATE TABLE pre.tcp_programa_ids (
+  id_cp_programa_uno INTEGER NOT NULL,
+  id_cp_programa_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+
+CREATE TABLE pre.tcp_proyecto_ids (
+  id_cp_proyecto_uno INTEGER NOT NULL,
+  id_cp_proyecto_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+
+CREATE TABLE pre.tcp_actividad_ids (
+  id_cp_actividad_uno INTEGER NOT NULL,
+  id_cp_actividad_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+
+
+CREATE TABLE pre.tcp_fuente_fin_ids (
+  id_cp_fuente_fin_uno INTEGER NOT NULL,
+  id_cp_fuente_fin_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+
+
+CREATE TABLE pre.tcp_organismo_fin_ids (
+  id_cp_organismo_fin_uno INTEGER NOT NULL,
+  id_cp_organismo_fin_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+
+CREATE TABLE pre.tcategoria_programatica_ids (
+  id_categoria_programatica_uno INTEGER NOT NULL,
+  id_categoria_programatica_dos INTEGER NOT NULL,
+  sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion' NOT NULL
+) 
+WITH (oids = false);
+
+/*****************************F-SCP-RAC-PRE-0-24/07/2017*************/
+
+
+

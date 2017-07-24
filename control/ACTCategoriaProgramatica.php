@@ -54,8 +54,14 @@ class ACTCategoriaProgramatica extends ACTbase{
 	}
 						
 	function eliminarCategoriaProgramatica(){
-			$this->objFunc=$this->create('MODCategoriaProgramatica');	
+		$this->objFunc=$this->create('MODCategoriaProgramatica');	
 		$this->res=$this->objFunc->eliminarCategoriaProgramatica($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	
+	function clonarCategoriaProgramatica(){
+		$this->objFunc=$this->create('MODCategoriaProgramatica');	
+		$this->res=$this->objFunc->clonarCategoriaProgramatica($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 			
