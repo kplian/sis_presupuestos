@@ -62,6 +62,7 @@ DECLARE
     v_parametros_ad 					varchar;
     v_tipo_noti 						varchar;
     v_titulo  							varchar;
+    v_id_presupuesto_dos				integer;
     
     
 			    
@@ -354,7 +355,7 @@ BEGIN
        
     /*********************************    
  	#TRANSACCION:  'PRE_CLONARPRE_IME'
- 	#DESCRIPCION:	Clona los presupeustos y centros de costos para la siguiente gestion
+ 	#DESCRIPCION:	Clona los presupuestos y centros de costos para la siguiente gestion
  	#AUTOR:	    Rensi Arteaga Copari
  	#FECHA:		04-08-2015 00:30:39
 	***********************************/
@@ -397,15 +398,33 @@ BEGIN
             
             --clonamos presupuestos y centros de costos
             FOR v_registros in (
-                                  select p.* from pre.tpresupuesto p 
+                                  select 
+                                     p.* ,
+                                     cc.id_tipo_cc,
+                                     ci.id_categoria_programatica_dos
+                                  from pre.tpresupuesto p 
                                   inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                                  left join pre.tcategoria_programatica_ids ci on ci.id_categoria_programatica_uno = p.id_categoria_prog
                                   where cc.id_gestion = v_parametros.id_gestion   
                                         and p.estado_reg = 'activo') LOOP
-                    -- preguntamos si ya existe en la tabla de ids                    
-                     IF NOT EXISTS ( select 1 from pre.tpresupuesto_ids i where i.id_presupuesto_uno = v_registros.id_presupuesto  )  THEN
+                                        
+                                        
+                    -- preguntamos si ya existe en la tabla de ids 
+                    v_id_presupuesto_dos = NULL;
+                    select 
+                       i.id_presupuesto_dos
+                     into
+                       v_id_presupuesto_dos
+                    from pre.tpresupuesto_ids i 
+                    where i.id_presupuesto_uno = v_registros.id_presupuesto ;                   
+                     
+                     IF v_id_presupuesto_dos is null  THEN
                        
                          -- clonamos el centro de costos
-                           select * into v_reg_cc_ori 
+                           select 
+                               * 
+                           into 
+                              v_reg_cc_ori 
                            from param.tcentro_costo cc 
                            where cc.id_centro_costo = v_registros.id_centro_costo;
                            
@@ -417,7 +436,8 @@ BEGIN
                                         estado_reg,
                                         id_ep,
                                         id_uo,
-                                        id_gestion
+                                        id_gestion,
+                                        id_tipo_cc
                                       )
                                       VALUES (
                                         p_id_usuario,
@@ -425,7 +445,8 @@ BEGIN
                                         'activo',
                                         v_reg_cc_ori.id_ep,
                                         v_reg_cc_ori.id_uo,
-                                        v_id_gestion_destino
+                                        v_id_gestion_destino,
+                                        v_reg_cc_ori.id_tipo_cc
                                       ) RETURNING id_centro_costo into v_id_centro_costo;
                            
                        
@@ -447,7 +468,9 @@ BEGIN
                                     cod_fin,
                                     cod_prg,
                                     cod_pry,
-                                    cod_act
+                                    cod_act,
+                                    descripcion,
+                                    sw_consolidado
                                   )
                                   VALUES (
                                     p_id_usuario,                                   
@@ -457,20 +480,38 @@ BEGIN
                                     v_id_centro_costo,
                                     v_registros.tipo_pres,
                                     v_registros.estado_pres,
-                                    v_registros.id_categoria_prog,
+                                    v_registros.id_categoria_programatica_dos,
                                     v_registros.id_parametro,
                                     v_registros.id_fuente_financiamiento,
                                     v_registros.id_concepto_colectivo,
                                     v_registros.cod_fin,
                                     v_registros.cod_prg,
                                     v_registros.cod_pry,
-                                    v_registros.cod_act
+                                    v_registros.cod_act,
+                                    v_registros.descripcion,
+                                    v_registros.sw_consolidado
                                   )RETURNING id_presupuesto into v_id_presupuesto;
                                   
                                   INSERT INTO pre.tpresupuesto_ids (id_presupuesto_uno, id_presupuesto_dos, sw_cambio_gestion ) 
                                   VALUES ( v_registros.id_presupuesto, v_id_presupuesto, 'gestion');
                                    v_conta = v_conta + 1;
                                    
+                     
+                     ELSE
+                        --si el presupeusto ya existe modificarlo
+                      
+                          update param.tcentro_costo set
+                             id_tipo_cc = v_registros.id_tipo_cc
+                          where id_centro_costo = v_id_presupuesto_dos;
+                          
+                          update pre.tpresupuesto  c set
+                             descripcion = v_registros.descripcion,
+                             id_categoria_prog = v_registros.id_categoria_programatica_dos,
+                             sw_consolidado = v_registros.sw_consolidado
+                          where id_centro_costo = v_id_presupuesto_dos;
+                          
+                     
+                     
                      END IF;
                                        
             END LOOP;
