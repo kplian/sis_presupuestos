@@ -2174,7 +2174,7 @@ AS
        JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo;  
        
        
---------------- SQL ---------------
+-----------------
 
 CREATE OR REPLACE VIEW pre.vpresupuesto_cc(
     id_centro_costo,
@@ -2231,14 +2231,7 @@ AS
          uo.nombre_unidad AS nombre_uo,
          ep.ep,
          ges.gestion,
-         CASE
-           WHEN pre.descripcion IS NOT NULL THEN (('Id: '::text ||
-             cec.id_centro_costo::text) || ' '::text) ||((((' - '::text ||
-             pre.descripcion::text) || ' - ('::text) || ges.gestion) || ')'::
-             text)
-           ELSE (((uo.codigo::text || ' - ('::text) || ep.ep) || ') Id: '::text)
-             || cec.id_centro_costo::text
-         END AS codigo_cc,
+         cec.codigo_cc,
          ep.nombre_programa,
          ep.nombre_proyecto,
          ep.nombre_actividad,
@@ -2261,13 +2254,13 @@ AS
          tp.sw_oficial,
          pre.sw_consolidado,
          pre.id_categoria_prog,
-         (case 
-            when vcc.id_tipo_cc is not null then
-              '('||vcc.codigo_tcc|| ') '||vcc.descripcion_tcc
-            else
-               pre.descripcion
-            end ) AS descripcion
-  FROM param.tcentro_costo cec
+         CASE
+           WHEN cec.id_tipo_cc IS NOT NULL THEN ((('('::text || cec.codigo_tcc::
+             text) || ') '::text) || cec.descripcion_tcc::text)::character
+             varying
+           ELSE pre.descripcion
+         END AS descripcion
+  FROM param.vcentro_costo cec
        JOIN segu.tusuario usu1 ON usu1.id_usuario = cec.id_usuario_reg
        LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = cec.id_usuario_mod
        JOIN param.vep ep ON ep.id_ep = cec.id_ep
@@ -2276,174 +2269,9 @@ AS
        JOIN pre.tpresupuesto pre ON pre.id_centro_costo = cec.id_centro_costo
        LEFT JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica
          = pre.id_categoria_prog
-       JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text
-       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo
-         ;       
+       JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text;
            
 
 /***********************************F-DEP-RAC-PRE-0-09/06/2017*****************************************/
    
 
-/***********************************I-DEP-RAC-PRE-0-29/06/2017*****************************************/
-  
-  CREATE OR REPLACE VIEW param.vtipo_cc_techo(
-    codigo_techo,
-    descripcion_techo,
-    id_tipo_cc_techo,
-    control_techo,
-    control_partida,
-    ids,
-    id_tipo_cc,
-    id_tipo_cc_fk,
-    codigo,
-    descripcion,
-    movimiento)
-AS
-WITH RECURSIVE tipo_cc_techo(
-    ids,
-    id_tipo_cc,
-    id_tipo_cc_fk,
-    descripcion,
-    codigo,
-    control_techo,
-    control_partida,
-    movimiento) AS(
-  SELECT ARRAY [ c_1.id_tipo_cc ] AS "array",
-         c_1.id_tipo_cc,
-         c_1.id_tipo_cc_fk,
-         c_1.descripcion,
-         c_1.codigo,
-         c_1.control_techo,
-         c_1.control_partida,
-         c_1.movimiento
-  FROM param.ttipo_cc c_1
-  WHERE c_1.control_techo::text = 'si'::text AND
-        c_1.estado_reg::text = 'activo'::text
-  UNION
-  SELECT pc.ids || c2.id_tipo_cc,
-         c2.id_tipo_cc,
-         c2.id_tipo_cc_fk,
-         c2.descripcion,
-         c2.codigo,
-         c2.control_techo,
-         c2.control_partida,
-         c2.movimiento
-  FROM param.ttipo_cc c2,
-       tipo_cc_techo pc
-  WHERE c2.id_tipo_cc_fk = pc.id_tipo_cc AND
-        c2.estado_reg::text = 'activo'::text)
-      SELECT cl.codigo AS codigo_techo,
-             cl.descripcion AS descripcion_techo,
-             cl.id_tipo_cc AS id_tipo_cc_techo,
-             cl.control_techo,
-             cl.control_partida,
-             c.ids,
-             c.id_tipo_cc,
-             c.id_tipo_cc_fk,
-             c.codigo,
-             c.descripcion,
-             c.movimiento
-      FROM tipo_cc_techo c
-           JOIN param.ttipo_cc cl ON cl.id_tipo_cc = c.ids [ 1 ]
-      WHERE c.movimiento::text = 'si'::text;
-      
-      
-CREATE OR REPLACE VIEW pre.vpresupuesto_cc(
-    id_centro_costo,
-    estado_reg,
-    id_ep,
-    id_gestion,
-    id_uo,
-    id_usuario_reg,
-    fecha_reg,
-    id_usuario_mod,
-    fecha_mod,
-    usr_reg,
-    usr_mod,
-    codigo_uo,
-    nombre_uo,
-    ep,
-    gestion,
-    codigo_cc,
-    nombre_programa,
-    nombre_proyecto,
-    nombre_actividad,
-    nombre_financiador,
-    nombre_regional,
-    tipo_pres,
-    cod_act,
-    cod_fin,
-    cod_prg,
-    cod_pry,
-    estado_pres,
-    estado,
-    id_presupuesto,
-    id_estado_wf,
-    nro_tramite,
-    id_proceso_wf,
-    movimiento_tipo_pres,
-    desc_tipo_presupuesto,
-    sw_oficial,
-    sw_consolidado,
-    id_categoria_prog,
-    descripcion)
-AS
-  SELECT cec.id_centro_costo,
-         cec.estado_reg,
-         cec.id_ep,
-         cec.id_gestion,
-         cec.id_uo,
-         cec.id_usuario_reg,
-         cec.fecha_reg,
-         cec.id_usuario_mod,
-         cec.fecha_mod,
-         usu1.cuenta AS usr_reg,
-         usu2.cuenta AS usr_mod,
-         uo.codigo AS codigo_uo,
-         uo.nombre_unidad AS nombre_uo,
-         ep.ep,
-         ges.gestion,
-         vcc.codigo_cc,
-         ep.nombre_programa,
-         ep.nombre_proyecto,
-         ep.nombre_actividad,
-         ep.nombre_financiador,
-         ep.nombre_regional,
-         pre.tipo_pres,
-         pre.cod_act,
-         pre.cod_fin,
-         pre.cod_prg,
-         pre.cod_pry,
-         pre.estado_pres,
-         pre.estado,
-         pre.id_presupuesto,
-         pre.id_estado_wf,
-         pre.nro_tramite,
-         pre.id_proceso_wf,
-         tp.movimiento AS movimiento_tipo_pres,
-         ((('('::text || tp.codigo::text) || ') '::text) || tp.nombre::text)::
-           character varying AS desc_tipo_presupuesto,
-         tp.sw_oficial,
-         pre.sw_consolidado,
-         pre.id_categoria_prog,
-         CASE
-           WHEN vcc.id_tipo_cc IS NOT NULL THEN ((('('::text || vcc.codigo_tcc::
-             text) || ') '::text) || vcc.descripcion_tcc::text)::character
-             varying
-           ELSE pre.descripcion
-         END AS descripcion
-  FROM param.tcentro_costo cec
-       JOIN segu.tusuario usu1 ON usu1.id_usuario = cec.id_usuario_reg
-       LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = cec.id_usuario_mod
-       JOIN param.vep ep ON ep.id_ep = cec.id_ep
-       JOIN param.tgestion ges ON ges.id_gestion = cec.id_gestion
-       JOIN orga.tuo uo ON uo.id_uo = cec.id_uo
-       JOIN pre.tpresupuesto pre ON pre.id_centro_costo = cec.id_centro_costo
-       LEFT JOIN pre.tcategoria_programatica cp ON cp.id_categoria_programatica
-         = pre.id_categoria_prog
-       JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text
-       JOIN param.vcentro_costo vcc ON vcc.id_centro_costo = pre.id_centro_costo
-         ;      
-      
-/***********************************F-DEP-RAC-PRE-0-29/06/2017*****************************************/
-  
