@@ -126,6 +126,25 @@ class MODCategoriaProgramatica extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+    function clonarCategoriaProgramatica(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_categoria_programatica_ime';
+		$this->transaccion='PRE_CLCARPRO_IME';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_gestion','id_gestion','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+
 			
 }
 ?>

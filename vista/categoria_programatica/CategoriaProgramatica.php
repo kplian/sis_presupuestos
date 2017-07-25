@@ -35,10 +35,16 @@ Phx.vista.CategoriaProgramatica=Ext.extend(Phx.gridInterfaz,{
 			
 			
         },this);
+        
+        
+        this.addButton('btnCLonar',{grupo:[2],text: 'Duplicar Categorias',iconCls: 'bchecklist',disabled: false,handler: this.duplicarCategorias,tooltip: '<b>Duplicar categorias </b><br/>Duplicar categorias para la siguiente gestión'});
+		
 		
 		this.bloquearOrdenamientoGrid();
 		this.init();
 	},
+	
+	
 			
 	Atributos:[
 		{
@@ -537,11 +543,44 @@ Phx.vista.CategoriaProgramatica=Ext.extend(Phx.gridInterfaz,{
 	    } 
     },
     
+    duplicarCategorias: function(){
+		if(this.cmbGestion.getValue()){
+			Phx.CP.loadingShow(); 
+	   		Ext.Ajax.request({
+				url: '../../sis_presupuestos/control/CategoriaProgramatica/clonarCategoriaProgramatica',
+			  	params:{
+			  		id_gestion: this.cmbGestion.getValue()
+			      },
+			      success:this.successRep,
+			      failure: this.conexionFailure,
+			      timeout:this.timeout,
+			      scope:this
+			});
+		}
+		else{
+			alert('primero debe selecionar la gestión origen');
+		}
+   		
+   },
+   
+   successRep:function(resp){
+        Phx.CP.loadingHide();
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        if(!reg.ROOT.error){
+            this.reload();
+            if(reg.ROOT.datos.observaciones){
+               alert(reg.ROOT.datos.observaciones)
+            }
+           
+        }else{
+            alert('Ocurrió un error durante el proceso')
+        }
+	},
     
-	bdel:true,
-	bsave:false
-	}
-)
+    
+bdel:true,
+bsave:false
+});
 </script>
 		
 		
