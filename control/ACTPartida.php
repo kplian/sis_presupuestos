@@ -6,7 +6,7 @@
 *@date 23-11-2012 20:06:53
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-require_once(dirname(__FILE__).'/../reportes/RPartidaEjecutadoXls.php');
+//require_once(dirname(__FILE__).'/../reportes/RPartidaEjecutadoXls.php');
 class ACTPartida extends ACTbase{    
 			
 	function listarPartida(){
@@ -22,7 +22,14 @@ class ACTPartida extends ACTbase{
 	    	$this->objParam->addFiltro("par.id_partida in (select id_partida from pre.tconcepto_partida cp where cp.id_concepto_ingas = " . $this->objParam->getParametro('id_concepto_ingas') . ")");	
 		}
 		if($this->objParam->getParametro('tipo')!=''){
-	    	$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
+			
+			if($this->objParam->getParametro('tipo') == 'ingreso_egreso'){
+				$this->objParam->addFiltro("par.tipo in (''recurso'',''gasto'')");	
+			}
+			else{
+				$this->objParam->addFiltro("par.tipo = ''".$this->objParam->getParametro('tipo')."''");	
+			}
+	    	
 		}
 		if($this->objParam->getParametro('sw_transaccional')!=''){
 	    	$this->objParam->addFiltro("par.sw_transaccional = ''".$this->objParam->getParametro('sw_transaccional')."''");	
