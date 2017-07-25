@@ -67,7 +67,8 @@ BEGIN
              pre.nro_tramite,
              cc.id_gestion,
              ges.gestion,
-             tp.sw_oficial
+             tp.sw_oficial,
+             pre.tipo_pres
           into
             v_registros
           from pre.tpresupuesto pre
@@ -76,7 +77,9 @@ BEGIN
           inner join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
           where pre.id_proceso_wf = p_id_proceso_wf;
           
-          
+          IF v_registros.tipo_pres  is null  THEN
+             raise exception 'No tiene un tipo de presupuesto asignado';
+          END IF;
           -- 
           SELECT 
              sum(pp.importe),
@@ -88,6 +91,8 @@ BEGIN
           where  pp.id_presupuesto =  v_registros.id_presupuesto 
                  and pp.estado_reg = 'activo';
                  
+                 
+           raise exception 'No tiene ningun monto formulado % - %, .....%, %', v_importe_total, v_importe_aprobado_total, v_registros.id_presupuesto, p_id_proceso_wf ;       
           
           IF v_registros.sw_oficial = 'si' THEN
                IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) THEN 
@@ -95,7 +100,7 @@ BEGIN
                END IF; 
           ELSE
               IF (v_importe_total is null or  v_importe_total = 0) THEN 
-                 raise exception 'No tiene ningun monto formulado';
+                 raise exception 'No tiene ningun monto formulado % - %', v_importe_total, v_importe_aprobado_total ;
               END IF; 
           END IF;
           
