@@ -808,3 +808,144 @@ WITH (oids = false);
 /*****************************F-SCP-RAC-PRE-0-27/06/2017*************/
 
 
+/*****************************I-SCP-FEA-PRE-0-25/07/2017*************/
+CREATE TABLE pre.tdireccion_administrativa (
+  id_direccion_administrativa SERIAL,
+  id_gestion INTEGER,
+  codigo VARCHAR(20),
+  nombre VARCHAR(256),
+  CONSTRAINT tdireccion_administrativa_codigo_key UNIQUE(codigo),
+  CONSTRAINT tdireccion_administrativa_nombre_key UNIQUE(nombre),
+  CONSTRAINT tdireccion_administrativa_pkey PRIMARY KEY(id_direccion_administrativa),
+  CONSTRAINT tdireccion_administrativa_fk FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tdireccion_administrativa
+  ALTER COLUMN id_direccion_administrativa SET STATISTICS 0;
+
+ALTER TABLE pre.tdireccion_administrativa
+  ALTER COLUMN id_gestion SET STATISTICS 0;
+
+ALTER TABLE pre.tdireccion_administrativa
+  ALTER COLUMN codigo SET STATISTICS 0;
+
+ALTER TABLE pre.tdireccion_administrativa
+  ALTER COLUMN nombre SET STATISTICS 0;
+
+
+CREATE TABLE pre.tentidad_transferencia (
+  id_entidad_transferencia SERIAL,
+  id_gestion INTEGER,
+  codigo VARCHAR(20),
+  nombre VARCHAR(256),
+  CONSTRAINT tentidad_transferencia_codigo_key UNIQUE(codigo),
+  CONSTRAINT tentidad_transferencia_nombre_key UNIQUE(nombre),
+  CONSTRAINT tentidad_transferencia_pkey PRIMARY KEY(id_entidad_transferencia),
+  CONSTRAINT tentidad_transferencia_fk FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tentidad_transferencia
+  ALTER COLUMN id_entidad_transferencia SET STATISTICS 0;
+
+ALTER TABLE pre.tentidad_transferencia
+  ALTER COLUMN id_gestion SET STATISTICS 0;
+
+ALTER TABLE pre.tentidad_transferencia
+  ALTER COLUMN codigo SET STATISTICS 0;
+
+ALTER TABLE pre.tentidad_transferencia
+  ALTER COLUMN nombre SET STATISTICS 0;
+
+
+CREATE TABLE pre.tpresupuesto_partida_entidad (
+  id_presupuesto_partida_entidad SERIAL,
+  id_presupuesto INTEGER,
+  id_partida INTEGER,
+  id_entidad_transferencia INTEGER,
+  id_gestion INTEGER,
+  CONSTRAINT tpresupuesto_partida_entidad_pkey PRIMARY KEY(id_presupuesto_partida_entidad),
+  CONSTRAINT tpresupuesto_partida_entidad_fk FOREIGN KEY (id_presupuesto)
+    REFERENCES pre.tpresupuesto(id_presupuesto)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT tpresupuesto_partida_entidad_fk1 FOREIGN KEY (id_partida)
+    REFERENCES pre.tpartida(id_partida)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT tpresupuesto_partida_entidad_fk2 FOREIGN KEY (id_entidad_transferencia)
+    REFERENCES pre.tentidad_transferencia(id_entidad_transferencia)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT tpresupuesto_partida_entidad_fk3 FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tpresupuesto_partida_entidad
+  ALTER COLUMN id_presupuesto_partida_entidad SET STATISTICS 0;
+
+ALTER TABLE pre.tpresupuesto_partida_entidad
+  ALTER COLUMN id_presupuesto SET STATISTICS 0;
+
+ALTER TABLE pre.tpresupuesto_partida_entidad
+  ALTER COLUMN id_partida SET STATISTICS 0;
+
+ALTER TABLE pre.tpresupuesto_partida_entidad
+  ALTER COLUMN id_entidad_transferencia SET STATISTICS 0;
+
+ALTER TABLE pre.tpresupuesto_partida_entidad
+  ALTER COLUMN id_gestion SET STATISTICS 0;
+
+CREATE UNIQUE INDEX tpresupuesto_partida_entidad_idx ON pre.tpresupuesto_partida_entidad
+  USING btree (id_presupuesto, id_partida, id_entidad_transferencia);
+
+
+CREATE TABLE pre.tunidad_ejecutora (
+  id_unidad_ejecutora SERIAL,
+  id_gestion INTEGER,
+  codigo VARCHAR(20),
+  nombre VARCHAR(256),
+  CONSTRAINT tunidad_ejecutora_codigo_key UNIQUE(codigo),
+  CONSTRAINT tunidad_ejecutora_nombre_key UNIQUE(nombre),
+  CONSTRAINT tunidad_ejecutora_pkey PRIMARY KEY(id_unidad_ejecutora),
+  CONSTRAINT tunidad_ejecutora_fk FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+ALTER TABLE pre.tunidad_ejecutora
+  ALTER COLUMN id_unidad_ejecutora SET STATISTICS 0;
+
+ALTER TABLE pre.tunidad_ejecutora
+  ALTER COLUMN id_gestion SET STATISTICS 0;
+
+ALTER TABLE pre.tunidad_ejecutora
+  ALTER COLUMN codigo SET STATISTICS 0;
+
+ALTER TABLE pre.tunidad_ejecutora
+  ALTER COLUMN nombre SET STATISTICS 0;
+
+/*****************************F-SCP-FEA-PRE-0-25/07/2017*************/
