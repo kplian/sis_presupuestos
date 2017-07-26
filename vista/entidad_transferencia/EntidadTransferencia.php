@@ -36,7 +36,7 @@ Phx.vista.EntidadTransferencia=Ext.extend(Phx.gridInterfaz,{
             config: {
                 name: 'id_gestion',
                 fieldLabel: 'Gestion',
-                allowBlank: true,
+                allowBlank: false,
                 emptyText:'Gestion...',
                 blankText: 'Año',
                 store:new Ext.data.JsonStore(
@@ -82,7 +82,7 @@ Phx.vista.EntidadTransferencia=Ext.extend(Phx.gridInterfaz,{
             config:{
                 name: 'codigo',
                 fieldLabel: 'Codigo',
-                allowBlank: true,
+                allowBlank: false,
                 anchor: '80%',
                 gwidth: 70,
                 maxLength:20
@@ -98,7 +98,7 @@ Phx.vista.EntidadTransferencia=Ext.extend(Phx.gridInterfaz,{
             config:{
                 name: 'nombre',
                 fieldLabel: 'Nombre',
-                allowBlank: true,
+                allowBlank: falses,
                 anchor: '80%',
                 gwidth: 300,
                 maxLength:256

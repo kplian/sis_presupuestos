@@ -51,7 +51,7 @@ Phx.vista.PresupuestoPartidaEntidad=Ext.extend(Phx.gridInterfaz,{
             config: {
                 name: 'id_gestion',
                 fieldLabel: 'Gestion',
-                allowBlank: true,
+                allowBlank: false,
                 emptyText:'Gestion...',
                 blankText: 'Año',
                 store:new Ext.data.JsonStore(
@@ -97,7 +97,7 @@ Phx.vista.PresupuestoPartidaEntidad=Ext.extend(Phx.gridInterfaz,{
 			config: {
 				name: 'id_partida',
 				fieldLabel: 'Partida',
-				allowBlank: true,
+				allowBlank: false,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
 					url: '../../sis_presupuestos/control/Partida/listarPartida',
@@ -157,7 +157,7 @@ Phx.vista.PresupuestoPartidaEntidad=Ext.extend(Phx.gridInterfaz,{
 			config: {
 				name: 'id_entidad_transferencia',
 				fieldLabel: 'Entidad Transf.',
-				allowBlank: true,
+				allowBlank: false,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
 					url: '../../sis_presupuestos/control/EntidadTransferencia/listarEntidadTransferencia',
@@ -210,7 +210,7 @@ Phx.vista.PresupuestoPartidaEntidad=Ext.extend(Phx.gridInterfaz,{
             config: {
                 name: 'id_presupuesto',
                 fieldLabel: 'Presupuesto',
-                allowBlank: true,
+                allowBlank: false,
                 emptyText: 'Elija una opción...',
                 store: new Ext.data.JsonStore({
                     url: '../../sis_presupuestos/control/Presupuesto/listarPresupuesto',
@@ -427,10 +427,9 @@ Phx.vista.PresupuestoPartidaEntidad=Ext.extend(Phx.gridInterfaz,{
     },
 
     onButtonEdit: function () {
-        //var rec = this.getSelectedData();
         Phx.vista.PresupuestoPartidaEntidad.superclass.onButtonEdit.call(this);
-        this.Cmp.id_partida.store.baseParams = {par_filtro:'par.codigo#par.nombre_partida', id_gestion:reg.ROOT.datos.id_gestion, sw_transaccional: 'movimiento'};
-        this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', tipo_interfaz:'PresupuestoInicio', id_gestion: reg.ROOT.datos.id_gestion, codigo_tipo_pres: '2'};
+        this.Cmp.id_partida.store.baseParams = {par_filtro:'par.codigo#par.nombre_partida', id_gestion:this.Cmp.id_gestion.getValue(), sw_transaccional: 'movimiento'};
+        this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', tipo_interfaz:'PresupuestoInicio', id_gestion: this.Cmp.id_gestion.getValue(), codigo_tipo_pres: '2'};
 
     },
 

@@ -14,7 +14,7 @@ class RCertificacionPresupuestaria extends  ReportePDF{
         //formato de fecha
 
         //cabecera del reporte
-        $this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/logo.jpg', 10,5,40,20);
+        $this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/logo.jpg', 16,5,40,20);
         $this->ln(5);
 
 
@@ -90,15 +90,16 @@ class RCertificacionPresupuestaria extends  ReportePDF{
         $elaborado = explode(',',$firmas[1]);
         $aprobado = explode(',',$firmas[0]);
         $firmas = explode(',',$firmas[2]);
+
         $fecha = date_format(date_create($firmas[1]), 'd/m/Y');
 
 
-        $tbl = '<table border="0" style="font-size: 8pt;"> 
-                <tr><td width="50%"><b>ENTIDAD: </b>'.$this->datos[0]['nombre_entidad'].'</td><td width="50%"><b>No. PROCESO: </b>'.$this->datos[0]['num_tramite'].'</td></tr>
-                <tr><td><b>DIRECCIÓN ADMINISTRATIVA: </b>'.$this->datos[0]['direccion_admin'].'</td><td><b>FECHA: </b>'.$fecha.'</td></tr>
-                <tr><td colspan="2"><b>UNIDAD EJECUTORA: </b> '.$this->datos[0]['unidad_ejecutora'].'</td></tr>
-                <tr><td><b>CON IMPUTACIÓN PRESUPUESTARIA: </b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compromiso <img src="'.dirname(__FILE__).'/../../sis_presupuestos/reportes/media/comprobado.png'.'"></td><td><b>DOCUMENTO DE RESPALDO:</b></td></tr>
-                <tr><td colspan="2"><b>CATEGORIA DE COMPRA: </b> '.($this->datos[0]['codigo_moneda']=='Bs'?'Compra Nacional.':'Compra Internacional.').'</td></tr>
+        $tbl = '<table border="0" style="font-size: 7pt;"> 
+                <tr><td width="28%"><b>ENTIDAD: </b></td><td width="23%"> '.$this->datos[0]['nombre_entidad'].'</td><td width="23%"><b>NRO. PROCESO: </b></td><td width="28%">'.$this->datos[0]['num_tramite'].'</td></tr>
+                <tr><td><b>DIRECCIÓN ADMINISTRATIVA: </b></td><td> '.$this->datos[0]['direccion_admin'].'</td><td><b>FECHA: </b></td><td>'.$fecha.'</td></tr>
+                <tr><td><b>UNIDAD EJECUTORA: </b></td><td> '.$this->datos[0]['unidad_ejecutora'].'</td><td><b>UNIDAD SOLICITANTE: </b></td><td>'.$this->datos[0]['unidad_solicitante'].' </td></tr>
+                <tr><td><b>CON IMPUTACIÓN PRESUPUESTARIA: </b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compromiso: <img width="13" height="13" src="'.dirname(__FILE__).'/../../sis_presupuestos/reportes/media/tiqueado.png"></td><td></td><td><b>FUNCIONARIO SOLICITANTE: </b></td><td>'.$this->datos[0]['funcionario_solicitante'].'</td></tr>
+                <tr><td colspan="4"><b>CATEGORIA DE COMPRA: </b> '.($this->datos[0]['codigo_moneda']=='Bs'?'Compra Nacional.':'Compra Internacional.').'</td></tr>
                 ';
 
         $this->Ln(5);
@@ -222,8 +223,8 @@ class RCertificacionPresupuestaria extends  ReportePDF{
                             <td width="5%" align="center"><br><b>FTE.</b></td>
                             <td width="5%" align="center" ><b>ORG. FINAN</b></td>
                             <td width="10%" align="center" valign="center"><br><b>PARTIDA</b></td>
-                            <td width="7%" align="center"><b>ENT.</b> <br><b>TRANSF</b></td>
                             <td width="36%" align="center"><br><b>DESCRIPCIÓN</b></td>
+                            <td width="7%" align="center"><b>ENT.</b> <br><b>TRANSF</b></td>
                             <td width="15%" align="right"><br><b>IMPORTE '.($cod_moneda=='Bs'?'Bs.':'$us.').'</b></td>
                         </tr>';
 
@@ -257,8 +258,8 @@ class RCertificacionPresupuestaria extends  ReportePDF{
                             <td width="5%" align="center">'.$record["codigo_fuente_fin"].'</td>
                             <td width="5%" align="center" >'.$record["codigo_origen_fin"].'</td>
                             <td width="10%" align="center" valign="center">'.$record["codigo_partida"].'</td>
-                            <td width="7%" align="center">'.$record["codigo_transf"].'</td>
                             <td width="36%" align="left">'.$record["nombre_partidad"].'</td>
+                            <td width="7%" align="center">'.$record["codigo_transf"].'</td>
                             <td width="15%" align="right">'.number_format($record["precio_total"],2, ',', '.').'</td>
                         </tr>';
 
@@ -305,6 +306,11 @@ class RCertificacionPresupuestaria extends  ReportePDF{
                         
                </tr></table>';
         $this->writeHTML ($tbl);
+       //controlamos el alto para las firmas
+        if($this->GetY() == 220)
+            $this->SetY(250);
+
+        //var_dump($this->getPageDimensions());exit;
         if($firmas[0]=='vbrpc') {
             $tbl = '<table>
                     <tr>
@@ -318,19 +324,15 @@ class RCertificacionPresupuestaria extends  ReportePDF{
                         <tr>
                             <td align="center" > 
                                 <br><br>
-                                <img  style="width: 95px; height: 95px;" src="' . $this->generarImagen($elaborado[2], $elaborado[3]) . '" alt="Logo">
-                                <br> ELABORADO
+                                <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($elaborado[2], $elaborado[3],$elaborado[4]) . '" alt="Logo">
+                               
                             </td>
                             <td align="center" >
                                 <br><br>
-                                <img  style="width: 95px; height: 95px;" src="' . $this->generarImagen($aprobado[2], $aprobado[3]) . '" alt="Logo">
-                                <br> APROBADO
+                                <img  style="width: 110px; height: 110px;" src="' . $this->generarImagen($aprobado[2], $aprobado[3],$aprobado[4]) . '" alt="Logo">
+                                  
                             </td>
                          </tr>
-                         <!--<tr>
-                            <td>Firma Electrónica</td>    
-                            <td>Firma Electrónica</td>    
-                         </tr>-->
                     </table>
                     </td>
                     <td style="width:15%;"></td>
@@ -353,19 +355,15 @@ class RCertificacionPresupuestaria extends  ReportePDF{
                         <tr>
                             <td align="center" > 
                                 <br><br>
-                                <img  style="width: 95px; height: 95px;" src="" alt="Logo">
-                                <br> ELABORADO
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+                                
                             </td>
                             <td align="center" >
                                 <br><br>
-                                <img  style="width: 95px; height: 95px;" src="" alt="Logo">
-                                <br> APROBADO
+                                <img  style="width: 95px; height: 95px;" src="" alt="Logo"><br>
+                                
                             </td>
                          </tr>
-                         <!--<tr>
-                            <td>Firma Electrónica</td>    
-                            <td>Firma Electrónica</td>    
-                         </tr>-->
                     </table>
                     </td>
                     <td style="width:15%;"></td>
@@ -454,20 +452,20 @@ class RCertificacionPresupuestaria extends  ReportePDF{
         }
     }
 
-    function generarImagen($nom, $nac){
-        $cadena_qr = 'Nombre: '.$nom. "\n" . 'Cargo: '.$nac ;
+    function generarImagen($nom, $car, $ofi){
+        $cadena_qr = 'Nombre: '.$nom. "\n" . 'Cargo: '.$car."\n".'Oficina: '.$ofi ;
         $barcodeobj = new TCPDF2DBarcode($cadena_qr, 'QRCODE,M');
         $png = $barcodeobj->getBarcodePngData($w = 8, $h = 8, $color = array(0, 0, 0));
         $im = imagecreatefromstring($png);
         if ($im !== false) {
             header('Content-Type: image/png');
-            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nac . ".png");
+            imagepng($im, dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png");
             imagedestroy($im);
 
         } else {
             echo 'A ocurrido un Error.';
         }
-        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nac . ".png"; //$this->objParam->getParametro('nombre_archivo')
+        $url_archivo = dirname(__FILE__) . "/../../reportes_generados/" . $nom . ".png";
 
         return $url_archivo;
     }
