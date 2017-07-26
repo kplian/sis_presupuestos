@@ -394,6 +394,8 @@ class MODPresupuesto extends MODbase{
         $this->captura('firmas', 'varchar');
         $this->captura('justificacion', 'varchar');
         $this->captura('codigo_transf', 'varchar');
+        $this->captura('unidad_solicitante', 'varchar');
+        $this->captura('funcionario_solicitante', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
