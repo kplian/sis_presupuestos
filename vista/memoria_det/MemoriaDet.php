@@ -386,7 +386,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     },
     
     calculaTotal: function(e){
-    	var tot = Number(parseInt(e.record.data.cantidad_mem)) * Number(parseInt(e.record.data.importe_unitario));
+    	var tot = Number(e.record.data.cantidad_mem) * Number(e.record.data.importe_unitario);
     	e.record.set( 'importe', tot );
     	e.record.markDirty();
     },
