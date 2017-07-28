@@ -351,7 +351,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		'desc_periodo',
 		{name:'cantidad_mem', type: 'numeric'},
-		{name:'importe_unitario', type: 'numeric'},'unidad_medida',,'tipo_reg'
+		{name:'importe_unitario', type: 'numeric'},'unidad_medida','tipo_reg'
 
 		
 	],
@@ -370,21 +370,23 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
         this.Cmp.id_memoria_calculo.setValue(this.maestro.id_memoria_calculo);       
     },
     successSave:function(resp){
+
     	 Phx.vista.MemoriaDet.superclass.successSave.call(this,resp);
     	 Phx.CP.getPagina(this.idContenedorPadre).reload();
-    	 
+		 Phx.CP.getPagina(Phx.CP.getPagina(this.idContenedorPadre).idContenedorPadre).reload();
     },
     
     iniciarEventos:function(){
-    	
     	this.grid.on('afteredit',function(e){
+			 e.record.set( 'cantidad_mem', parseInt(e.record.data.cantidad_mem));
+			 e.record.set( 'importe_unitario', parseInt(e.record.data.importe_unitario));
     		 this.calculaTotal(e);
     	}, this);
     	
     },
     
     calculaTotal: function(e){
-    	var tot = Number(e.record.data.cantidad_mem) * Number(e.record.data.importe_unitario);
+    	var tot = Number(parseInt(e.record.data.cantidad_mem)) * Number(parseInt(e.record.data.importe_unitario));
     	e.record.set( 'importe', tot );
     	e.record.markDirty();
     },
