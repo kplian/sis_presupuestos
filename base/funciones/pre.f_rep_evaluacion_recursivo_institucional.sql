@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION pre.f_rep_evaluacion_recursivo_institucional (
+CREATE OR REPLACE FUNCTION pre.f_rep_evaluacion_recursivo (
   p_id_gestion integer,
   p_nivel integer
 )
@@ -23,8 +23,8 @@ $body$
 
 
   BEGIN
-		---raise EXCEPTION 'llega ';
-    v_nombre_funcion = 'pre.f_rep_evaluacion_recursivo_todo';
+
+    v_nombre_funcion = 'pre.f_rep_evaluacion_recursivo';
 
     raise notice 'lamada recursiva.........................';
     v_sw_force = false;  --para criterio de parada
@@ -32,6 +32,9 @@ $body$
     FOR v_registros in (
       select
         tem.id_partida,
+        --tem.id_presupuesto,
+       -- tem.id_categoria_programatica,
+        --tem.id_cp_programa,
         tem.id_gestion,
         tem.id_partida_fk,
         par.codigo as codigo_partida,
@@ -39,6 +42,7 @@ $body$
         par.id_partida_fk as id_partida_abuelo,
         par.nivel_partida,
         par.sw_transaccional,
+        tem.cod_prg,
         sum(c1) as c1,
         sum(c2) as c2,
         sum(c3) as c3,
@@ -63,28 +67,20 @@ $body$
         sum(b10) as b10,
         sum(b11) as b11,
         sum(b12) as b12,
-        sum(f1) as f1,
-        sum(f2) as f2,
-        sum(f3) as f3,
-        sum(f4) as f4,
-        sum(f5) as f5,
-        sum(f6) as f6,
-        sum(f7) as f7,
-        sum(f8) as f8,
-        sum(f9) as f9,
-        sum(f10) as f10,
-        sum(f11) as f11,
-        sum(f12) as f12,
         sum (total_programado) as total_programado,
         sum(importe_aprobado) as importe_aprobado,
         sum(modificaciones) as modificaciones,
-        sum(total_comprometido) as total_comprometido,
-        sum(total_ejecutado) as total_ejecutado
+        sum(total_comp_ejec) as total_comp_ejec
+
       FROM temp_prog tem
         inner join pre.tpartida par on par.id_partida = tem.id_partida_fk
       where par.nivel_partida = p_nivel
       group by
+        --tem.id_presupuesto,
+        --tem.id_categoria_programatica,
+        --tem.id_cp_programa,
         tem.id_gestion,
+        cod_prg,
         par.codigo,
         par.nombre_partida,
         par.nivel_partida,
@@ -95,6 +91,9 @@ $body$
 
 
       insert into temp_prog(
+        --id_presupuesto,
+       -- id_categoria_programatica,
+        --id_cp_programa,
         id_gestion,
         id_partida,
         codigo_partida,
@@ -102,6 +101,7 @@ $body$
         id_partida_fk,
         nivel_partida,
         sw_transaccional,
+        cod_prg,
         c1,
         c2,
         c3,
@@ -117,35 +117,25 @@ $body$
         b1,
         b2,
         b3,
-         b4,
-         b5,
-         b6,
-         b7,
-         b8,
-         b9,
-         b10,
-         b11,
-         b12,
-         f1,
-         f2,
-         f3,
-         f4,
-         f5,
-         f6,
-         f7,
-         f8,
-         f9,
-         f10,
-         f11,
-         f12,
-         total_programado,
-        importe_aprobado,
-        modificaciones,
-        total_comprometido,
-        total_ejecutado,
-        procesado)
+        b4,
+        b5,
+        b6,
+        b7,
+        b8,
+        b9,
+        b10,
+        b11,
+        b12,
+       total_programado,
+       importe_aprobado,
+       modificaciones,
+       total_comp_ejec
+        )
 
       values   (
+        --v_registros.id_presupuesto,
+        --v_registros.id_categoria_programatica,
+       -- v_registros.id_cp_programa,
         p_id_gestion,
         v_registros.id_partida_fk,
         v_registros.codigo_partida,
@@ -153,6 +143,7 @@ $body$
         v_registros.id_partida_abuelo,
         v_registros.nivel_partida,
         v_registros.sw_transaccional,
+        v_registros.cod_prg,
 
         v_registros.c1,
         v_registros.c2,
@@ -179,43 +170,28 @@ $body$
         v_registros.b10,
         v_registros.b11,
         v_registros.b12,
-
-        v_registros.f1,
-         v_registros.f2,
-         v_registros.f3,
-         v_registros.f4,
-         v_registros.f5,
-         v_registros.f6,
-         v_registros.f7,
-         v_registros.f8,
-         v_registros.f9,
-         v_registros.f10,
-         v_registros.f11,
-         v_registros.f12,
-         v_registros.total_programado,
+        v_registros.total_programado,
         v_registros.importe_aprobado,
         v_registros.modificaciones,
-        v_registros.total_comprometido,
-        v_registros.total_ejecutado,
-        'no');
+        v_registros.total_comp_ejec
+        );
 
-
+		-- raise exception 'Esta llegando';
       v_sw_force = true;
-
-      update temp_prog set
-        procesado = 'si'
-      where  id_partida = v_registros.id_partida;
 
     END LOOP;
 
     -- si tenemos mas datos para procesar hacemos la llamada recursiva
     IF v_sw_force THEN
-      if p_nivel >0 then
-        PERFORM pre.f_rep_evaluacion_recursivo_institucional(p_id_gestion,p_nivel-1);
+      if p_nivel > 0 then
+        PERFORM pre.f_rep_evaluacion_recursivo(p_id_gestion,p_nivel-1);
       end if;
     END IF;
---raise exception 'llega dd';
+
     RETURN TRUE;
+--raise exception 'llega';
+
+
     EXCEPTION
 
     WHEN OTHERS THEN

@@ -33,8 +33,8 @@ $body$
       select
         tem.id_partida,
         --tem.id_presupuesto,
-        tem.id_categoria_programatica,
-        tem.id_cp_programa,
+       -- tem.id_categoria_programatica,
+        --tem.id_cp_programa,
         tem.id_gestion,
         tem.id_partida_fk,
         par.codigo as codigo_partida,
@@ -77,8 +77,8 @@ $body$
       where par.nivel_partida = p_nivel
       group by
         --tem.id_presupuesto,
-        tem.id_categoria_programatica,
-        tem.id_cp_programa,
+        --tem.id_categoria_programatica,
+        --tem.id_cp_programa,
         tem.id_gestion,
         cod_prg,
         par.codigo,
@@ -92,8 +92,8 @@ $body$
 
       insert into temp_prog(
         --id_presupuesto,
-        id_categoria_programatica,
-        id_cp_programa,
+       -- id_categoria_programatica,
+        --id_cp_programa,
         id_gestion,
         id_partida,
         codigo_partida,
@@ -134,8 +134,8 @@ $body$
 
       values   (
         --v_registros.id_presupuesto,
-        v_registros.id_categoria_programatica,
-        v_registros.id_cp_programa,
+        --v_registros.id_categoria_programatica,
+       -- v_registros.id_cp_programa,
         p_id_gestion,
         v_registros.id_partida_fk,
         v_registros.codigo_partida,
