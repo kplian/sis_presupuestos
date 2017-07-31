@@ -573,16 +573,16 @@ BEGIN
             ELSE
             	v_firma_fun = '';
         	END IF;
-        	------
-            SELECT te.nombre
+        		------
+            SELECT (''||te.codigo||' '||te.nombre)::varchar
             INTO v_nombre_entidad
-            FROM param.tentidad te;
+            FROM param.tempresa te;
             ------
-            SELECT tda.nombre
+            SELECT (''||tda.codigo||' '||tda.nombre)::varchar
             INTO v_direccion_admin
             FROM pre.tdireccion_administrativa tda;
 			------
-            SELECT (tue.codigo||' - '||tue.nombre)::varchar
+            SELECT (''||tue.codigo||' '||tue.nombre)::varchar
             INTO v_unidad_ejecutora
             FROM pre.tunidad_ejecutora tue;
             ---
@@ -592,13 +592,15 @@ BEGIN
             SELECT vcp.id_categoria_programatica AS id_cp,  ttc.codigo AS centro_costo,
             vcp.codigo_programa , vcp.codigo_proyecto, vcp.codigo_actividad, vcp.codigo_fuente_fin, vcp.codigo_origen_fin,
             tpar.codigo AS codigo_partida, tpar.nombre_partida , tcg.codigo AS codigo_cg,  tcg.nombre AS nombre_cg,
-            tsd.precio_total,tmo.codigo AS codigo_moneda, ts.num_tramite,
+            sum(tsd.precio_total) AS precio_total,tmo.codigo AS codigo_moneda, ts.num_tramite,
             '''||v_nombre_entidad||'''::varchar AS nombre_entidad,
             COALESCE('''||v_direccion_admin||'''::varchar, '''') AS direccion_admin,
             '''||v_unidad_ejecutora||'''::varchar AS unidad_ejecutora,
             COALESCE('''||v_firma_fun||'''::varchar, '''') AS firmas,
             COALESCE('''||v_record_sol.justificacion||'''::varchar,'''') AS justificacion,
-            COALESCE(tet.codigo::varchar,''00''::varchar) AS codigo_transf
+            COALESCE(tet.codigo::varchar,''00''::varchar) AS codigo_transf,
+            (uo.codigo||''-''||uo.nombre_unidad)::varchar as unidad_solicitante,
+            fun.desc_funcionario1::varchar as funcionario_solicitante
             FROM adq.tsolicitud ts
             INNER JOIN adq.tsolicitud_det tsd ON tsd.id_solicitud = ts.id_solicitud
             INNER JOIN pre.tpartida tpar ON tpar.id_partida = tsd.id_partida
@@ -616,12 +618,16 @@ BEGIN
 
             INNER JOIN param.tmoneda tmo ON tmo.id_moneda = ts.id_moneda
 
-            left JOIN pre.tpresupuesto_partida_entidad tppe ON tppe.id_partida = tpar.id_partida AND tppe.id_presupuesto = tp.id_presupuesto
-            left JOIN pre.tentidad_transferencia tet ON tet.id_entidad_transferencia = tppe.id_entidad_transferencia
+            inner join orga.vfuncionario fun on fun.id_funcionario = ts.id_funcionario
+            inner join orga.tuo uo on uo.id_uo = ts.id_uo
 
-            WHERE ts.id_proceso_wf = '||v_parametros.id_proceso_wf;
+            left join pre.tpresupuesto_partida_entidad tppe ON tppe.id_partida = tpar.id_partida AND tppe.id_presupuesto = tp.id_presupuesto
+            left join pre.tentidad_transferencia tet ON tet.id_entidad_transferencia = tppe.id_entidad_transferencia
 
-			v_consulta =  v_consulta || ' ORDER BY tpar.codigo, tcg.nombre asc ';
+            WHERE tsd.estado_reg = ''activo'' AND ts.id_proceso_wf = '||v_parametros.id_proceso_wf;
+			v_consulta =  v_consulta || ' GROUP BY vcp.id_categoria_programatica, tpar.codigo, ttc.codigo,vcp.codigo_programa,vcp.codigo_proyecto, vcp.codigo_actividad,
+            vcp.codigo_fuente_fin, vcp.codigo_origen_fin, tpar.nombre_partida, tcg.codigo, tcg.nombre, tmo.codigo, ts.num_tramite, tet.codigo, unidad_solicitante, funcionario_solicitante';
+			v_consulta =  v_consulta || ' ORDER BY tpar.codigo, tcg.nombre, vcp.id_categoria_programatica, ttc.codigo asc ';
 			--Devuelve la respuesta
             RAISE NOTICE 'v_consulta %',v_consulta;
 			return v_consulta;
