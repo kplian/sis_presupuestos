@@ -949,3 +949,9 @@ ALTER TABLE pre.tunidad_ejecutora
   ALTER COLUMN nombre SET STATISTICS 0;
 
 /*****************************F-SCP-FEA-PRE-0-25/07/2017*************/
+
+/*****************************I-SCP-FEA-PRE-0-01/08/2017*************/
+ALTER TABLE pre.tpresupuesto
+  ADD COLUMN fecha_inicio_pres DATE,
+  ADD COLUMN fecha_fin_pres DATE;
+/*****************************F-SCP-FEA-PRE-0-01/08/2017*************/
