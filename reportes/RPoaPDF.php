@@ -67,7 +67,7 @@ class RPoaPDF extends  ReportePDF{
         /*$dimensions = $this->getPageDimensions();
         var_dump($dimensions);exit;*/
         foreach( $this->datos as $record) {
-            if($record['gestion']=='2017') {
+            //if($record['gestion']=='2017') {
 
                 if($bandera_head){
                     $tbl .= '<table border="1" style="font-size: 7pt;"><tr align="center">
@@ -147,7 +147,7 @@ class RPoaPDF extends  ReportePDF{
                     $bandera = true;
                     $cont_lineas+=8;
                 }
-           }else {
+           /*}else {
 
                 if ($bandera_head) {
                     $tbl .= '<table border="1" style="font-size: 7pt;"><tr align="center">
@@ -164,7 +164,6 @@ class RPoaPDF extends  ReportePDF{
                 if ($record['nivel_objetivo'] == '1') {
                     if($contador>=1){
                         $tbl.='</table>';
-                        //echo '$cont_lineas'.$cont_lineas;
                         if($cont_lineas>=180&&$cont_lineas<=215.9){
 
                             $tbl.='<br><br><br><br><br><br>';
@@ -209,7 +208,6 @@ class RPoaPDF extends  ReportePDF{
                 }
 
                 if ($record['nivel_objetivo'] == '3') {
-                    //var_dump('entra');
                     if ($record['id_objetivo_fk'] != '') {
                         if ($record['id_objetivo_fk'] == $id_obj_fk)
                             $tbl .= '<tr style="font-size: 7pt;">';
@@ -223,11 +221,10 @@ class RPoaPDF extends  ReportePDF{
                     $cont_lineas+=8;
                 }
 
-            }
+            }*/
 
         }
         $tbl .='</table>';
-        //var_dump($tbl);exit;
         $this->writeHTML ($tbl);
 
     }
