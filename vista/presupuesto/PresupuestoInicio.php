@@ -312,21 +312,27 @@ Phx.vista.PresupuestoInicio = {
           {
     		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaInicio.php',
     		  title:'Partidas', 
-    		  width:'60%',
+    		  width:'50%',
     		  cls:'PresupPartidaInicio'
 		  },
 		  {
     		  url:'../../../sis_presupuestos/vista/presupuesto_funcionario/PresupuestoFuncionario.php',
     		  title:'Funcionarios', 
-    		  width:'60%',
+    		  width:'50%',
     		  cls:'PresupuestoFuncionario'
 		  },
 		  {
     		  url:'../../../sis_presupuestos/vista/rel_pre/RelPreInicio.php',
     		  title:'Composición', 
-    		  width:'60%',
+    		  width:'50%',
     		  cls:'RelPreInicio'
-		  }],
+		  },
+          {
+              url:'../../../sis_presupuestos/vista/presupuesto_objetivo/PresupuestoObjetivo.php',
+              title:'Objetivos',
+              width:'50%',
+              cls:'PresupuestoObjetivo'
+          }]
 	
     
    

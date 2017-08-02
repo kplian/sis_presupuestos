@@ -151,7 +151,9 @@ BEGIN
                               vcc.codigo_uo,
                               vcc.nombre_uo,
                               vcc.id_tipo_cc,
-                              (''(''||vcc.codigo_tcc ||'') '' ||vcc.descripcion_tcc)::varchar AS desc_tcc
+                              (''(''||vcc.codigo_tcc ||'') '' ||vcc.descripcion_tcc)::varchar AS desc_tcc,
+                              pre.fecha_inicio_pres,
+                              pre.fecha_fin_pres
 						from pre.tpresupuesto pre
                         inner join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
@@ -630,6 +632,60 @@ BEGIN
 			v_consulta =  v_consulta || ' ORDER BY tpar.codigo, tcg.nombre, vcp.id_categoria_programatica, ttc.codigo asc ';
 			--Devuelve la respuesta
             RAISE NOTICE 'v_consulta %',v_consulta;
+			return v_consulta;
+
+        end;
+    /*********************************
+ 	#TRANSACCION:  'PR_REPPOA_SEL'
+ 	#DESCRIPCION:	REPORTE POA
+ 	#AUTOR:		F.E.A.
+ 	#FECHA:		31-07-2017 09:00:59
+	***********************************/
+
+	elsif(p_transaccion='PR_REPPOA_SEL')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+
+             --Obtenemos la gestion
+
+            SELECT vcc.id_gestion
+            INTO v_id_gestion
+            FROM pre.tpresupuesto tp
+        	INNER JOIN param.vcentro_costo vcc on vcc.id_centro_costo = tp.id_centro_costo
+            WHERE tp.id_proceso_wf = v_parametros.id_proceso_wf;
+			v_consulta:='select
+            			obj.id_objetivo,
+                        obj.id_objetivo_fk,
+                        obj.codigo,
+						obj.nivel_objetivo,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_HIJOS'')::integer,0::integer) AS hijos,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_NIETOS'')::integer,0::integer) AS nietos,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_HERMANOS'')::integer,0::integer) AS hermanos,
+						obj.sw_transaccional,
+						obj.cantidad_verificacion,
+						obj.unidad_verificacion,
+						obj.ponderacion,
+						obj.fecha_inicio,
+						obj.tipo_objetivo,
+						obj.descripcion,
+						obj.linea_base,
+						obj.indicador_logro,
+
+						obj.periodo_ejecucion,
+						obj.producto,
+						obj.fecha_fin,
+                        tg.gestion::varchar
+						from pre.tobjetivo obj
+						inner join segu.tusuario usu1 on usu1.id_usuario = obj.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = obj.id_usuario_mod
+                        INNER JOIN param.tgestion tg ON tg.id_gestion = obj.id_gestion
+				        where  obj.estado_reg = ''activo'' AND obj.id_gestion = '||v_id_gestion;
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||'  order by obj.codigo ASC ';
+			raise notice 'v_consulta: %',v_consulta;
+			--Devuelve la respuesta
 			return v_consulta;
 
         end;

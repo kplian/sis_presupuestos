@@ -148,7 +148,9 @@ BEGIN
                     descripcion,
                     tipo_pres,
                     sw_consolidado,
-                    id_categoria_prog
+                    id_categoria_prog,
+                    fecha_inicio_pres,
+                    fecha_fin_pres
             ) values(
                     v_id_centro_costo,
                     v_id_centro_costo,
@@ -159,7 +161,9 @@ BEGIN
                     v_parametros.descripcion,
                     v_parametros.tipo_pres,
                     v_parametros.sw_consolidado,
-                    v_parametros.id_categoria_prog
+                    v_parametros.id_categoria_prog,
+                    v_parametros.fecha_inicio_pres,
+                    v_parametros.fecha_fin_pres
       							
              );
             
@@ -244,7 +248,9 @@ BEGIN
               sw_consolidado = v_parametros.sw_consolidado,
               id_categoria_prog = v_parametros.id_categoria_prog,
               fecha_mod = now(),
-              id_usuario_mod = p_id_usuario
+              id_usuario_mod = p_id_usuario,
+              fecha_inicio_pres = v_parametros.fecha_inicio_pres,
+              fecha_fin_pres = v_parametros.fecha_fin_pres
 			where id_presupuesto=v_parametros.id_presupuesto;
                
 			--Definicion de la respuesta
