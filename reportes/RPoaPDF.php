@@ -63,7 +63,7 @@ class RPoaPDF extends  ReportePDF{
         $tbl = '';
 
         foreach( $this->datos as $record) {
-            if($record['gestion']=='2017') {
+            //if($record['gestion']=='2017') {
 
                 if ($bandera_head) {
                     $tbl .= '<table border="1" style="font-size: 7pt;"><tr align="center">
@@ -106,9 +106,9 @@ class RPoaPDF extends  ReportePDF{
                     }
                     $contador++;
                     $tbl .= '<tr style="font-size: 7pt;">     
-                        <td width="6%" align="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['codigo'] . '</td>
-                        <td width="6%" align="center" valign="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['ponderacion'] . '%</td>
-                        <td width="21%" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['descripcion'] . '</td>
+                        <td width="6%" align="center" rowspan="' . $record['nietos'] . '"><br>' . $record['codigo'] . '</td>
+                        <td width="6%" align="center" valign="center" rowspan="' . $record['nietos'] . '"><br>' . $record['ponderacion'] . '%</td>
+                        <td width="21%" rowspan="' . $record['nietos'] . '"><br>' . $record['descripcion'] . '</td>
                       ';
                     $id_padre = $record['id_objetivo'];
                     $bandera = false;
@@ -143,86 +143,7 @@ class RPoaPDF extends  ReportePDF{
                     $bandera = true;
                     $cont_lineas += 8;
                 }
-            }else{
-                if ($bandera_head) {
-                    $tbl .= '<table border="1" style="font-size: 7pt;"><tr align="center">
-                        <td width="6%"><b>COD. OBJ. GES. INST.</b></td>
-                        <td width="6%"><b>POND. OBJ. GES. INST.</b></td>
-                        <td width="21%"><b>OBJETIVOS DE GESTIÓN INSTITUCIONAL</b></td>
-                        <td width="7%"><b>COD. OBJ. ESP.</b></td>
-                        <td width="6%"><b>POND. OBJ. ESP.</b></td>
-                        <td width="17%"><b>OBJETIVO ESPECÍFICO</b></td>
-                        <td width="7%"><b>COD. OPE.</b></td>
-                        <td width="28%"><b>OPERACIÓN</b></td>
-                      </tr>
-                     ';
-                    $bandera_head = false;
-                }
 
-                if ($record['nivel_objetivo'] == '2') {
-                    if ($contador >= 1) {
-                        $tbl .= '</table>';
-                        if ($cont_lineas >= 180 && $cont_lineas <= 215.9) {
-
-                            $tbl .= '<br><br><br><br><br><br><br>';
-                            $tbl .= '<table border="1" style="font-size: 7pt;">
-                                        <tr align="center">
-                                            <td width="6%"><b>COD. OBJ. GES. INST.</b></td>
-                                            <td width="6%"><b>POND. OBJ. GES. INST.</b></td>
-                                            <td width="21%"><b>OBJETIVOS DE GESTIÓN INSTITUCIONAL</b></td>
-                                            <td width="7%"><b>COD. OBJ. ESP.</b></td>
-                                            <td width="6%"><b>POND. OBJ. ESP.</b></td>
-                                            <td width="17%"><b>OBJETIVO ESPECÍFICO</b></td>
-                                            <td width="7%"><b>COD. OPE.</b></td>
-                                            <td width="28%"><b>OPERACIÓN</b></td>
-                                        </tr>
-                                     ';
-                        } else {
-                            $tbl .= '<table border="1" style="font-size: 7pt;">';
-                        }
-
-
-                    }
-                    $contador++;
-                    $tbl .= '<tr style="font-size: 7pt;">     
-                        <td width="6%" align="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['codigo'] . '</td>
-                        <td width="6%" align="center" valign="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['ponderacion'] . '%</td>
-                        <td width="21%" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['descripcion'] . '</td>
-                      ';
-                    $id_padre = $record['id_objetivo'];
-                    $bandera = false;
-                }
-
-                if ($record['nivel_objetivo'] == '3') {
-                    //if($obj_gestion!='') {
-                    if ($record['codigo'] != $obj_gestion && $bandera) {
-                        $tbl .= '<tr style="font-size: 7pt;">';
-
-                    }
-                    //}
-                    $tbl .= '<td width="7%" align="center" rowspan="' . $record['hijos'] . '"><br>' . $record['codigo'] . '</td>
-                       <td width="6%" align="center" rowspan="' . $record['hijos'] . '"><br>' . $record['ponderacion'] . '%</td>
-                       <td width="17%" rowspan="' . $record['hijos'] . '"><br>' . $record['descripcion'] . '</td>
-                      ';
-                    $obj_gestion = $record['codigo'];
-                    $bandera = true;
-                }
-
-                if ($record['nivel_objetivo'] == '4') {
-                    //if($record['hijos']!=0 && $record['nietos']!=0){
-                    if ($record['id_objetivo_fk'] != '') {
-                        if ($record['id_objetivo_fk'] == $id_obj_fk)
-                            $tbl .= '<tr style="font-size: 7pt;">';
-                    }
-                    $tbl .= '<td width="7%" align="center">' . $record['codigo'] . '</td>
-                       <td width="28%">' . $record['descripcion'] . '</td>
-                       </tr>
-                      ';
-                    $id_obj_fk = $record['id_objetivo_fk'];
-                    $bandera = true;
-                    $cont_lineas += 8;
-                }
-            }
            /*}else {
 
                 if ($bandera_head) {
