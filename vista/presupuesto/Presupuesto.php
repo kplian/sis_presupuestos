@@ -30,8 +30,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
           
         this.addButton('fin_registro', { grupo:[0], text:'Siguiente', iconCls: 'badelante', disabled:true,handler:this.fin_registro,tooltip: '<b>Siguiente</b><p>Pasa al siguiente estado, si esta en borrador comprometera presupuesto</p>'});
         this.addButton('btnMemoria',{ grupo:[0,1,2], text :'Memoria', iconCls:'bdocuments', disabled: true, handler : this.onButtonMemoria,tooltip : '<b>Memoria de Calculo</b><br/><b>Planificación de gastos o recursos</b>'});
-  		this.addButton('diagrama_gantt',{ grupo:[1,2], text: 'Gantt', iconCls: 'bgantt', disabled: true, handler: this.diagramGantt, tooltip: '<b>Diagrama gantt de proceso macro</b>'});
-        this.addButton('btnChequeoDocumentosWf',
+  		 this.addButton('btnChequeoDocumentosWf',
             {
                 text: 'Documentos',
                 grupo:[0,1,2],
@@ -41,8 +40,9 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
                 tooltip: '<b>Documentos de la Solicitud</b><br/>Subir los documetos requeridos en la solicitud seleccionada.'
             }
         );
-        
-        this.addButton('btnObs',{
+		this.addButton('diagrama_gantt',{ grupo:[0,1,2], text: 'Gantt', iconCls: 'bgantt', disabled: true, handler: this.diagramGantt, tooltip: '<b>Diagrama gantt de proceso macro</b>'});
+
+		this.addButton('btnObs',{
                     text :'Obs Wf',
                     grupo:[1,2],
                     iconCls : 'bchecklist',
@@ -64,7 +64,7 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 					gwidth: 50
 			},
 			type:'Field',
-			grid: true,
+			grid: false,
 			form:true 
 		},
 		{
@@ -279,6 +279,49 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 	       		grid:true,
 	       		form:true
 	    },
+
+		{
+			config: {
+				name: 'fecha_inicio_pres',
+				fieldLabel: 'Fecha Inicio Presupuesto',
+				allowBlank: false,
+				anchor: '42.3%',
+				gwidth: 100,
+
+
+				format: 'd/m/Y',
+				renderer: function (value, p, record) {
+					return value ? value.dateFormat('d/m/Y') : ''
+				}
+			},
+			type: 'DateField',
+			filters: {pfiltro: 'pre.fecha_inicio_pres', type: 'date'},
+			id_grupo: 1,
+			grid: true,
+			form: true
+		},
+
+		{
+			config: {
+				name: 'fecha_fin_pres',
+				fieldLabel: 'Fecha Fin Presupuesto',
+				allowBlank: false,
+				anchor: '42.3%',
+				gwidth: 100,
+
+
+				format: 'd/m/Y',
+				renderer: function (value, p, record) {
+					return value ? value.dateFormat('d/m/Y') : ''
+				}
+			},
+			type: 'DateField',
+			filters: {pfiltro: 'pre.fecha_fin_pres', type: 'date'},
+			id_grupo: 1,
+			grid: true,
+			form: true
+		},
+
 		{
 			config:{
 				name: 'nro_tramite',
@@ -415,8 +458,10 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		{ name:'usr_mod', type: 'string'},'estado',
 		'id_estado_wf','nro_tramite','id_proceso_wf',
 		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres',
-		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog','mov_pres','momento_pres','id_uo','codigo_uo','nombre_uo','id_tipo_cc','desc_tcc'
-		
+		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog','mov_pres','momento_pres','id_uo','codigo_uo','nombre_uo','id_tipo_cc','desc_tcc',
+		{ name:'fecha_inicio_pres', type: 'date'},
+		{ name:'fecha_fin_pres', type: 'date'}
+
 	],
 	
 	
@@ -424,7 +469,9 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		field: 'id_presupuesto',
 		direction: 'ASC'
 	},
-	
+
+	fheight: '68%',
+	fwidth: '55%',
 	
 	onButtonEdit : function () {
         var rec=this.sm.getSelected();
@@ -550,8 +597,10 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
         }
         return tb;
     },  
-	bdel: false,
+
 	bnew: false,
+	bedit: false,
+	bdel: false,
 	bsave: false,
 	 
      loadCheckDocumentosSolWf:function() {

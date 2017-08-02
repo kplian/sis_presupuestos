@@ -12,7 +12,7 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.PresupuestoFor = {
-    bedit:true,
+    bedit:false,
     bnew:false,
     bsave:false,
     bdel:false,
@@ -55,16 +55,23 @@ Phx.vista.PresupuestoFor = {
    
    
    tabeast:[
+
+		   /*{
+			   url:'../../../sis_presupuestos/vista/presupuesto_objetivo/PresupuestoObjetivoForm.php',
+			   title:'Objetivos',
+			   width:'50%',
+			   cls:'PresupuestoObjetivoForm'
+		   },*/
 	       {
     		  url:'../../../sis_presupuestos/vista/presup_partida/PresupPartidaForm.php',
     		  title:'Partidas', 
-    		  width:'60%',
+    		  width:'50%',
     		  cls:'PresupPartidaForm'
 		  },
 		  {
     		  url:'../../../sis_presupuestos/vista/rel_pre/RelPreFor.php',
     		  title:'Composición', 
-    		  width:'60%',
+    		  width:'50%',
     		  cls:'RelPreFor'
 		  }]
    

@@ -38,6 +38,17 @@ DECLARE
     v_join_responsables				varchar;
     v_sw_distinc					varchar;
 
+    --certificacion presupuestaria
+    v_nombre_entidad				varchar;
+	  v_direccion_admin				varchar;
+    v_record						record;
+    v_index							integer = 0;
+    v_record_funcionario			record;
+    v_firmas						VARCHAR[];
+    v_firma_fun						varchar;
+    v_unidad_ejecutora				varchar;
+    v_record_sol					record;
+
 BEGIN
 
 	v_nombre_funcion = 'pre.ft_presupuesto_sel';
@@ -140,7 +151,9 @@ BEGIN
                               vcc.codigo_uo,
                               vcc.nombre_uo,
                               vcc.id_tipo_cc,
-                              (''(''||vcc.codigo_tcc ||'') '' ||vcc.descripcion_tcc)::varchar AS desc_tcc
+                              (''(''||vcc.codigo_tcc ||'') '' ||vcc.descripcion_tcc)::varchar AS desc_tcc,
+                              pre.fecha_inicio_pres,
+                              pre.fecha_fin_pres
 						from pre.tpresupuesto pre
                         inner join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
@@ -513,6 +526,165 @@ BEGIN
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 
+			--Devuelve la respuesta
+			return v_consulta;
+
+        end;
+  /*********************************
+ 	#TRANSACCION:  'PR_REPCERPRE_SEL'
+ 	#DESCRIPCION:	Reporte Certificación Presupuestaria
+ 	#AUTOR:		FEA
+ 	#FECHA:		14-07-2017 11:00
+	***********************************/
+
+	elsif(p_transaccion='PR_REPCERPRE_SEL')then
+
+		begin
+
+            SELECT ts.estado, ts.id_estado_wf, ts.justificacion
+            INTO v_record_sol
+            FROM adq.tsolicitud ts
+            WHERE ts.id_proceso_wf = v_parametros.id_proceso_wf;
+
+            IF(v_record_sol.estado='vbrpc')THEN
+              v_index = 1;
+              FOR v_record IN (WITH RECURSIVE firmas(id_estado_fw, id_estado_anterior,fecha_reg, codigo, id_funcionario) AS (
+                                SELECT tew.id_estado_wf, tew.id_estado_anterior , tew.fecha_reg, te.codigo, tew.id_funcionario
+                                FROM wf.testado_wf tew
+                                INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = tew.id_tipo_estado
+                                WHERE tew.id_estado_wf = v_record_sol.id_estado_wf
+
+                                UNION ALL
+
+                                SELECT ter.id_estado_wf, ter.id_estado_anterior, ter.fecha_reg, te.codigo, ter.id_funcionario
+                                FROM wf.testado_wf ter
+                                INNER JOIN firmas f ON f.id_estado_anterior = ter.id_estado_wf
+                                INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = ter.id_tipo_estado
+                                WHERE f.id_estado_anterior IS NOT NULL
+                            )SELECT * FROM firmas ORDER BY id_estado_fw ASC) LOOP
+                  IF(v_record.codigo = 'suppresu' OR v_record.codigo = 'vbpresupuestos' OR v_record.codigo = 'vbrpc')THEN
+                    SELECT vf.desc_funcionario1, vf.nombre_cargo, vf.oficina_nombre
+                    INTO v_record_funcionario
+                    FROM orga.vfuncionario_cargo_lugar vf
+                    WHERE vf.id_funcionario = v_record.id_funcionario;
+                    v_firmas[v_index] = v_record.codigo::VARCHAR||','||v_record.fecha_reg::VARCHAR||','||v_record_funcionario.desc_funcionario1::VARCHAR||','||v_record_funcionario.nombre_cargo::VARCHAR||','||v_record_funcionario.oficina_nombre;
+                    v_index = v_index + 1;
+                  END IF;
+              END LOOP;
+            	v_firma_fun = array_to_string(v_firmas,';');
+            ELSE
+            	v_firma_fun = '';
+        	END IF;
+        		------
+            SELECT (''||te.codigo||' '||te.nombre)::varchar
+            INTO v_nombre_entidad
+            FROM param.tempresa te;
+            ------
+            SELECT (''||tda.codigo||' '||tda.nombre)::varchar
+            INTO v_direccion_admin
+            FROM pre.tdireccion_administrativa tda;
+			------
+            SELECT (''||tue.codigo||' '||tue.nombre)::varchar
+            INTO v_unidad_ejecutora
+            FROM pre.tunidad_ejecutora tue;
+            ---
+
+			--Sentencia de la consulta de conteo de registros
+			v_consulta:='
+            SELECT vcp.id_categoria_programatica AS id_cp,  ttc.codigo AS centro_costo,
+            vcp.codigo_programa , vcp.codigo_proyecto, vcp.codigo_actividad, vcp.codigo_fuente_fin, vcp.codigo_origen_fin,
+            tpar.codigo AS codigo_partida, tpar.nombre_partida , tcg.codigo AS codigo_cg,  tcg.nombre AS nombre_cg,
+            sum(tsd.precio_total) AS precio_total,tmo.codigo AS codigo_moneda, ts.num_tramite,
+            '''||v_nombre_entidad||'''::varchar AS nombre_entidad,
+            COALESCE('''||v_direccion_admin||'''::varchar, '''') AS direccion_admin,
+            '''||v_unidad_ejecutora||'''::varchar AS unidad_ejecutora,
+            COALESCE('''||v_firma_fun||'''::varchar, '''') AS firmas,
+            COALESCE('''||v_record_sol.justificacion||'''::varchar,'''') AS justificacion,
+            COALESCE(tet.codigo::varchar,''00''::varchar) AS codigo_transf,
+            (uo.codigo||''-''||uo.nombre_unidad)::varchar as unidad_solicitante,
+            fun.desc_funcionario1::varchar as funcionario_solicitante
+            FROM adq.tsolicitud ts
+            INNER JOIN adq.tsolicitud_det tsd ON tsd.id_solicitud = ts.id_solicitud
+            INNER JOIN pre.tpartida tpar ON tpar.id_partida = tsd.id_partida
+
+            INNER JOIN pre.tpresup_partida tpp ON tpp.id_partida = tpar.id_partida AND tpp.id_centro_costo = tsd.id_centro_costo
+
+            INNER JOIN param.tcentro_costo tcc ON tcc.id_centro_costo = tsd.id_centro_costo
+            INNER JOIN param.ttipo_cc ttc ON ttc.id_tipo_cc = tcc.id_tipo_cc
+
+            INNER JOIN pre.tpresupuesto	tp ON tp.id_presupuesto = tpp.id_presupuesto
+            INNER JOIN pre.vcategoria_programatica vcp ON vcp.id_categoria_programatica = tp.id_categoria_prog
+
+            INNER JOIN pre.tclase_gasto_partida tcgp ON tcgp.id_partida = tpp.id_partida
+            INNER JOIN pre.tclase_gasto tcg ON tcg.id_clase_gasto = tcgp.id_clase_gasto
+
+            INNER JOIN param.tmoneda tmo ON tmo.id_moneda = ts.id_moneda
+
+            inner join orga.vfuncionario fun on fun.id_funcionario = ts.id_funcionario
+            inner join orga.tuo uo on uo.id_uo = ts.id_uo
+
+            left join pre.tpresupuesto_partida_entidad tppe ON tppe.id_partida = tpar.id_partida AND tppe.id_presupuesto = tp.id_presupuesto
+            left join pre.tentidad_transferencia tet ON tet.id_entidad_transferencia = tppe.id_entidad_transferencia
+
+            WHERE tsd.estado_reg = ''activo'' AND ts.id_proceso_wf = '||v_parametros.id_proceso_wf;
+			v_consulta =  v_consulta || ' GROUP BY vcp.id_categoria_programatica, tpar.codigo, ttc.codigo,vcp.codigo_programa,vcp.codigo_proyecto, vcp.codigo_actividad,
+            vcp.codigo_fuente_fin, vcp.codigo_origen_fin, tpar.nombre_partida, tcg.codigo, tcg.nombre, tmo.codigo, ts.num_tramite, tet.codigo, unidad_solicitante, funcionario_solicitante';
+			v_consulta =  v_consulta || ' ORDER BY tpar.codigo, tcg.nombre, vcp.id_categoria_programatica, ttc.codigo asc ';
+			--Devuelve la respuesta
+            RAISE NOTICE 'v_consulta %',v_consulta;
+			return v_consulta;
+
+        end;
+    /*********************************
+ 	#TRANSACCION:  'PR_REPPOA_SEL'
+ 	#DESCRIPCION:	REPORTE POA
+ 	#AUTOR:		F.E.A.
+ 	#FECHA:		31-07-2017 09:00:59
+	***********************************/
+
+	elsif(p_transaccion='PR_REPPOA_SEL')then
+
+		begin
+			--Sentencia de la consulta de conteo de registros
+
+             --Obtenemos la gestion
+
+            SELECT vcc.id_gestion
+            INTO v_id_gestion
+            FROM pre.tpresupuesto tp
+        	INNER JOIN param.vcentro_costo vcc on vcc.id_centro_costo = tp.id_centro_costo
+            WHERE tp.id_proceso_wf = v_parametros.id_proceso_wf;
+			v_consulta:='select
+            			obj.id_objetivo,
+                        obj.id_objetivo_fk,
+                        obj.codigo,
+						obj.nivel_objetivo,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_HIJOS'')::integer,0::integer) AS hijos,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_NIETOS'')::integer,0::integer) AS nietos,
+                        COALESCE(pre.f_get_arbol(obj.id_objetivo, ''CONT_HERMANOS'')::integer,0::integer) AS hermanos,
+						obj.sw_transaccional,
+						obj.cantidad_verificacion,
+						obj.unidad_verificacion,
+						obj.ponderacion,
+						obj.fecha_inicio,
+						obj.tipo_objetivo,
+						obj.descripcion,
+						obj.linea_base,
+						obj.indicador_logro,
+
+						obj.periodo_ejecucion,
+						obj.producto,
+						obj.fecha_fin,
+                        tg.gestion::varchar
+						from pre.tobjetivo obj
+						inner join segu.tusuario usu1 on usu1.id_usuario = obj.id_usuario_reg
+						left join segu.tusuario usu2 on usu2.id_usuario = obj.id_usuario_mod
+                        INNER JOIN param.tgestion tg ON tg.id_gestion = obj.id_gestion
+				        where  obj.estado_reg = ''activo'' AND obj.id_gestion = '||v_id_gestion;
+
+			--Definicion de la respuesta
+			v_consulta:=v_consulta||'  order by obj.codigo ASC ';
+			raise notice 'v_consulta: %',v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
 

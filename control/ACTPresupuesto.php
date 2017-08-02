@@ -10,7 +10,11 @@
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/ReportWriter.php');
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/RPresupuesto.php');
 require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/DataSource.php');
+require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/DataSource.php');
 */
+require_once(dirname(__FILE__).'/../../sis_presupuestos/reportes/RCertificacionPresupuestaria.php');
+require_once(dirname(__FILE__).'/../../sis_presupuestos/reportes/RPoaPDF.php');
+
 class ACTPresupuesto extends ACTbase{    
 			
 	function listarPresupuesto(){
@@ -205,8 +209,52 @@ class ACTPresupuesto extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 	
-	
-			
+
+	//Reporte Certificación Presupuestaria (FEA) 13/07/2017
+	function reporteCertificacionP (){
+		$this->objFunc=$this->create('MODPresupuesto');
+		$dataSource=$this->objFunc->reporteCertificacionP();
+		$this->dataSource=$dataSource->getDatos();
+
+		$nombreArchivo = uniqid(md5(session_id()).'[Reporte-CertificaciónPresupuestaria]').'.pdf';
+		$this->objParam->addParametro('orientacion','P');
+		$this->objParam->addParametro('tamano','LETTER');
+		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+		$this->objReporte = new RCertificacionPresupuestaria($this->objParam);
+		$this->objReporte->setDatos($this->dataSource);
+		$this->objReporte->generarReporte();
+		$this->objReporte->output($this->objReporte->url_archivo,'F');
+
+
+		$this->mensajeExito=new Mensaje();
+		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado', 'Se generó con éxito el reporte: '.$nombreArchivo,'control');
+		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+	}
+
+    //Reporte POA (FEA) 31/07/2017
+    function reportePOA (){
+        $this->objFunc=$this->create('MODPresupuesto');
+        $dataSource=$this->objFunc->reportePOA();
+        $this->dataSource=$dataSource->getDatos();
+
+        $nombreArchivo = uniqid(md5(session_id()).'[Reporte-POA]').'.pdf';
+        $this->objParam->addParametro('orientacion','L');
+        $this->objParam->addParametro('tamano','LETTER');
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $this->objReporte = new RPoaPDF($this->objParam);
+        $this->objReporte->setDatos($this->dataSource);
+        $this->objReporte->generarReporte();
+        $this->objReporte->output($this->objReporte->url_archivo,'F');
+
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado', 'Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
 }
 
 ?>
