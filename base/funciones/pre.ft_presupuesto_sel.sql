@@ -48,6 +48,7 @@ DECLARE
     v_firma_fun						varchar;
     v_unidad_ejecutora				varchar;
     v_record_sol					record;
+    v_id_gestion					integer;
 
 BEGIN
 
