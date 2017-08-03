@@ -345,7 +345,7 @@ class MODPresupPartida extends MODbase{
 
         //Definicion de variables para ejecucion del procedimientp
         $this->procedimiento='pre.f_rep_ejecucion_wf';
-        $this->transaccion='PRE_PROGR_WF';
+        $this->transaccion='PRE_PROGRA_WF';
         $this->tipo_procedimiento='SEL';//tipo de transaccion
         $this->setCount(false);
         $this->setTipoRetorno('record');
