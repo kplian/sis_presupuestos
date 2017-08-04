@@ -453,6 +453,33 @@ class MODPresupuesto extends MODbase{
         return $this->respuesta;
     }
 
+
+    function listarNotaInterna(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_presupuesto_sel';
+        $this->transaccion='PR_NOTA_SEL';
+        $this->tipo_procedimiento='SEL';
+        $this->setCount(false);
+        //Define los parametros para la funcion
+        $this->setParametro('id_proceso_wf','id_proceso_wf','int4');
+
+        $this->captura('desc_funcionario1','varchar');
+        $this->captura('nombre_cargo','varchar');
+        $this->captura('funcionario_gerencia','varchar');
+        $this->captura('cargo_gerencia','varchar');
+        $this->captura('nro_cite_inicio','varchar');
+        $this->captura('nro_cite_fin','varchar');
+        $this->captura('fecha_nota','varchar');
+        $this->captura('gestion','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->consulta);exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
  
    		
 }

@@ -167,7 +167,7 @@ class REjecucionGestionAnterior
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 2,'"BOLIVIANA DE AVIACIÓN" - BoA');
         $this->docexcel->getActiveSheet()->getStyle('A2:BJ2')->applyFromArray($styleTitulos1);
         $this->docexcel->getActiveSheet()->mergeCells('A2:BJ2');
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $this->datos_detalle[0]['descripcion'] );
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, 3, $this->datos_detalle[0]['descripcion'].' - '.$this->datos_detalle[0]['gestion'] );
         $this->docexcel->getActiveSheet()->getStyle('A3:BJ3')->applyFromArray($styleTitulos1);
         $this->docexcel->getActiveSheet()->mergeCells('A3:BJ3');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,4,'(Expresado en Bolivianos)');
@@ -175,10 +175,10 @@ class REjecucionGestionAnterior
         $this->docexcel->getActiveSheet()->mergeCells('A4:BJ4');
 
 
-        $this->cabecera = array('PARTIDA','DESCRIPCION','PRESUPUESTO VIGENTE 2017','EJECUTADO ENERO','EJECUTADO FEBRERO','EJECUTADO MARZO','EJECUTADO ABRIL',
+        $this->cabecera = array('PARTIDA','DESCRIPCION','PRESUPUESTO VIGENTE '.$this->datos_detalle[0]['gestion'],'EJECUTADO ENERO','EJECUTADO FEBRERO','EJECUTADO MARZO','EJECUTADO ABRIL',
             'EJECUTADO MAYO','EJECUTADO JUNIO','EJECUTADO JULIO','EJECUTADO AGOSTO','EJECUTADO SEPTIEMBRE','EJECUTADO OCTUBRE','EJECUTADO NOVIEMBRE','EJECUTADO DICIEMBRE',
             'EJECUCION PROGRAMADA PARA ENERO','EJECUCION PROGRAMADA PARA FEBRERO','EJECUCION PROGRAMADA PARA MARZO','EJECUCION PROGRAMADA PARA ABRIL','EJECUCION PROGRAMADA PARA MAYO',
-            'EJECUCION PROGRAMADA PARA JUNIO','EJECUCION PROGRAMADA PARA JULIO','EJECUCION PROGRAMADA PARA AGOSTO','EJECUCION PROGRAMADA PARA SEPTIEMBRE','EJECUCION PROGRAMADA PARA OCTUBRE','EJECUCION PROGRAMADA PARA NOVIEMBTR','EJECUCION PROGRAMADA PARA DICIEMBRE'
+            'EJECUCION PROGRAMADA PARA JUNIO','EJECUCION PROGRAMADA PARA JULIO','EJECUCION PROGRAMADA PARA AGOSTO','EJECUCION PROGRAMADA PARA SEPTIEMBRE','EJECUCION PROGRAMADA PARA OCTUBRE','EJECUCION PROGRAMADA PARA NOVIEMBRE','EJECUCION PROGRAMADA PARA DICIEMBRE'
         );
 
 
@@ -191,6 +191,7 @@ class REjecucionGestionAnterior
         }
         if (date("m")>= '01' and '01' <= date("m")) {
             $this->docexcel->getActiveSheet()->getColumnDimension('D')->setVisible(1);
+
         }else{
             $this->docexcel->getActiveSheet()->getColumnDimension('D')->setVisible(0);
         }
@@ -228,6 +229,7 @@ class REjecucionGestionAnterior
             $this->docexcel->getActiveSheet()->getColumnDimension('K')->setVisible(1);
         }else{
             $this->docexcel->getActiveSheet()->getColumnDimension('K')->setVisible(0);
+
         }
         if (date("m")>= '09' and '09' <= date("m")) {
             $this->docexcel->getActiveSheet()->getColumnDimension('L')->setVisible(1);
@@ -250,10 +252,67 @@ class REjecucionGestionAnterior
             $this->docexcel->getActiveSheet()->getColumnDimension('O')->setVisible(0);
         }
 
+        if (date("m")>= '01'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('P')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('P')->setVisible(1);
+        }
+        if (date("m")>= '02'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('Q')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('Q')->setVisible(1);
+        }
+        if (date("m")>= '03'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('R')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('R')->setVisible(1);
+        }
+        if (date("m")>= '04'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('S')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('S')->setVisible(1);
+        }
+        if (date("m")>= '05'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('T')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('T')->setVisible(1);
+        }
+        if (date("m")>= '06'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('U')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('U')->setVisible(1);
+        }
+        if (date("m")>= '07'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('V')->setVisible(0);
 
-
-
-
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('V')->setVisible(1);
+        }
+        if (date("m")>= '08'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('W')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('W')->setVisible(1);
+        }
+        if (date("m")>= '09'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('X')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('X')->setVisible(1);
+        }
+        if (date("m")>= '10'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('Y')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('Y')->setVisible(1);
+        }
+        if (date("m")>= '11'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('Z')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('Z')->setVisible(1);
+        }
+        if (date("m")>= '12'){
+            $this->docexcel->getActiveSheet()->getColumnDimension('AA')->setVisible(0);
+        }else{
+            $this->docexcel->getActiveSheet()->getColumnDimension('AA')->setVisible(1);
+        }
 
         $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(50);
         $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(20);
@@ -333,7 +392,7 @@ class REjecucionGestionAnterior
         $sheet = 0;
         $this->codigo =['10000','20000','30000','40000','50000','60000','80000','90000'];
         $this->imprimeCabecera($sheet, $titulo );
-
+        $fi = 7;
         foreach ($datos as $value) {
             if (in_array($value['nivel_partida'], $this->titulo)) {
                 $this->imprimeTituloPartida( $this->numero, $value['nivel_partida']);
@@ -362,7 +421,7 @@ class REjecucionGestionAnterior
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13,  $this->numero, $value['c11']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14,  $this->numero, $value['c12']);
             $this->numero++;
-            $this->docexcel->getActiveSheet()->getStyle("C$this->numero:AA$this->numero")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
+            $this->docexcel->getActiveSheet()->getStyle("C$fi:AA$this->numero")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat :: FORMAT_NUMBER_COMMA_SEPARATED1);
         }
 
 

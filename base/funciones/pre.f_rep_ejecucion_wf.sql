@@ -15,6 +15,8 @@ v_resp				varchar;
 
 v_registros 		record;
 v_nivel				integer;
+v_presupuesto		record;
+v_presupuesto_ant		record;
 
 
 
@@ -26,13 +28,13 @@ BEGIN
 
 
     /*********************************
-     #TRANSACCION:    'PRE_PROGR_WF'
+     #TRANSACCION:    'PRE_PROGRA_WF'
      #DESCRIPCION:     reporte de programacion mensual
      #AUTOR:           MMV
      #FECHA:           31-07-2017
     ***********************************/
 
-	IF(p_transaccion='PRE_PROGR_WF')THEN
+	IF(p_transaccion='PRE_PROGRA_WF')THEN
    begin
    		  CREATE TEMPORARY TABLE temp_prog ( id_partida integer,
                                         id_partida_fk integer,
@@ -59,6 +61,29 @@ BEGIN
                                         procesado varchar) ON COMMIT DROP;
 
 
+
+
+select 	p.id_presupuesto,
+		p.descripcion,
+        c.id_gestion,
+        p.id_proceso_wf
+        into
+        v_presupuesto
+from pre.tpresupuesto p
+inner join pre.tcategoria_programatica c on c.id_categoria_programatica = p.id_categoria_prog
+where p.id_proceso_wf = v_parametros.id_proceso_wf;
+
+select 	p.id_presupuesto,
+		p.descripcion,
+        c.id_gestion,
+        p.id_proceso_wf
+        into
+        v_presupuesto_ant
+from pre.tpresupuesto p
+inner join pre.tcategoria_programatica c on c.id_categoria_programatica = p.id_categoria_prog
+where c.id_gestion = v_presupuesto.id_gestion - 1  and p.descripcion = v_presupuesto.descripcion;
+
+
    FOR v_registros in(select 	par.id_partida,
    								par.id_partida_fk,
                                 par.id_gestion,
@@ -68,24 +93,27 @@ BEGIN
                                 p.descripcion,
                                 par.nivel_partida,
                                 par.sw_transaccional,
-                                me.importe_enero,
-                                me.importe_febrero,
-                                me.importe_marzo,
-                                me.importe_abril,
-                                me.importe_mayo,
-                                me.importe_junio,
-                                me.importe_julio,
-                                me.importe_agosto,
-                                me.importe_septiembre,
-                                me.importe_octubre,
-                                me.importe_noviembre,
-                                me.importe_diciembre,
-                                pre.f_get_ejecucion_programa_memoria_total(me.id_partida, me.id_presupuesto,15) as total_programado
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 1, 'ejecutado') as importe_enero,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 2, 'ejecutado') as importe_febrero,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 3, 'ejecutado') as importe_marzo,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 4, 'ejecutado') as importe_abril,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 5, 'ejecutado') as importe_mayo,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 6, 'ejecutado') as importe_junio,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 7, 'ejecutado') as importe_julio,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 8, 'ejecutado') as importe_agosto,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 9, 'ejecutado') as importe_septiembre,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 10, 'ejecutado') as importe_octubre,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 11, 'ejecutado') as importe_noviembre,
+                                pre.f_get_ejecutado_por_periodo(par.id_partida, p.id_presupuesto, 15, 12, 'ejecutado') as importe_diciembre,
+                                round( pre.f_get_presupuesto_aprobado_por_gestion(par.id_partida,p.id_presupuesto ,15) +  pre.f_presupuesto_ajuste_prueba(par.id_partida,p.id_presupuesto,15)+ pre.f_presupuesto_ajuste_de_por_gestion(par.id_partida,p.id_presupuesto,15) )as total_programado
                                 from pre.tpresupuesto p
-                                inner join pre.vpartida_ejecutado_por_periodos me on me.id_proceso_wf = p.id_proceso_wf
-                                inner join pre.tpartida par on par.id_partida = me.id_partida
+                                --inner join pre.vpartida_ejecutado_por_periodos me on me.id_proceso_wf = p.id_proceso_wf
+                                inner join pre.tpresup_partida su on su.id_presupuesto = p.id_presupuesto
+                                inner join pre.tpartida par on par.id_partida = su.id_partida
                                 inner join param.tgestion g on g.id_gestion = par.id_gestion
-                                where p.id_proceso_wf = v_parametros.id_proceso_wf )
+                                where p.id_proceso_wf = v_presupuesto_ant.id_proceso_wf )
+
+
    					LOOP
 
 	insert into temp_prog(
@@ -216,6 +244,28 @@ BEGIN
                                         m11 NUMERIC,
                                         m12 NUMERIC,
                                         procesado varchar) ON COMMIT DROP;
+   select 	p.id_presupuesto,
+		p.descripcion,
+        c.id_gestion,
+        p.id_proceso_wf
+        into
+        v_presupuesto
+from pre.tpresupuesto p
+inner join pre.tcategoria_programatica c on c.id_categoria_programatica = p.id_categoria_prog
+where p.id_proceso_wf = v_parametros.id_proceso_wf;
+
+select 	p.id_presupuesto,
+		p.descripcion,
+        c.id_gestion,
+        p.id_proceso_wf
+        into
+        v_presupuesto_ant
+from pre.tpresupuesto p
+inner join pre.tcategoria_programatica c on c.id_categoria_programatica = p.id_categoria_prog
+where c.id_gestion = v_presupuesto.id_gestion - 1  and p.descripcion = v_presupuesto.descripcion;
+
+
+
 
 
    FOR v_registros in(select 	par.id_partida,
@@ -240,10 +290,10 @@ BEGIN
                                 me.importe_noviembre,
                                 me.importe_diciembre
                                 from pre.tpresupuesto p
-                                inner join pre.vprogramando_memoria_por_periodo me on me.id_proceso_wf = p.id_proceso_wf
+                                inner join pre.vformulacion_mensual me on me.id_proceso_wf = p.id_proceso_wf
                                 inner join pre.tpartida par on par.id_partida = me.id_partida
                                 inner join param.tgestion g on g.id_gestion = par.id_gestion
-                                where p.id_proceso_wf = v_parametros.id_proceso_wf )
+                                where p.id_proceso_wf = v_presupuesto_ant.id_proceso_wf )
    					LOOP
 
 	insert into temp_prog(
