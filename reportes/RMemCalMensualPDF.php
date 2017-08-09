@@ -297,7 +297,7 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         $conf_par_tablewidths=array(10,35,45,70,15,20,10,15,15,15,15,15,15,15,15,15,15,15,15,25);
         $conf_par_tablealigns=array('C','L','L','L','R','R','C','R','R','R','R','R','R','R','R','R','R','R','R','R');
-        $conf_par_tablenumbers=array(0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2);
+        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         $conf_tableborders=array('T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T');
 
         $this->tablewidths=$conf_par_tablewidths;
@@ -320,21 +320,21 @@ class RMemCalMensualPDF extends  ReportePDF {
             's2' => $val['desc_ingas'],
             's3' => $val['justificacion'],
             's4' => $val['unidad_medida'],
-            's5' => $val['importe_unitario'],
+            's5' => number_format ($val['importe_unitario'], 0 , "." , "." ),
             's6' => $val['cantidad_mem'],
-            's7' => $importeXperiodo[0],
-            's8' => $importeXperiodo[1],
-            's9' => $importeXperiodo[2],
-            's10' => $importeXperiodo[3],
-            's11' => $importeXperiodo[4],
-            's12' => $importeXperiodo[5],
-            's13' => $importeXperiodo[6],
-            's14' => $importeXperiodo[7],
-            's15' => $importeXperiodo[8],
-            's16' => $importeXperiodo[9],
-            's17' => $importeXperiodo[10],
-            's18' => $importeXperiodo[11],
-            's19' => $val['importe']);
+            's7' => number_format ($importeXperiodo[0], 0 , "." , "." ),
+            's8' => number_format ($importeXperiodo[1], 0 , "." , "." ),
+            's9' => number_format ($importeXperiodo[2], 0 , "." , "." ),
+            's10' => number_format ($importeXperiodo[3], 0 , "." , "." ),
+            's11' => number_format ($importeXperiodo[4], 0 , "." , "." ),
+            's12' => number_format ($importeXperiodo[5], 0 , "." , "." ),
+            's13' => number_format ($importeXperiodo[6], 0 , "." , "." ),
+            's14' => number_format ($importeXperiodo[7], 0 , "." , "." ),
+            's15' => number_format ($importeXperiodo[8], 0 , "." , "." ),
+            's16' => number_format ($importeXperiodo[9], 0 , "." , "." ),
+            's17' => number_format ($importeXperiodo[10], 0 , "." , "." ),
+            's18' => number_format ($importeXperiodo[11], 0 , "." , "." ),
+            's19' => number_format ($val['importe'], 0 , "." , "." ));
 
         $this-> MultiRow($RowArray,$fill,1);
 
@@ -429,13 +429,13 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         $this->tablewidths=array(10+50+50+80+15+20+15+145,25);
         $this->tablealigns=array('R','R');
-        $this->tablenumbers=array(0,2,);
+        $this->tablenumbers=array(0,0,);
         $this->tableborders=array('T','LRTB');
         $this->SetFont('','B',8);
 
         $RowArray = array(
             'espacio' => 'TOTAL PARTIDA '.$this->ult_codigo_partida.':',
-            's1' => $this->s1
+            's1' => number_format ($this->s1, 0 , "." , ".")
         );
 
         $this-> MultiRow($RowArray,false,1);

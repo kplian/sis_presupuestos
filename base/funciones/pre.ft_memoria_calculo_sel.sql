@@ -292,6 +292,106 @@ BEGIN
     elseif(p_transaccion='PRE_MECALMEN_REP')then
 
     	begin
+    	IF(v_parametros.tipo_rep = 'periodos')THEN
+        	v_filtro = ' id_gestion =  '||v_parametros.id_gestion;
+           v_ordenacion = '';
+           v_titulares = '';
+           v_grupos = '';
+
+            IF v_parametros.id_partida != 0 and v_parametros.id_partida is not null THEN
+                v_filtro = v_filtro||'  and id_partida = '||v_parametros.id_partida;
+            END IF;
+
+            --filtro de por tipo de presupeustos
+            v_filtro = v_filtro||'  and codigo_tipo_pres::integer in ('||v_parametros.tipo_pres||')';
+
+
+
+            IF v_parametros.tipo_reporte = 'presupuesto'  THEN
+
+                 IF  v_parametros.id_presupuesto != 0 and v_parametros.id_presupuesto is not null THEN
+                    v_filtro = v_filtro||' and id_presupuesto = '||v_parametros.id_presupuesto;
+                 END IF;
+
+                v_titulares = 'id_presupuesto as id_concepto,
+                               codigo_cc::varchar as concepto,';
+
+                v_grupos = 'id_presupuesto,
+                               codigo_cc,';
+                v_ordenacion = 'id_presupuesto asc,';
+
+
+            ELSEIF v_parametros.tipo_reporte = 'categoria'  THEN
+
+                IF  v_parametros.id_categoria_programatica != 0 and v_parametros.id_categoria_programatica is not null THEN
+                    v_filtro = v_filtro||' and id_categoria_programatica = '||v_parametros.id_categoria_programatica;
+                 END IF;
+
+                v_titulares = 'id_categoria_programatica as id_concepto,
+                               codigo_categoria::varchar as concepto,';
+                v_grupos = 'id_categoria_programatica,
+                					codigo_categoria,';
+                v_ordenacion = 'id_categoria_programatica asc,';
+
+
+            ELSEIF v_parametros.tipo_reporte = 'programa'  THEN
+
+                 IF  v_parametros.id_cp_programa != 0 and v_parametros.id_cp_programa is not null THEN
+                    v_filtro = v_filtro||' and id_cp_programa = '||v_parametros.id_cp_programa;
+                 END IF;
+
+
+
+                v_titulares = 'id_cp_programa as id_concepto,
+                               desc_programa::varchar as concepto,';
+                v_grupos = 'id_cp_programa,
+                				desc_programa,';
+                v_ordenacion = 'id_cp_programa asc,';
+
+            END IF;
+
+    		--Sentencia de la consulta
+			v_consulta:='SELECT
+                            '||v_titulares||'
+
+                            id_concepto_ingas,
+                            id_partida,
+                            codigo_partida,
+                            nombre_partida,
+                            descripcion_pres,
+                            desc_ingas,
+                            justificacion,
+                            unidad_medida,
+                            importe_unitario,
+                            cantidad_mem,
+                            sum(importe) as importe,
+                            m.gestion,
+                            pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, m.cantidad_mem::integer, m.importe_unitario::integer) AS importe_periodo
+                          FROM
+                            pre.vmemoria_por_categoria m
+                          WHERE '||v_filtro||'
+                          group by
+
+                              '||v_grupos||'
+
+                              id_concepto_ingas,
+                              id_partida,
+                              codigo_partida,
+                              nombre_partida,
+                              descripcion_pres,
+                              desc_ingas,
+                              justificacion,
+                              unidad_medida,
+                              importe_unitario,
+                              cantidad_mem,
+                              importe,
+							  m.id_memoria_calculo,
+                              m.gestion
+                          order by
+
+                              '||v_ordenacion||'
+                              codigo_partida asc ';
+        ELSE
         v_consulta:='SELECT
                             m.id_presupuesto as id_concepto,
                             m.codigo_cc::varchar as concepto,
@@ -331,7 +431,7 @@ BEGIN
                           order by
                               m.id_presupuesto asc,
                               m.codigo_partida asc ';
-
+        END IF;
         raise notice 'consulta: %', v_consulta;
 		--  Devuelve la respuesta
 		return v_consulta;

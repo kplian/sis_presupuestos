@@ -98,50 +98,55 @@ class ACTMemoriaCalculo extends ACTbase{
 	
 	
 	function reporteMemoriaCalculo(){
-		
-			    if($this->objParam->getParametro('formato_reporte')=='pdf'){
-					$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.pdf'; 
+
+				if($this->objParam->getParametro('tipo_rep') == 'general') {
+
+					if($this->objParam->getParametro('formato_reporte')=='pdf'){
+						$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.pdf';
+					}
+					else{
+						$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.xls';
+					}
+
+					$dataSource = $this->recuperarMemoriaCalculo();
+					$dataGestion = $this->recuperarDatosGestion();
+					$dataEmpresa = $this->recuperarDatosEmpresa();
+
+					//parametros basicos
+					$tamano = 'LETTER';
+					$orientacion = 'L';
+					$titulo = 'Consolidado';
+
+
+					$this->objParam->addParametro('orientacion',$orientacion);
+					$this->objParam->addParametro('tamano',$tamano);
+					$this->objParam->addParametro('titulo_archivo',$titulo);
+					$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+					//Instancia la clase de pdf
+					if($this->objParam->getParametro('formato_reporte')=='pdf'){
+						$reporte = new RMemoriaCalculo($this->objParam);
+						$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+						$reporte->generarReporte();
+						$reporte->output($reporte->url_archivo,'F');
+					}
+					else{
+						$reporte = new RMemoriaCalculoXls($this->objParam);
+						$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+						$reporte->generarReporte();
+					}
+
+
+
+					$this->mensajeExito=new Mensaje();
+					$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+					$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+					$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
+				} else {
+					$this->reporteMemoriaCalculoMensual();
 				}
-				else{
-					$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.xls'; 
-				}
-				
-				$dataSource = $this->recuperarMemoriaCalculo();
-				$dataGestion = $this->recuperarDatosGestion();
-				$dataEmpresa = $this->recuperarDatosEmpresa();
-				
-				
-				//parametros basicos
-				$tamano = 'LETTER';
-				$orientacion = 'L';
-				$titulo = 'Consolidado';
-				
-				
-				$this->objParam->addParametro('orientacion',$orientacion);
-				$this->objParam->addParametro('tamano',$tamano);		
-				$this->objParam->addParametro('titulo_archivo',$titulo);        
-				$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
-				
-				//Instancia la clase de pdf
-				if($this->objParam->getParametro('formato_reporte')=='pdf'){
-				    $reporte = new RMemoriaCalculo($this->objParam);
-					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
-				    $reporte->generarReporte();
-				    $reporte->output($reporte->url_archivo,'F');  
-				}
-				else{
-					$reporte = new RMemoriaCalculoXls($this->objParam); 
-					$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
-				    $reporte->generarReporte(); 
-				}
-		         
-				
-				
-				$this->mensajeExito=new Mensaje();
-				$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
-				$this->mensajeExito->setArchivoGenerado($nombreArchivo);
-				$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
-		
+
 	}
 
     function recuperarProgramacion(){    	
@@ -327,6 +332,11 @@ class ACTMemoriaCalculo extends ACTbase{
     }
 
 	function reporteMemoriaCalculoMensual(){
+
+		if($this->objParam->getParametro('tipo_rep') == null){
+			$this->objParam->addParametro('tipo_rep','');
+		}
+
 		$this->objFunc = $this->create('MODMemoriaCalculo');
 		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
 
@@ -350,19 +360,6 @@ class ACTMemoriaCalculo extends ACTbase{
 		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
 		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
 	}
-
-	/*function  recuperarMemCalXPeriodo(){
-		$this->objFunc = $this->create('MODMemoriaCalculo');
-		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
-		if($cbteHeader->getTipo() == 'EXITO'){
-			return $cbteHeader;
-		}
-		else{
-			$cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
-			exit;
-		}
-	}*/
-
 }
 
 ?>
