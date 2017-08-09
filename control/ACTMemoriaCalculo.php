@@ -13,7 +13,8 @@ require_once(dirname(__FILE__).'/../reportes/RMemoriaProgramacion.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaProgramacionXls.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaCalculaWf.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaProgramacionWf.php');
-class ACTMemoriaCalculo extends ACTbase{    
+require_once(dirname(__FILE__).'/../reportes/RMemCalMensualPDF.php');
+class ACTMemoriaCalculo extends ACTbase{
 
 	function listarMemoriaCalculo(){
 		$this->objParam->defecto('ordenacion','id_memoria_calculo');
@@ -325,10 +326,42 @@ class ACTMemoriaCalculo extends ACTbase{
 
     }
 
+	function reporteMemoriaCalculoMensual(){
+		$this->objFunc = $this->create('MODMemoriaCalculo');
+		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
 
+		$nombreArchivo = uniqid(md5(session_id()).'[MemoriaCalculo-Mensual]') . '.pdf';
+		$dataSource = $cbteHeader;
+		$dataEmpresa = $this->recuperarDatosEmpresa();
+		//parametros basicos
+		$tamano = 'A3';
+		$orientacion = 'L';
+		$titulo = 'Consolidado';
+		$this->objParam->addParametro('orientacion',$orientacion);
+		$this->objParam->addParametro('tamano',$tamano);
+		$this->objParam->addParametro('titulo_archivo',$titulo);
+		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+		$reporte = new RMemCalMensualPDF($this->objParam);
+		$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataEmpresa->getDatos());
+		$reporte->generarReporte();
+		$reporte->output($reporte->url_archivo,'F');
+		$this->mensajeExito=new Mensaje();
+		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+	}
 
-
-
+	/*function  recuperarMemCalXPeriodo(){
+		$this->objFunc = $this->create('MODMemoriaCalculo');
+		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){
+			return $cbteHeader;
+		}
+		else{
+			$cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}
+	}*/
 
 }
 

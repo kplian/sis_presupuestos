@@ -359,6 +359,42 @@ class MODMemoriaCalculo extends MODbase{
         return $this->respuesta;
     }
 
+	function listarMemoriaCalculoMensual(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='pre.ft_memoria_calculo_sel';
+		$this->transaccion='PRE_MECALMEN_REP';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		$this->setCount(false);
+
+		//captura parametros adicionales para el count
+		$this->setParametro('id_proceso_wf','id_proceso_wf','int4');
+
+
+		//Definicion de la lista del resultado del query
+		$this->captura('id_concepto','int4');
+		$this->captura('concepto','VARCHAR');
+		$this->captura('id_concepto_ingas','int4');
+		$this->captura('id_partida','int4');
+		$this->captura('codigo_partida','varchar');
+		$this->captura('nombre_partida','varchar');
+		$this->captura('descripcion_pres','varchar');
+		$this->captura('desc_ingas','varchar');
+		$this->captura('justificacion','varchar');
+		$this->captura('unidad_medida','varchar');
+		$this->captura('importe_unitario','NUMERIC');
+		$this->captura('cantidad_mem','NUMERIC');
+		$this->captura('importe','NUMERIC');
+		$this->captura('gestion','int4');
+		$this->captura('importe_periodo','varchar');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		//var_dump($this->consulta);exit;
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
 			
 }
 ?>

@@ -283,6 +283,60 @@ BEGIN
 		--  Devuelve la respuesta
 		return v_consulta;
     end;
+    /*********************************
+ 	#TRANSACCION:  'PRE_MECALMEN_REP'
+ 	#DESCRIPCION:	Consulta de datos para reporte de memoria calculo mensual
+ 	#AUTOR:		FRANKLIN ESPINOZA
+ 	#FECHA:		03/08/2017
+	***********************************/
+    elseif(p_transaccion='PRE_MECALMEN_REP')then
+
+    	begin
+        v_consulta:='SELECT
+                            m.id_presupuesto as id_concepto,
+                            m.codigo_cc::varchar as concepto,
+                            m.id_concepto_ingas,
+                            m.id_partida,
+                            m.codigo_partida,
+                            m.nombre_partida,
+                            m.descripcion_pres,
+                            m.desc_ingas,
+                            m.justificacion,
+                            m.unidad_medida,
+                            m.importe_unitario,
+                            m.cantidad_mem,
+                            sum(m.importe) as importe,
+                            g.gestion,
+                            pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, (m.cantidad_mem)::integer, m.importe_unitario::integer) AS importe_periodo
+                          FROM pre.vmemoria_por_categoria m
+						  INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
+                          INNER JOIN param.tgestion g on g.id_gestion = m.id_gestion
+                          WHERE p.id_proceso_wf  = '||v_parametros.id_proceso_wf||'
+                          group by
+                          	  m.id_memoria_calculo,
+                              m.id_presupuesto,
+                              m.codigo_cc,
+                              m.id_concepto_ingas,
+                              m.id_partida,
+                              m.codigo_partida,
+                              m.nombre_partida,
+                              m.descripcion_pres,
+                              m.desc_ingas,
+                              m.justificacion,
+                              m.unidad_medida,
+                              m.importe_unitario,
+                              m.cantidad_mem,
+                              m.importe,
+                              g.gestion
+                          order by
+                              m.id_presupuesto asc,
+                              m.codigo_partida asc ';
+
+        raise notice 'consulta: %', v_consulta;
+		--  Devuelve la respuesta
+		return v_consulta;
+    end;
+
     else
 
 		raise exception 'Transaccion inexistente';
