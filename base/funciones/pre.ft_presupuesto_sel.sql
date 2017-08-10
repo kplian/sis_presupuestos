@@ -105,9 +105,11 @@ BEGIN
 
             IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
                  IF p_administrador !=1 THEN
-                     v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';
+                    -- v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';
+                 v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                  ELSE
-                      v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                      --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                 v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                  END IF;
             END IF;
 
