@@ -553,7 +553,7 @@ BEGIN
             FROM adq.tsolicitud ts
             WHERE ts.id_proceso_wf = v_parametros.id_proceso_wf;
 
-            IF(v_record_sol.estado='vbrpc')THEN
+            IF(v_record_sol.estado='vbrpc' OR v_record_sol.estado = 'aprobado' OR v_record_sol.estado = 'proceso' OR v_record_sol.estado = 'finalizado')THEN
               v_index = 1;
               FOR v_record IN (WITH RECURSIVE firmas(id_estado_fw, id_estado_anterior,fecha_reg, codigo, id_funcionario) AS (
                                 SELECT tew.id_estado_wf, tew.id_estado_anterior , tew.fecha_reg, te.codigo, tew.id_funcionario
