@@ -11,7 +11,6 @@ class RPoaPDF extends  ReportePDF{
 
     function Header() {
         $this->Ln(3);
-        //formato de fecha
 
         //cabecera del reporte
         $this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/logo.jpg', 20,5,40,20);
@@ -20,10 +19,9 @@ class RPoaPDF extends  ReportePDF{
 
         $this->SetFont('','B',12);
         $this->Cell(0,5,"PROGRAMA ANUAL DE OPERACIONES",0,1,'C');
-        /*$this->SetFont('','B',7);*/
         $this->Cell(0,5,"GESTIÓN - ".$this->datos[0]['gestion'],0,1,'C');
         $this->Ln(5);
-        /*$this->SetFont('','',10);*/
+
         /*$tbl = '<table border="1" style="font-size: 7pt;"><tr align="center">
                         <td width="6%"><b>COD. OBJ. GES. INST.</b></td>
                         <td width="6%"><b>POND. OBJ. GES. INST.</b></td>
@@ -46,8 +44,7 @@ class RPoaPDF extends  ReportePDF{
     }
 
     function  generarReporte()
-    {  // $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
+    {
         $this->AddPage();
         $this->SetMargins(15, 40, 15);
         $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -64,12 +61,11 @@ class RPoaPDF extends  ReportePDF{
         //$tbl = '<table border="1" style="font-size: 7pt;">';
         $cont_lineas = $this->getY();
         $tbl = '';
-        /*$dimensions = $this->getPageDimensions();
-        var_dump($dimensions);exit;*/
+
         foreach( $this->datos as $record) {
             //if($record['gestion']=='2017') {
 
-                if($bandera_head){
+                if ($bandera_head) {
                     $tbl .= '<table border="1" style="font-size: 7pt;"><tr align="center">
                         <td width="6%"><b>COD. OBJ. GES. INST.</b></td>
                         <td width="6%"><b>POND. OBJ. GES. INST.</b></td>
@@ -85,11 +81,11 @@ class RPoaPDF extends  ReportePDF{
                 }
 
                 if ($record['nivel_objetivo'] == '1') {
-                    if($contador>=1){
-                        $tbl.='</table>';
-                        if($cont_lineas>=180&&$cont_lineas<=215.9){
+                    if ($contador >= 1) {
+                        $tbl .= '</table>';
+                        if ($cont_lineas >= 180 && $cont_lineas <= 215.9) {
 
-                            $tbl.='<br><br><br><br><br><br><br>';
+                            $tbl .= '<br><br><br><br><br><br><br>';
                             $tbl .= '<table border="1" style="font-size: 7pt;">
                                         <tr align="center">
                                             <td width="6%"><b>COD. OBJ. GES. INST.</b></td>
@@ -102,7 +98,7 @@ class RPoaPDF extends  ReportePDF{
                                             <td width="28%"><b>OPERACIÓN</b></td>
                                         </tr>
                                      ';
-                        }else{
+                        } else {
                             $tbl .= '<table border="1" style="font-size: 7pt;">';
                         }
 
@@ -110,9 +106,9 @@ class RPoaPDF extends  ReportePDF{
                     }
                     $contador++;
                     $tbl .= '<tr style="font-size: 7pt;">     
-                        <td width="6%" align="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['codigo'] . '</td>
-                        <td width="6%" align="center" valign="center" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['ponderacion'] . '%</td>
-                        <td width="21%" rowspan="' . $record['nietos'] . '"><br><br><br><br><br>' . $record['descripcion'] . '</td>
+                        <td width="6%" align="center" rowspan="' . $record['nietos'] . '"><br>' . $record['codigo'] . '</td>
+                        <td width="6%" align="center" valign="center" rowspan="' . $record['nietos'] . '"><br>' . $record['ponderacion'] . '%</td>
+                        <td width="21%" rowspan="' . $record['nietos'] . '"><br>' . $record['descripcion'] . '</td>
                       ';
                     $id_padre = $record['id_objetivo'];
                     $bandera = false;
@@ -145,8 +141,9 @@ class RPoaPDF extends  ReportePDF{
                       ';
                     $id_obj_fk = $record['id_objetivo_fk'];
                     $bandera = true;
-                    $cont_lineas+=8;
+                    $cont_lineas += 8;
                 }
+
            /*}else {
 
                 if ($bandera_head) {

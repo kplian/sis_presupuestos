@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -37,10 +35,9 @@ DECLARE
     v_filadd			varchar;
     v_join_responsables				varchar;
     v_sw_distinc					varchar;
-
     --certificacion presupuestaria
     v_nombre_entidad				varchar;
-	  v_direccion_admin				varchar;
+	v_direccion_admin				varchar;
     v_record						record;
     v_index							integer = 0;
     v_record_funcionario			record;
@@ -48,7 +45,12 @@ DECLARE
     v_firma_fun						varchar;
     v_unidad_ejecutora				varchar;
     v_record_sol					record;
-
+    --reporte po
+    v_id_gestion					integer;
+    v_fecha							varchar;
+    v_nro_cite_dce_fin					varchar;
+    v_nro_cite_dce_in					varchar;
+    v_nro_tramite					varchar;
 BEGIN
 
 	v_nombre_funcion = 'pre.ft_presupuesto_sel';
@@ -93,17 +95,21 @@ BEGIN
 
             IF v_parametros.tipo_interfaz = 'PresupuestoVb' THEN
                  IF p_administrador !=1 THEN
-                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                     -- v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   ELSE
-                      v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                     -- v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   END IF;
             END IF;
 
             IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
                  IF p_administrador !=1 THEN
-                     v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';
+                    -- v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';
+                 v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                  ELSE
-                      v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                      --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                 v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                  END IF;
             END IF;
 
@@ -530,7 +536,8 @@ BEGIN
 			return v_consulta;
 
         end;
-  /*********************************
+
+    /*********************************
  	#TRANSACCION:  'PR_REPCERPRE_SEL'
  	#DESCRIPCION:	Reporte Certificación Presupuestaria
  	#AUTOR:		FEA
@@ -546,7 +553,7 @@ BEGIN
             FROM adq.tsolicitud ts
             WHERE ts.id_proceso_wf = v_parametros.id_proceso_wf;
 
-            IF(v_record_sol.estado='vbrpc')THEN
+            IF(v_record_sol.estado='vbrpc' OR v_record_sol.estado = 'aprobado' OR v_record_sol.estado = 'proceso' OR v_record_sol.estado = 'finalizado')THEN
               v_index = 1;
               FOR v_record IN (WITH RECURSIVE firmas(id_estado_fw, id_estado_anterior,fecha_reg, codigo, id_funcionario) AS (
                                 SELECT tew.id_estado_wf, tew.id_estado_anterior , tew.fecha_reg, te.codigo, tew.id_funcionario
@@ -603,6 +610,7 @@ BEGIN
             COALESCE(tet.codigo::varchar,''00''::varchar) AS codigo_transf,
             (uo.codigo||''-''||uo.nombre_unidad)::varchar as unidad_solicitante,
             fun.desc_funcionario1::varchar as funcionario_solicitante
+
             FROM adq.tsolicitud ts
             INNER JOIN adq.tsolicitud_det tsd ON tsd.id_solicitud = ts.id_solicitud
             INNER JOIN pre.tpartida tpar ON tpar.id_partida = tsd.id_partida
@@ -623,10 +631,11 @@ BEGIN
             inner join orga.vfuncionario fun on fun.id_funcionario = ts.id_funcionario
             inner join orga.tuo uo on uo.id_uo = ts.id_uo
 
-            left join pre.tpresupuesto_partida_entidad tppe ON tppe.id_partida = tpar.id_partida AND tppe.id_presupuesto = tp.id_presupuesto
-            left join pre.tentidad_transferencia tet ON tet.id_entidad_transferencia = tppe.id_entidad_transferencia
+            left JOIN pre.tpresupuesto_partida_entidad tppe ON tppe.id_partida = tpar.id_partida AND tppe.id_presupuesto = tp.id_presupuesto
+            left JOIN pre.tentidad_transferencia tet ON tet.id_entidad_transferencia = tppe.id_entidad_transferencia
 
             WHERE tsd.estado_reg = ''activo'' AND ts.id_proceso_wf = '||v_parametros.id_proceso_wf;
+
 			v_consulta =  v_consulta || ' GROUP BY vcp.id_categoria_programatica, tpar.codigo, ttc.codigo,vcp.codigo_programa,vcp.codigo_proyecto, vcp.codigo_actividad,
             vcp.codigo_fuente_fin, vcp.codigo_origen_fin, tpar.nombre_partida, tcg.codigo, tcg.nombre, tmo.codigo, ts.num_tramite, tet.codigo, unidad_solicitante, funcionario_solicitante';
 			v_consulta =  v_consulta || ' ORDER BY tpar.codigo, tcg.nombre, vcp.id_categoria_programatica, ttc.codigo asc ';
@@ -689,6 +698,57 @@ BEGIN
 			return v_consulta;
 
         end;
+    /*********************************
+ 	#TRANSACCION:  'PR_NOTA_SEL'
+ 	#DESCRIPCION:	NOTA INTERNA
+ 	#AUTOR:		MMV
+ 	#FECHA:		3-08-2017 09:00:59
+	***********************************/
+
+	elsif(p_transaccion='PR_NOTA_SEL')then
+
+        begin
+
+          SELECT to_char(twf.fecha_reg,'DD/MM/YYYY')
+          INTO
+          v_fecha
+          FROM wf.testado_wf twf
+          INNER JOIN wf.ttipo_estado te ON te.id_tipo_estado = twf.id_tipo_estado
+          WHERE twf.id_proceso_wf = v_parametros.id_proceso_wf  AND te.codigo = 'vobopre';
+
+        select p.nro_tramite
+        into
+        v_nro_tramite
+        from pre.tpresupuesto p
+        WHERE p.id_proceso_wf = v_parametros.id_proceso_wf;
+        v_nro_cite_dce_fin = 'OB.CP.NI.FP.'||ltrim(substr(v_nro_tramite,7,8),'0');
+        v_nro_cite_dce_in = 'OB.CP.NI.IP.'||ltrim(substr(v_nro_tramite,7,8),'0');
+
+
+
+
+			v_consulta:='select  initcap(fg.desc_funcionario1)::varchar as desc_funcionario1,
+                                  fg.nombre_cargo,
+                                  initcap(f.desc_funcionario1)::varchar as funcionario_gerencia,
+                                  f.nombre_cargo as cargo_gerencia,
+                                  COALESCE(p.nro_cite_inicio,'''||v_nro_cite_dce_fin||''')::varchar as nro_cite_inicio,
+                                  COALESCE(p.nro_cite_fin,'''||v_nro_cite_dce_in||''')::varchar as nro_cite_fin,
+                                  '''||COALESCE(v_fecha,'vobopre')||'''::varchar as fecha_nota,
+                                  g.gestion
+                                  from pre.tpresupuesto p
+                                  inner join pre.tpresupuesto_funcionario pf on pf.id_presupuesto = p.id_presupuesto and pf.accion = ''responsable''
+                                  inner join orga.vfuncionario_cargo f on f.id_funcionario = pf.id_funcionario and (f.fecha_finalizacion is null OR f.fecha_finalizacion >= now()::date)
+                                  inner join orga.testructura_uo ou on ou.id_uo_hijo = f.id_uo
+                                  inner join orga.vfuncionario_cargo fg on fg.id_uo = ou.id_uo_padre and (fg.fecha_finalizacion is null OR fg.fecha_finalizacion >= now()::date)
+                                  inner join pre.tcategoria_programatica ca on ca.id_categoria_programatica = p.id_categoria_prog
+                                  inner join param.tgestion g on g.id_gestion = ca.id_gestion
+                                  where p.id_proceso_wf = '||v_parametros.id_proceso_wf;
+
+			--Devuelve la respuesta
+			return v_consulta;
+
+        end;
+
 
     else
 

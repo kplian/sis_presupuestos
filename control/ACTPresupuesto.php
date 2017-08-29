@@ -14,6 +14,7 @@ require_once(dirname(__FILE__).'/../../sis_mantenimiento/reportes/pxpReport/Data
 */
 require_once(dirname(__FILE__).'/../../sis_presupuestos/reportes/RCertificacionPresupuestaria.php');
 require_once(dirname(__FILE__).'/../../sis_presupuestos/reportes/RPoaPDF.php');
+require_once(dirname(__FILE__).'/../../sis_presupuestos/reportes/RNotaIntern.php');
 
 class ACTPresupuesto extends ACTbase{    
 			
@@ -255,6 +256,28 @@ class ACTPresupuesto extends ACTbase{
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
+    function notaInterna(){
+        $this->objFunc=$this->create('MODPresupuesto');
+        $dataSource=$this->objFunc->listarNotaInterna();
+        $this->dataSource=$dataSource->getDatos();
+        //var_dump($this->dataSource);exit;
+        $nombreArchivo = uniqid(md5(session_id()).'[Reporte-POA]').'.pdf';
+        $this->objParam->addParametro('orientacion','P');
+        $this->objParam->addParametro('tamano','LETTER');
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $this->objReporte = new RNotaIntern($this->objParam);
+        $this->objReporte->setDatos($this->dataSource);
+        $this->objReporte->generarReporte();
+        $this->objReporte->output($this->objReporte->url_archivo,'F');
+
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado', 'Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
 }
 
 ?>

@@ -62,7 +62,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
         {
             config:{
             	name: 'tipo_pres',
-				fieldLabel: 'Tipo',
+				fieldLabel: 'Tipo Presupuesto',
 				grupo: [0, 1, 2],
 				allowBlank: false,
 				emptyText:'Filtro...',
@@ -88,7 +88,6 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 				mode : 'remote',
 				pageSize : 20,
 				width : 250,
-				anchor : '80%',
 				listWidth : '280',
 				resizable : true,
 				minChars : 2
@@ -258,7 +257,32 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			type:'ComboBox',
 			id_grupo:1,
 			form:true
-		}],
+		},
+		{
+			config:{
+				name:'tipo_rep',
+				fieldLabel:'Tipo Memoria',
+				typeAhead: true,
+				allowBlank:false,
+				triggerAction: 'all',
+				emptyText:'Tipo...',
+				selectOnFocus:true,
+				mode:'local',
+				store:new Ext.data.ArrayStore({
+					fields: ['ID', 'valor'],
+					data :[ ['general','Memoria de Calculo General'],
+						['periodos','Memoria de Calculo Mensual']]
+				}),
+				valueField:'ID',
+				displayField:'valor',
+				width:250
+
+			},
+			type:'ComboBox',
+			id_grupo:1,
+			form:true
+		}
+		],
 		
 		
 		title : 'Memoria de Calculo',		

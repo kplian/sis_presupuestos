@@ -341,6 +341,85 @@ class MODPresupPartida extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function ejecucionGestionAnterior(){
+
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.f_rep_ejecucion_wf';
+        $this->transaccion='PRE_PROGRA_WF';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->setCount(false);
+        $this->setTipoRetorno('record');
+
+        //captura parametros adicionales para el count
+        $this->setParametro('id_proceso_wf','id_proceso_wf','int4');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+        $this->captura('descripcion','varchar');
+        $this->captura('gestion','int4');
+        $this->captura('c1','NUMERIC');
+        $this->captura('c2','NUMERIC');
+        $this->captura('c3','NUMERIC');
+        $this->captura('c4','NUMERIC');
+        $this->captura('c5','NUMERIC');
+        $this->captura('c6','NUMERIC');
+        $this->captura('c7','NUMERIC');
+        $this->captura('c8','NUMERIC');
+        $this->captura('c9','NUMERIC');
+        $this->captura('c10','NUMERIC');
+        $this->captura('c11','NUMERIC');
+        $this->captura('c12','NUMERIC');
+        $this->captura('total','NUMERIC');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+       // var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function memoriaGestionAnterior(){
+
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.f_rep_ejecucion_wf';
+        $this->transaccion='PRE_MEMORIA_WF';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+        $this->setCount(false);
+        $this->setTipoRetorno('record');
+
+        //captura parametros adicionales para el count
+        $this->setParametro('id_proceso_wf','id_proceso_wf','int4');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_partida','int4');
+        $this->captura('codigo_partida','varchar');
+        $this->captura('nombre_partida','varchar');
+        $this->captura('nivel_partida','int4');
+        $this->captura('descripcion','varchar');
+        $this->captura('gestion','int4');
+        $this->captura('m1','NUMERIC');
+        $this->captura('m2','NUMERIC');
+        $this->captura('m3','NUMERIC');
+        $this->captura('m4','NUMERIC');
+        $this->captura('m5','NUMERIC');
+        $this->captura('m6','NUMERIC');
+        $this->captura('m7','NUMERIC');
+        $this->captura('m8','NUMERIC');
+        $this->captura('m9','NUMERIC');
+        $this->captura('m10','NUMERIC');
+        $this->captura('m11','NUMERIC');
+        $this->captura('m12','NUMERIC');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        // var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 			
 }
 ?>

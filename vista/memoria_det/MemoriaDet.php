@@ -118,7 +118,39 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				anchor: '80%',
 				gwidth: 100,
 				sortable: false,
-				maxLength:1179650
+				maxLength:1179650,
+                renderer:function (value,p,record){
+                    return  String.format('<div style="vertical-align:middle;text-align:center;"><span ><b>{0}</b></span></div>',value);
+                },
+                validateValue: function(pw){
+                        function tiene_punto(pw)
+                        {
+                            var expreg=/^([A-Za-z0-9_ ]+)$/;
+                            if(expreg.test(pw))
+                                return 1;
+                            return 0;
+                        }
+
+                        var x = '';
+                        var seguridad = 0;
+
+                        if(tiene_punto(pw)==1)
+                            seguridad += 18;
+                        else
+                            x += 'No se permite el caracter puntos.<br>';
+
+
+
+                        this.markInvalid(x);
+
+                        if(pw.length == 0)
+                            seguridad = 0;
+
+                        if(x=='')
+                            return true
+                        else
+                            return false
+                    }
 			},
 				type:'NumberField',
 				filters:{pfiltro:'mdt.cantidad_mem',type:'numeric'},
@@ -386,6 +418,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     },
     
     calculaTotal: function(e){
+		console.log('IMPORTE: ',e.record.data.cantidad_mem, e.record.data.importe_unitario);
     	var tot = Number(e.record.data.cantidad_mem) * Number(e.record.data.importe_unitario);
     	e.record.set( 'importe', tot );
     	e.record.markDirty();

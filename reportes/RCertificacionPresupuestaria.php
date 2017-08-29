@@ -41,57 +41,20 @@ class RCertificacionPresupuestaria extends  ReportePDF{
         $this->SetMargins(15, 40, 15);
         $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-        $height = 5;
-        $width2 = 5;
-        $width3 = 46;
+        $firmas = explode(';',$this->datos[0]['firmas']);
 
-        $width1 = 5;
-        $esp_width = 10;
-        $width_c1= 60;
-        $width_c2= 55;
-
-        /*$nro_tramite = $this->datos[0]['nro_tramite'];
-        $tipo_empleado = $this->datos[0]['tipo_empleado'];
-        $tipo_servicio = $this->datos[0]['tipo_servicio'];
-        $fecha_desde = date_format(date_create($this->datos[0]['fecha_desde']), 'd/m/Y');
-        $fecha_hasta = date_format(date_create($this->datos[0]['fecha_hasta']), 'd/m/Y');
-        $ip_equipo_remoto = $this->datos[0]['ip_equipo_remoto'];
-        $lista_servicios = $this->datos[0]['lista_servicios'];
-        $nota_adicional = $this->datos[0]['nota_adicional'];
-        $nombre_funcionario = $this->datos[0]['nombre_funcionario'];
-        $desc_fun = explode('|',$this->datos[0]['desc_fun']);
-        $fun_contacto = explode('|',$this->datos[0]['fun_contacto']);
-        $ofi_gerencia = $this->datos[0]['ofi_gerencia'];
-
-        $estado = $this->datos[0]['estado'];
-        $fun_firmas = $this->datos[0]['fun_firmas'];*/
-
-        //$fun_firmas = explode(';',$this->datos[0]['fun_firmas']);
-
-        //$reg0 = $reg1 = $reg2 = [];
-
-        /*for ($i=0;$i<=count($fun_firmas);$i++){
-
-        }*/
-
-        /*foreach ($fun_firmas as $rec=>$record){
-            $reg{$rec} = explode(',',$record);
-            echo 'firmas funcionarios: ';
-            foreach (explode(',',$record) as $data){
-
-                echo 'c: '.$rec.'v: '.$data.'\n';
+        $firma_fecha = '';
+        foreach ($firmas as $fir){
+            if(strpos($fir, 'vbrpc')!==false){
+                $firma_fecha = explode(',',$fir);
             }
         }
 
-        var_dump($reg0);exit;*/
-
-        $firmas = explode(';',$this->datos[0]['firmas']);
-
         $elaborado = explode(',',$firmas[1]);
         $aprobado = explode(',',$firmas[0]);
-        $firmas = explode(',',$firmas[2]);
+        //$firmas = explode(',',$firmas[2]);
 
-        $fecha = date_format(date_create($firmas[1]), 'd/m/Y');
+        $fecha = date_format(date_create($firma_fecha[1]), 'd/m/Y');
 
 
         $tbl = '<table border="0" style="font-size: 7pt;"> 
@@ -105,74 +68,10 @@ class RCertificacionPresupuestaria extends  ReportePDF{
         $this->Ln(5);
         $this->writeHTML ($tbl);
 
-        /*$this->Ln(5);
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell($width_c1, $height, 'ENTIDAD:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        $this->SetFillColor(192,192,192, true);
-        $this->Cell($width_c2, $height, $this->datos[0]['nombre_entidad'], 0, 0, 'L', false, '', 0, false, 'T', 'C');
 
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($esp_width, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell(42, $height,'No. PROCESO:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell(30, $height, $this->datos[0]['num_tramite'], 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Ln();
-
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell($width_c1, $height, 'DIRECCIÓN ADMINISTRATIVA:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell($width_c2, $height, 'Boliviana de Aviación - BoA', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($esp_width, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell(42, $height,'FECHA:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell(30, $height, '13/07/2017', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Ln();
-
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell($width_c1, $height, 'CON IMPUTACITACIÓN PRESUPUESTARIA:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell($width_c2, $height, 'Por Especificar', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($esp_width, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell(42, $height,'DOCUMENTO DE RESPALDO:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell(30, $height, 'Por Especificar', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Ln();
-
-        $this->SetFont('helvetica','B', 8);
-        //$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->Cell($width_c1, $height, 'CATEGORIA DE COMPRA:', 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        $this->SetFont('helvetica','', 8);
-        //$this->SetFillColor(192,192,192, true);
-        $this->Cell($width_c2, $height, ($this->datos[0]['codigo_moneda']=='Bs'?'Compra Nacional.':'Compra Internacional.'), 0, 0, 'L', false, '', 0, false, 'T', 'C');
-        */
         $this->Ln(5);
 
-        /*id_cp
-        centro_costo
-        codigo_programa
-        codigo_proyecto
-        codigo_actividad
-        codigo_fuente_fin
-        codigo_origen_fin
-
-        codigo_partida
-        nombre_partidad
-        codigo_cg
-        nombre_cg
-        precio_total*/
+      
         //variables para la tabla
         $codigo_cg = '';
         $id_cp = 0;
@@ -311,7 +210,7 @@ class RCertificacionPresupuestaria extends  ReportePDF{
             $this->SetY(250);
 
         //var_dump($this->getPageDimensions());exit;
-        if($firmas[0]=='vbrpc') {
+        if($firma_fecha[0]=='vbrpc') {
             $tbl = '<table>
                     <tr>
                     <td style="width: 15%"></td>

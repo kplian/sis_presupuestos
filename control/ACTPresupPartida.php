@@ -11,6 +11,7 @@ require_once(dirname(__FILE__).'/../reportes/REjecucion.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionXls.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionPorPartida.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionPorPartidaXls.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionGestionAnterior.php');
 class ACTPresupPartida extends ACTbase{    
 			
 	function listarPresupPartida(){
@@ -318,7 +319,45 @@ class ACTPresupPartida extends ACTbase{
 				$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
 		
 	}
-	
+    function listarPartidaEjecutados(){
+        $this->objFunc = $this->create('MODPresupPartida');
+        $cbteHeader = $this->objFunc->ejecucionGestionAnterior($this->objParam);
+        if($cbteHeader->getTipo() == 'EXITO'){
+            return $cbteHeader;
+        }
+        else{
+            $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+            exit;
+        }
+
+    }
+    function listarPartidaMemoria(){
+        $this->objFunc = $this->create('MODPresupPartida');
+        $cbteHeader = $this->objFunc->memoriaGestionAnterior($this->objParam);
+        if($cbteHeader->getTipo() == 'EXITO'){
+            return $cbteHeader;
+        }
+        else{
+            $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+            exit;
+        }
+
+    }
+    function listarPartidaEjecutadoAnterior (){
+        $dataSource = $this->listarPartidaEjecutados();
+        $dataSourceMemoria = $this->listarPartidaMemoria();
+        $nombreArchivo = uniqid(md5(session_id()).'Partidas').'.xls';
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+        $reporte = new REjecucionGestionAnterior($this->objParam);
+        $reporte->datosHeader($dataSource->getDatos(),$dataSource->extraData,$dataSourceMemoria->getDatos());
+        $reporte->generarReporte();
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+
+    }
+
 			
 }
 

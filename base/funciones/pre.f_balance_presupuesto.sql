@@ -1,8 +1,9 @@
 --------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_balance_presupuesto (
-  p_id_tipo_cc integer,  
+  p_id_tipo_cc integer,
   p_id_periodo integer,
-  p_desde date = NULL::date,  
+  p_desde date = NULL::date,
   p_hasta date = NULL::date,
   p_tipo_importe varchar = 'todos'::character varying,
   out ps_formulado numeric,
@@ -61,74 +62,116 @@ BEGIN
      IF v_pre_integrar_presupuestos = 'true' THEN 
       
          IF p_tipo_importe = 'todos' or p_tipo_importe = 'formulado' THEN
-           select   
-                sum(pe.monto_mb)
-              into
-                ps_formulado
-           from  pre.tpartida_ejecucion pe, 
-                 param.tperiodo per, 
-                 param.tcentro_costo cc 
-        
-           where      cc.id_tipo_cc = p_id_tipo_cc
-                 and  pe.tipo_movimiento = 'formulado'
-                 and  cc.id_centro_costo = pe.id_presupuesto
-                 and  CASE
+         
+                IF p_id_periodo is not null THEN
+                   select   
+                        sum(pe.monto_mb)
+                      into
+                        ps_formulado
+                   from  pre.tpartida_ejecucion pe, 
+                         param.tperiodo per, 
+                         param.tcentro_costo cc 
+                
+                   where      cc.id_tipo_cc = p_id_tipo_cc
+                         and  pe.estado_reg = 'activo'
+                         and  pe.tipo_movimiento = 'formulado'
+                         and  cc.id_centro_costo = pe.id_presupuesto
+                         and  pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
+                         and per.id_periodo = p_id_periodo;
+                
+        		ELSE 
+               		 select   
+                          sum(pe.monto_mb)
+                        into
+                          ps_formulado
+                     from  pre.tpartida_ejecucion pe, 
+                          param.tcentro_costo cc 
                   
-                  WHEN p_id_periodo is not null then
-                           pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
-                		and
-                           per.id_periodo = p_id_periodo
-                  ELSE
-                        pe.fecha::Date BETWEEN p_desde and p_hasta
-                  END;
+                     where      cc.id_tipo_cc = p_id_tipo_cc
+                           and  pe.estado_reg = 'activo'
+                           and  pe.tipo_movimiento = 'formulado'
+                           and  cc.id_centro_costo = pe.id_presupuesto
+                           and  pe.fecha::Date BETWEEN p_desde and p_hasta;
+        
+           		END IF;
+           
                  
         END IF;
         
-        IF p_tipo_importe = 'todos' or p_tipo_importe = 'comprometido' THEN   
+        IF p_tipo_importe = 'todos' or p_tipo_importe = 'comprometido' THEN 
+        
+        		IF p_id_periodo is not null THEN
+                
+                      select   
+                          sum(pe.monto_mb)
+                        into
+                          ps_comprometido
+                    from  pre.tpartida_ejecucion pe, 
+                           param.tperiodo per, 
+                           param.tcentro_costo cc 
+                    where      cc.id_tipo_cc = p_id_tipo_cc
+                           and  pe.estado_reg = 'activo' 
+                           and  pe.tipo_movimiento = 'comprometido'
+                           and  cc.id_centro_costo = pe.id_presupuesto
+                           and  pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
+                           and   per.id_periodo = p_id_periodo; 
+                
+        		ELSE 
+                     select   
+                          sum(pe.monto_mb)
+                        into
+                          ps_comprometido
+                    from  pre.tpartida_ejecucion pe, 
+                           param.tcentro_costo cc 
+                    where      cc.id_tipo_cc = p_id_tipo_cc
+                           and  pe.estado_reg = 'activo' 
+                           and  pe.tipo_movimiento = 'comprometido'
+                           and  cc.id_centro_costo = pe.id_presupuesto
+                           and  pe.fecha::Date BETWEEN p_desde and p_hasta; 
+        
+           		END IF; 
            
-              select   
-                    sum(pe.monto_mb)
-                  into
-                    ps_comprometido
-              from  pre.tpartida_ejecucion pe, 
-                     param.tperiodo per, 
-                     param.tcentro_costo cc 
-              where      cc.id_tipo_cc = p_id_tipo_cc
-                     and  pe.tipo_movimiento = 'comprometido'
-                     and  cc.id_centro_costo = pe.id_presupuesto
-                     and  CASE
-                      
-                      WHEN p_id_periodo is not null then
-                               pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
-                            and
-                               per.id_periodo = p_id_periodo
-                      ELSE
-                            pe.fecha::Date BETWEEN p_desde and p_hasta
-                      END;      
+                   
          
          END IF;
          
          IF p_tipo_importe = 'todos' or p_tipo_importe = 'ejecutado' THEN           
            
-           select   
-                sum(pe.monto_mb)
-              into
-                ps_ejecutado
-           from  pre.tpartida_ejecucion pe, 
-                     param.tperiodo per, 
-                     param.tcentro_costo cc 
-              where      cc.id_tipo_cc = p_id_tipo_cc
-                     and  pe.tipo_movimiento = 'ejecutado'
-                     and  cc.id_centro_costo = pe.id_presupuesto
-                     and  CASE
-                      
-                      WHEN p_id_periodo is not null then
-                               pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
-                            and
-                               per.id_periodo = p_id_periodo
-                      ELSE
-                            pe.fecha::Date BETWEEN p_desde and p_hasta
-                      END; 
+           
+           		IF p_id_periodo is not null THEN
+           
+                   select   
+                        sum(pe.monto_mb)
+                      into
+                        ps_ejecutado
+                   from  pre.tpartida_ejecucion pe, 
+                             param.tperiodo per, 
+                             param.tcentro_costo cc 
+                      where      cc.id_tipo_cc = p_id_tipo_cc
+                             AND  pe.estado_reg = 'activo' 
+                             and  pe.tipo_movimiento = 'ejecutado'
+                             and  cc.id_centro_costo = pe.id_presupuesto
+                             and pe.fecha BETWEEN per.fecha_ini and per.fecha_fin
+                             and  per.id_periodo = p_id_periodo;
+           
+           		ELSE
+                
+                   select   
+                        sum(pe.monto_mb)
+                      into
+                        ps_ejecutado
+                   from  pre.tpartida_ejecucion pe, 
+                             param.tcentro_costo cc 
+                      where      cc.id_tipo_cc = p_id_tipo_cc
+                             AND  pe.estado_reg = 'activo' 
+                             and  pe.tipo_movimiento = 'ejecutado'
+                             and  cc.id_centro_costo = pe.id_presupuesto
+                             and  pe.fecha::Date BETWEEN p_desde and p_hasta;
+           
+           		END IF;
+           
+           
+            
          END IF;   
      
       
