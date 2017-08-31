@@ -6,7 +6,7 @@
 *@date 20-07-2016 20:37:41
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-require_once(dirname(__FILE__).'/../reportes/RpoaXls.php');
+//require_once(dirname(__FILE__).'/../reportes/RpoaXls.php');
 class ACTObjetivo extends ACTbase{    
 			
 	function listarObjetivo(){
