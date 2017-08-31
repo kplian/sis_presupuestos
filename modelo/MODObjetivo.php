@@ -206,6 +206,40 @@ class MODObjetivo extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function ReportePOA(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.ft_objetivo_sel';
+        $this-> setCount(false);
+        $this->transaccion='PRE_OBJ_REPT';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        //captura parametros adicionales para el count
+        $this->setParametro('id_gestion','id_gestion','int4');
+
+        $this->captura('codigo','varchar');
+        $this->captura('nivel_objetivo','int4');
+       // $this->captura('sw_transaccional','varchar');
+        //$this->captura('cantidad_verificacion','numeric');
+        //$this->captura('unidad_verificacion','varchar');
+       // $this->captura('ponderacion','numeric');
+       // $this->captura('fecha_inicio','date');
+       // $this->captura('tipo_objetivo','varchar');
+        $this->captura('descripcion','varchar');
+        //$this->captura('linea_base','varchar');
+        //$this->captura('indicador_logro','varchar');
+        //$this->captura('periodo_ejecucion','varchar');
+        //$this->captura('producto','varchar');
+        //$this->captura('fecha_fin','date');
+       // $this->captura('gestion','int4');
+        //Ejecuta la instruccion
+        $this->captura('nivel_preuspuesto','int4');
+        $this->captura('presupuesto','varchar');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump( $this->respuesta);exit;
+        return $this->respuesta;
+    }
 			
 }
 ?>
