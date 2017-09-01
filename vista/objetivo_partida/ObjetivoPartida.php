@@ -304,13 +304,16 @@ Phx.vista.ObjetivoPartida=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.ObjetivoPartida.superclass.successSave.call(this,resp);
 
 		var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-		Ext.Msg.show({
-			title: 'Información',
-			msg: objRes.ROOT.datos.v_mensaje,
-			buttons: Ext.Msg.OK,
-			width: 650,
-			icon: Ext.Msg.INFO
-		});
+		console.log('objRes.ROOT.datos.v_mensaje',objRes.ROOT.datos.v_mensaje);
+		if(objRes.ROOT.datos.v_mensaje!= undefined || objRes.ROOT.datos.v_mensaje!= null) {
+			Ext.Msg.show({
+				title: 'Información',
+				msg: objRes.ROOT.datos.v_mensaje,
+				buttons: Ext.Msg.OK,
+				width: 650,
+				icon: Ext.Msg.INFO
+			});
+		}
 	},
 
 	onButtonEdit: function () {

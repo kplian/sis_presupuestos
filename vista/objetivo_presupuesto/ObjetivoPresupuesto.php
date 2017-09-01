@@ -285,13 +285,29 @@ Phx.vista.ObjetivoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 
 
     onButtonNew: function () {
-        Phx.vista.ObjetivoPartida.superclass.onButtonNew.call(this);
+        Phx.vista.ObjetivoPresupuesto.superclass.onButtonNew.call(this);
         //this.Cmp.id_partida.store.baseParams ={id_gestion:this.maestro.id_gestion, sw_transaccional:'movimiento'};
         this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
     },
 
+	successSave: function (resp) {
+		Phx.vista.ObjetivoPresupuesto.superclass.successSave.call(this,resp);
+
+		var objRes = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+		console.log('v_mensaje',objRes.ROOT.datos.v_mensaje);
+		if(objRes.ROOT.datos.v_mensaje!= undefined || objRes.ROOT.datos.v_mensaje!= null) {
+			Ext.Msg.show({
+				title: 'Información',
+				msg: objRes.ROOT.datos.v_mensaje,
+				buttons: Ext.Msg.OK,
+				width: 650,
+				icon: Ext.Msg.INFO
+			});
+		}
+	},
+
 	onButtonEdit: function () {
-		Phx.vista.ObjetivoPartida.superclass.onButtonEdit.call(this);
+		Phx.vista.ObjetivoPresupuesto.superclass.onButtonEdit.call(this);
 		this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
 	}
 

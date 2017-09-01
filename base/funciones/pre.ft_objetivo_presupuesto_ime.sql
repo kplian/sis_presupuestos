@@ -46,6 +46,7 @@ DECLARE
 
     v_cadena_duplicados			varchar;
     v_record				record;
+    v_tam_cadena			integer;
 
 BEGIN
 
@@ -170,30 +171,33 @@ BEGIN
                 END IF;
             END LOOP;
 
-            /*v_cadena_duplicados = 'Estimado usuario, darle a conocer que el presupuesto ';
-            FOR v_index IN 1..array_length(v_presupuesto_existe,1) LOOP
-            	SELECT tp.codigo, tp.descripcion
-            	INTO v_record
-            	FROM pre.tpresupuesto tp
-            	WHERE tp.id_partida = v_presupuesto_existe[v_index];
-                v_cadena_duplicados = v_cadena_duplicados ||'<b style="color:green;">('||v_record.codigo ||')-'||v_record.descripcion||'</b> ; ';
-            END LOOP;
+            v_tam_cadena = COALESCE(array_length(v_obj_pres_existe,1),0);
 
-            v_cadena_duplicados = v_cadena_duplicados ||'<br> ya se tiene registrado en los siguientes objetivos:<br><br>';
-            FOR v_index IN 1..array_length(v_obj_pres_existe,1) LOOP
+            IF(v_tam_cadena>=1)THEN
+              v_cadena_duplicados = 'Estimado usuario, darle a conocer que el presupuesto ';
+              FOR v_index IN 1..array_length(v_presupuesto_existe,1) LOOP
+                  SELECT tp.tipo_pres, tp.descripcion
+                  INTO v_record
+                  FROM pre.tpresupuesto tp
+                  WHERE tp.id_presupuesto = v_presupuesto_existe[v_index];
+                  v_cadena_duplicados = v_cadena_duplicados ||'<b style="color:green;">('||v_record.tipo_pres ||')-'||v_record.descripcion||'</b> ; ';
+              END LOOP;
 
-            	SELECT tob.codigo, tob.nivel_objetivo, tob.descripcion
-                INTO v_record
-                FROM pre.tobjetivo tob
-                WHERE tob.id_objetivo = v_obj_pres_existe[v_index];
+              v_cadena_duplicados = v_cadena_duplicados ||'<br> ya se tiene registrado en los siguientes objetivos:<br><br>';
+              FOR v_index IN 1..array_length(v_obj_pres_existe,1) LOOP
 
-                v_cadena_duplicados = v_cadena_duplicados||'<b>'||v_index||'.</b>  <b style="color:green;">('||v_record.codigo||' -> Nivel: '||v_record.nivel_objetivo||')</b>-'||v_record.descripcion||'.<br>';
+                  SELECT tob.codigo, tob.nivel_objetivo, tob.descripcion
+                  INTO v_record
+                  FROM pre.tobjetivo tob
+                  WHERE tob.id_objetivo = v_obj_pres_existe[v_index];
 
-            END LOOP;
-            v_cadena_duplicados = v_cadena_duplicados||'<br> Verifique y defina de acuerdo a sus necesidades.';
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Partidas guardadas con Exito.'::varchar);
-            v_resp = pxp.f_agrega_clave(v_resp,'v_mensaje',v_cadena_duplicados::varchar);*/
+                  v_cadena_duplicados = v_cadena_duplicados||'<b>'||v_index||'.</b>  <b style="color:green;">('||v_record.codigo||' -> Nivel: '||v_record.nivel_objetivo||')</b>-'||v_record.descripcion||'.<br>';
 
+              END LOOP;
+              v_cadena_duplicados = v_cadena_duplicados||'<br> Verifique y defina de acuerdo a sus necesidades.';
+              v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Partidas guardadas con Exito.'::varchar);
+              v_resp = pxp.f_agrega_clave(v_resp,'v_mensaje',v_cadena_duplicados::varchar);
+			END IF;
             --Devuelve la respuesta
             return v_resp;
 
