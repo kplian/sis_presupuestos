@@ -97,7 +97,7 @@ BEGIN
                         INNER JOIN pre.tpartida tpar ON tpar.id_partida = obj_part.id_partida
                         INNER JOIN param.tgestion tg ON tg.id_gestion = tpar.id_gestion
                         INNER JOIN pre.tobjetivo tobj ON tobj.id_objetivo = obj_part.id_objetivo
-					    where ';
+					    where obj_part.id_objetivo='||v_parametros.id_objetivo||' AND ;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

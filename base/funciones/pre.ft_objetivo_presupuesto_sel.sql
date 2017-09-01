@@ -94,7 +94,7 @@ BEGIN
 						left join segu.tusuario usu2 on usu2.id_usuario = obj_pres.id_usuario_mod
                         INNER JOIN pre.tpresupuesto tpre ON tpre.id_presupuesto = obj_pres.id_presupuesto
                         INNER JOIN pre.tobjetivo tobj ON tobj.id_objetivo = obj_pres.id_objetivo
-					    where ';
+					    where obj_pres.id_objetivo='||v_parametros.id_objetivo||' AND ';
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
