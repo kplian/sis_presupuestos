@@ -63,9 +63,9 @@ Phx.vista.ObjetivoPresupuesto=Ext.extend(Phx.gridInterfaz,{
                         direction: 'ASC'
                     },
                     totalProperty: 'total',
-                    fields: ['id_presupuesto', 'tipo_pres', 'descripcion'],
+                    fields: ['id_presupuesto', 'tipo_pres', 'descripcion', 'desc_tcc', 'nombre_uo','codigo_tcc', 'descripcion_tcc'],
                     remoteSort: true,
-                    baseParams: {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
+                    baseParams: {par_filtro: 'pre.tipo_pres#pre.descripcion#codigo_tcc', tipo_interfaz:'PresupuestoInicio'}
                 }),
                 valueField: 'id_presupuesto',
                 displayField: 'descripcion',
@@ -74,8 +74,8 @@ Phx.vista.ObjetivoPresupuesto=Ext.extend(Phx.gridInterfaz,{
                     '<tpl for=".">',
                     '<div class="x-combo-list-item">',
                     '<div class="awesomecombo-item {checked}">',
-                    '<p><b>Tipo: {tipo_pres}</b></p>',
-                    '</div><p><b>Descripción:</b> <span style="color: green;">{descripcion}</span></p>',
+                    '<p><b>Depto: {nombre_uo}</b></p>',
+                    '</div><p><b>Descripción:</b> <span style="color: green;">{desc_tcc}</span></p>',
                     '</div></tpl>'
                 ]),
 
@@ -287,7 +287,7 @@ Phx.vista.ObjetivoPresupuesto=Ext.extend(Phx.gridInterfaz,{
     onButtonNew: function () {
         Phx.vista.ObjetivoPresupuesto.superclass.onButtonNew.call(this);
         //this.Cmp.id_partida.store.baseParams ={id_gestion:this.maestro.id_gestion, sw_transaccional:'movimiento'};
-        this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
+        this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.tipo_pres#pre.descripcion#codigo_tcc', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
     },
 
 	successSave: function (resp) {
@@ -308,7 +308,7 @@ Phx.vista.ObjetivoPresupuesto=Ext.extend(Phx.gridInterfaz,{
 
 	onButtonEdit: function () {
 		Phx.vista.ObjetivoPresupuesto.superclass.onButtonEdit.call(this);
-		this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.id_presupuesto#pre.tipo_pres#pre.descripcion', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
+		this.Cmp.id_presupuesto.store.baseParams = {par_filtro: 'pre.tipo_pres#pre.descripcion#codigo_tcc', id_gestion:this.maestro.id_gestion, tipo_interfaz:'PresupuestoInicio', codigo_tipo_pres: '2'}
 	}
 
 
