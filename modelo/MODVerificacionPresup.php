@@ -24,15 +24,32 @@ class MODVerificacionPresup extends MODbase{
 		$this->setParametro('tabla','tabla','varchar');		
 		$this->setParametro('id','id','int4');
 		
-		//Definicion de la lista del resultado del query
-		$this->captura('id_partida','int4');
-		$this->captura('id_centro_costo','int4');
-		$this->captura('id_moneda','int4');
-		$this->captura('importe','numeric');
-		$this->captura('disponibilidad','varchar');
-		$this->captura('desc_partida','text');
-		$this->captura('desc_cc','text');
-		 
+		$this->captura('id_ver','bigint');
+		$this->captura('control_partida','VARCHAR');
+		$this->captura('id_par','int4');
+		$this->captura('id_agrupador','INTEGER');
+		$this->captura('monto_mo','NUMERIC');		
+		$this->captura('movimiento','VARCHAR');
+		$this->captura('id_presupuesto','INTEGER');
+		$this->captura('tipo_cambio','NUMERIC');
+		$this->captura('monto_mb','NUMERIC');
+		$this->captura('verificacion','VARCHAR');
+		$this->captura('saldo','NUMERIC');		
+		$this->captura('codigo_partida','VARCHAR');
+		$this->captura('nombre_partida','VARCHAR');
+		$this->captura('desc_tipo_presupuesto','VARCHAR');
+		$this->captura('descripcion','VARCHAR');		
+		$this->captura('desc_cp','VARCHAR');
+		$this->captura('codigo_categoria','VARCHAR');
+		$this->captura('codigo_tcc','VARCHAR');
+		$this->captura('desc_tcc','VARCHAR');
+		
+		$this->captura('pre_verificar_categoria','VARCHAR');
+		$this->captura('pre_verificar_tipo_cc','VARCHAR');
+		
+		
+		
+		
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

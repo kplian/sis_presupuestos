@@ -9,8 +9,7 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-	Phx.vista.VerificacionPresup = Ext.extend(Phx.gridInterfaz, {
-		
+Phx.vista.VerificacionPresup = Ext.extend(Phx.gridInterfaz, {
 		constructor: function(config) {
 			this.maestro = config;
 			Phx.vista.VerificacionPresup.superclass.constructor.call(this, config);
@@ -23,126 +22,147 @@ header("content-type: text/javascript; charset=UTF-8");
 					start : 0,
 					limit : this.tam_pag,
 					tabla: this.tabla,
-					id: id
+					id: this.tabla_id
 				}
 			});
 		},
 		
-		Atributos : [
-		 {
-			config : {
-				name : 'id_partida',
-				fieldLabel : 'Partida',
-				gwidth : 200,
-				renderer: function(value, p, record){
-					return String.format('{0}', record.data.desc_partida);
-				},
-				gdisplayField: 'desc_partida'
+		Atributos:[
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_ver'
 			},
-			type : 'ComboBox',
-			/*filters : {
-				pfiltro : 'desc_partida',
-				type : 'string'
-			},*/
-			id_grupo : 1,
-			grid : true,
-			form : false
-		}, {
-			config : {
-				name : 'id_presupuesto',
-				fieldLabel : 'Presupuesto',
-				gwidth : 200,
-				renderer: function(value, p, record){
-					return String.format('{0}', record.data.desc_cc);
-				},
-				gdisplayField: 'desc_cc'
-			},
-			type : 'ComboBox',
-			/*filters : {
-				pfiltro : 'desc_cc',
-				type : 'string'
-			},*/
-			id_grupo : 1,
-			grid : true,
-			form : false
-		},{
-			config : {
-				name : 'importe',
-				fieldLabel : 'Importe',
-				gwidth : 100
-			},
-			type : 'TextField',
-			/*filters : {
-				pfiltro : 'importe',
-				type : 'string'
-			},*/
-			id_grupo : 1,
-			grid : true,
-			form : false
-		},{
-			config : {
-				name : 'id_moneda',
-				fieldLabel : 'Moneda',
-				gwidth : 100,
-				renderer: function(value, p, record){
-					return String.format('{0}', record.data.desc_moneda);
+			type:'Field',
+			form:false 
+		},
+		{
+			config:{
+				name: 'descripcion',
+				fieldLabel: 'Categoria/Presupuesto/Tipo Centro',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 300,
+				maxLength:300,
+				renderer:function (value,p,record){
+						if(record.data.pre_verificar_categoria=='si'){
+							return  String.format('({0}) - {1}', record.data.codigo_categoria, record.data.desc_cp);
+						}
+						else{
+							if(record.data.pre_verificar_tipo_cc=='si'){
+							    return  String.format('({0}) - {1}', record.data.codigo_tcc, record.data.desc_tcc);
+						    }
+						    else{
+						    	return  String.format('{0} ', record.data.desc_tipo_presupuesto);
+						    }
+						
+						}
+						
 				}
 			},
-			type : 'TextField',
-			/*filters : {
-				pfiltro : 'desc_moneda',
-				type : 'string'
-			},*/
-			id_grupo : 1,
-			grid : true,
-			form : false
-		}, {
-			config : {
-				name : 'disponibilidad',
-				fieldLabel : 'Disponibilidad Presup.',
-				allowBlank : true,
-				anchor : '80%',
-				gwidth : 130,
-				maxLength : 10
+				type:'TextField',
+				bottom_filter: true,
+				
+   			    //filters:{pfiltro:'pcc.descripcion',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{
+			config:{
+				name: 'nombre_partida',
+				fieldLabel: 'Partida',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 200,
+				maxLength:300,
+				renderer:function (value,p,record){
+					if(record.data.pre_verificar_tipo_cc=='si' && record.data.control_partida=='no'){
+						return 'No considera partidas ';
+					}
+					else{
+						return  String.format('{0} - {1}', record.data.codigo_partida, value);
+					}
+						
+				}
 			},
-			type : 'TextField',
-			/*filters : {
-				pfiltro : 'disponibilidad',
-				type : 'string'
-			},*/
-			id_grupo : 1,
-			grid : true,
-			form : false
-		}],
+				type:'TextField',
+				bottom_filter: true,
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+	   	
+		
+		{
+			config:{
+				name: 'monto_mb',
+				fieldLabel: 'Monto MB (Necesario)',
+				gwidth: 100,
+				renderer:function (value,p,record){
+						return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+				}
+			},
+				type: 'NumberField',
+				id_grupo: 1,
+				grid: true,
+				form: false
+		},
+		{
+			config:{
+				name: 'verificacion',
+				fieldLabel: 'Disponibilidad',
+				gwidth: 100,
+				renderer:function (value,p,record){
+						if(value == 'true'){
+							return  '<b><font size=2 color="green">SI</font><b>';
+						}
+						else{
+							return '<b><font size=2 color="red">NO</font><b>';
+						}
+						
+						
+					}
+			},
+				type: 'NumberField',
+				id_grupo: 1,
+				grid: true,
+				form: false
+		},
+		{
+			config:{
+				name: 'saldo',
+				fieldLabel: 'Saldo',
+				gwidth: 100,
+				renderer:function (value,p,record){
+					return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						
+				}
+			},
+				type: 'NumberField',
+				id_grupo: 1,
+				grid: true,
+				form: false
+		}
+		
+		
+	    ],
 		title : 'Verificación presupuestaria',
 		ActList : '../../sis_presupuestos/control/VerificacionPresup/verificarPresup',
-		fields : [{
-			name : 'id_partida',
-			type : 'numeric'
-		}, {
-			name : 'id_presupuesto',
-			type : 'numeric'
-		}, {
-			name : 'id_moneda',
-			type : 'numeric'
-		}, {
-			name : 'importe',
-			type : 'numeric'
-		}, {
-			name : 'disponibilidad',
-			type : 'string'
-		}, {
-			name : 'desc_partida',
-			type : 'string'
-		}, {
-			name : 'desc_cc',
-			type : 'string'
-		}, {
-			name : 'desc_moneda',
-			type : 'string'
-		}],
+		fields: [
+		 'id_ver', 'control_partida','id_par',
+          'id_agrupador','importe_debe', 'importe_haber','movimiento',
+          'id_presupuesto','tipo_cambio', 'monto_mb','verificacion', 'saldo',
+          'codigo_partida', 'nombre_partida','desc_tipo_presupuesto', 'descripcion',
+          'desc_cp','codigo_categoria','codigo_tcc','desc_tcc','pre_verificar_categoria','pre_verificar_tipo_cc'
+          
+          
+		
+	    ],
 		sortInfo : {
-			field : 'desc_partida',
+			field : 'id_ver',
 			direction : 'ASC'
 		},
 		bdel : false,
