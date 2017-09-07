@@ -117,12 +117,12 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
 				anchor: '80%',
 				gwidth: 140,
 				mode: 'local',
-				store:['Objetivo Institucional','Objetivo de Gestion']
+				store:['Objetivo Institucional','Objetivo de Gestion', 'Objetivo Específico', 'Operación', 'Actividad']
 			},
 				type:'ComboBox',
 				filters:{pfiltro:'obj.tipo_objetivo',type:'string'},
 				id_grupo:1,
-				filters:{	
+				filters:{
 	       		         type: 'list',
 	       		         pfiltro:'obj.tipo_objetivo',
 	       				 options: ['Objetivo Institucional','Objetivo de Gestion'],	
@@ -340,7 +340,7 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
 				grid:false,
 				form:false
 		},
-		{
+		/*{
 			config: {
 				name: 'id_parametros',
 				fieldLabel: 'id_parametros',
@@ -382,7 +382,7 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
 			filters: {pfiltro: 'movtip.nombre',type: 'string'},
 			grid: false,
 			form: true
-		},
+		},*/
 		
 		{
 			config:{
@@ -569,8 +569,11 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
 	     	
 	     }   
     },
-    
+
+
+
     preparaMenu:function(n){
+		var rec = this.getSelectedData();
         if(n.attributes.tipo_nodo == 'hijo' || n.attributes.tipo_nodo == 'raiz' || n.attributes.id == 'id'){
             this.tbar.items.get('b-new-'+this.idContenedor).enable()
         }
@@ -578,10 +581,38 @@ Phx.vista.Objetivo=Ext.extend(Phx.arbGridInterfaz,{
             this.tbar.items.get('b-new-'+this.idContenedor).disable()
         }
         // llamada funcion clase padre
-            Phx.vista.Objetivo.superclass.preparaMenu.call(this,n);
+		Phx.vista.Objetivo.superclass.preparaMenu.call(this,n);
+
     },
-	
-	}
+
+
+	enableTabPartida:function(){
+		if(this.TabPanelEast.get(0)){
+			this.TabPanelEast.get(0).enable();
+			this.TabPanelEast.setActiveTab(0);
+		}
+	},
+
+	disableTabPartida:function(){
+		if(this.TabPanelEast.get(0)){
+			this.TabPanelEast.get(0).disable();
+		}
+	},
+
+	tabeast:[
+		{
+            url:'../../../sis_presupuestos/vista/objetivo_partida/ObjetivoPartida.php',
+            title:'Partidas',
+            width:'50%',
+            cls:'ObjetivoPartida'
+        },
+        {
+            url:'../../../sis_presupuestos/vista/objetivo_presupuesto/ObjetivoPresupuesto.php',
+            title:'Presupuestos',
+            width:'50%',
+            cls:'ObjetivoPresupuesto'
+        }]
+}
 )
 </script>
 		

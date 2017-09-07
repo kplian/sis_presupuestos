@@ -6,7 +6,7 @@
 *@date 20-07-2016 20:37:41
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
 */
-
+//require_once(dirname(__FILE__).'/../reportes/RpoaXls.php');
 class ACTObjetivo extends ACTbase{    
 			
 	function listarObjetivo(){
@@ -122,6 +122,29 @@ class ACTObjetivo extends ACTbase{
 		$this->res=$this->objFunc->eliminarObjetivo($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+    function ReportePoa(){
+        $this->objFunc = $this->create('MODObjetivo');
+        $this->res = $this->objFunc->ReportePOA($this->objParam);
+        //var_dump( $this->res);exit;
+        //obtener titulo de reporte
+        $titulo = 'Reporte POA';
+        //Genera el nombre del archivo (aleatorio + titulo)
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+
+        $nombreArchivo .= '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+        $this->objParam->addParametro('datos', $this->res->datos);
+        //Instancia la clase de excel
+        $this->objReporteFormato = new RpoaXls($this->objParam);
+        $this->objReporteFormato->generarDatos();
+        $this->objReporteFormato->generarReporte();
+
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
 			
 }
 

@@ -21,23 +21,26 @@ $body$
 
 DECLARE
 
-	v_resp		            varchar;
+	v_resp		            varchar='';
 	v_nombre_funcion        text;
 	v_record 				record;
-	v_cont					integer;
+	v_cont					integer=1;
     v_general				integer=0;
     v_nivel					integer;
     v_id_gestion			integer;
     v_fkey					integer;
+
+    v_record_ids			record;
+    v_cadena_ids			varchar ='';
 BEGIN
 
     v_nombre_funcion = 'pre.f_get_arbol';
 
     /*********************************
- 	#TRANSACCION:  'PRE_AJU_INS'
- 	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin
- 	#FECHA:		13-04-2016 13:21:12
+ 	#TRANSACCION:  'DETALLE DEL ARBOL DE OBJETIVOS'
+ 	#DESCRIPCION:	Devuelve el numero de hijos, nietos, hermanos.
+ 	#AUTOR:		franklin.espinoza
+ 	#FECHA:		13-7-2017 13:21:12
 	***********************************/
 	SELECT g.id_gestion
     INTO v_id_gestion
@@ -50,7 +53,7 @@ BEGIN
        INTO v_cont
        FROM pre.tobjetivo tob
        WHERE tob.id_objetivo_fk = p_id_objetivo;
-
+       v_resp = v_cont::varchar;
     ELSIF(p_transaccion = 'CONT_NIETOS')THEN
     	FOR v_cont IN (SELECT pre.f_get_arbol(tob.id_objetivo, 'CONT_HIJOS')
        				   FROM pre.tobjetivo tob
@@ -58,6 +61,7 @@ BEGIN
         	v_general = v_general + v_cont;
         END LOOP;
         v_cont = v_general;
+        v_resp = v_cont::varchar;
     ELSIF(p_transaccion = 'CONT_HERMANOS')THEN
 
      	  v_nivel = pre.f_get_arbol(p_id_objetivo, 'NIVEL')::INTEGER;
@@ -75,17 +79,28 @@ BEGIN
 
               v_cont =  pre.f_get_arbol(v_fkey, 'CONT_HIJOS')::integer;
           END IF;
+          v_resp = v_cont::varchar;
     ELSIF(p_transaccion = 'NIVEL')THEN
     	SELECT tob.nivel_objetivo
         INTO v_nivel
         FROM pre.tobjetivo tob
         WHERE tob.id_objetivo = p_id_objetivo;
         v_cont = v_nivel;
+        v_resp = v_cont::varchar;
+    ELSIF(p_transaccion = 'IDS_HIJOS')THEN
+        IF(pre.f_get_arbol(p_id_objetivo, 'CONT_HIJOS') = '0')THEN
+              v_cont =  p_id_objetivo;
+    	END IF;
+    	FOR v_record_ids IN (SELECT tob.id_objetivo
+        					FROM pre.tobjetivo tob
+        					WHERE tob.id_objetivo_fk = p_id_objetivo)LOOP
+
+        	RAISE NOTICE 'id_objetivo: %',v_record_ids.id_objetivo;
+            v_resp = v_resp || v_record_ids.id_objetivo||','|| pre.f_get_arbol(v_record_ids.id_objetivo, 'IDS_HIJOS');
+        END LOOP;
     END IF;
 
-
-
-	v_resp = v_cont::varchar;
+	--v_resp = v_cont::varchar;
 
     RETURN v_resp;
 

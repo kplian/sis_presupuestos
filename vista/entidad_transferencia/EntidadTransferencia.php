@@ -98,7 +98,7 @@ Phx.vista.EntidadTransferencia=Ext.extend(Phx.gridInterfaz,{
             config:{
                 name: 'nombre',
                 fieldLabel: 'Nombre',
-                allowBlank: falses,
+                allowBlank: false,
                 anchor: '80%',
                 gwidth: 300,
                 maxLength:256
