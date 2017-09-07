@@ -35,6 +35,7 @@ DECLARE
     v_registros				record;
     v_registros_mem			record;
     v_importe				numeric;
+    v_estado		        varchar;
 			    
 BEGIN
 
@@ -49,11 +50,11 @@ BEGIN
  	#AUTOR:		admin	
  	#FECHA:		01-03-2016 14:23:08
 	***********************************/
-
+	
 	if(p_transaccion='PRE_MDT_MOD')then
 
 		begin
-			
+			--raise exception 'hola: %',v_parametros;
             select 
               md.id_memoria_det,
               md.importe
@@ -64,11 +65,28 @@ BEGIN
             
             select 
               mc.id_memoria_calculo,
-              mc.importe_total
+              mc.importe_total,
+              mc.id_presupuesto
             into
               v_registros_mem  
             from pre.tmemoria_calculo mc 
             where mc.id_memoria_calculo = v_parametros.id_memoria_calculo;
+            
+            
+            select
+              pre.estado
+            into
+              v_estado
+            from pre.tpresupuesto pre
+            inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
+            inner join param.tgestion ges on ges.id_gestion = cc.id_gestion
+            where pre.id_presupuesto = v_registros_mem.id_presupuesto;
+
+            --raise exception 'v_gestion %', v_gestion;
+
+            IF v_estado = 'aprobado' THEN
+               raise exception 'No puede agregar conceptos a la memoria de calculo de un presupuesto aprobado';
+            END IF;
             
            
             
