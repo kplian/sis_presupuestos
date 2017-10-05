@@ -12,7 +12,7 @@ header("content-type: text/javascript; charset=UTF-8");
 Phx.vista.ConceptoIngasDir = {
 	require:'../../../sis_parametros/vista/concepto_ingas/ConceptoIngas.php',
 	requireclase:'Phx.vista.ConceptoIngas',
-	title:'Concepto de Ingreso/Gasto',
+	title:'Concepto Ingas',
 	nombreVista: 'concetoIngasDir',
 	bdel: true,
 	bedit: true,
