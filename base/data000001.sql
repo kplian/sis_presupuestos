@@ -431,4 +431,9 @@ VALUES
 /*******************************************F-DAT-RAC-PRE-0-29/06/2017***********************************************/
 
 
+/***********************************I-DAT-FEA-PARAM-1-05/10/2017*****************************************/
 
+select pxp.f_insert_tgui ('<i class="fa fa-search fa-2x"></i>Consulta Concepto Ingas', 'Consulta Concepto Ingas', 'CON_INGAS', 'si', 14, 'sis_presupuestos/vista/concepto_ingas/ConsultaConceptoIngas.php', 3, '', 'ConsultaConceptoIngas', 'PRE');
+select pxp.f_insert_testructura_gui ('CON_INGAS', 'REPPRE');
+
+/***********************************F-DAT-FEA-PARAM-1-05/10/2017*****************************************/
