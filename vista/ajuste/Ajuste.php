@@ -16,7 +16,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Ajuste.superclass.constructor.call(this,config);
-		this.load({params:{start:0, limit:this.tam_pag}});
+		//this.load({params:{start:0, limit:this.tam_pag}});
 		
 		
 		this.addButton('ant_estado',{
@@ -539,19 +539,21 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
   
     
     enableTabDecrementos:function(){
-     	if(this.TabPanelEast.get(0)){
+     	if(this.TabPanelEast && this.TabPanelEast.get(0)){
      		      this.TabPanelEast.get(0).enable();
+			      this.TabPanelEast.setActiveTab(0);
 		        }
      },
      
     enableTabIncrementos:function(){
-     	if(this.TabPanelEast.get(1)){
+     	if(this.TabPanelEast && this.TabPanelEast.get(1)){
      		      this.TabPanelEast.get(1).enable();
+			      this.TabPanelEast.setActiveTab(1);
 		        }
      }, 
      
     disableTabDecrementos:function(){
-     	if(this.TabPanelEast.get(0)){
+     	if(this.TabPanelEast && this.TabPanelEast.get(0)){
      		      this.TabPanelEast.get(0).disable();
      		      this.TabPanelEast.get(1).enable();	
 		          this.TabPanelEast.setActiveTab(1)
@@ -560,7 +562,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
     },
     
     disableTabIncrementos:function(){
-    	if(this.TabPanelEast.get(1)){
+    	if(this.TabPanelEast && this.TabPanelEast.get(1)){
      		      this.TabPanelEast.get(1).disable();	
      		      this.TabPanelEast.get(0).enable();
 		          this.TabPanelEast.setActiveTab(0)
@@ -588,5 +590,4 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 	
 })
 </script>
-		
 		

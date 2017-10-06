@@ -92,7 +92,7 @@ BEGIN
                  and pp.estado_reg = 'activo';
                  
                  
-           raise exception 'No tiene ningun monto formulado % - %, .....%, %', v_importe_total, v_importe_aprobado_total, v_registros.id_presupuesto, p_id_proceso_wf ;       
+         
           
           IF v_registros.sw_oficial = 'si' THEN
                IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) THEN 
