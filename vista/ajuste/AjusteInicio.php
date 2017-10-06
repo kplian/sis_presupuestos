@@ -34,15 +34,22 @@ Phx.vista.AjusteInicio = {
 	constructor: function(config) {
 	    Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
         this.init();
-        this.finCons = true; 
+       
+        
+        this.store.baseParams={tipo_interfaz:this.nombreVista, estado : 'borrador'};
+        //this.store.baseParams.pes_estado = 'borrador';
+    	this.load({params:{start:0, limit:this.tam_pag}});
+    	
+    	 this.finCons = true;
         
    },
    validarFiltros:function(){
+      
         return true;
    },
    
    getParametrosFiltro: function(){
-    	
+       
         this.store.baseParams.estado = this.swEstado;
         this.store.baseParams.tipo_interfaz = this.nombreVista;
      
@@ -50,7 +57,7 @@ Phx.vista.AjusteInicio = {
     },
    
     capturaFiltros:function(combo, record, index){
-		
+        
 		this.desbloquearOrdenamientoGrid();
         this.getParametrosFiltro();
         this.load( { params:{start:0, limit:50 } });
@@ -60,14 +67,19 @@ Phx.vista.AjusteInicio = {
 	},
 	
 	actualizarSegunTab: function(name, indice){
-		this.swEstado = name;
-    	if(this.validarFiltros()){
-            this.getParametrosFiltro();
-            Phx.vista.AjusteInicio.superclass.onButtonAct.call(this);
-        }
+        this.swEstado = name;
+		if(this.finCons){
+	    	if(this.validarFiltros()){            
+	            this.getParametrosFiltro();
+	            this.load({params:{start:0, limit:this.tam_pag}});
+	         }
+	   }
     },
+    
+    
 	
 	onButtonAct:function(){
+       
         if(!this.validarFiltros()){
             alert('Especifique los filtros antes')
          }
@@ -80,7 +92,7 @@ Phx.vista.AjusteInicio = {
    preparaMenu:function(n){
           var data = this.getSelectedData();
           var tb =this.tbar;
-          
+       
           Phx.vista.AjusteInicio.superclass.preparaMenu.call(this,n);
           
           if (data['estado']== 'borrador'){
