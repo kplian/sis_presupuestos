@@ -37,12 +37,10 @@ Phx.vista.AjusteInicio = {
        
         
         this.store.baseParams={tipo_interfaz:this.nombreVista, estado : 'borrador'};
-        //this.store.baseParams.pes_estado = 'borrador';
-    	this.load({params:{start:0, limit:this.tam_pag}});
-    	
+        this.load({params:{start:0, limit:this.tam_pag}}); 
     	this.iniciarEventos();
-    	
     	this.finCons = true;
+
         
    },
    validarFiltros:function(){

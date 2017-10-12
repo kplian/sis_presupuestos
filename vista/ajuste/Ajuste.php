@@ -685,5 +685,4 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		  
 		  ],
 	
-})
-</script>
+});
