@@ -437,3 +437,16 @@ select pxp.f_insert_tgui ('<i class="fa fa-search fa-2x"></i>Consulta Concepto I
 select pxp.f_insert_testructura_gui ('CON_INGAS', 'REPPRE');
 
 /***********************************F-DAT-FEA-PARAM-1-05/10/2017*****************************************/
+
+
+
+/***********************************I-DAT-RAC-PARAM-1-11/10/2017*****************************************/
+
+
+INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
+VALUES 
+  (E'pre_codigo_proc_macajsutable', E'TES-PD,PU,CINTPD,CNAPD', E'codigo de preocesos macro que pueden ajustarce desde la interface de  modificaciones presupuestarias');
+
+
+/***********************************F-DAT-RAC-PARAM-1-11/10/2017*****************************************/
+

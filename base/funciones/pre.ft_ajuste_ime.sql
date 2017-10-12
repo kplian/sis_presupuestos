@@ -12,15 +12,16 @@ $body$
  SISTEMA:		Sistema de Presupuesto
  FUNCION: 		pre.ft_ajuste_ime
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tajuste'
- AUTOR: 		 (admin)
+ AUTOR: 		RAC (KPLIAN)
  FECHA:	        13-04-2016 13:21:12
  COMENTARIOS:	
 ***************************************************************************
- HISTORIAL DE MODIFICACIONES:
+HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+   	
+ ISSUE            FECHA:		      AUTOR       DESCRIPCION
+ 0                10/10/2017        RAC        Consirerar inserciones de ajustes de comprometido en PRE_AJU_INS
+ 0                12/10/2017        RAC        validar inc y rev de comproemtido al cambiar de estado en  PRE_SIGAJT_IME
 ***************************************************************************/
 
 DECLARE
@@ -60,16 +61,19 @@ DECLARE
     v_total_incrementos				numeric;
     v_total_decrementos				numeric;
     va_id_partida					integer[];
+    v_id_moneda						integer;
 			    
 BEGIN
 
     v_nombre_funcion = 'pre.ft_ajuste_ime';
     v_parametros = pxp.f_get_record(p_tabla);
+    
+   
 
 	/*********************************    
  	#TRANSACCION:  'PRE_AJU_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		RAC	
  	#FECHA:		13-04-2016 13:21:12
 	***********************************/
 
@@ -115,6 +119,20 @@ BEGIN
          IF v_codigo_tipo_proceso is NULL THEN
            raise exception 'No existe un proceso inicial para el proceso macro indicado (Revise la configuración)';
          END IF;
+         
+         --recuperamos la moenda del tramite en partida ejecucion
+         IF  v_parametros.tipo_ajuste in ('inc_comprometido','rev_comprometido') and  v_parametros.nro_tramite_aux is not null and v_parametros.nro_tramite_aux != ''THEN
+            select               
+               pe.id_moneda
+            into
+              v_id_moneda
+            from pre.tpartida_ejecucion pe
+            where pe.nro_tramite = v_parametros.nro_tramite_aux
+            limit 1 offset 0;
+         ELSE   
+            v_id_moneda = param.f_get_moneda_base();
+         END IF;
+         
           
          -- Sentencia de la insercion
         	insert into pre.tajuste(
@@ -129,7 +147,8 @@ BEGIN
               fecha,
               id_gestion,
               importe_ajuste,
-              movimiento
+              movimiento,
+              id_moneda
           	) values(              
               'activo',
               'borrador',
@@ -142,12 +161,11 @@ BEGIN
               v_parametros.fecha,
               v_id_gestion,
               v_parametros.importe_ajuste,
-              v_parametros.movimiento
+              v_parametros.movimiento,
+              v_id_moneda
 		  )RETURNING id_ajuste into v_id_ajuste;
             
-            
-            
-            -- iniciar el tramite en el sistema de WF
+        -- iniciar el tramite en el sistema de WF
        SELECT 
              ps_num_tramite ,
              ps_id_proceso_wf ,
@@ -168,7 +186,8 @@ BEGIN
              NULL,
              NULL,
              'Inicio de  '|| v_parametros.tipo_ajuste,
-             '');
+             '',
+             v_parametros.nro_tramite_aux);
         
           -- UPDATE DATOS wf
         
@@ -210,15 +229,29 @@ BEGIN
               a.estado,
               a.movimiento,
               a.tipo_ajuste,
-              a.id_gestion
+              a.id_gestion,
+              nro_tramite
             into
              v_registros_proc
             from pre.tajuste  a
             where  a.id_ajuste = v_parametros.id_ajuste;
             
             IF v_registros_proc.estado != 'borrador' THEN
-                 raise exception 'Solo puede editar ajsute en borrador';  
+                 raise exception 'Solo puede editar ajuste  en borrador';  
             END IF;
+            
+            
+            --no peudes cambiar el tipo de ajuste
+            IF v_registros_proc.tipo_ajuste !=  v_parametros.tipo_ajuste THEN 
+              raise exception 'No peude cambiar el tipo de ajuste';            
+            END IF;
+            
+            IF v_registros_proc.tipo_ajuste in('inc_comprometido','rev_comprometido') THEN 
+               IF v_registros_proc.nro_tramite !=  v_parametros.nro_tramite_aux THEN 
+                    raise exception 'No peude cambiar el Nro de trámite';            
+               END IF;         
+            END IF;
+            
             
             --El tipo de ajuste y el movieminto solo pueden editarse si que no existe detalle
             
@@ -282,7 +315,6 @@ BEGIN
 	elsif(p_transaccion='PRE_AJU_ELI')then
 
 		begin
-        
         
             select
               a.id_ajuste,
@@ -447,14 +479,37 @@ BEGIN
                      IF v_registros_proc.importe_ajuste !=  (v_total_decrementos*-1) THEN
                         raise exception 'los decrementos no igualan con el monto a ajustar';
                      END IF;
-                     
-                     -- validar que no se tengan incrementos
-                     
+                                          
+                     -- validar que no se tengan incrementos                     
                      IF v_total_incrementos != 0 THEN
                         raise exception 'elimine los incrementos registrados';
                      END IF;
-                 
-                 
+                     
+                     
+                 ELSEIF v_registros_proc.tipo_ajuste = 'rev_comprometido'   THEN 
+                 -- si es decremento
+                    -- validar que se tenga un monto a decrementar y cero a incrementar
+                     IF v_registros_proc.importe_ajuste !=  (v_total_decrementos*-1) THEN
+                        raise exception 'los decrementos no igualan con el monto a ajustar';
+                     END IF;
+                                          
+                     -- validar que no se tengan incrementos                     
+                     IF v_total_incrementos != 0 THEN
+                        raise exception 'elimine los incrementos registrados';
+                     END IF;
+                     
+                  ELSEIF v_registros_proc.tipo_ajuste = 'inc_comprometido'   THEN
+                     -- si es incremento
+             	    -- validar que se tenga un monto de incremento y ningun decremento
+                     IF v_registros_proc.importe_ajuste !=  v_total_incrementos THEN
+                        raise exception 'los incrementos no igualan con el monto a ajustar';
+                     END IF;
+                     
+                     -- validar que no se tengan decrementos
+                     
+                     IF v_total_decrementos != 0 THEN
+                        raise exception 'elimine los decrementos registrados';
+                     END IF;        
                  
                  ELSE
                     raise exception 'no se reconoce el tipo de ajuste %', v_registros_proc.tipo_ajuste;

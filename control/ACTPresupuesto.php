@@ -94,6 +94,19 @@ class ACTPresupuesto extends ACTbase{
 	    	$this->objParam->addFiltro("sw_consolidado = ''".$this->objParam->getParametro('sw_consolidado')."''");	
 		}
 		
+		if($this->objParam->getParametro('tipo_ajuste')!='' && 
+		   $this->objParam->getParametro('nro_tramite')!='' && 
+		   $this->objParam->getParametro('id_gestion')!=''){
+	    	  	
+	    	  $this->objParam->addFiltro("id_presupuesto in (select x.id_presupuesto from pre.vpartida_ejecucion_check x where   x.id_gestion =  ".$this->objParam->getParametro('id_gestion')." and  x.nro_tramite = ''".$this->objParam->getParametro('nro_tramite')."'')");	
+	    	
+	    	  
+		}
+		
+		
+		
+		
+		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam, $this);
 			$this->res = $this->objReporte->generarReporteListado('MODPresupuesto','listarPresupuestoCmb');

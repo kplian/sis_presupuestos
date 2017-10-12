@@ -55,6 +55,17 @@ class ACTPartida extends ACTbase{
 	    	$this->objParam->addFiltro("par.id_partida in (select id_partida from pre.tpresup_partida where id_presupuesto = " . $this->objParam->getParametro('id_presupuesto') . ")");	
 		}
 		
+		if($this->objParam->getParametro('tipo_ajuste')!='' && 
+		   $this->objParam->getParametro('nro_tramite')!='' && 
+		   $this->objParam->getParametro('id_gestion')!='' &&
+		   $this->objParam->getParametro('id_presupuesto_ajuste')!=''
+		   ){
+	    	  	
+	    	  $this->objParam->addFiltro("id_partida in (select x.id_partida from pre.vpe_check_partida x where x.id_presupuesto = ".$this->objParam->getParametro('id_presupuesto_ajuste')." and x.id_gestion =  ".$this->objParam->getParametro('id_gestion')." and  x.nro_tramite = ''".$this->objParam->getParametro('nro_tramite')."'')");	
+	     }
+		
+		
+		
 		/////////////////////
 		//Llamada al Modelo	
 		/////////////////////	

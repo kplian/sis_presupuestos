@@ -38,6 +38,19 @@ Phx.vista.AjusteDetInc = {
    onReloadPage:function(m){
 		this.maestro=m;
         this.store.baseParams={id_ajuste: this.maestro.id_ajuste, tipo_ajuste: 'incremento'};
+        
+        if(this.maestro.tipo_ajuste == 'inc_comprometido'){
+        	this.Cmp.id_presupuesto.store.baseParams.nro_tramite = this.maestro.nro_tramite;
+        	this.Cmp.id_presupuesto.store.baseParams.tipo_ajuste = this.maestro.tipo_ajuste;
+        	this.Cmp.id_partida.store.baseParams.nro_tramite = this.maestro.nro_tramite;
+        	this.Cmp.id_partida.store.baseParams.tipo_ajuste = this.maestro.tipo_ajuste;
+        }
+        else{
+        	delete this.Cmp.id_presupuesto.store.baseParams.nro_tramite;
+        	delete this.Cmp.id_presupuesto.store.baseParams.tipo_ajuste;
+        	delete this.Cmp.id_partida.store.baseParams.nro_tramite;
+        	delete this.Cmp.id_partida.store.baseParams.tipo_ajuste;
+        }
        
         
         this.Cmp.id_presupuesto.store.baseParams.id_gestion = this.maestro.id_gestion;
@@ -52,24 +65,8 @@ Phx.vista.AjusteDetInc = {
          this.load({params:{start:0, limit:50}});
    },
 
-    iniciarEventos : function() {
-
-        this.Cmp.id_presupuesto.on('select', function (c, r, i) {
-
-            //this.Cmp.id_partida.store.setBaseParam('id_presupuesto',r.data.id_presupuesto);
-            //this.Cmp.id_partida.modificado = true;
-            //this.Cmp.id_partida.reset();
-
-
-        }, this);
-    },
-    onButtonEdit : function () {
-        var selected = this.sm.getSelected().data;
-        //Phx.vista.AjusteDet.superclass.onButtonEdit.call(this);
-        //this.Cmp.id_partida.store.setBaseParam('id_presupuesto',selected.id_presupuesto);
-        //this.Cmp.id_partida.enable();
-        //this.Cmp.id_partida.modificado = true;
-    },
+   
+    
    
    loadValoresIniciales:function(){
         Phx.vista.AjusteDetInc.superclass.loadValoresIniciales.call(this);

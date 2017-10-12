@@ -63,6 +63,8 @@ BEGIN
              ELSE
                raise exception 'Tipo de interface no reconocida %', v_parametros.tipo_interfaz;
              END IF;
+             
+             
             
             --  Sentencia de la consulta
 			v_consulta:='select
@@ -85,19 +87,24 @@ BEGIN
                             aju.fecha,
                             aju.id_gestion	,
                             aju.importe_ajuste,
-                            aju.movimiento
+                            aju.movimiento,
+                            aju.nro_tramite as nro_tramite_aux,
+                            mon.codigo as desc_moneda,
+                            mon.id_moneda
 						from pre.tajuste aju
 						inner join segu.tusuario usu1 on usu1.id_usuario = aju.id_usuario_reg
                         inner join wf.testado_wf ew on ew.id_estado_wf = aju.id_estado_wf
+                        inner join param.tmoneda mon on mon.id_moneda = aju.id_moneda
 						left join segu.tusuario usu2 on usu2.id_usuario = aju.id_usuario_mod
 				        where  '||v_filtro;
                         
-                     
+                   
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
+            
+            raise notice 'consulta: %  ...... %',v_consulta,v_parametros.filtro ;      
             
 			--Devuelve la respuesta
 			return v_consulta;
@@ -137,9 +144,10 @@ BEGIN
             --Sentencia de la consulta de conteo de registros
 			v_consulta:='select count(id_ajuste)
 					    from pre.tajuste aju
-						inner join segu.tusuario usu1 on usu1.id_usuario = aju.id_usuario_reg
-                        inner join wf.testado_wf ew on ew.id_estado_wf = aju.id_estado_wf
-						left join segu.tusuario usu2 on usu2.id_usuario = aju.id_usuario_mod
+                          inner join segu.tusuario usu1 on usu1.id_usuario = aju.id_usuario_reg
+                          inner join wf.testado_wf ew on ew.id_estado_wf = aju.id_estado_wf
+                          inner join param.tmoneda mon on mon.id_moneda = aju.id_moneda
+                          left join segu.tusuario usu2 on usu2.id_usuario = aju.id_usuario_mod
 				        where  '||v_filtro;
 			
 			--Definicion de la respuesta		    

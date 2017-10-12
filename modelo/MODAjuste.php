@@ -43,8 +43,9 @@ class MODAjuste extends MODbase{
 		$this->captura('id_gestion','int4');
 		$this->captura('importe_ajuste','numeric');
 		$this->captura('movimiento','varchar');
-		
-		
+		$this->captura('nro_tramite_aux','varchar');
+		$this->captura('desc_moneda','varchar');
+		$this->captura('id_moneda','int4');
 		
 		
 		
@@ -68,9 +69,10 @@ class MODAjuste extends MODbase{
 		$this->setParametro('fecha','fecha','date');
 		$this->setParametro('importe_ajuste','importe_ajuste','numeric');
 		$this->setParametro('movimiento','movimiento','varchar');
+		$this->setParametro('nro_tramite_aux','nro_tramite_aux','varchar');
 		
 		
-
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -92,9 +94,8 @@ class MODAjuste extends MODbase{
 		$this->setParametro('fecha','fecha','date');
 		$this->setParametro('importe_ajuste','importe_ajuste','numeric');
 		$this->setParametro('movimiento','movimiento','varchar');
+		$this->setParametro('nro_tramite_aux','nro_tramite_aux','varchar');
 		
-		
-
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
