@@ -6,19 +6,15 @@
 *@date 13-04-2016 13:21:12
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
-
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 
-	constructor:function(config){
+	constructor:function(config){		
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Ajuste.superclass.constructor.call(this,config);
-		//this.load({params:{start:0, limit:this.tam_pag}});
-		
-		
 		this.addButton('ant_estado',{
          	  grupo:[4],
               argument: {estado: 'anterior'},
@@ -60,8 +56,6 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                     tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>',
 
          });
-         
-         
          
          
 	},
@@ -667,8 +661,6 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 	 },
 	
 	
-	
-	
 	tabeast:[
 	      {
     		  url:'../../../sis_presupuestos/vista/ajuste_det/AjusteDetDec.php',
@@ -686,3 +678,4 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		  ],
 	
 });
+</script>

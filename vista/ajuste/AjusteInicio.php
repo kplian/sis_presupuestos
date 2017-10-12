@@ -32,38 +32,27 @@ Phx.vista.AjusteInicio = {
      bexcelGroups: [0,1,2],
 	
 	constructor: function(config) {
-	    Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
-        this.init();
-       
-        
+		Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
+        this.init();        
         this.store.baseParams={tipo_interfaz:this.nombreVista, estado : 'borrador'};
         this.load({params:{start:0, limit:this.tam_pag}}); 
     	this.iniciarEventos();
     	this.finCons = true;
 
-        
    },
-   validarFiltros:function(){
-      
+   validarFiltros:function(){      
         return true;
    },
    
-   getParametrosFiltro: function(){
-       
+   getParametrosFiltro: function(){       
         this.store.baseParams.estado = this.swEstado;
         this.store.baseParams.tipo_interfaz = this.nombreVista;
-     
-  
-    },
+   },
    
-    capturaFiltros:function(combo, record, index){
-        
+   capturaFiltros:function(combo, record, index){
 		this.desbloquearOrdenamientoGrid();
         this.getParametrosFiltro();
         this.load( { params:{start:0, limit:50 } });
-		
-			
-			
 	},
 	
 	actualizarSegunTab: function(name, indice){
@@ -76,10 +65,7 @@ Phx.vista.AjusteInicio = {
 	   }
     },
     
-    
-	
-	onButtonAct:function(){
-       
+    onButtonAct:function(){       
         if(!this.validarFiltros()){
             alert('Especifique los filtros antes')
          }
@@ -105,13 +91,9 @@ Phx.vista.AjusteInicio = {
              this.getBoton('del').disable();
              this.getBoton('new').disable();
           }
-          
-          
-          
           this.getBoton('btnObs').enable();    
           this.getBoton('btnChequeoDocumentosWf').enable(); 
           this.getBoton('diagrama_gantt').enable();
-          
           
           if (data['tipo_ajuste'] == 'incremento' || data['tipo_ajuste'] == 'inc_comprometido'){ 
           	this.disableTabDecrementos();
@@ -134,14 +116,9 @@ Phx.vista.AjusteInicio = {
           	 this.getBoton('chkpresupuesto').disable();
           }
           
-         
-          
-          
    },
     
     iniciarEventos:function(){
-        
-	      
 	        //inicio de eventos 
 	        this.Cmp.fecha.on('change',function(f){
 	        	this.Cmp.nro_tramite_aux.reset();
@@ -163,8 +140,6 @@ Phx.vista.AjusteInicio = {
       
     },
      onButtonEdit:function(){
-     	
-     	
        var rec = this.getSelectedData();
        Phx.vista.AjusteInicio.superclass.onButtonEdit.call(this);
        
@@ -174,12 +149,9 @@ Phx.vista.AjusteInicio = {
        else{
            this.ocultarComponente(this.Cmp.nro_tramite_aux);
        }
-       
        this.Cmp.nro_tramite_aux.disable();
        this.Cmp.tipo_ajuste.disable();
        this.Cmp.fecha.disable();
-       
-       
     },
      onButtonNew:function(){
 	       //abrir formulario de solicitud
@@ -190,11 +162,6 @@ Phx.vista.AjusteInicio = {
          this.Cmp.fecha.enable();
 	     this.mostrarComponente(this.Cmp.nro_tramite_aux);
 		   
-	}
-    
-    
-    
-    
-    
+	}    
 };
 </script>
