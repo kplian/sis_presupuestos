@@ -445,7 +445,7 @@ select pxp.f_insert_testructura_gui ('CON_INGAS', 'REPPRE');
 
 INSERT INTO pxp.variable_global ("variable", "valor", "descripcion")
 VALUES 
-  (E'pre_codigo_proc_macajsutable', E'TES-PD,PU,CINTPD,CNAPD', E'codigo de preocesos macro que pueden ajustarce desde la interface de  modificaciones presupuestarias');
+  (E'pre_codigo_proc_macajsutable', E'''TES-PD'',''PU'',''CINTPD'',''CNAPD''', E'codigo de preocesos macro que pueden ajustarce desde la interface de  modificaciones presupuestarias');
 
 
 /***********************************F-DAT-RAC-PARAM-1-11/10/2017*****************************************/
