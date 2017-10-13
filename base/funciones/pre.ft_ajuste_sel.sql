@@ -55,7 +55,11 @@ BEGIN
                 END IF;
             
              ELSEIF  v_parametros.tipo_interfaz = 'AjusteVb' THEN
-                
+                 IF p_administrador !=1 THEN
+                   v_filtro = '(ew.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  and  aju.estado not in (''borrador'', ''aprobado'') and ';
+                ELSE
+                    v_filtro = 'aju.estado not in (''borrador'', ''aprobado'') and ';
+                END IF;
                 
              ELSEIF  v_parametros.tipo_interfaz = 'AjusteConsulta' THEN   
                 --RAC 13/10/2017,  esta interface no tendra filtros
