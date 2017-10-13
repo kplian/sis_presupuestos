@@ -53,9 +53,7 @@ Phx.vista.AjusteVb = {
           	  this.disableTabIncrementos();
             }
             else{
-            	
-            	this.enableTabIncrementos();
-            	this.enableTabDecrementos();
+            	this.enableAllTab();
             }
           }
           

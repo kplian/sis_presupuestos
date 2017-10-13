@@ -22,14 +22,13 @@ Phx.vista.AjusteDetInc = {
 	nombreVista: 'AjusteDetInc',
 		
 	constructor: function(config) {
-	    Phx.vista.AjusteDetInc.superclass.constructor.call(this,config);
+		Phx.vista.AjusteDetInc.superclass.constructor.call(this,config);
         this.init();
         var dataPadre = Phx.CP.getPagina(this.idContenedorPadre).getSelectedData()
         if(dataPadre){
             this.onEnablePanel(this, dataPadre);
         }
-        else
-        {
+        else{
            this.bloquearMenus();
         }
        

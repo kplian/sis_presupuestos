@@ -608,7 +608,19 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
          }
     },
   
+    enableAllTab: function(){
+    	if(this.TabPanelEast && this.TabPanelEast.get(0) && this.TabPanelEast.get(1)){
+    	  this.TabPanelEast.get(0).enable();
+    	  this.TabPanelEast.get(1).enable();
+    	 }
+    },
     
+    disableAllTab: function(){
+    	if(this.TabPanelEast && this.TabPanelEast.get(0) && this.TabPanelEast.get(1)){
+    	   this.TabPanelEast.get(0).disable();
+    	    this.TabPanelEast.get(1).disable();
+    	 }
+    },
     enableTabDecrementos:function(){
      	if(this.TabPanelEast && this.TabPanelEast.get(0)){
      		      this.TabPanelEast.get(0).enable();
