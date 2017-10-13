@@ -450,3 +450,13 @@ VALUES
 
 /***********************************F-DAT-RAC-PARAM-1-11/10/2017*****************************************/
 
+
+/***********************************I-DAT-RAC-PARAM-1-13/10/2017*****************************************/
+
+select pxp.f_insert_tgui ('Consulta de Procesos de Ajustes', 'Consulta de Ajustes', 'CONAJU', 'si', 3, 'sis_presupuestos/vista/ajuste/AjusteConsulta.php', 4, '', 'AjusteConsulta', 'PRE');
+select pxp.f_insert_testructura_gui ('CONAJU', 'AJUSTE');
+
+/***********************************F-DAT-RAC-PARAM-1-13/10/2017*****************************************/
+
+
+
