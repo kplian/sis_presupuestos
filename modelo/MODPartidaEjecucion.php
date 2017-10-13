@@ -56,6 +56,29 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+
+   function listarTramitesAjustables(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_LISTRAPE_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		
+		$this->setParametro('fecha_ajuste','fecha_ajuste','date');
+		$this->captura('id_gestion','int4');
+        $this->captura('nro_tramite','varchar');
+        $this->captura('codigo','varchar');
+		$this->captura('id_moneda','int4');
+		$this->captura('desc_moneda','varchar');
+		
+		
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 			
 	function insertarPartidaEjecucion(){
 		//Definicion de variables para ejecucion del procedimiento

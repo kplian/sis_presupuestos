@@ -48,6 +48,25 @@ class ACTPartidaEjecucion extends ACTbase{
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	
+	function listarTramitesAjustables(){
+		$this->objParam->defecto('ordenacion','nro_tramite');
+		$this->objParam->defecto('dir_ordenacion','asc');
+		
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','listarTramitesAjustables');
+		} else{
+			$this->objFunc=$this->create('MODPartidaEjecucion');
+			
+			$this->res=$this->objFunc->listarTramitesAjustables($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+	
+	
+	
+	
 				
 	function insertarPartidaEjecucion(){
 		$this->objFunc=$this->create('MODPartidaEjecucion');	
