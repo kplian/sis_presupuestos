@@ -45,17 +45,23 @@ Phx.vista.AjusteVb = {
           this.getBoton('diagrama_gantt').enable();
           
           
-          if (data['tipo_ajuste'] == 'incremento'){ 
+          if (data['tipo_ajuste'] == 'incremento' || data['tipo_ajuste'] == 'inc_comprometido'){ 
           	this.disableTabDecrementos();
           }
           else {
-          	if (data['tipo_ajuste'] == 'decremento'){ 
+          	if (data['tipo_ajuste'] == 'decremento' || data['tipo_ajuste'] == 'rev_comprometido'){ 
           	  this.disableTabIncrementos();
             }
             else{
-            	this.enableTabIncrementos();
-            	this.enableTabDecrementos();
+            	this.enableAllTab();
             }
+          }
+          
+          if (data['tipo_ajuste'] == 'rev_comprometido' || data['tipo_ajuste'] == 'inc_comprometido'){
+          	 this.getBoton('chkpresupuesto').enable();
+          } 
+          else{
+          	 this.getBoton('chkpresupuesto').disable();
           }
           
           

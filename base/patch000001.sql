@@ -955,3 +955,22 @@ ALTER TABLE pre.tpresupuesto
   ADD COLUMN fecha_inicio_pres DATE,
   ADD COLUMN fecha_fin_pres DATE;
 /*****************************F-SCP-FEA-PRE-0-01/08/2017*************/
+
+
+
+/*****************************I-SCP-RAC-PRE-0-12/10/2017*************/
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tajuste
+  ADD COLUMN id_moneda INTEGER DEFAULT param.f_get_moneda_base() NOT NULL;
+
+COMMENT ON COLUMN pre.tajuste.id_moneda
+IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupeusto comprometido,  si fue comprometido en dolares la moenda se tiene que mantener';
+
+/*****************************F-SCP-RAC-PRE-0-12/10/2017*************/
+
+
+
+
+

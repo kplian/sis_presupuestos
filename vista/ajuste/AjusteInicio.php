@@ -32,38 +32,27 @@ Phx.vista.AjusteInicio = {
      bexcelGroups: [0,1,2],
 	
 	constructor: function(config) {
-	    Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
-        this.init();
-       
-        
+		Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
+        this.init();        
         this.store.baseParams={tipo_interfaz:this.nombreVista, estado : 'borrador'};
-        //this.store.baseParams.pes_estado = 'borrador';
-    	this.load({params:{start:0, limit:this.tam_pag}});
-    	
-    	 this.finCons = true;
-        
+        this.load({params:{start:0, limit:this.tam_pag}}); 
+    	this.iniciarEventos();
+    	this.finCons = true;
+
    },
-   validarFiltros:function(){
-      
+   validarFiltros:function(){      
         return true;
    },
    
-   getParametrosFiltro: function(){
-       
+   getParametrosFiltro: function(){       
         this.store.baseParams.estado = this.swEstado;
         this.store.baseParams.tipo_interfaz = this.nombreVista;
-     
-  
-    },
+   },
    
-    capturaFiltros:function(combo, record, index){
-        
+   capturaFiltros:function(combo, record, index){
 		this.desbloquearOrdenamientoGrid();
         this.getParametrosFiltro();
         this.load( { params:{start:0, limit:50 } });
-		
-			
-			
 	},
 	
 	actualizarSegunTab: function(name, indice){
@@ -76,10 +65,7 @@ Phx.vista.AjusteInicio = {
 	   }
     },
     
-    
-	
-	onButtonAct:function(){
-       
+    onButtonAct:function(){       
         if(!this.validarFiltros()){
             alert('Especifique los filtros antes')
          }
@@ -105,29 +91,75 @@ Phx.vista.AjusteInicio = {
              this.getBoton('del').disable();
              this.getBoton('new').disable();
           }
-          
-          
-          
           this.getBoton('btnObs').enable();    
           this.getBoton('btnChequeoDocumentosWf').enable(); 
           this.getBoton('diagrama_gantt').enable();
           
-          
-          if (data['tipo_ajuste'] == 'incremento'){ 
-          	this.disableTabDecrementos();
+          if (data['tipo_ajuste'] == 'incremento' || data['tipo_ajuste'] == 'inc_comprometido'){ 
+          	 this.disableTabDecrementos();
           }
           else {
-          	if (data['tipo_ajuste'] == 'decremento'){ 
+          	if (data['tipo_ajuste'] == 'decremento' || data['tipo_ajuste'] == 'rev_comprometido'){ 
           	  this.disableTabIncrementos();
             }
             else{
-            	this.enableTabIncrementos();
-            	this.enableTabDecrementos();
+            	this.enableAllTab();            	
             }
           }
           
+          if (data['tipo_ajuste'] == 'rev_comprometido' || data['tipo_ajuste'] == 'inc_comprometido'){
+          	 this.getBoton('chkpresupuesto').enable();
+          } 
+          else{
+          	 this.getBoton('chkpresupuesto').disable();
+          }
           
-    }
+   },
     
+    iniciarEventos:function(){
+	        //inicio de eventos 
+	        this.Cmp.fecha.on('change',function(f){
+	        	this.Cmp.nro_tramite_aux.reset();
+	        	this.Cmp.nro_tramite_aux.modificado = true;
+	        	this.Cmp.nro_tramite_aux.store.baseParams.fecha_ajuste = this.Cmp.fecha.getValue().dateFormat(this.Cmp.fecha.format);
+	             
+	             },this);
+             
+           this.Cmp.tipo_ajuste.on('select',function(cmp,rec){        	
+           	   
+           	   if(this.Cmp.tipo_ajuste.getValue() == 'inc_comprometido' || this.Cmp.tipo_ajuste.getValue() == 'rev_comprometido'){
+                	 this.mostrarComponente(this.Cmp.nro_tramite_aux);
+                }
+                else{
+                	 this.ocultarComponente(this.Cmp.nro_tramite_aux);
+                }
+           	
+           },this);
+      
+    },
+     onButtonEdit:function(){
+       var rec = this.getSelectedData();
+       Phx.vista.AjusteInicio.superclass.onButtonEdit.call(this);
+       
+       if(this.Cmp.tipo_ajuste.getValue() == 'inc_comprometido' || this.Cmp.tipo_ajuste.getValue() == 'rev_comprometido'){
+            this.mostrarComponente(this.Cmp.nro_tramite_aux);
+       }
+       else{
+           this.ocultarComponente(this.Cmp.nro_tramite_aux);
+       }
+       this.Cmp.nro_tramite_aux.disable();
+       this.Cmp.tipo_ajuste.disable();
+       this.Cmp.fecha.disable();
+    },
+     onButtonNew:function(){
+	       //abrir formulario de solicitud
+	     var me = this;
+	     Phx.vista.AjusteInicio.superclass.onButtonNew.call(this);
+	     this.Cmp.nro_tramite_aux.enable();
+	     this.Cmp.tipo_ajuste.enable();
+         this.Cmp.fecha.enable();
+	     this.mostrarComponente(this.Cmp.nro_tramite_aux);
+		   
+	}    
 };
 </script>

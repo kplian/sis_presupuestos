@@ -103,10 +103,10 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
 				maxLength:1310722,
 				renderer:function (value,p,record){
 					if(record.data.tipo_reg != 'summary'){
-						return  String.format('{0}', value);
+						return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 					}
 					else{
-						return  String.format('<b><font size=2 >{0}</font><b>', value);
+						return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 					}
 					
 				}
@@ -263,28 +263,45 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
 		var tb = Phx.vista.AjusteDet.superclass.liberaMenu.call(this);
 		
     },
-    iniciarEventos : function() {
-    	
-    	this.Cmp.id_presupuesto.on('select', function (c, r, i) {
-          
-            this.Cmp.id_partida.store.setBaseParam('id_presupuesto',r.data.id_presupuesto);
-            this.Cmp.id_partida.modificado = true;
-            this.Cmp.id_partida.reset();
-            
-            
+   
+    
+	iniciarEventos : function() {
+
+        this.Cmp.id_presupuesto.on('select', function (c, r, i) {
+             this.Cmp.id_partida.reset();
+            if(this.maestro.tipo_ajuste == 'inc_comprometido' || this.maestro.tipo_ajuste == 'rev_comprometido'){
+			    
+			    this.Cmp.id_partida.store.baseParams.id_presupuesto_ajuste = this.Cmp.id_presupuesto.getValue();
+			    delete this.Cmp.id_partida.store.baseParams.id_presupuesto;
+			}
+			else{
+				
+				this.Cmp.id_partida.store.baseParams.id_presupuesto = this.Cmp.id_presupuesto.getValue();
+				delete this.Cmp.id_partida.store.baseParams.id_presupuesto_ajuste;
+			}
+			this.Cmp.id_partida.modificado = true;
+           
         }, this);
     },
     onButtonEdit : function () {
-		var selected = this.sm.getSelected().data;
-		Phx.vista.AjusteDet.superclass.onButtonEdit.call(this);
-		this.Cmp.id_partida.store.setBaseParam('id_presupuesto',selected.id_presupuesto);
-		this.Cmp.id_partida.enable();
-		this.Cmp.id_partida.modificado = true;
-	},
+        var selected = this.sm.getSelected().data;
+        Phx.vista.AjusteDet.superclass.onButtonEdit.call(this);
+        this.Cmp.id_presupuesto.disable();
+        this.Cmp.id_partida.disable();
+       
+    },
+     onButtonNew : function () {
+       
+        Phx.vista.AjusteDet.superclass.onButtonNew.call(this);
+        this.Cmp.id_presupuesto.enable();
+        this.Cmp.id_partida.enable();
+       
+    },
+	
+	
+	
 	bdel:true,
 	bsave:true
-	}
-)
-</script>
-		
+})
+</script>		
 		

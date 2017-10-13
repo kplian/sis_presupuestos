@@ -29,7 +29,21 @@ Phx.vista.AjusteDetDec = {
    
    onReloadPage:function(m){
 		this.maestro=m;
+        
         this.store.baseParams={id_ajuste: this.maestro.id_ajuste, tipo_ajuste: 'decremento'};
+        
+        if(this.maestro.tipo_ajuste == 'rev_comprometido'){
+        	this.Cmp.id_presupuesto.store.baseParams.nro_tramite = this.maestro.nro_tramite;
+        	this.Cmp.id_presupuesto.store.baseParams.tipo_ajuste = this.maestro.tipo_ajuste;
+        	this.Cmp.id_partida.store.baseParams.nro_tramite = this.maestro.nro_tramite;
+        	this.Cmp.id_partida.store.baseParams.tipo_ajuste = this.maestro.tipo_ajuste;
+        }
+        else{
+        	delete this.Cmp.id_presupuesto.store.baseParams.nro_tramite;
+        	delete this.Cmp.id_presupuesto.store.baseParams.tipo_ajuste;
+        	delete this.Cmp.id_partida.store.baseParams.nro_tramite;
+        	delete this.Cmp.id_partida.store.baseParams.tipo_ajuste;
+        }
        
         this.Cmp.id_presupuesto.store.baseParams.id_gestion = this.maestro.id_gestion;
         this.Cmp.id_presupuesto.store.baseParams.movimiento_tipo_pres = this.maestro.movimiento;
@@ -48,7 +62,5 @@ Phx.vista.AjusteDetDec = {
         this.Cmp.tipo_ajuste.setValue('decremento');        
     
    }
-  
-    
 };
 </script>

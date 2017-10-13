@@ -2,8 +2,8 @@
 /**
 *@package pXP
 *@file Presupuesto.php
-*@author  Gonzalo Sarmiento Sejas
-*@date 27-02-2013 00:30:39
+*@author  Rensi Arteaga Copari
+*@date 27-02-2016 00:30:39
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
 header("content-type: text/javascript; charset=UTF-8");
@@ -50,6 +50,8 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
                     handler : this.onOpenObs,
                     tooltip : '<b>Observaciones</b><br/><b>Observaciones del WF</b>'
          });
+
+        
 	},
 	
 	

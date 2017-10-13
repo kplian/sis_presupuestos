@@ -6,19 +6,15 @@
 *@date 13-04-2016 13:21:12
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
-
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 
-	constructor:function(config){
+	constructor:function(config){		
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Ajuste.superclass.constructor.call(this,config);
-		//this.load({params:{start:0, limit:this.tam_pag}});
-		
-		
 		this.addButton('ant_estado',{
          	  grupo:[4],
               argument: {estado: 'anterior'},
@@ -50,6 +46,18 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                     handler : this.onOpenObs,
                     tooltip : '<b>Observaciones</b><br/><b>Observaciones del WF</b>'
          });
+         
+          this.addButton('chkpresupuesto',{
+                    text :'Comp/Ejec',
+                    grupo:[0,1,2],
+                    iconCls : 'bchecklist',
+                    disabled: true,
+                    handler : this.checkPresupuesto,
+                    tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>',
+
+         });
+         
+         
 	},
 			
 	Atributos:[
@@ -93,8 +101,8 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
             id_grupo:0,
             grid:true,
             form:true
-        },
-		{
+      },
+      {
             config:{
                 name: 'tipo_ajuste',
                 fieldLabel: 'Tipo ',
@@ -114,10 +122,11 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				                              	'traspaso':'Traspaso',
 				                              	'reformulacion':'Reformulación',
 				                              	'incremento':'Incremento',
-				                              	'decremento':'Decremento'
+				                              	'decremento':'Decremento',
+				                              	'inc_comprometido':'Comprometer',
+				                              	'rev_comprometido':'Revertir Comprometido'
 				                              };
 				                               
-	                           
 	                           return String.format('<b><font color="green">{0}</font></b>', ajustes[value]);
 	                          
                          }
@@ -127,15 +136,58 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                             data :  [['traspaso','Traspaso'],
                                       ['reformulacion','Reformulación'],
                                       ['incremento','Incremento'],
-                                      ['decremento','Decremento']]}),
+                                      ['decremento','Decremento'],
+                                      ['inc_comprometido','Comprometer'],
+                                      ['rev_comprometido','Revertir Comprometido']]}),
             },
             type:'ComboBox',
             id_grupo:1,
             filters:{   pfiltro:'aju.tipo_ajuste',
                         type: 'list',
-                        options: ['reformulacion','reformulacion','incremento','decremento'],  
+                        options: ['reformulacion','reformulacion','incremento','decremento','inc_comprometido','rev_comprometido'],  
                     },
             grid:true,
+            form:true
+        },
+        {
+            config:{
+                name:'nro_tramite_aux',
+                fieldLabel:'Nº Trámite',
+                allowBlank:true,
+                emptyText:'Tipo...',
+                store: new Ext.data.JsonStore({
+                    url: '../../sis_presupuestos/control/PartidaEjecucion/listarTramitesAjustables',
+                    id: 'nro_tramite',
+                    root: 'datos',
+                    sortInfo:{
+                        field: 'pe.nro_tramite',
+                        direction: 'ASC'
+                    },
+                    totalProperty: 'total',
+                    fields: ['nro_tramite','codigo','desc_moneda','id_moneda'],
+                    // turn on remote sorting
+                    remoteSort: true,
+                    baseParams:{par_filtro:'pe.nro_tramite#pm.codigo'}
+
+                }),
+                tpl:'<tpl for="."><div class="x-combo-list-item"><p>{nro_tramite} ({desc_moneda})</p></div></tpl>',
+				valueField: 'nro_tramite',
+                displayField: 'nro_tramite',
+                gdisplayField: 'nro_tramite',
+                forceSelection:true,
+                typeAhead: false,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode:'remote',
+                pageSize:20,
+                queryDelay:1000,
+                width:250,
+                minChars:2
+
+            },
+            type:'ComboBox',
+            id_grupo:0,
+            grid:false,
             form:true
         },
 		{
@@ -175,6 +227,21 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
+        {
+			config:{
+				name: 'desc_moneda',
+				fieldLabel: 'Moneda',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:50
+			},
+				type:'TextField',
+				filters:{pfiltro:'mon.codigo',type:'string'},
+				id_grupo:1,
+				grid: true,
+				form: false
+		},
         
         {
 			config:{
@@ -185,6 +252,9 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				allowNegative: false,
 				anchor: '80%',
 				gwidth: 100,
+				renderer:function (value,p,record){
+					return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+				},
 				maxLength:1179650
 			},
 				type:'NumberField',
@@ -355,7 +425,8 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date', dateFormat:'Y-m-d H:i:s.u'},
 		{name:'fecha', type: 'date', dateFormat:'Y-m-d'},
 		{name:'usr_reg', type: 'string'},
-		{name:'usr_mod', type: 'string'}, 'importe_ajuste','movimiento','id_gestion'
+		{name:'usr_mod', type: 'string'}, 
+		'importe_ajuste','movimiento','id_gestion','nro_tramite_aux','desc_moneda','id_moneda'
 		
 	],
 	sortInfo:{
@@ -526,6 +597,8 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
     
     
     
+    
+    
     liberaMenu:function(){
         var tb = Phx.vista.Ajuste.superclass.liberaMenu.call(this);
         if(tb){
@@ -534,10 +607,23 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
             this.getBoton('btnObs').disable();    
             this.getBoton('btnChequeoDocumentosWf').disable(); 
             this.getBoton('diagrama_gantt').disable();
+            this.getBoton('chkpresupuesto').disable();
          }
     },
   
+    enableAllTab: function(){
+    	if(this.TabPanelEast && this.TabPanelEast.get(0) && this.TabPanelEast.get(1)){
+    	  this.TabPanelEast.get(0).enable();
+    	  this.TabPanelEast.get(1).enable();
+    	 }
+    },
     
+    disableAllTab: function(){
+    	if(this.TabPanelEast && this.TabPanelEast.get(0) && this.TabPanelEast.get(1)){
+    	   this.TabPanelEast.get(0).disable();
+    	    this.TabPanelEast.get(1).disable();
+    	 }
+    },
     enableTabDecrementos:function(){
      	if(this.TabPanelEast && this.TabPanelEast.get(0)){
      		      this.TabPanelEast.get(0).enable();
@@ -572,6 +658,24 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
       
 	bdel:true,
 	bsave:true,
+	
+	checkPresupuesto:function(){                   
+			  var rec=this.sm.getSelected();
+			  var configExtra = [];
+			  this.objChkPres = Phx.CP.loadWindows('../../../sis_presupuestos/vista/presup_partida/ChkPresupuesto.php',
+										'Estado del Presupuesto',
+										{
+											modal:true,
+											width:700,
+											height:450
+										}, {
+											data:{
+											   nro_tramite: rec.data.nro_tramite								  
+											}}, this.idContenedor,'ChkPresupuesto');
+			   
+	 },
+	
+	
 	tabeast:[
 	      {
     		  url:'../../../sis_presupuestos/vista/ajuste_det/AjusteDetDec.php',
@@ -588,6 +692,5 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		  
 		  ],
 	
-})
+});
 </script>
-		

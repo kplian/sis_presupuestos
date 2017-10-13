@@ -48,7 +48,14 @@ Phx.vista.PresupuestoInicio = {
 		//Crea el botón para llamar a la replicación
 		this.addButton('btnRepRelCon',{grupo:[2],text: 'Duplicar Presupuestos',iconCls: 'bchecklist',disabled: false,handler: this.duplicarPresupuestos,tooltip: '<b>Duplicar presupuestos </b><br/>Duplicar presupuestos para la siguiente gestión'});
 		this.addButton('btnIniTra',{grupo:[0],text: 'Iniciar',iconCls: 'bchecklist',disabled: true,handler: this.iniTramite,tooltip: '<b>Iniciar Trámite</b><br/>Inicia el trámite de formulación para el presupuesto'});
-		
+        this.addButton('btnClo',{
+            text :'Clonar Formulacio',
+            grupo:[1],
+            iconCls : 'bfolder',
+            disabled: true,
+            handler : this.onClonar,
+            tooltip : '<b>Clonar Formulacion</b>'
+        });
 	   
 		this.init();
 		this.TabPanelEast.get(2).disable();
