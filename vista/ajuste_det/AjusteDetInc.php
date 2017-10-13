@@ -50,11 +50,9 @@ Phx.vista.AjusteDetInc = {
         	delete this.Cmp.id_partida.store.baseParams.nro_tramite;
         	delete this.Cmp.id_partida.store.baseParams.tipo_ajuste;
         }
-       
-        
+               
         this.Cmp.id_presupuesto.store.baseParams.id_gestion = this.maestro.id_gestion;
-        this.Cmp.id_presupuesto.store.baseParams.movimiento_tipo_pres = this.maestro.movimiento;
-        
+        this.Cmp.id_presupuesto.store.baseParams.movimiento_tipo_pres = this.maestro.movimiento;        
         this.Cmp.id_partida.store.baseParams.id_gestion = this.maestro.id_gestion;
         this.Cmp.id_partida.store.baseParams.partida_rubro = this.maestro.movimiento;
         this.Cmp.id_presupuesto.modificado = true;
@@ -63,17 +61,12 @@ Phx.vista.AjusteDetInc = {
         
          this.load({params:{start:0, limit:50}});
    },
-
-   
-    
    
    loadValoresIniciales:function(){
         Phx.vista.AjusteDetInc.superclass.loadValoresIniciales.call(this);
         this.Cmp.id_ajuste.setValue(this.maestro.id_ajuste);
-        this.Cmp.tipo_ajuste.setValue('incremento');        
-    
+        this.Cmp.tipo_ajuste.setValue('incremento'); 
    }
-  
     
 };
 </script>

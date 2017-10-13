@@ -252,6 +252,9 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				allowNegative: false,
 				anchor: '80%',
 				gwidth: 100,
+				renderer:function (value,p,record){
+					return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+				},
 				maxLength:1179650
 			},
 				type:'NumberField',

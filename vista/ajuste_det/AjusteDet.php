@@ -103,10 +103,10 @@ Phx.vista.AjusteDet=Ext.extend(Phx.gridInterfaz,{
 				maxLength:1310722,
 				renderer:function (value,p,record){
 					if(record.data.tipo_reg != 'summary'){
-						return  String.format('{0}', value);
+						return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
 					}
 					else{
-						return  String.format('<b><font size=2 >{0}</font><b>', value);
+						return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
 					}
 					
 				}
