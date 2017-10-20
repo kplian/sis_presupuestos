@@ -402,6 +402,11 @@ class MODPresupuesto extends MODbase{
         $this->captura('codigo_transf', 'varchar');
         $this->captura('unidad_solicitante', 'varchar');
         $this->captura('funcionario_solicitante', 'varchar');
+        $this->captura('fecha_soli', 'date');
+        $this->captura('gestion', 'integer');
+        $this->captura('codigo_poa', 'varchar');
+        $this->captura('codigo_descripcion', 'varchar');
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();
