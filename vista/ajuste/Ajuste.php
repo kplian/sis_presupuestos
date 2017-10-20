@@ -78,12 +78,13 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Nº Trámite',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 120,
 				maxLength:300
 			},
 				type:'TextField',
 				filters: { pfiltro:'aju.nro_tramite',type:'string'},
 				id_grupo: 1,
+				bottom_filter: true,
 				grid: true,
 				form: false
 		},
@@ -110,6 +111,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                 anchor: '40%',
                 gwidth: 100,
                 typeAhead: true,
+                bottom_filter: true,
                 triggerAction: 'all',
                 lazyRender:true,
                 mode: 'local',
@@ -197,7 +199,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                 qtip: '¿Para definir si se ajusta  presupuestos de gasto o de recurso?',
                 allowBlank: false,
                 anchor: '40%',
-                gwidth: 100,
+                gwidth: 70,
                 typeAhead: true,
                 triggerAction: 'all',
                 lazyRender:true,
@@ -233,7 +235,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Moneda',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 60,
 				maxLength:50
 			},
 				type:'TextField',
@@ -276,6 +278,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'aju.justificacion',type:'string'},
 				id_grupo:1,
+				bottom_filter: true,
 				grid:true,
 				form:true
 		},
@@ -291,6 +294,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'aju.estado',type:'string'},
 				id_grupo:1,
+				bottom_filter: true,
 				grid: true,
 				form: false
 		},
@@ -431,7 +435,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 	],
 	sortInfo:{
 		field: 'id_ajuste',
-		direction: 'ASC'
+		direction: 'desc'
 	},
 	loadCheckDocumentosSolWf:function() {
             var rec=this.sm.getSelected();
