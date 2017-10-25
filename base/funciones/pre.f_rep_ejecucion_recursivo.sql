@@ -47,8 +47,6 @@ DECLARE
 
 BEGIN
 
-
-
           v_nombre_funcion = 'pre.f_rep_ejecucion_recursivo';
           
           ps_importe_total = 0;
@@ -57,11 +55,9 @@ BEGIN
           ps_comprometido_total = 0;
           ps_ejecutado_total = 0;
           ps_pagado_total = 0;
-          ps_ajustado_total = 0;
-         
+          ps_ajustado_total = 0;      
           
-          -- iniciamos miembros es cero 
-          
+          -- iniciamos miembros es cero           
           FOR v_registros in (
            			          SELECT 
                                    par.id_partida,
@@ -71,7 +67,14 @@ BEGIN
                                    par.sw_transaccional,
                                    par.nivel_partida
                               FROM pre.tpartida par
-                              WHERE par.id_partida_fk = p_id_partida_padre )LOOP
+                              WHERE 
+                              
+                                  case 
+                                   when p_sw_transaccional = 'movimiento' then
+                                     par.id_partida = p_id_partida_padre
+                                   else
+                                      par.id_partida_fk = p_id_partida_padre
+                                   end )LOOP
                        
                        
                        -- si es partida de movimiento
@@ -172,6 +175,8 @@ BEGIN
                             ps_ejecutado_total = ps_ejecutado_total + v_ejecutado;
                             ps_pagado_total = ps_pagado_total + v_pagado;
                             ps_ajustado_total = ps_ajustado_total + v_ajustado;
+                            
+                          
                            
                        
                        ELSE
@@ -212,6 +217,8 @@ BEGIN
                        
           END LOOP;
           
+      
+          
           -- insertamos datos para el padre (con la suma de miembros)
           IF  ps_importe_aprobado_total != 0 THEN
            v_porc_ejecucion = round((ps_ejecutado_total/ps_importe_aprobado_total)*100,2);
@@ -219,13 +226,13 @@ BEGIN
            v_porc_ejecucion = 0;
           END IF;          
           
-          IF  ps_importe_total != 0  or
+          IF  (ps_importe_total != 0  or
               ps_importe_aprobado_total != 0  or
               ps_formulado_total != 0  or
               ps_comprometido_total != 0  or
               ps_ejecutado_total != 0  or
               ps_pagado_total != 0  or
-              ps_ajustado_total != 0  THEN
+              ps_ajustado_total != 0) and p_sw_transaccional != 'movimiento'  THEN
               
           INSERT into temp_prog (
                         id_partida,

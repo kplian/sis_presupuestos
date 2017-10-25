@@ -75,7 +75,9 @@ class REjecucion extends  ReportePDF {
 		if($this->objParam->getParametro('tipo_reporte') =='presupuesto'){
 			$tmp = 'PRESUPUESTO';
 		}
-		
+		if($this->objParam->getParametro('tipo_reporte') =='tipo_cc'){
+			$tmp = 'CENTRO DE COSTO';
+		}
 		
 		
 		$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
@@ -173,7 +175,8 @@ class REjecucion extends  ReportePDF {
 		
 		
 		if ($val['nivel_partida'] == 0){
-			 $this->SetFont('','BU',6);
+			 //$this->SetFont('','BU',6);
+			 $this->SetFont('','',6);
 			 $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
 			 $conf_par_tablewidths=array(15,53,18,18,18,18,18,18,18,18,18,18,15);
 		     $this->tablealigns=array('L','L','R','R','R','R','R','R','R','R','R','R','R');
@@ -297,15 +300,8 @@ class REjecucion extends  ReportePDF {
                         's13' => $val['porc_ejecucion'].' %');
 			 
 		}
-	   
-	   
-       
-		
-		
-        
-       
-						
-		$this-> MultiRow2($RowArray,$fill,1);
+	   			
+		$this-> MultiRow($RowArray,$fill,1);
 		
 	}
 

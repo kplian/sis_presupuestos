@@ -268,6 +268,9 @@ class MODPresupPartida extends MODbase{
 		  $this->setParametro('id_cp_programa','id_cp_programa','int4');
 		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
 		  $this->setParametro('id_presupuesto','id_presupuesto','int4');
+		  $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		  
+		  
 		  $this->setParametro('id_gestion','id_gestion','int4');
 		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
 		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
@@ -315,6 +318,7 @@ class MODPresupPartida extends MODbase{
 		  //captura parametros adicionales para el count
 		 
 		  $this->setParametro('id_categoria_programatica','id_categoria_programatica','int4');
+		  $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
 		  $this->setParametro('id_partida','id_partida','int4');
 		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
 		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');

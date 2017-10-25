@@ -28,6 +28,16 @@ Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
+					name: 'concepto2'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
 					name: 'categoria'
 			},
 			type:'Field',
@@ -139,6 +149,50 @@ Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
    			id_grupo:0,
    			form:true
 	   	},
+	   	
+	   	{
+			config:{
+				name:'tipo_reporte',
+				fieldLabel:'Filtrar por',
+				typeAhead: true,
+				allowBlank:false,
+	    		triggerAction: 'all',
+	    		emptyText:'Tipo...',
+	    		selectOnFocus:true,
+				mode:'local',
+				store:new Ext.data.ArrayStore({
+	        	fields: ['ID', 'valor'],
+	        	data :	[
+		        	        ['categoria','Categoría Programática'],	
+							['tipo_cc','Tipo Centro Costo']
+						]	        				
+	    		}),
+				valueField:'ID',
+				displayField:'valor',
+				width:250,			
+				
+			},
+			type:'ComboBox',
+			id_grupo:1,
+			form:true
+		},
+		{
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tipo_cc',
+	   				url:  '../../sis_parametros/control/TipoCc/listarTipoCcAll',
+	   				baseParams: {movimiento:''},	   				
+	   				allowBlank:true,
+	   				width: 150 
+	   				
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			form:true
+	    },
 		
 		
 		
@@ -244,6 +298,10 @@ Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
 		constructor : function(config) {
 			Phx.vista.FormRepEjecucionPorPartida.superclass.constructor.call(this, config);
 			this.init();
+			
+			this.ocultarComponente(this.Cmp.id_tipo_cc);
+			this.ocultarComponente(this.Cmp.id_categoria_programatica);
+			
 			this.iniciarEventos();
 		},
 		
@@ -278,21 +336,26 @@ Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
 				
 			},this);
 			
-			this.Cmp.id_categoria_programatica.on('select',function(c,r,n){
-				 
-				 if (r.data.codigo_categoria == 'Todos'){
-				 	this.Cmp.categoria.setValue('Todas');
-				 }
-				 else{
-				 	this.Cmp.categoria.setValue(r.data.codigo_categoria);
-				 }
-				 
+			
+			this.Cmp.tipo_reporte.on('select',function(combo, record, index){
 				
-			},this);
+				this.Cmp.id_categoria_programatica.reset();				
+				this.Cmp.id_tipo_cc.reset();
+				
+				if(record.data.ID == 'categoria'){
+					this.mostrarComponente(this.Cmp.id_categoria_programatica);					
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
+				}
+				
+				if(record.data.ID == 'tipo_cc'){
+					this.ocultarComponente(this.Cmp.id_categoria_programatica);
+					this.mostrarComponente(this.Cmp.id_tipo_cc);
+				}
+				
+				
+			}, this);
 			
 			
-			
-		
 		},
 		
 		
@@ -318,6 +381,16 @@ Phx.vista.FormRepEjecucionPorPartida = Ext.extend(Phx.frmInterfaz, {
 	ActSave:'../../sis_presupuestos/control/PresupPartida/reporteEjecucionPorPartida',
 	
 	onSubmit: function(o, x, force){
+		
+		if(this.Cmp.tipo_reporte.getValue()=='categoria'){
+			this.Cmp.categoria.setValue(this.Cmp.id_categoria_programatica.getRawValue());
+		}
+		
+		if(this.Cmp.tipo_reporte.getValue()=='tipo_cc'){
+			this.Cmp.categoria.setValue(this.Cmp.id_tipo_cc.getRawValue());
+		}
+		
+		
 		Phx.vista.FormRepEjecucionPorPartida.superclass.onSubmit.call(this,o, x, force);
 	},
 	

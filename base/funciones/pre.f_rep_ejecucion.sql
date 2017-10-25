@@ -27,6 +27,7 @@ v_total 			numeric;
 v_tipo_cuenta		varchar;
 v_incluir_cierre	varchar;
 va_id_presupuesto	INTEGER[];
+va_tipo_cc			INTEGER[];
  
 
 BEGIN
@@ -44,7 +45,7 @@ BEGIN
 
 	IF(p_transaccion='PRE_EJECUCION_REP')then
     
-        --raise exception 'error';
+        
     
         -- 1) Crea una tabla temporal con los datos que se utilizaran 
 
@@ -64,7 +65,7 @@ BEGIN
                                 ajustado NUMERIC,
                                 porc_ejecucion NUMERIC) ON COMMIT DROP;
     
-    
+     
          --determinar array de presupuestos
          
          
@@ -78,7 +79,7 @@ BEGIN
                      inner join pre.tcategoria_programatica cp on cp.id_categoria_programatica = p.id_categoria_prog
                      where cp.id_cp_programa = v_parametros.id_cp_programa
                             and p.tipo_pres::text = ANY (string_to_array(v_parametros.tipo_pres::text,','));
-                            
+                          
                           
             ELSEIF v_parametros.tipo_reporte = 'categoria' and v_parametros.id_categoria_programatica is not null and v_parametros.id_categoria_programatica != 0 THEN
              
@@ -89,12 +90,41 @@ BEGIN
                      FROM pre.tpresupuesto p
                      where p.id_categoria_prog = v_parametros.id_categoria_programatica
                      and p.tipo_pres  = ANY (string_to_array(v_parametros.tipo_pres::text,','));
+                     
+                     
+             ELSEIF v_parametros.tipo_reporte = 'tipo_cc'  THEN
              
+                   
+                     --RAC 24/10/2017
+                     --Recupera toda la rama del tipo_cc
+                     WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                        SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                        FROM param.ttipo_cc tcc
+                        WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                      UNION ALL
+                        SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                        FROM tipo_cc_rec lrec 
+                        INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                        where tcc2.estado_reg = 'activo'
+                      )
+                    SELECT  pxp.aggarray(id_tipo_cc) 
+                      into 
+                        va_tipo_cc
+                    FROM tipo_cc_rec;
+                    
+                    --busca todos lso presupuestos de laguna de las ramas de lso tipos seleccionados
+                     SELECT
+                         pxp.aggarray(p.id_presupuesto)
+                     into 
+                        va_id_presupuesto
+                     FROM param.vcentro_costo c
+                     INNER JOIN  pre.tpresupuesto p on p.id_presupuesto = c.id_centro_costo
+                     where c.id_tipo_cc  = ANY(va_tipo_cc)
+                     and p.tipo_pres  = ANY (string_to_array(v_parametros.tipo_pres::text,',')); 
+                    
              
              ELSEIF v_parametros.tipo_reporte = 'presupuesto' and v_parametros.id_presupuesto is not null and v_parametros.id_presupuesto != 0 THEN
-                     
-                   va_id_presupuesto[1] = v_parametros.id_presupuesto;
-             
+                    va_id_presupuesto[1] = v_parametros.id_presupuesto;
              ELSE
                      
                    
@@ -105,9 +135,11 @@ BEGIN
                    FROM pre.vpresupuesto p
                    where p.id_gestion = v_parametros.id_gestion
                    and p.tipo_pres  = ANY (string_to_array(v_parametros.tipo_pres::text,','));
+                   
+                  
                      
            END IF;
-         
+       
          
          -- lista las partida basicas de cada presupuesto
          FOR v_registros in (
@@ -174,11 +206,35 @@ BEGIN
  #FECHA:           26-04-2016
 ***********************************/
 
-ELSEIF(p_transaccion='PRE_EJEXPAR_REP')then  
+ELSEIF(p_transaccion='PRE_EJEXPAR_REP')then 
 
+
+        --RAC 24/10/2017
+        IF v_parametros.tipo_reporte = 'tipo_cc' THEN
+        
+           --Recupera toda la rama del tipo_cc
+           WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+              SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+              FROM param.ttipo_cc tcc
+              WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+            UNION ALL
+              SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+              FROM tipo_cc_rec lrec 
+              INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+              where tcc2.estado_reg = 'activo'
+            )
+          SELECT  pxp.aggarray(id_tipo_cc) 
+            into 
+              va_tipo_cc
+          FROM tipo_cc_rec;
+          
+      END IF;              
+       
+     
      
       
-      FOR v_registros in (SELECT * FROM(SELECT 
+      FOR v_registros in (SELECT * FROM(
+                                               SELECT 
                                                         p.id_presupuesto,
                                                         p.codigo_cc,
                                                         sum(COALESCE(prpa.importe, 0::numeric)) AS importe,
@@ -191,14 +247,19 @@ ELSEIF(p_transaccion='PRE_EJEXPAR_REP')then
                                               
                                               FROM pre.tpresup_partida prpa
                                               INNER JOIN pre.vpresupuesto_cc p on p.id_presupuesto = prpa.id_presupuesto
+                                              inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                                               WHERE  
                                                  p.tipo_pres::text = ANY (string_to_array(v_parametros.tipo_pres::text,',')) and
                                                   
                                                   CASE 
-                                                    WHEN v_parametros.id_categoria_programatica = 0   THEN   -- todos 
-                                                           0=0 
-                                                        ELSE                                  
+                                                        WHEN v_parametros.tipo_reporte = 'categoria' and v_parametros.id_categoria_programatica = 0   THEN   -- todos 
+                                                            0=0 
+                                                        WHEN v_parametros.tipo_reporte = 'categoria' and v_parametros.id_categoria_programatica! = 0   THEN     
                                                             p.id_categoria_prog = v_parametros.id_categoria_programatica
+                                                        WHEN v_parametros.tipo_reporte = 'tipo_cc' THEN                                  
+                                                            cc.id_tipo_cc =ANY(va_tipo_cc)
+                                                        ELSE 
+                                                           0 = 0
                                                         END 
                                                   and
                                                   
@@ -222,7 +283,7 @@ ELSEIF(p_transaccion='PRE_EJEXPAR_REP')then
                                                   tmp.ejecutado > 0 or
                                                   tmp.pagado > 0
                                                order by 
-                                                  tmp.codigo_cc      
+                                                  tmp.id_presupuesto      
                                              ) LOOP
                           
                           -- raise exception '... %',v_registros;
