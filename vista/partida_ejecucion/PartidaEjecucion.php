@@ -74,7 +74,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 
 				renderer:function (value, p, record){
-					var dato='';
+					var dato=value;
 					dato = (value=='1')?'Comprometido':dato;
 					dato = (dato==''&&value=='2')?'Revertido':dato;
 					dato = (dato==''&&value=='3')?'Devengado':dato;

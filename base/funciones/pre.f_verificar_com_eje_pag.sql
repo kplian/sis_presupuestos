@@ -21,6 +21,11 @@ $body$
  AUTOR: 		Rensi Aarteaga Copari
  FECHA:	        04-07-2013
  COMENTARIOS:	
+ 
+ 
+  ISSUE            FECHA:		      AUTOR       DESCRIPCION
+ 0	, ETR			13/11/2017			RAC			Sse activa la verficacion presupesutaria por nro de tramite, fueron relizadas pruebas en adqusicioens y obligaciones de pago (comprometer, ejecutar, revertir) , aparentemente todo se ve bien
+ 
 ***************************************************************************/
 
 
@@ -90,10 +95,12 @@ BEGIN
       ELSE 
      
             -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
-            IF  1=0 THEN
+            IF  1=1 THEN
                -- esta aprte funciona bien con nro de tramite 
                -- pero es necesario una similar a laversion de endesis
                --  que separa por partida ejeucion  por la necesida d de compatibilidad
+               
+               --13/11/2017, se habilitar la versifcion por nro de tramite en ETR
             
                     select 
                         pe.nro_tramite,

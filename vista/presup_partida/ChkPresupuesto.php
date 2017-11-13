@@ -138,7 +138,7 @@ Phx.vista.ChkPresupuesto=Ext.extend(Phx.gridInterfaz,{
 				type: 'NumberField',
 				filters: { pfiltro:'prpa.pagado', type: 'numeric' },
 				id_grupo: 1,
-				grid: true,
+				grid: false,
 				form: false
 		}
 		
