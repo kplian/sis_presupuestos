@@ -83,8 +83,22 @@ class ACTPresupuesto extends ACTbase{
 		}
 		
 		if($this->objParam->getParametro('movimiento_tipo_pres')!=''){
+			
 	    	$this->objParam->addFiltro("movimiento_tipo_pres = ''".$this->objParam->getParametro('movimiento_tipo_pres')."''");	
 		}
+		
+		if($this->objParam->getParametro('ajuste_tipo_pres')!=''){
+			if($this->objParam->getParametro('ajuste_tipo_pres')=='gasto'){
+				$this->objParam->addFiltro("movimiento_tipo_pres  in(''".$this->objParam->getParametro('ajuste_tipo_pres')."'' , ''ingreso_egreso'') ");	
+			}
+			else{
+				$this->objParam->addFiltro("movimiento_tipo_pres in(''".$this->objParam->getParametro('ajuste_tipo_pres')."'', ''ingreso_egreso'')");	
+			}
+			
+		}
+		
+		
+		
 		
 		if($this->objParam->getParametro('sw_oficial')!=''){
 	    	$this->objParam->addFiltro("sw_oficial = ''".$this->objParam->getParametro('sw_oficial')."''");	

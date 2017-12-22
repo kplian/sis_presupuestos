@@ -371,21 +371,22 @@ BEGIN
                -- analizamos respuesta y retornamos error
                IF v_resultado_ges[1] = 0 THEN
                
-                 if p_monto_total[v_cont] < 0  THEN
-                      raise exception '%  , %',  v_resultado_ges, p_monto_total[v_cont];
-                 END IF; 
+                   /*
+                     if p_monto_total[v_cont] < 0  THEN
+                          raise exception 'estado: %  , %',  v_resultado_ges, p_monto_total[v_cont];
+                     END IF; */
                
                
-                     -- raise exception '- % , % , % , % -',v_sw_momento,  p_id_partida_ejecucion[v_cont], p_id_partida[v_cont],p_monto_total[v_cont];
-                    --raise exception ' % ',v_resultado_ges;
+                   -- raise exception '- % , % , % , % -',v_sw_momento,  p_id_partida_ejecucion[v_cont], p_id_partida[v_cont],p_monto_total[v_cont];
+                   --raise exception ' % ',v_resultado_ges;
                   
                     IF v_resultado_ges[4] is not null and  v_resultado_ges[4] = 1  THEN
                         raise exception 'el presupuesto no alcanza por diferencia cambiaria, en moneda base tenemos:  % ',v_resultado_ges[3];
                     ELSE
                         IF v_id_moneda_base = p_id_moneda[v_cont] THEN
-                            raise exception 'solo se tiene disponible un monto en moneda base de:  %', v_resultado_ges[3];    
+                            raise exception 'solo se tiene disponible un monto en moneda base de:  % , % , %', v_resultado_ges[3], p_nro_tramite[v_cont] , p_monto_total[v_cont];   
                         ELSE
-                            raise exception 'solo se tiene disponible un monto de:  %', v_resultado_ges[5];
+                            raise exception 'solo se tiene disponible un monto de:  % , %', v_resultado_ges[5], p_nro_tramite[v_cont];
                         END IF;
                       
                    END IF;

@@ -66,13 +66,16 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 	}
 	
 	if(config.origen=='PRESUPUESTO'){    		
-		    		
+		    	
 		    var tpl = new Ext.XTemplate([
 		     '<tpl for=".">',
 		     '<div class="x-combo-list-item">',
 		     	'<tpl if="movimiento_tipo_pres == \'gasto\'">',
 		     	'<font color="red"><p>{codigo_cc}</p></font>',
 		     	'</tpl>',
+		     	 '<tpl if="movimiento_tipo_pres == \'ingreso_egreso\'">',
+		    		      '<p><b><font color="blue">{codigo_cc}</font></b></p>',
+		    	'</tpl>',
 		     	'<tpl if="movimiento_tipo_pres == \'recurso\'">',
 		     	'<font color="green"><p>{codigo_cc}</p></font>',
 		     	'</tpl>',
@@ -84,7 +87,8 @@ Phx.comborec.sis_presupuestos.configini = function (config){
 		     '</tpl>'
 		     
 		   ]);
-		   
+		  
+	
 		   
 		    
 		    return {

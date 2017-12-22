@@ -52,7 +52,7 @@ Phx.vista.AjusteDetInc = {
         }
                
         this.Cmp.id_presupuesto.store.baseParams.id_gestion = this.maestro.id_gestion;
-        this.Cmp.id_presupuesto.store.baseParams.movimiento_tipo_pres = this.maestro.movimiento;        
+        this.Cmp.id_presupuesto.store.baseParams.ajuste_tipo_pres = this.maestro.movimiento;        
         this.Cmp.id_partida.store.baseParams.id_gestion = this.maestro.id_gestion;
         this.Cmp.id_partida.store.baseParams.partida_rubro = this.maestro.movimiento;
         this.Cmp.id_presupuesto.modificado = true;

@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_v2 (
   p_id_usuario integer,
   p_tipo_cambio numeric,

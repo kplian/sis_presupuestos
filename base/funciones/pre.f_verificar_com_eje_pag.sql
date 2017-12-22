@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION pre.f_verificar_com_eje_pag (
   p_id_partida_ejecucion integer,
   p_id_moneda integer,
   p_conexion varchar = NULL::character varying,
+  p_tipo_control varchar = 'nro_tramite'::character varying,
   out ps_comprometido numeric,
   out ps_ejecutado numeric,
   out ps_pagado numeric
@@ -25,7 +26,9 @@ $body$
  
   ISSUE            FECHA:		      AUTOR       DESCRIPCION
  0	, ETR			13/11/2017			RAC			Sse activa la verficacion presupesutaria por nro de tramite, fueron relizadas pruebas en adqusicioens y obligaciones de pago (comprometer, ejecutar, revertir) , aparentemente todo se ve bien
- 
+ 0,	  ETR			01/12/2017          RAC			Se agrega el parametro p_tipo_control, para definir si controlamso por nro de tramite o por partida ejecucion,  en rediciones de tesoria no se 
+                                                    necesita el control por partida , ya al revertir presupuesto si dos facturas afectna la misma partida y presupuesto
+                                                    se revertia todo en el primer regitro y daba error al revertir el segundo por que ya no tenia presupesuto para revertir 	 		
 ***************************************************************************/
 
 
@@ -95,7 +98,7 @@ BEGIN
       ELSE 
      
             -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
-            IF  1=1 THEN
+            IF  p_tipo_control = 'nro_tramite' THEN
                -- esta aprte funciona bien con nro de tramite 
                -- pero es necesario una similar a laversion de endesis
                --  que separa por partida ejeucion  por la necesida d de compatibilidad
