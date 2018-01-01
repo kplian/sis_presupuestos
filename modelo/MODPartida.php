@@ -201,6 +201,7 @@ class MODPartida extends MODbase{
         $this->setParametro('fecha_ini','fecha_ini','date');
         $this->setParametro('fecha_fin','fecha_fin','date');
         $this->setParametro('tipo_movimiento','tipo_movimiento','varchar');
+       
 
         $this->captura('id_partida','int4');
         $this->captura('codigo_partida','varchar');
@@ -423,6 +424,7 @@ class MODPartida extends MODbase{
         $this->setParametro('fecha_ini','fecha_ini','date');
         $this->setParametro('fecha_fin','fecha_fin','date');
         $this->setParametro('tipo_movimiento','tipo_movimiento','varchar');
+
 
         $this->captura('id_partida','int4');
         $this->captura('codigo_partida','varchar');

@@ -49,6 +49,7 @@ DECLARE
   v_id_partida_ejecucion		integer;
   v_reg_par_eje_fk				record;
   v_error_presupuesto			numeric;
+  v_reg_tipo_cc					record;
   
 BEGIN
 
@@ -80,7 +81,7 @@ BEGIN
              into
                p_id_presupuesto,
                p_id_partida
-             from pre.tpartida_ejecucion pe
+             from  pre.tpartida_ejecucion pe
              where pe.id_partida_ejecucion = p_id_partida_ejecucion;
          
             
@@ -88,14 +89,26 @@ BEGIN
           END IF;
           
           
-          IF not exists(select 
-                          1
-                        from pre.tpresupuesto pr
-                        where pr.id_presupuesto = p_id_presupuesto
-                              and  pr.estado = 'aprobado') THEN
-                
-               raise exception 'el presupuesto no se encuentra aprobado (id = %)', p_id_presupuesto; 
-                
+          select 
+             pr.id_presupuesto,
+             tcc.codigo,
+             tcc.descripcion,
+             pr.estado
+           into
+             v_reg_tipo_cc
+          from pre.tpresupuesto pr
+          inner join param.tcentro_costo cc on cc.id_centro_costo = pr.id_presupuesto
+          inner join param.ttipo_cc tcc on tcc.id_tipo_cc =  cc.id_tipo_cc
+           where      pr.id_presupuesto = p_id_presupuesto
+                  and pr.estado_reg = 'activo';
+          
+          
+          IF  v_reg_tipo_cc is null  THEN
+             raise exception 'No se encontro el presupesuto con el ID %', p_id_presupuesto;
+          END IF;
+          
+          IF v_reg_tipo_cc.estado != 'aprobado' THEN                
+               raise exception 'el presupuesto no se encuentra aprobado (%, %)', v_reg_tipo_cc.codigo, v_reg_tipo_cc.descripcion;                
           END IF;
           
           

@@ -112,7 +112,6 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
             form:true
         },
 
-
         {
             config:{
                 name:'tipo_reporte',
@@ -128,7 +127,8 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
                     data :	[
                         ['programa','Programa'],
                         ['categoria','Categoría Programática'],
-                        ['presupuesto','Presupuesto']
+                        ['presupuesto','Presupuesto'],
+                        ['tipo_cc','Tipo Centro Costo']
                     ]
                 }),
                 valueField:'ID',
@@ -140,6 +140,23 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
             id_grupo:1,
             form:true
         },
+		{
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tipo_cc',
+	   				url:  '../../sis_parametros/control/TipoCc/listarTipoCcAll',
+	   				baseParams: {movimiento:''},	   				
+	   				allowBlank:true,
+	   				width: 150 
+	   				
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			form:true
+	    },
         {
             config:{
                 name: 'id_categoria_programatica',
@@ -370,7 +387,9 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
         Phx.vista.FormPartidaEjecutado.superclass.constructor.call(this,config);
         this.ocultarComponente(this.Cmp.id_categoria_programatica);
         this.ocultarComponente(this.Cmp.id_presupuesto);
-        this.ocultarComponente(this.Cmp.id_cp_programa);
+        this.ocultarComponente(this.Cmp.id_cp_programa);	
+        
+        this.ocultarComponente(this.Cmp.id_tipo_cc);
         //this.ocultarComponente(this.Cmp.fecha_ini);
         //this.ocultarComponente(this.Cmp.id_partida);
         this.iniciarEventos();
@@ -416,21 +435,27 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
                 this.ocultarComponente(this.Cmp.id_categoria_programatica);
                 this.ocultarComponente(this.Cmp.id_presupuesto);
                 this.mostrarComponente(this.Cmp.id_cp_programa);
-
+                this.ocultarComponente(this.Cmp.id_tipo_cc);
             }
 
             if(record.data.ID == 'categoria'){
                 this.mostrarComponente(this.Cmp.id_categoria_programatica);
                 this.ocultarComponente(this.Cmp.id_presupuesto);
                 this.ocultarComponente(this.Cmp.id_cp_programa);
-
+                this.ocultarComponente(this.Cmp.id_tipo_cc);
             }
 
             if(record.data.ID == 'presupuesto'){
                 this.ocultarComponente(this.Cmp.id_categoria_programatica);
                 this.mostrarComponente(this.Cmp.id_presupuesto);
                 this.ocultarComponente(this.Cmp.id_cp_programa);
-
+                this.ocultarComponente(this.Cmp.id_tipo_cc);
+            }
+            if(record.data.ID == 'tipo_cc'){
+                this.ocultarComponente(this.Cmp.id_categoria_programatica);
+                this.ocultarComponente(this.Cmp.id_presupuesto);
+                this.ocultarComponente(this.Cmp.id_cp_programa);
+                this.mostrarComponente(this.Cmp.id_tipo_cc);
             }
 
 
@@ -473,6 +498,9 @@ Phx.vista.FormPartidaEjecutado = Ext.extend(Phx.frmInterfaz,{
         }
         if(this.Cmp.tipo_reporte.getValue()=='presupuesto'){
             this.Cmp.concepto.setValue(this.Cmp.id_presupuesto.getRawValue());
+        }
+        if(this.Cmp.tipo_reporte.getValue()=='tipo_cc'){
+            this.Cmp.concepto.setValue(this.Cmp.id_tipo_cc.getRawValue());
         }
 
         Phx.vista.FormPartidaEjecutado.superclass.onSubmit.call(this,o, x, force);

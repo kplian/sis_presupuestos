@@ -130,6 +130,7 @@ class MODMemoriaCalculo extends MODbase{
 		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
 		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
 		  $this->setParametro('id_partida','id_partida','int4');
+		  $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
 		
 		  //Definicion de la lista del resultado del query
 		 $this->captura('id_concepto','int4');
@@ -174,8 +175,7 @@ class MODMemoriaCalculo extends MODbase{
 		  $this->setParametro('tipo_pres','tipo_pres','VARCHAR');
 		  $this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
 		  $this->setParametro('nivel','nivel','int4');
-		  
-		 
+		  $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
 		
 		//Definicion de la lista del resultado del query
 		$this->captura('id_partida','int4');
@@ -378,7 +378,7 @@ class MODMemoriaCalculo extends MODbase{
 		$this->setParametro('tipo_reporte','tipo_reporte','VARCHAR');
 		$this->setParametro('id_partida','id_partida','int4');
 		$this->setParametro('tipo_rep','tipo_rep','varchar');
-
+        $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
 
 		//Definicion de la lista del resultado del query
 		$this->captura('id_concepto','int4');
@@ -396,6 +396,7 @@ class MODMemoriaCalculo extends MODbase{
 		$this->captura('importe','NUMERIC');
 		$this->captura('gestion','int4');
 		$this->captura('importe_periodo','varchar');
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		//var_dump($this->consulta);exit;

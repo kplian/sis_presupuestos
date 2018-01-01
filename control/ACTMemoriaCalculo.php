@@ -339,26 +339,33 @@ class ACTMemoriaCalculo extends ACTbase{
 
 		$this->objFunc = $this->create('MODMemoriaCalculo');
 		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){										
+			$nombreArchivo = uniqid(md5(session_id()).'[MemoriaCalculo-Mensual]') . '.pdf';
+			$dataSource = $cbteHeader;
+			$dataEmpresa = $this->recuperarDatosEmpresa();
+			//parametros basicos
+			$tamano = 'A3';
+			$orientacion = 'L';
+			$titulo = 'Consolidado';
+			$this->objParam->addParametro('orientacion',$orientacion);
+			$this->objParam->addParametro('tamano',$tamano);
+			$this->objParam->addParametro('titulo_archivo',$titulo);
+			$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+			$reporte = new RMemCalMensualPDF($this->objParam);
+			$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataEmpresa->getDatos());
+			$reporte->generarReporte();
+			$reporte->output($reporte->url_archivo,'F');
+			$this->mensajeExito=new Mensaje();
+			$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+			$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+			$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());			
+		}
+		else{
+			$cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}	
 
-		$nombreArchivo = uniqid(md5(session_id()).'[MemoriaCalculo-Mensual]') . '.pdf';
-		$dataSource = $cbteHeader;
-		$dataEmpresa = $this->recuperarDatosEmpresa();
-		//parametros basicos
-		$tamano = 'A3';
-		$orientacion = 'L';
-		$titulo = 'Consolidado';
-		$this->objParam->addParametro('orientacion',$orientacion);
-		$this->objParam->addParametro('tamano',$tamano);
-		$this->objParam->addParametro('titulo_archivo',$titulo);
-		$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
-		$reporte = new RMemCalMensualPDF($this->objParam);
-		$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataEmpresa->getDatos());
-		$reporte->generarReporte();
-		$reporte->output($reporte->url_archivo,'F');
-		$this->mensajeExito=new Mensaje();
-		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
-		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
-		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+		
 	}
 }
 

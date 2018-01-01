@@ -252,7 +252,6 @@ class ACTPartida extends ACTbase{
             $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
             exit;
         }
-
     }
     function listarPartidaEjecutado (){
 		$dataSource = $this->listarPartidaEjecutados();
@@ -269,10 +268,6 @@ class ACTPartida extends ACTbase{
 		$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
 		$this->mensajeExito->setArchivoGenerado($nombreArchivo);
 		$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
-
-
-
-
     }
 
 			

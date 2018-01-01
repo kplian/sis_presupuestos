@@ -90,7 +90,8 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 				width : 250,
 				listWidth : '280',
 				resizable : true,
-				minChars : 2
+				minChars : 2,
+				anchor:'100%'
 			},
             type:'AwesomeCombo',
             id_grupo:0,
@@ -117,13 +118,14 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 	        	data :	[
 		        	        ['programa','Programa'],
 		        	        ['categoria','Categoría Programática'],	
-							['presupuesto','Presupuesto']
+							['presupuesto','Presupuesto'],
+							['tipo_centro_de_costo','Tipo centro de costo']
 						]	        				
 	    		}),
 				valueField:'ID',
 				displayField:'valor',
 				width:250,			
-				
+				anchor:'100%'
 			},
 			type:'ComboBox',
 			id_grupo:1,
@@ -160,6 +162,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			   width: 150,
 			   listWidth: 280,
 			   minChars:2,
+			   anchor:'100%',
 			   tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo_categoria}</p><p>{descripcion}</p> </div></tpl>'
 			},
 			type:'ComboBox',
@@ -182,7 +185,25 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
             id_grupo: 0,
             form: true
         },
-		
+	   	{
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tipo_cc',
+	   				url:  '../../sis_parametros/control/TipoCc/listarTipoCcAll',
+	   				baseParams: {movimiento:'', _adicionar:'todos'},	   				
+	   				allowBlank:true,
+	   				width: 150,
+	   				anchor:'100%',
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			filters:{pfiltro:'vcc.codigo_tcc#vcc.descripcion_tcc',type:'string'},
+   		    grid:true,
+   			form:true
+	    },
 		{
 			
 			config: {
@@ -252,7 +273,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 				valueField:'ID',
 				displayField:'valor',
 				width:250,			
-				
+				anchor:'100%'
 			},
 			type:'ComboBox',
 			id_grupo:1,
@@ -275,8 +296,8 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 				}),
 				valueField:'ID',
 				displayField:'valor',
-				width:250
-
+				width:250,
+                anchor:'100%'
 			},
 			type:'ComboBox',
 			id_grupo:1,
@@ -300,7 +321,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 			this.ocultarComponente(this.Cmp.id_categoria_programatica);
 			this.ocultarComponente(this.Cmp.id_presupuesto);
 			this.ocultarComponente(this.Cmp.id_cp_programa);
-						
+			this.ocultarComponente(this.Cmp.id_tipo_cc);			
 			this.iniciarEventos();
 		},
 		
@@ -341,6 +362,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 					this.ocultarComponente(this.Cmp.id_categoria_programatica);
 					this.ocultarComponente(this.Cmp.id_presupuesto);
 					this.mostrarComponente(this.Cmp.id_cp_programa);
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
 					
 				}
 				
@@ -348,6 +370,7 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 					this.mostrarComponente(this.Cmp.id_categoria_programatica);
 					this.ocultarComponente(this.Cmp.id_presupuesto);
 					this.ocultarComponente(this.Cmp.id_cp_programa);
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
 					
 				}
 				
@@ -355,7 +378,14 @@ Phx.vista.FormRepMemoria = Ext.extend(Phx.frmInterfaz, {
 					this.ocultarComponente(this.Cmp.id_categoria_programatica);
 					this.mostrarComponente(this.Cmp.id_presupuesto);
 					this.ocultarComponente(this.Cmp.id_cp_programa);
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
 					
+				}
+				if(record.data.ID == 'tipo_centro_de_costo'){
+					this.ocultarComponente(this.Cmp.id_categoria_programatica);
+					this.ocultarComponente(this.Cmp.id_presupuesto);
+					this.ocultarComponente(this.Cmp.id_cp_programa);
+					this.mostrarComponente(this.Cmp.id_tipo_cc);
 				}
 				
 				

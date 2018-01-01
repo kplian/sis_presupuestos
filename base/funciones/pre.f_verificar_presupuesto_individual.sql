@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_individual (
   p_nro_tramite varchar,
   p_id_partida_ejecucion integer,
@@ -12,22 +10,22 @@ CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_individual (
 RETURNS varchar [] AS
 $body$
 /**************************************************************************
- SISTEMA:		Sistema de Presupuestos
- FUNCION: 		pre.f_verificar_presupuesto_individual
+ SISTEMA:   Sistema de Presupuestos
+ FUNCION:     pre.f_verificar_presupuesto_individual
  DESCRIPCION:   funcion que verifica si el monto puede procesarce
  
                 se asume que la moneda no puede varia entre comprometido ejecutado y pagado
                 para  hacer el calculo en moneda base y moneda de trasaccion            
  
   
- AUTOR: 		Rensi Arteaga Copari
- FECHA:	        24/03/2016
- COMENTARIOS:	
+ AUTOR:     Rensi Arteaga Copari
+ FECHA:         24/03/2016
+ COMENTARIOS: 
  -------------------------------
  MODIFICACIONES
- AUTOR: 		Rensi Arteaga Copari
- FECHA:	        29/06/2017
- COMENTARIOS:	SE agrega la opcion para permitir selecionar la logica de verifiaciones 
+ AUTOR:     Rensi Arteaga Copari
+ FECHA:         29/06/2017
+ COMENTARIOS: SE agrega la opcion para permitir selecionar la logica de verifiaciones 
                 es permitido  por presupeusto , por categoria programatica y se adiciona 
                 la logica para arboles en tipo_cc  ,
                 tambien opcionalmente la logica para controlar por partida o no
@@ -38,33 +36,36 @@ DECLARE
   verificado numeric[];
   v_consulta varchar;
   v_conexion varchar;
-  v_resp	varchar;
+  v_resp  varchar;
   v_sincronizar varchar;
  
   
-  v_nombre_funcion  		varchar;
+  v_nombre_funcion      varchar;
   
-  v_total_formulado 		numeric;
-  v_total_comprometido		numeric;
-  v_total_ejecutado			numeric;
-  v_total_pagado			numeric;
-  v_total_revertido			numeric;
-  v_saldo					numeric;
+  v_total_formulado     numeric;
+  v_total_comprometido    numeric;
+  v_total_ejecutado     numeric;
+  v_total_pagado      numeric;
+  v_total_revertido     numeric;
+  v_saldo         numeric;
   
-  v_total_formulado_mb 		numeric;
-  v_total_comprometido_mb	numeric;
-  v_total_ejecutado_mb		numeric;
-  v_total_revertido_mb		numeric;
-  v_saldo_mb				numeric;
-  v_total_pagado_mb			numeric;
+  v_total_formulado_mb    numeric;
+  v_total_comprometido_mb numeric;
+  v_total_ejecutado_mb    numeric;
+  v_total_revertido_mb    numeric;
+  v_saldo_mb        numeric;
+  v_total_pagado_mb     numeric;
   
   
-  v_respuesta						varchar[];
-  v_pre_verificar_categoria			varchar;
-  v_id_categoria_programatica		integer;
-  v_pre_verificar_tipo_cc			varchar;
-  v_id_tipo_cc_techo 				integer;
-  v_control_partida					varchar;
+  v_respuesta           varchar[];
+  v_pre_verificar_categoria     varchar;
+  v_id_categoria_programatica   integer;
+  v_pre_verificar_tipo_cc     varchar;
+  v_id_tipo_cc_techo        integer;
+  v_control_partida         varchar;
+  v_id_partida_aux          integer;
+  v_tipo              varchar;
+  v_tipo_movimiento           varchar;
   
 BEGIN
 
@@ -75,6 +76,46 @@ BEGIN
             v_pre_verificar_categoria = pxp.f_get_variable_global('pre_verificar_categoria');
             v_pre_verificar_tipo_cc = pxp.f_get_variable_global('pre_verificar_tipo_cc');
             v_control_partida = 'si'; --por defeto controlamos los monstos por partidas
+            
+            --RAC 30/12/2017, . Recuepra el tipo de partida recurso o gasto
+            
+            --recuperamos la partida ...
+           IF p_id_partida is not null THEN
+                 
+                 v_id_partida_aux = p_id_partida;
+            
+           ELSEIF p_id_partida_ejecucion is not null THEN              
+                
+                select  pe.id_partida into v_id_partida_aux   
+                from pre.tpartida_ejecucion pe 
+                where pe.id_partida_ejecucion = p_id_partida_ejecucion; 
+           END IF;
+            
+            
+             IF p_id_partida = 0 THEN
+             
+                  v_tipo = 'gasto';
+                  v_tipo_movimiento = 'presupuestaria';
+             ELSE
+             
+               select 
+                     p.tipo,
+                     p.sw_movimiento
+                  into
+                    v_tipo,
+                    v_tipo_movimiento
+                  from pre.tpartida p 
+                  where p.id_partida = v_id_partida_aux;
+                
+            END IF;
+            
+          
+            
+            
+            IF (p_monto_total_mb >= 0 and p_sw_momento  in ('formulado','comprometido')  and v_tipo is null)    or  (p_monto_total_mb < 0 and p_sw_momento  in ('formulado')  and v_tipo is null)THEN
+               RAISE exception 'REVISAR,....  No se encontro un tipo de partida definido para ID: %',p_id_partida;
+            END IF;
+            
             
             IF v_pre_verificar_categoria = 'si' THEN
                -- obtener categoria a partir del presupuesto
@@ -108,7 +149,7 @@ BEGIN
      
            -- si tenemos partida ejecucion  obtener partida y presupuesto
             
-           -- raise exception 'monto total.. %',p_monto_total_mb;
+            --raise exception 'monto total.. %',p_monto_total_mb;
         
             IF p_monto_total_mb >= 0 THEN
                    -- si el monto es positivo
@@ -128,6 +169,7 @@ BEGIN
                              into 
                                v_total_formulado_mb
                              from pre.tpartida_ejecucion pe
+                             inner join pre.tpartida par on  par.id_partida = pe.id_partida  and par.tipo = v_tipo  and par.sw_movimiento = v_tipo_movimiento  --RAC 03/01/2017
                              inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
                              inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                              inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
@@ -161,6 +203,8 @@ BEGIN
                         
                         ELSEIF p_sw_momento  = 'comprometido' THEN 
                         
+                     
+                        
                                --  verificar que el monto formulado - comprometido sea suficiente
                                
                                IF p_id_partida is null or p_id_presupuesto is null THEN
@@ -173,6 +217,7 @@ BEGIN
                                into 
                                  v_total_formulado_mb
                                from pre.tpartida_ejecucion pe
+                               inner join pre.tpartida par on  par.id_partida = pe.id_partida  and par.tipo = v_tipo  and par.sw_movimiento = v_tipo_movimiento  --RAC 03/01/2017
                                inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
                                inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                                inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
@@ -198,6 +243,7 @@ BEGIN
                               into 
                                  v_total_comprometido_mb
                               from pre.tpartida_ejecucion pe
+                              inner join pre.tpartida par on  par.id_partida = pe.id_partida  and par.tipo = v_tipo  and par.sw_movimiento = v_tipo_movimiento  --RAC 03/01/2017
                               inner join pre.tpresupuesto p on p.id_presupuesto = pe.id_presupuesto
                               inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                               inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
@@ -226,6 +272,8 @@ BEGIN
                               END IF;
                               
                              v_respuesta[2] = v_saldo_mb::varchar;
+                             
+                               --  raise exception 'llega  % -% =  % ', v_total_formulado_mb,v_total_comprometido_mb,  v_saldo_mb;
                            
                         
                         ------------------------
@@ -428,7 +476,7 @@ BEGIN
                                      and  (
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
-                                     		WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
+                                        WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
                                                   tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
@@ -469,6 +517,8 @@ BEGIN
                              END IF;
                               
                              v_respuesta[2] = v_saldo_mb::varchar;
+                             
+                            
                            
                           -------------------------------------
                           --  SI ES REVERSION DEL COMPROMETIDO 
@@ -480,6 +530,8 @@ BEGIN
                                       IF p_nro_tramite is null  THEN
                                            raise exception 'para revertir el comprometido necesitamos el número de tramite';
                                       END IF;
+                                      
+                                     --  raise exception 'saldo de reversion % = % - % :: %, %, p_id_partida_ejecucion %',v_saldo_mb, v_total_formulado_mb,v_total_comprometido_mb, p_id_partida, p_id_presupuesto, p_id_partida_ejecucion;
                                     
                                      --recuperar la partida y el presupuesto
                                      IF p_id_partida is null or p_id_presupuesto is null THEN
@@ -547,7 +599,9 @@ BEGIN
                                   ELSE  
                                     v_respuesta[3] = 'false';
                                     v_respuesta[4] = v_saldo::varchar;
-                                  END IF;        
+                                  END IF;   
+                                  
+                                   --raise exception 'saldo de reversion % = % - %',v_saldo_mb, v_total_formulado_mb,v_total_comprometido_mb;     
                                
                          -----------------------------------
                          --  SI ES REVERSION DEL EJECUTADO
@@ -703,13 +757,13 @@ BEGIN
 
 
 EXCEPTION
-					
-	WHEN OTHERS THEN
-			v_resp='';
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
-			raise exception '%',v_resp;
+          
+  WHEN OTHERS THEN
+      v_resp='';
+      v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+      v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+      v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+      raise exception '%',v_resp;
 END;
 $body$
 LANGUAGE 'plpgsql'

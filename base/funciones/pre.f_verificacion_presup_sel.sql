@@ -78,7 +78,11 @@ BEGIN
  	#TRANSACCION:  'PRE_VERPRE_SEL'
  	#DESCRIPCION:	Verifica la disponibilidad presupuestaria, consultando el saldo por comprometer
  	#AUTOR:			RCM	
- 	#FECHA:			27/12/2013
+    #FECHA:			27/12/2013
+    ------------------ modificaciones
+    #DESCRIPCION:	Consulta generica para verificar presupeusto, para obligacioens de pago y int_comprobante, considera la configuracion  categoria, presupuesto o tipo_cc
+ 	#AUTOR:			RAC	
+ 	#FECHA:			04/09/2017
 	***********************************/
 
 	if(p_transaccion='PRE_VERPRE_SEL')then

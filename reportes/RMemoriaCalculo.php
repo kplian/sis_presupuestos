@@ -368,7 +368,7 @@ class RMemoriaCalculo extends  ReportePDF {
             $this->tablealigns=array('R','R');
 	        $this->tablenumbers=array(0,2,);	
 	        $this->tableborders=array('T','LRTB');
-			 $this->SetFont('','B',8);
+			$this->SetFont('','B',8);
 	        
 	        $RowArray = array( 
 	                    'espacio' => 'TOTAL PARTIDA '.$this->ult_codigo_partida.':',
@@ -390,7 +390,7 @@ class RMemoriaCalculo extends  ReportePDF {
             $this->tablealigns=array('R','R');
 	        $this->tablenumbers=array(0,2,);	
 	        $this->tableborders=array('T','LRTB');
-			 $this->SetFont('','B',8);
+			$this->SetFont('','B',8);
 	        
 	        $RowArray = array( 
 	                    'espacio' => 'TOTAL '.$this->ult_concepto.':',
@@ -406,7 +406,8 @@ class RMemoriaCalculo extends  ReportePDF {
   function cerrarCuadroTotal(){
    	    	
    	    //si noes inicio termina el cuardro anterior	   	  
-		$this->tablewidths=array(10+50+50+80+15+20+15,25);
+		$this->tablewidths=array(10+50+50+80+15+10+10,40);
+		//$this->tablewidths=array(10+50+50+80+15+20+15,25);
         $this->tablealigns=array('C','R');
         $this->tablenumbers=array(0,2);	
         $this->tableborders=array('TB','LRTB');

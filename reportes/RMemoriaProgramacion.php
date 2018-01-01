@@ -78,8 +78,9 @@ class RMemoriaProgramacion extends  ReportePDF {
 		if($this->objParam->getParametro('tipo_reporte') =='presupuesto'){
 			$tmp = 'PRESUPUESTO';
 		}
-		
-		
+		if($this->objParam->getParametro('tipo_reporte') =='tipo_centro_de_costo'){
+			$tmp = 'TIPO CENTRO DE COSTO';
+		}
 		
 		$this->Cell($width1, $height, '', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         $this->Cell($width_c1, $height, $tmp.": ", 0, 0, 'L', false, '', 0, false, 'T', 'C');
@@ -93,7 +94,6 @@ class RMemoriaProgramacion extends  ReportePDF {
 		
 		$this->SetFont('','B',6);
 		$this->generarCabecera();
-		
 		
 	}
    
@@ -183,8 +183,17 @@ class RMemoriaProgramacion extends  ReportePDF {
 		
 		
 		if ($val['nivel_partida'] == 0){
-			 $this->SetFont('','BU',6);
-			 $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
+			
+			 if($this->objParam->getParametro('marcar_raiz') =='Si'){
+			 	$this->SetFont('','BU',6);
+				$this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
+				
+			 }
+			 else{
+				$this->SetFont('','',6);
+				$this->tableborders=array('LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR','LR');
+			 }
+			 
 			 $this->tablewidths=array(10,45,16,16,16,16,16,16,16,16,16,16,16,16,20);
 		     $this->tablealigns=array('L','L','R','R','R','R','R','R','R','R','R','R','R','R','R');
 		     $this->tablenumbers=array(0,0,2,2,2,2,2,2,2,2,2,2,2,2,2);

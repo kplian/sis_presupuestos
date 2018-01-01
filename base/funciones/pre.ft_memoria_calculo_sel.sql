@@ -7,11 +7,11 @@ CREATE OR REPLACE FUNCTION pre.ft_memoria_calculo_sel (
 RETURNS varchar AS
 $body$
 /**************************************************************************
- SISTEMA:		Sistema de Presupuesto
- FUNCION: 		pre.ft_memoria_calculo_sel
+ SISTEMA:   Sistema de Presupuesto
+ FUNCION:     pre.ft_memoria_calculo_sel
  DESCRIPCION:   Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.tmemoria_calculo'
- AUTOR: 		 (admin)
- FECHA:	        01-03-2016 14:22:24
+ AUTOR:      (admin)
+ FECHA:         01-03-2016 14:22:24
  COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
@@ -23,32 +23,37 @@ $body$
 
 DECLARE
 
-	v_consulta    		varchar;
-	v_parametros  		record;
-	v_nombre_funcion   	text;
-	v_resp				varchar;
-    v_filtro			varchar;
-    v_ordenacion		varchar;
-    v_titulares			varchar;
-    v_grupos			varchar;
+  v_consulta        varchar;
+  v_parametros      record;
+  v_nombre_funcion    text;
+  v_resp        varchar;
+    v_filtro      varchar;
+    v_ordenacion    varchar;
+    v_titulares     varchar;
+    v_grupos      varchar;
+    v_filtro_tipo_cc    varchar;
+    v_inner             varchar;
+    v_with              varchar;
+    v_tipo_cc           varchar;
+    v_where_aux        varchar;
 
 BEGIN
 
-	v_nombre_funcion = 'pre.ft_memoria_calculo_sel';
+  v_nombre_funcion = 'pre.ft_memoria_calculo_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************
- 	#TRANSACCION:  'PRE_MCA_SEL'
- 	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:		admin
- 	#FECHA:		01-03-2016 14:22:24
-	***********************************/
+  /*********************************
+  #TRANSACCION:  'PRE_MCA_SEL'
+  #DESCRIPCION: Consulta de datos
+  #AUTOR:   admin
+  #FECHA:   01-03-2016 14:22:24
+  ***********************************/
 
-	if(p_transaccion='PRE_MCA_SEL')then
+  if(p_transaccion='PRE_MCA_SEL')then
 
-    	begin
-    		--Sentencia de la consulta
-			v_consulta:='select
+      begin
+        --Sentencia de la consulta
+      v_consulta:='select
                             mca.id_memoria_calculo,
                             mca.id_concepto_ingas,
                             mca.importe_total,
@@ -67,7 +72,7 @@ BEGIN
                             par.id_partida,
                             (par.codigo||'' - ''|| par.nombre_partida)::varchar as desc_partida,
                             ges.gestion::varchar as desc_gestion
-						from pre.tmemoria_calculo mca
+            from pre.tmemoria_calculo mca
                         inner join pre.tpresupuesto pre on pre.id_presupuesto = mca.id_presupuesto
                         inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
                         inner join param.tconcepto_ingas cig on cig.id_concepto_ingas = mca.id_concepto_ingas
@@ -76,29 +81,29 @@ BEGIN
                         inner join pre.tpartida par on par.id_partida = cp.id_partida and par.id_gestion = cc.id_gestion
                         inner join segu.tusuario usu1 on usu1.id_usuario = mca.id_usuario_reg
                         left join segu.tusuario usu2 on usu2.id_usuario = mca.id_usuario_mod
-				        where  ';
+                where  ';
 
-			--Definicion de la respuesta
-			v_consulta:=v_consulta||v_parametros.filtro;
-			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+      --Definicion de la respuesta
+      v_consulta:=v_consulta||v_parametros.filtro;
+      v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
-			--Devuelve la respuesta
-			return v_consulta;
+      --Devuelve la respuesta
+      return v_consulta;
 
-		end;
+    end;
 
-	/*********************************
- 	#TRANSACCION:  'PRE_MCA_CONT'
- 	#DESCRIPCION:	Conteo de registros
- 	#AUTOR:		admin
- 	#FECHA:		01-03-2016 14:22:24
-	***********************************/
+  /*********************************
+  #TRANSACCION:  'PRE_MCA_CONT'
+  #DESCRIPCION: Conteo de registros
+  #AUTOR:   admin
+  #FECHA:   01-03-2016 14:22:24
+  ***********************************/
 
-	elsif(p_transaccion='PRE_MCA_CONT')then
+  elsif(p_transaccion='PRE_MCA_CONT')then
 
-		begin
-			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_memoria_calculo)
+    begin
+      --Sentencia de la consulta de conteo de registros
+      v_consulta:='select count(id_memoria_calculo)
                         from pre.tmemoria_calculo mca
                         inner join pre.tpresupuesto pre on pre.id_presupuesto = mca.id_presupuesto
                         inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
@@ -110,39 +115,40 @@ BEGIN
                         left join segu.tusuario usu2 on usu2.id_usuario = mca.id_usuario_mod
                         where  ';
 
-			--Definicion de la respuesta
-			v_consulta:=v_consulta||v_parametros.filtro;
+      --Definicion de la respuesta
+      v_consulta:=v_consulta||v_parametros.filtro;
 
-			--Devuelve la respuesta
-			return v_consulta;
+      --Devuelve la respuesta
+      return v_consulta;
 
-		end;
+    end;
 
-	/*********************************
- 	#TRANSACCION:  'PRE_MEMCAL_REP'
- 	#DESCRIPCION:	Consulta de datos para reporte de memoria
- 	#AUTOR:		RAC (KPLIAN)
- 	#FECHA:		22-04-2016 14:22:24
-	***********************************/
+  /*********************************
+      #TRANSACCION:  'PRE_MEMCAL_REP'
+  #DESCRIPCION: Consulta de datos para reporte de memoria
+  #AUTOR:   RAC (KPLIAN)
+  #FECHA:   22-04-2016 14:22:24
+  ***********************************/
 
-	elseif(p_transaccion='PRE_MEMCAL_REP')then
+  elseif(p_transaccion='PRE_MEMCAL_REP')then
 
-    	begin
+      begin
 
-           v_filtro = ' id_gestion =  '||v_parametros.id_gestion;
+           v_filtro = ' mcc.id_gestion =  '||v_parametros.id_gestion;
            v_ordenacion = '';
            v_titulares = '';
            v_grupos = '';
+           v_inner = '';
+           v_with = '';
 
             IF v_parametros.id_partida != 0 and v_parametros.id_partida is not null THEN
                 v_filtro = v_filtro||'  and id_partida = '||v_parametros.id_partida;
             END IF;
 
             --filtro de por tipo de presupeustos
-            v_filtro = v_filtro||'  and codigo_tipo_pres::integer in ('||v_parametros.tipo_pres||')';
+            v_filtro = v_filtro||'  and mcc.codigo_tipo_pres::integer in ('||v_parametros.tipo_pres||')';
 
-
-
+            
             IF v_parametros.tipo_reporte = 'presupuesto'  THEN
 
                  IF  v_parametros.id_presupuesto != 0 and v_parametros.id_presupuesto is not null THEN
@@ -166,7 +172,7 @@ BEGIN
                 v_titulares = 'id_categoria_programatica as id_concepto,
                                codigo_categoria::varchar as concepto,';
                 v_grupos = 'id_categoria_programatica,
-                					codigo_categoria,';
+                          codigo_categoria,';
                 v_ordenacion = 'id_categoria_programatica asc,';
 
 
@@ -181,15 +187,99 @@ BEGIN
                 v_titulares = 'id_cp_programa as id_concepto,
                                desc_programa::varchar as concepto,';
                 v_grupos = 'id_cp_programa,
-                				desc_programa,';
+                        desc_programa,';
                 v_ordenacion = 'id_cp_programa asc,';
+                
+                
+           ELSEIF v_parametros.tipo_reporte = 'tipo_centro_de_costo'  THEN  
 
-            END IF;
+                 IF  v_parametros.id_tipo_cc is not null THEN
+                  
+                      IF v_parametros.id_tipo_cc != 0  THEN
+                            v_where_aux =  'tcc.id_tipo_cc = '||v_parametros.id_tipo_cc;                       
+                      ELSE
+                            v_where_aux =  'tcc.id_tipo_cc_fk is null ';
+                      END IF;
 
+                             v_with :='WITH  tipo_centro_costo_aux (
+                                                                      id_tipo_cc,
+                                                                      codigo,
+                                                                      descripcion,
+                                                                      id_tipo_cc_raiz,
+                                                                      codigo_raiz,
+                                                                      descripcion_raiz,
+                                                                      movimiento) AS (
+                                              WITH RECURSIVE tipo_cc_rec (ids, id_tipo_cc, codigo, descripcion, id_tipo_cc_fk,movimiento ) AS (
+                                                                   SELECT 
+                                                                      ARRAY [ tcc.id_tipo_cc ] AS array, 
+                                                                      tcc.id_tipo_cc, codigo, descripcion ,  tcc.id_tipo_cc_fk, movimiento
+                                                                      FROM param.ttipo_cc tcc
+                                                                      WHERE  '||v_where_aux||' and tcc.estado_reg = ''activo''
+                                                                    UNION ALL
+                                                                      SELECT 
+                                                                      lrec.ids || tcc2.id_tipo_cc,
+                                                                      tcc2.id_tipo_cc, tcc2.codigo, tcc2.descripcion, tcc2.id_tipo_cc_fk, tcc2.movimiento
+                                                                      FROM tipo_cc_rec lrec 
+                                                                      INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                                                                      where tcc2.estado_reg = ''activo''
+                                                                    )
+                                                                  SELECT 
+                                                                      c.id_tipo_cc,
+                                                                      c.codigo,
+                                                                      c.descripcion,
+                                                                      cl.id_tipo_cc as id_tipo_cc_raiz,
+                                                                      cl.codigo as codigo_raiz,
+                                                                      cl.descripcion as descripcion_raiz,
+                                                                      c.movimiento
+                                                                  FROM tipo_cc_rec c
+                                                                  JOIN param.ttipo_cc cl ON cl.id_tipo_cc = c.ids [ 1 ]
+                                                                  where  c.movimiento = ''si'') ';   
+                                               
+                              
+                             v_inner := 'join param.tcentro_costo cc on cc.id_centro_costo = mcc.id_presupuesto
+                                         join tipo_centro_costo_aux aux on cc.id_tipo_cc = aux.id_tipo_cc ';
+                                              
+                                              
+                                              
+                             v_titulares = 'id_tipo_cc_raiz::integer as id_tipo_cc_raiz,
+                                            aux.descripcion::varchar as concepto,';
+                                             
+                             v_grupos = 'id_tipo_cc_raiz,
+                                          aux.descripcion,';
+                                           
+                              v_ordenacion = 'id_tipo_cc_raiz asc,';                 
+                          
+                 END IF;
+                 
+                
+              
+           END IF;
+            
 
-    		--Sentencia de la consulta
-			v_consulta:='SELECT
-                            '||v_titulares||'
+        --Sentencia de la consulta
+      v_consulta:=v_with||'
+                          SELECT
+                          '||v_titulares||'
+
+                          id_concepto_ingas,
+                          id_partida,
+                          codigo_partida,
+                          nombre_partida,
+                          descripcion_pres,
+                          desc_ingas,
+                          justificacion,
+                          unidad_medida,
+                          importe_unitario,
+                          cantidad_mem,
+                          sum(importe) as importe
+                        FROM
+                          pre.vmemoria_por_categoria mcc
+                       
+                        '||v_inner|| '
+                         WHERE '||v_filtro||'
+                        group by
+
+                            '||v_grupos||'
 
                             id_concepto_ingas,
                             id_partida,
@@ -201,46 +291,28 @@ BEGIN
                             unidad_medida,
                             importe_unitario,
                             cantidad_mem,
-                            sum(importe) as importe
-                          FROM
-                            pre.vmemoria_por_categoria
-                          WHERE '||v_filtro||'
-                          group by
+                            importe
 
-                              '||v_grupos||'
+                        order by
 
-                              id_concepto_ingas,
-                              id_partida,
-                              codigo_partida,
-                              nombre_partida,
-                              descripcion_pres,
-                              desc_ingas,
-                              justificacion,
-                              unidad_medida,
-                              importe_unitario,
-                              cantidad_mem,
-                              importe
-
-                          order by
-
-                              '||v_ordenacion||'
+                            '||v_ordenacion||'
                               codigo_partida asc ';
 
-			raise notice '..... % ......', v_consulta;
-			 --  Devuelve la respuesta
-			return v_consulta;
+      raise notice '..... % ......', v_consulta;
+       --  Devuelve la respuesta
+      return v_consulta;
 
-		end;
+    end;
 
     /*********************************
- 	#TRANSACCION:  'PRE_MEWF_REP'
- 	#DESCRIPCION:	Consulta de datos para reporte de memoria por wf
- 	#AUTOR:		MMV
- 	#FECHA:		26/7/2017
-	***********************************/
+  #TRANSACCION:  'PRE_MEWF_REP'
+  #DESCRIPCION: Consulta de datos para reporte de memoria por wf
+  #AUTOR:   MMV
+  #FECHA:   26/7/2017
+  ***********************************/
     elseif(p_transaccion='PRE_MEWF_REP')then
 
-    	begin
+      begin
         v_consulta:='SELECT
                             m.id_presupuesto as id_concepto,
                             m.codigo_cc::varchar as concepto,
@@ -257,7 +329,7 @@ BEGIN
                             sum(m.importe) as importe,
                             g.gestion
                           FROM pre.vmemoria_por_categoria m
-						  INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
+              INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
                           INNER JOIN param.tgestion g on g.id_gestion = m.id_gestion
                           WHERE p.id_proceso_wf  = '||v_parametros.id_proceso_wf||'
                           group by
@@ -280,20 +352,21 @@ BEGIN
                               m.codigo_partida asc ';
 
         raise notice '..... % ......', v_consulta;
-		--  Devuelve la respuesta
-		return v_consulta;
+    --  Devuelve la respuesta
+    return v_consulta;
     end;
     /*********************************
- 	#TRANSACCION:  'PRE_MECALMEN_REP'
- 	#DESCRIPCION:	Consulta de datos para reporte de memoria calculo mensual
- 	#AUTOR:		FRANKLIN ESPINOZA
- 	#FECHA:		03/08/2017
-	***********************************/
+  #TRANSACCION:  'PRE_MECALMEN_REP'
+  #DESCRIPCION: Consulta de datos para reporte de memoria calculo mensual
+  #AUTOR:   FRANKLIN ESPINOZA
+  #FECHA:   03/08/2017
+  ***********************************/
     elseif(p_transaccion='PRE_MECALMEN_REP')then
 
-    	begin
-    	IF(v_parametros.tipo_rep = 'periodos')THEN
-        	v_filtro = ' id_gestion =  '||v_parametros.id_gestion;
+      begin
+        
+      IF(v_parametros.tipo_rep = 'periodos')THEN
+          v_filtro = ' g.id_gestion =  '||v_parametros.id_gestion;
            v_ordenacion = '';
            v_titulares = '';
            v_grupos = '';
@@ -330,7 +403,7 @@ BEGIN
                 v_titulares = 'id_categoria_programatica as id_concepto,
                                codigo_categoria::varchar as concepto,';
                 v_grupos = 'id_categoria_programatica,
-                					codigo_categoria,';
+                          codigo_categoria,';
                 v_ordenacion = 'id_categoria_programatica asc,';
 
 
@@ -345,13 +418,64 @@ BEGIN
                 v_titulares = 'id_cp_programa as id_concepto,
                                desc_programa::varchar as concepto,';
                 v_grupos = 'id_cp_programa,
-                				desc_programa,';
+                        desc_programa,';
                 v_ordenacion = 'id_cp_programa asc,';
-
+            ELSEIF v_parametros.tipo_reporte = 'tipo_centro_de_costo'  THEN
+            
+                       IF  v_parametros.id_tipo_cc != 0 and v_parametros.id_tipo_cc is not null  THEN
+                           v_where_aux =  'tcc.id_tipo_cc = '||v_parametros.id_tipo_cc;   
+                       ELSE
+                           v_where_aux =  'tcc.id_tipo_cc_fk is null ';
+                       END IF;
+                       
+                       v_with :='WITH  tipo_centro_costo_aux (
+                                                                id_tipo_cc,
+                                                                codigo,
+                                                                descripcion,
+                                                                id_tipo_cc_raiz,
+                                                                codigo_raiz,
+                                                                descripcion_raiz,
+                                                                movimiento) AS (
+                                        WITH RECURSIVE tipo_cc_rec (ids, id_tipo_cc, codigo, descripcion, id_tipo_cc_fk,movimiento ) AS (
+                                                             SELECT 
+                                                                ARRAY [ tcc.id_tipo_cc ] AS array, 
+                                                                tcc.id_tipo_cc, codigo, descripcion ,  tcc.id_tipo_cc_fk, movimiento
+                                                                FROM param.ttipo_cc tcc
+                                                                WHERE  '||v_where_aux||' and tcc.estado_reg = ''activo''
+                                                              UNION ALL
+                                                                SELECT 
+                                                                lrec.ids || tcc2.id_tipo_cc,
+                                                                tcc2.id_tipo_cc, tcc2.codigo, tcc2.descripcion, tcc2.id_tipo_cc_fk, tcc2.movimiento
+                                                                FROM tipo_cc_rec lrec 
+                                                                INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                                                                where tcc2.estado_reg = ''activo''
+                                                              )
+                                                            SELECT 
+                                                                c.id_tipo_cc,
+                                                                c.codigo,
+                                                                c.descripcion,
+                                                                cl.id_tipo_cc as id_tipo_cc_raiz,
+                                                                cl.codigo as codigo_raiz,
+                                                                cl.descripcion as descripcion_raiz,
+                                                                c.movimiento
+                                                            FROM tipo_cc_rec c
+                                                            JOIN param.ttipo_cc cl ON cl.id_tipo_cc = c.ids [ 1 ]
+                                                            where  c.movimiento = ''si'') ';  
+                                                                        
+                       v_inner := 'join param.tcentro_costo cc on cc.id_centro_costo = m.id_presupuesto
+                                   join tipo_centro_costo_aux aux on cc.id_tipo_cc = aux.id_tipo_cc ';
+                       
+                       v_titulares = 'id_tipo_cc_raiz::integer as id_tipo_cc_raiz,
+                                      aux.descripcion::varchar as concepto,';
+                       v_grupos = 'id_tipo_cc_raiz,
+                                   aux.descripcion,';
+                       v_ordenacion = 'id_tipo_cc_raiz asc,' ; 
+                   
+                   
             END IF;
-
-    		--Sentencia de la consulta
-			v_consulta:='SELECT
+            
+        --Sentencia de la consulta
+      v_consulta:=v_with||'SELECT
                             '||v_titulares||'
 
                             id_concepto_ingas,
@@ -365,10 +489,12 @@ BEGIN
                             importe_unitario,
                             cantidad_mem,
                             sum(importe) as importe,
-                            m.gestion,
+                            g.gestion,
                             pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, m.cantidad_mem::integer, m.importe_unitario::integer) AS importe_periodo
                           FROM
                             pre.vmemoria_por_categoria m
+                            inner join param.tgestion g on g.id_gestion=m.id_gestion
+                            '||v_inner|| '
                           WHERE '||v_filtro||'
                           group by
 
@@ -385,12 +511,13 @@ BEGIN
                               importe_unitario,
                               cantidad_mem,
                               importe,
-							  m.id_memoria_calculo,
-                              m.gestion
+                m.id_memoria_calculo,
+                              g.gestion
                           order by
 
                               '||v_ordenacion||'
                               codigo_partida asc ';
+
         ELSE
         v_consulta:='SELECT
                             m.id_presupuesto as id_concepto,
@@ -409,11 +536,11 @@ BEGIN
                             g.gestion,
                             pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, (m.cantidad_mem)::integer, m.importe_unitario::integer) AS importe_periodo
                           FROM pre.vmemoria_por_categoria m
-						  INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
+              INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
                           INNER JOIN param.tgestion g on g.id_gestion = m.id_gestion
                           WHERE p.id_proceso_wf  = '||v_parametros.id_proceso_wf||'
                           group by
-                          	  m.id_memoria_calculo,
+                              m.id_memoria_calculo,
                               m.id_presupuesto,
                               m.codigo_cc,
                               m.id_concepto_ingas,
@@ -432,25 +559,27 @@ BEGIN
                               m.id_presupuesto asc,
                               m.codigo_partida asc ';
         END IF;
+        
+        --RAISE EXCEPTION 'error provocado %','provocado';
         raise notice 'consulta: %', v_consulta;
-		--  Devuelve la respuesta
-		return v_consulta;
+    --  Devuelve la respuesta
+    return v_consulta;
     end;
 
     else
 
-		raise exception 'Transaccion inexistente';
+    raise exception 'Transaccion inexistente';
 
-	end if;
+  end if;
 
 EXCEPTION
 
-	WHEN OTHERS THEN
-			v_resp='';
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
-			raise exception '%',v_resp;
+  WHEN OTHERS THEN
+      v_resp='';
+      v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+      v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+      v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+      raise exception '%',v_resp;
 END;
 $body$
 LANGUAGE 'plpgsql'

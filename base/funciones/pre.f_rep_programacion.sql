@@ -9,9 +9,9 @@ $body$
 DECLARE
 
 
-v_parametros  		record;
-v_nombre_funcion   	text;
-v_resp				varchar;
+v_parametros      record;
+v_nombre_funcion    text;
+v_resp        varchar;
 
 
 v_sw integer;
@@ -21,17 +21,18 @@ v_consulta varchar;
 v_registros  record;  -- PARA ALMACENAR EL CONJUNTO DE DATOS RESULTADO DEL SELECT
 
 
-v_i 				integer;
-v_nivel_inicial		integer;
-v_total 			numeric;
-v_tipo_cuenta		varchar;
-v_incluir_cierre	varchar;
-va_id_presupuesto	INTEGER[];
-va_id_periodo		integer[];
-v_nivel				integer;
-v_id_gestion		integer;
+v_i         integer;
+v_nivel_inicial   integer;
+v_total       numeric;
+v_tipo_cuenta   varchar;
+v_incluir_cierre  varchar;
+va_id_presupuesto INTEGER[];
+va_id_periodo   integer[];
+v_nivel       integer;
+v_id_gestion    integer;
 
-
+v_where_aux         varchar;
+v_with              varchar;
 BEGIN
 
      v_nombre_funcion = 'pre.f_rep_programacion';
@@ -45,7 +46,7 @@ BEGIN
      #FECHA:           26-04-2016
     ***********************************/
 
-	IF(p_transaccion='PRE_PROGR_REP')then
+  IF(p_transaccion='PRE_PROGR_REP')then
 
         --raise exception 'error';
 
@@ -62,7 +63,7 @@ BEGIN
                                 id_partida_fk integer,
                                 nivel_partida integer,
                                 sw_transaccional varchar,
-                                c1	numeric,
+                                c1  numeric,
                                 c2 NUMERIC,
                                 c3 NUMERIC,
                                 c4 NUMERIC,
@@ -74,7 +75,7 @@ BEGIN
                                 c10 NUMERIC,
                                 c11 NUMERIC,
                                 c12 NUMERIC,
-                                total	numeric,
+                                total numeric,
                                 procesado varchar) ON COMMIT DROP;
 
 
@@ -113,7 +114,59 @@ BEGIN
              ELSEIF v_parametros.tipo_reporte = 'presupuesto' and v_parametros.id_presupuesto is not null and v_parametros.id_presupuesto != 0 THEN
 
                    va_id_presupuesto[1] = v_parametros.id_presupuesto;
+             ELSEIF v_parametros.tipo_reporte = 'tipo_centro_de_costo'  THEN
 
+                  WITH  tipo_centro_costo_aux (
+                                                            id_tipo_cc,
+                                                            codigo,
+                                                            descripcion,
+                                                            id_tipo_cc_raiz,
+                                                            codigo_raiz,
+                                                            descripcion_raiz,
+                                                            movimiento) AS (
+                                    WITH RECURSIVE tipo_cc_rec (ids, id_tipo_cc, codigo, descripcion, id_tipo_cc_fk,movimiento ) AS (
+                                                         SELECT 
+                                                            ARRAY [ tcc.id_tipo_cc ] AS array, 
+                                                            tcc.id_tipo_cc, codigo, descripcion ,  tcc.id_tipo_cc_fk, movimiento
+                                                            FROM param.ttipo_cc tcc
+                                                            WHERE 
+                                                             case  WHEN  v_parametros.id_tipo_cc != 0 then
+                                                                   tcc.id_tipo_cc = v_parametros.id_tipo_cc  
+                                                             else
+                                                                    tcc.id_tipo_cc_fk is null 
+                                                             end   
+                                                             
+                                                             and tcc.estado_reg = 'activo'
+                                                          UNION ALL
+                                                            SELECT 
+                                                            lrec.ids || tcc2.id_tipo_cc,
+                                                            tcc2.id_tipo_cc, tcc2.codigo, tcc2.descripcion, tcc2.id_tipo_cc_fk, tcc2.movimiento
+                                                            FROM tipo_cc_rec lrec 
+                                                            INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                                                            where tcc2.estado_reg = 'activo'
+                                                          )
+                                                        SELECT 
+                                                            c.id_tipo_cc,
+                                                            c.codigo,
+                                                            c.descripcion,
+                                                            cl.id_tipo_cc as id_tipo_cc_raiz,
+                                                            cl.codigo as codigo_raiz,
+                                                            cl.descripcion as descripcion_raiz,
+                                                            c.movimiento
+                                                        FROM tipo_cc_rec c
+                                                        JOIN param.ttipo_cc cl ON cl.id_tipo_cc = c.ids [ 1 ]
+                                                        where  c.movimiento = 'si')
+
+                    select 
+                         pxp.aggarray(pre.id_presupuesto)
+                      into 
+                          va_id_presupuesto
+                    from pre.tpresupuesto pre
+                    inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
+                    inner join  tipo_centro_costo_aux a on a.id_tipo_cc = cc.id_tipo_cc;
+                    
+                    
+                    --RAISE exception 'error provocado por juan % ',va_id_presupuesto;                                    
              ELSE
 
                    SELECT
@@ -253,7 +306,7 @@ BEGIN
        --raise exception 'llega';
         FOR v_registros in (
                               SELECT
-       							  id_partida,
+                      id_partida,
                                   codigo_partida,
                                   nombre_partida,
                                   nivel_partida,
@@ -295,7 +348,7 @@ BEGIN
      #FECHA:           27-07-2017
     ***********************************/
 
-	ELSIF(p_transaccion='PRE_PROGR_WF')then
+  ELSIF(p_transaccion='PRE_PROGR_WF')then
     BEGIN
 
     CREATE TEMPORARY TABLE temp_prog (id_partida integer,
@@ -309,21 +362,21 @@ BEGIN
                                       gestion integer,
                                       nivel_partida integer,
                                       sw_transaccional varchar,
-                                      c1	NUMERIC,
-                                      c2 	NUMERIC,
-                                      c3 	NUMERIC,
-                                      c4 	NUMERIC,
-                                      c5 	NUMERIC,
-                                      c6 	NUMERIC,
-                                      c7 	NUMERIC,
-                                      c8 	NUMERIC,
-                                      c9 	NUMERIC,
+                                      c1  NUMERIC,
+                                      c2  NUMERIC,
+                                      c3  NUMERIC,
+                                      c4  NUMERIC,
+                                      c5  NUMERIC,
+                                      c6  NUMERIC,
+                                      c7  NUMERIC,
+                                      c8  NUMERIC,
+                                      c9  NUMERIC,
                                       c10 NUMERIC,
                                       c11 NUMERIC,
                                       c12 NUMERIC,
-                                      total	numeric,
+                                      total numeric,
                                       procesado varchar) ON COMMIT DROP;
-    	select a.id_gestion
+      select a.id_gestion
         into
         v_id_gestion
         from pre.tpresup_partida p
@@ -343,7 +396,7 @@ BEGIN
                     order by per.periodo asc) periodo;
 
 
-    FOR v_registros in (select 	 fm.id_partida,
+    FOR v_registros in (select   fm.id_partida,
                                  fm.id_partida_fk,
                                  fm.id_gestion,
                                  fm.codigo_partida,
@@ -436,7 +489,7 @@ BEGIN
 
         FOR v_registros in (
                               SELECT
-       							  id_partida,
+                      id_partida,
                                   codigo_partida,
                                   nombre_partida,
                                   nivel_partida,
@@ -477,12 +530,12 @@ END IF;
 
 EXCEPTION
 
-	WHEN OTHERS THEN
-		v_resp='';
-		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
-		raise exception '%',v_resp;
+  WHEN OTHERS THEN
+    v_resp='';
+    v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+    v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+    v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+    raise exception '%',v_resp;
 
 END;
 $body$

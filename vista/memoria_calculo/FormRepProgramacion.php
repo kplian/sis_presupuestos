@@ -129,7 +129,8 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 	        	data :	[
 		        	        ['programa','Programa'],
 		        	        ['categoria','Categoría Programática'],	
-							['presupuesto','Presupuesto']
+							['presupuesto','Presupuesto'],
+							['tipo_centro_de_costo','Tipo centro de costo']
 						]	        				
 	    		}),
 				valueField:'ID',
@@ -194,7 +195,25 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
             id_grupo: 0,
             form: true
         },
-		
+	   	{
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tipo_cc',
+	   				url:  '../../sis_parametros/control/TipoCc/listarTipoCcAll',
+	   				baseParams: {movimiento:'', _adicionar:'todos'},	   				
+	   				allowBlank:true,
+	   				width: 150,
+	   				anchor:'100%',
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			filters:{pfiltro:'vcc.codigo_tcc#vcc.descripcion_tcc',type:'string'},
+   		    grid:true,
+   			form:true
+	    },
 		{
 			
 			config: {
@@ -285,11 +304,42 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 			type:'ComboBox',
 			id_grupo:1,
 			form:true
-		}],
-		
-		
-		title : 'Reporte Libro Compras Ventas IVA',		
-		ActSave : '../../sis_presupuestos/control/MemoriaCalculo/reporteMemoriaCalculo',
+		},
+        {
+                config: {
+                       name: 'marcar_raiz',
+                       fieldLabel: '¿Marcar raíz?',
+                       allowBlank: false,
+                       emptyText: 'Elija una opción...',
+                       store: new Ext.data.ArrayStore({
+	                        id: 0,
+	                        fields: [
+	                            'marcar_raiz'
+	                        ],
+	                        data: [['Si'], ['No']]
+                       }),
+                       valueField: 'marcar_raiz',
+                       displayField: 'marcar_raiz',
+                       gdisplayField: 'marcar_raiz',
+                       hiddenName: 'marcar_raiz',
+                       //forceSelection: true,
+                       typeAhead: false,
+                       triggerAction: 'all',
+                       lazyRender: true,
+                       mode: 'local',
+                       pageSize: 15,
+                       queryDelay: 1000,
+                       anchor: '80%',
+                       gwidth: 150,
+                       minChars: 2,
+                },
+                type: 'ComboBox',
+                id_grupo: 0,
+                filters: {pfiltro: 'marcar_raiz',type: 'string'},
+                grid: false,
+                form: true
+        },
+		],
 		
 		topBar : true,
 		botones : false,
@@ -300,10 +350,12 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 			Phx.vista.FormRepProgramacion.superclass.constructor.call(this, config);
 			this.init();
 			
+			this.Cmp.marcar_raiz.setValue('No');
+			
 			this.ocultarComponente(this.Cmp.id_categoria_programatica);
 			this.ocultarComponente(this.Cmp.id_presupuesto);
 			this.ocultarComponente(this.Cmp.id_cp_programa);
-						
+			this.ocultarComponente(this.Cmp.id_tipo_cc);				
 			this.iniciarEventos();
 		},
 		
@@ -334,27 +386,33 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 				this.Cmp.id_categoria_programatica.reset();
 				this.Cmp.id_presupuesto.reset();
 				this.Cmp.id_cp_programa.reset();
-				
+				this.Cmp.id_tipo_cc.reset();
 				console.log('--->',record.data.ID)
 				if(record.data.ID == 'programa'){
 					this.ocultarComponente(this.Cmp.id_categoria_programatica);
 					this.ocultarComponente(this.Cmp.id_presupuesto);
 					this.mostrarComponente(this.Cmp.id_cp_programa);
-					
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
 				}
 				
 				if(record.data.ID == 'categoria'){
 					this.mostrarComponente(this.Cmp.id_categoria_programatica);
 					this.ocultarComponente(this.Cmp.id_presupuesto);
 					this.ocultarComponente(this.Cmp.id_cp_programa);
-					
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
 				}
 				
 				if(record.data.ID == 'presupuesto'){
 					this.ocultarComponente(this.Cmp.id_categoria_programatica);
 					this.mostrarComponente(this.Cmp.id_presupuesto);
 					this.ocultarComponente(this.Cmp.id_cp_programa);
-					
+					this.ocultarComponente(this.Cmp.id_tipo_cc);
+				}
+				if(record.data.ID == 'tipo_centro_de_costo'){
+					this.ocultarComponente(this.Cmp.id_categoria_programatica);
+					this.ocultarComponente(this.Cmp.id_presupuesto);
+					this.ocultarComponente(this.Cmp.id_cp_programa);
+					this.mostrarComponente(this.Cmp.id_tipo_cc);
 				}
 				
 				
@@ -404,6 +462,9 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
 		if(this.Cmp.tipo_reporte.getValue()=='presupuesto'){
 			this.Cmp.concepto.setValue(this.Cmp.id_presupuesto.getRawValue());
 		}
+		if(this.Cmp.tipo_reporte.getValue()=='id_tipo_cc'){
+			this.Cmp.concepto.setValue(this.Cmp.id_tipo_cc.getRawValue());
+		}
 		
 		Phx.vista.FormRepProgramacion.superclass.onSubmit.call(this,o, x, force);
 	},
@@ -427,7 +488,7 @@ Phx.vista.FormRepProgramacion = Ext.extend(Phx.frmInterfaz, {
         else{
         	window.open('../../../reportes_generados/'+nomRep+'?t='+new Date().toLocaleTimeString())
         }
-       
+
 	}
 })
 </script>
