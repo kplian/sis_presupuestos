@@ -74,184 +74,162 @@ BEGIN
      inner join pre.vpresupuesto_cc cc on cc.id_presupuesto = p.id_presupuesto
      where p.id_partida_ejecucion = p_id_partida_ejecucion;
      
-    --raise exception 'entra % , %',v_gestion, p_id_partida_ejecucion;
-      IF(v_sincronizar='true' and (v_gestion <= 2016 or v_gestion is null))THEN
-      	
-            --si la sincronizacion esta activa busca lso datos en endesis
-            v_conexion:=migra.f_obtener_cadena_conexion();
-            
-            v_consulta:='select  p_comprometido, p_ejecutado, p_pagado from   presto."f_pr_verificar_comprometido3" ('||COALESCE(p_id_partida_ejecucion::varchar,'NULL')||','||COALESCE(p_id_moneda::varchar,'NULL')||')';
-          	
-            if (p_conexion is null) then   
-                select  * into verificado from dblink(v_conexion,v_consulta,true) as (p_comprometido numeric, p_ejecutado numeric, p_pagado numeric);
-            else
-                select  * into verificado from dblink(p_conexion,v_consulta,true) as (p_comprometido numeric, p_ejecutado numeric, p_pagado numeric);
-            end if;
-          
-          --raise exception '% %',v_consulta,v_conexion;
-          
-           ps_comprometido= verificado.p_comprometido;
-           ps_ejecutado= verificado.p_ejecutado;
-           ps_pagado= verificado.p_pagado;
-      
-      
-      ELSE 
-     
-            -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
-            IF  p_tipo_control = 'nro_tramite' THEN
-               -- esta aprte funciona bien con nro de tramite 
-               -- pero es necesario una similar a laversion de endesis
-               --  que separa por partida ejeucion  por la necesida d de compatibilidad
+   
+      -- si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
+          IF  p_tipo_control = 'nro_tramite' THEN
+             -- esta aprte funciona bien con nro de tramite 
+             -- pero es necesario una similar a laversion de endesis
+             --  que separa por partida ejeucion  por la necesida d de compatibilidad
                
-               --13/11/2017, se habilitar la versifcion por nro de tramite en ETR
+             --13/11/2017, se habilitar la versifcion por nro de tramite en ETR
             
-                    select 
-                        pe.nro_tramite,
-                        pe.id_presupuesto,
-                        pe.id_partida,
-                        pe.id_moneda
-                    into
-                        v_nro_tramite,
-                        v_id_presupuesto,
-                        v_id_partida,
-                        v_id_moneda
-                   from pre.tpartida_ejecucion pe
-                   where pe.id_partida_ejecucion = p_id_partida_ejecucion; 
+                  select 
+                      pe.nro_tramite,
+                      pe.id_presupuesto,
+                      pe.id_partida,
+                      pe.id_moneda
+                  into
+                      v_nro_tramite,
+                      v_id_presupuesto,
+                      v_id_partida,
+                      v_id_moneda
+                 from pre.tpartida_ejecucion pe
+                 where pe.id_partida_ejecucion = p_id_partida_ejecucion; 
                        
               
-                  IF v_id_moneda != p_id_moneda THEN
-                    raise exception 'La moneda indicada no se corresponde con la moneda de la transacción';
-                  END IF;
+                IF v_id_moneda != p_id_moneda THEN
+                  raise exception 'La moneda indicada no se corresponde con la moneda de la transacción';
+                END IF;
                 
-                 --  listamos el monto comprometido 
+               --  listamos el monto comprometido 
                                   
-                 select
+               select
+                 sum(pe.monto_mb),
+                 sum(pe.monto)
+               into
+                 v_total_comprometido_mb,
+                 v_total_comprometido
+               from pre.tpartida_ejecucion pe
+               where pe.estado_reg = 'activo'
+                     and pe.id_partida = v_id_partida
+                     and pe.id_presupuesto = v_id_presupuesto
+                     and pe.nro_tramite = v_nro_tramite
+                     and pe.tipo_movimiento = 'comprometido';      
+                                         
+                                         
+              --listamso el monto ejectuado
+                                
+               select
                    sum(pe.monto_mb),
                    sum(pe.monto)
                  into
-                   v_total_comprometido_mb,
-                   v_total_comprometido
+                   v_total_ejecutado_mb,
+                   v_total_ejecutado
                  from pre.tpartida_ejecucion pe
                  where pe.estado_reg = 'activo'
                        and pe.id_partida = v_id_partida
                        and pe.id_presupuesto = v_id_presupuesto
                        and pe.nro_tramite = v_nro_tramite
-                       and pe.tipo_movimiento = 'comprometido';      
-                                         
-                                         
-                --listamso el monto ejectuado
-                                
-                 select
-                     sum(pe.monto_mb),
-                     sum(pe.monto)
-                   into
-                     v_total_ejecutado_mb,
-                     v_total_ejecutado
-                   from pre.tpartida_ejecucion pe
-                   where pe.estado_reg = 'activo'
-                         and pe.id_partida = v_id_partida
-                         and pe.id_presupuesto = v_id_presupuesto
-                         and pe.nro_tramite = v_nro_tramite
-                         and pe.tipo_movimiento = 'ejecutado';
+                       and pe.tipo_movimiento = 'ejecutado';
                  
-                  --listamso el monto pagado
-                 select
-                     sum(pe.monto_mb),
-                     sum(pe.monto)
-                   into
-                     v_total_pagado_mb,
-                     v_total_pagado
-                   from pre.tpartida_ejecucion pe
-                   where pe.estado_reg = 'activo'
-                         and pe.id_partida = v_id_partida
-                         and pe.id_presupuesto = v_id_presupuesto
-                         and pe.nro_tramite = v_nro_tramite
-                         and pe.tipo_movimiento = 'pagado';
+                --listamso el monto pagado
+               select
+                   sum(pe.monto_mb),
+                   sum(pe.monto)
+                 into
+                   v_total_pagado_mb,
+                   v_total_pagado
+                 from pre.tpartida_ejecucion pe
+                 where pe.estado_reg = 'activo'
+                       and pe.id_partida = v_id_partida
+                       and pe.id_presupuesto = v_id_presupuesto
+                       and pe.nro_tramite = v_nro_tramite
+                       and pe.tipo_movimiento = 'pagado';
                
                 
-                ps_comprometido = v_total_comprometido;
-                ps_ejecutado = v_total_ejecutado;
-                ps_pagado = v_total_pagado;
+              ps_comprometido = v_total_comprometido;
+              ps_ejecutado = v_total_ejecutado;
+              ps_pagado = v_total_pagado;
       
-         ELSE
+       ELSE
          
-                 --  recuperar la raiz
-                  WITH RECURSIVE path_rec(id_partida_ejecucion, id_partida_ejecucion_fk ) AS (
-                      SELECT  
-                        pe.id_partida_ejecucion,
-                        pe.id_partida_ejecucion_fk
-                      FROM pre.tpartida_ejecucion pe 
-                      WHERE pe.id_partida_ejecucion = p_id_partida_ejecucion
+               --  recuperar la raiz
+                WITH RECURSIVE path_rec(id_partida_ejecucion, id_partida_ejecucion_fk ) AS (
+                    SELECT  
+                      pe.id_partida_ejecucion,
+                      pe.id_partida_ejecucion_fk
+                    FROM pre.tpartida_ejecucion pe 
+                    WHERE pe.id_partida_ejecucion = p_id_partida_ejecucion
               	
-                      UNION
-                      SELECT
-                        pe2.id_partida_ejecucion,
-                        pe2.id_partida_ejecucion_fk
-                      FROM pre.tpartida_ejecucion pe2
-                      inner join path_rec  pr on pe2.id_partida_ejecucion = pr.id_partida_ejecucion_fk
+                    UNION
+                    SELECT
+                      pe2.id_partida_ejecucion,
+                      pe2.id_partida_ejecucion_fk
+                    FROM pre.tpartida_ejecucion pe2
+                    inner join path_rec  pr on pe2.id_partida_ejecucion = pr.id_partida_ejecucion_fk
                       
               	     
-                  )
-                  SELECT 
-                    id_partida_ejecucion 
-                  into
-                    id_partida_ejecucion_raiz
-                  FROM path_rec order by id_partida_ejecucion limit 1 offset 0;
+                )
+                SELECT 
+                  id_partida_ejecucion 
+                into
+                  id_partida_ejecucion_raiz
+                FROM path_rec order by id_partida_ejecucion limit 1 offset 0;
                   
                  
-                 --suma todos los miembro segun su tipo 
-                 FOR v_registros in ( 
-                                    WITH RECURSIVE path_rec(
-                                            id_partida_ejecucion, 
-                                            id_partida_ejecucion_fk,
-                                            monto,
-                                            monto_mb,
-                                            tipo_movimiento ) AS (
+               --suma todos los miembro segun su tipo 
+               FOR v_registros in ( 
+                                  WITH RECURSIVE path_rec(
+                                          id_partida_ejecucion, 
+                                          id_partida_ejecucion_fk,
+                                          monto,
+                                          monto_mb,
+                                          tipo_movimiento ) AS (
                                             
-                                        SELECT  
-                                          pe.id_partida_ejecucion,
-                                          pe.id_partida_ejecucion_fk,
-                                          pe.monto,
-                                          pe.monto_mb,
-                                          pe.tipo_movimiento
+                                      SELECT  
+                                        pe.id_partida_ejecucion,
+                                        pe.id_partida_ejecucion_fk,
+                                        pe.monto,
+                                        pe.monto_mb,
+                                        pe.tipo_movimiento
                                           
-                                        FROM pre.tpartida_ejecucion pe 
-                                        WHERE pe.id_partida_ejecucion = id_partida_ejecucion_raiz
+                                      FROM pre.tpartida_ejecucion pe 
+                                      WHERE pe.id_partida_ejecucion = id_partida_ejecucion_raiz
                                 	
-                                        UNION
-                                        SELECT
-                                          pe2.id_partida_ejecucion,
-                                          pe2.id_partida_ejecucion_fk,
-                                          pe2.monto,
-                                          pe2.monto_mb,
-                                          pe2.tipo_movimiento
-                                        FROM pre.tpartida_ejecucion pe2
-                                        inner join path_rec  pr on pe2.id_partida_ejecucion_fk = pr.id_partida_ejecucion
-                                    )
-                                     SELECT  
-                                              sum(monto) as total,
-                                              sum(monto_mb) as total_mb,
-                                              tipo_movimiento 
-                                            FROM path_rec 
-                                            group by  tipo_movimiento) LOOP
+                                      UNION
+                                      SELECT
+                                        pe2.id_partida_ejecucion,
+                                        pe2.id_partida_ejecucion_fk,
+                                        pe2.monto,
+                                        pe2.monto_mb,
+                                        pe2.tipo_movimiento
+                                      FROM pre.tpartida_ejecucion pe2
+                                      inner join path_rec  pr on pe2.id_partida_ejecucion_fk = pr.id_partida_ejecucion
+                                  )
+                                   SELECT  
+                                            sum(monto) as total,
+                                            sum(monto_mb) as total_mb,
+                                            tipo_movimiento 
+                                          FROM path_rec 
+                                          group by  tipo_movimiento) LOOP
                  
                  
                  
-                         IF v_registros.tipo_movimiento = 'comprometido' THEN
-                             ps_comprometido = v_registros.total;
-                         ELSIF v_registros.tipo_movimiento = 'ejecutado' THEN
-                             ps_ejecutado = v_registros.total;
-                         ELSIF v_registros.tipo_movimiento = 'pagado' THEN
-                             ps_pagado = v_registros.total;
-                         ELSE
-                            raise exception 'momento no reconocido %' , v_registros.tipo_movimiento; 
-                         END IF;
+                       IF v_registros.tipo_movimiento = 'comprometido' THEN
+                           ps_comprometido = v_registros.total;
+                       ELSIF v_registros.tipo_movimiento = 'ejecutado' THEN
+                           ps_ejecutado = v_registros.total;
+                       ELSIF v_registros.tipo_movimiento = 'pagado' THEN
+                           ps_pagado = v_registros.total;
+                       ELSE
+                          raise exception 'momento no reconocido %' , v_registros.tipo_movimiento; 
+                       END IF;
                  
-                 END LOOP;
+               END LOOP;
               
          
-         END IF;
-      END IF;
+       END IF;
+    
       
      
  ELSE
