@@ -68,13 +68,15 @@ BEGIN
              cc.id_gestion,
              ges.gestion,
              tp.sw_oficial,
-             pre.tipo_pres
+             pre.tipo_pres,
+             tcc.control_techo
           into
             v_registros
           from pre.tpresupuesto pre
           inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
           inner join param.tgestion ges on ges.id_gestion = cc.id_gestion
           inner join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
+          inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
           where pre.id_proceso_wf = p_id_proceso_wf;
           
           IF v_registros.tipo_pres  is null  THEN
@@ -92,11 +94,11 @@ BEGIN
                  and pp.estado_reg = 'activo';
                  
                  
-         
+         --TODO validar que 
           
           IF v_registros.sw_oficial = 'si' THEN
-               IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) THEN 
-                  raise exception 'No tiene ningun monto aprobado mayor a cero';
+               IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) and v_registros.control_techo = 'si' THEN 
+                  raise exception 'No tiene ningun monto aprobado mayor a cero.';
                END IF; 
           ELSE
               IF (v_importe_total is null or  v_importe_total = 0) THEN 

@@ -87,9 +87,11 @@ BEGIN
 
            IF v_parametros.tipo_interfaz = 'PresupuestoFor' THEN
                   IF p_administrador !=1 THEN
-                      --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
-                  	  v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-                      v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                  	 -- v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+                       v_join_responsables = '';
+                      
+                      --v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
                   ELSE
                       v_filadd = ' (lower(pre.estado)  in (''formulacion'')) and ';
                   END IF;
@@ -97,8 +99,10 @@ BEGIN
 
             IF v_parametros.tipo_interfaz = 'PresupuestoVb' THEN
                  IF p_administrador !=1 THEN
-                     -- v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
-                  	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                      --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	   v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''vobopre'')) and ';
+                  	
+                    --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   ELSE
                      -- v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                   	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
@@ -118,8 +122,8 @@ BEGIN
                 IF p_administrador !=1 THEN
                       v_sw_distinc = ' DISTINCT ';
                       -- si noes adminsitrador solo funcionarios autorizados pueden visualizar
-                      v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-
+                     -- v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+                       v_join_responsables = '';
                   END IF;
                   v_filadd = ' (lower(pre.estado)  in (''aprobado'')) and ';
              END IF;
@@ -207,12 +211,14 @@ BEGIN
            END IF;
 
 
-            --  si el usuario no es administrador y la interfaz no es PresupuestoInicio
-            --  filtramos por el funcionario
+           --  si el usuario no es administrador y la interfaz no es PresupuestoInicio
+           --  filtramos por el funcionario
 
-            IF v_parametros.tipo_interfaz = 'PresupuestoFor' THEN
+           IF v_parametros.tipo_interfaz = 'PresupuestoFor' THEN
                   IF p_administrador !=1 THEN
                       v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                  	  v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+                      --v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
                   ELSE
                       v_filadd = ' (lower(pre.estado)  in (''formulacion'')) and ';
                   END IF;
@@ -220,34 +226,33 @@ BEGIN
 
             IF v_parametros.tipo_interfaz = 'PresupuestoVb' THEN
                  IF p_administrador !=1 THEN
-                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                      --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	   v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''vobopre'')) and ';
+                  	
+                    --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   ELSE
-                      v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                     -- v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   END IF;
             END IF;
 
-           IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
+            IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
                  IF p_administrador !=1 THEN
-                     v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';
+                     v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''vobopre'')) and ';                
                  ELSE
-                      v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                      v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';                
                  END IF;
             END IF;
 
 
             IF v_parametros.tipo_interfaz = 'PresupuestoReporte' THEN
-
                 IF p_administrador !=1 THEN
-
-
                       v_sw_distinc = ' DISTINCT ';
                       -- si noes adminsitrador solo funcionarios autorizados pueden visualizar
                       v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
 
                   END IF;
-
                   v_filadd = ' (lower(pre.estado)  in (''aprobado'')) and ';
-
              END IF;
 
 
