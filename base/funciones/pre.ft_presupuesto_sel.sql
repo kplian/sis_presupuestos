@@ -249,8 +249,8 @@ BEGIN
                 IF p_administrador !=1 THEN
                       v_sw_distinc = ' DISTINCT ';
                       -- si noes adminsitrador solo funcionarios autorizados pueden visualizar
-                      v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-
+                      --v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+                      v_join_responsables = '';
                   END IF;
                   v_filadd = ' (lower(pre.estado)  in (''aprobado'')) and ';
              END IF;

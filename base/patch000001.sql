@@ -972,5 +972,85 @@ IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupeusto comp
 
 
 
+/*****************************I-SCP-RAC-PRE-0-03/02/2018*************/
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.ttipo_presupuesto
+  ADD COLUMN codigo_alterno VARCHAR(10);
+  
+/*****************************F-SCP-RAC-PRE-0-03/02/2018*************/
+  
+ 
+ 
+  
+  
+ /*****************************I-SCP-RAC-PRE-0-05/02/2018*************/
+   
+  --------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_anticipo NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo
+IS 'monto anticipo en moenda original, (si la ejecucion correponde a un anticipo)';
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_anticipo_mb NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipado_mb
+IS 'monto anticipado en moenda base';
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_desc_anticipo NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo
+IS 'descuentos de anticipo en moenda original (es el monto que no se ejecuta por que se desconto de un anticipo)';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_desc_anticipo_mb NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo_mb
+IS 'monto descuento de anticipo en moenda base';
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN glosa VARCHAR;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.glosa
+IS 'descripcion de la trasaccion';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_iva_revertido NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido
+IS 'monto de iva revertido en moenda original';
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN monto_iva_revertido_mb NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido_mb
+IS 'monto iva revertido en moenda base';
+
+
+  
+ /*****************************F-SCP-RAC-PRE-0-05/02/2018*************/
+  
+  
 
 

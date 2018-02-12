@@ -8,7 +8,6 @@
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
-
 <script>
     Phx.vista.FormFiltro=Ext.extend(Phx.frmInterfaz,{
         constructor:function(config)
@@ -30,6 +29,17 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.vista.FormFiltro.superclass.constructor.call(this,config);
             this.init();
             this.iniciarEventos();
+            
+            if(config.detalle){
+        	
+				//cargar los valores para el filtro
+				this.loadForm({data: config.detalle});
+				var me = this;
+				setTimeout(function(){
+					me.onSubmit()
+				}, 1500);
+				
+			}  
 
 
 
@@ -48,6 +58,56 @@ header("content-type: text/javascript; charset=UTF-8");
                 id_grupo : 0,
                 form : true
             },
+            
+            {
+				config:{
+					name:'momento',
+					fieldLabel:'Momento Presupuestario',
+					allowBlank:true,
+					emptyText:'...',
+					typeAhead: true,
+					triggerAction: 'all',
+					lazyRender:true,
+					mode: 'local',
+                    width: 150,
+					valueField: 'tipo_moneda',					
+					store:new Ext.data.ArrayStore({
+						fields: ['variable', 'valor'],
+						data : [ 
+									['formulado','formulado'],
+									['comprometido','comprometido'],
+									['ejecutado','ejecutado']
+								]
+					}),
+					valueField: 'variable',
+					displayField: 'valor'
+				},
+				type:'ComboBox',
+				form:true
+			},
+			
+	            
+            {
+	   		config:{
+	   				name:'id_tipo_cc',
+	   				qtip: 'Tipo de centro de costos, cada tipo solo puede tener un centro por gestión',	   				
+	   				origen:'TIPOCC',
+	   				fieldLabel:'Tipo Centro',
+	   				gdisplayField: 'desc_tipo_cc',
+	   				url:  '../../sis_parametros/control/TipoCc/listarTipoCcAll',
+	   				baseParams: {movimiento:''},	   				
+	   				allowBlank:true,
+	   				width: 150 
+	   				
+	      		},
+   			type:'ComboRec',
+   			id_grupo:0,
+   			filters:{pfiltro:'vcc.codigo_tcc#vcc.descripcion_tcc',type:'string'},
+   		    grid:true,
+   			form:true
+	        },
+	   	            
+            
             {
                 config:{
                     name: 'id_centro_costo',
@@ -120,32 +180,21 @@ header("content-type: text/javascript; charset=UTF-8");
             width: '70%',
             cls: 'PartidaEjecucion'
         },
-         /*south: {
-         url: '../../../sis_presupuestos/vista/partida_ejecucion/PartidaEjecucion.php',
-         title: 'Detalle Ejecucion',
-         height: '70%',
-         cls: 'PartidaEjecucion'
-         },*/
+         
          
         title: 'Filtros Para el Reporte de Ejecución',
         // Funcion guardar del formulario
         onSubmit: function(o) {
             var me = this;
             if (me.form.getForm().isValid()) {
-
-                var parametros = me.getValForm()
-
-                console.log('parametros ....', parametros);
-
+                var parametros = me.getValForm();
                 this.onEnablePanel(this.idContenedor + '-east', parametros)
             }
         },
         iniciarEventos:function(){
-            this.Cmp.id_gestion.on('select', function(cmb, rec, ind){
-
-                //Ext.apply(this.Cmp.id_cuenta.store.baseParams,{id_gestion: rec.data.id_gestion})
-                Ext.apply(this.Cmp.id_partida.store.baseParams,{id_gestion: rec.data.id_gestion})
-                Ext.apply(this.Cmp.id_centro_costo.store.baseParams,{id_gestion: rec.data.id_gestion})
+            this.Cmp.id_gestion.on('select', function(cmb, rec, ind){                
+                Ext.apply(this.Cmp.id_partida.store.baseParams,{id_gestion: rec.data.id_gestion});
+                Ext.apply(this.Cmp.id_centro_costo.store.baseParams,{id_gestion: rec.data.id_gestion});
 
             },this);
         }

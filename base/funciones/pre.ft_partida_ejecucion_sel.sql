@@ -31,6 +31,8 @@ DECLARE
 	v_resp				varchar;
     v_pre_codigo_proc_macajsutable   varchar;
     v_id_gestion					 integer;
+    v_filtro_tipo_cc  varchar;
+    v_tipo_cc  varchar;
 
 BEGIN
 
@@ -47,44 +49,77 @@ BEGIN
 	if(p_transaccion='PRE_PAREJE_SEL')then
 
     	begin
+        
+             v_filtro_tipo_cc = ' 0=0  and ';
+        
+        
+             IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
+                 
+                      IF v_parametros.id_tipo_cc is not NULL THEN
+                    
+                          WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                            SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                            FROM param.ttipo_cc tcc
+                            WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                          UNION ALL
+                            SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                            FROM tipo_cc_rec lrec 
+                            INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                            where tcc2.estado_reg = 'activo'
+                          )
+                        SELECT  pxp.list(id_tipo_cc::varchar) 
+                          into 
+                            v_tipo_cc
+                        FROM tipo_cc_rec;
+                        
+                        
+                        
+                        v_filtro_tipo_cc = ' id_tipo_cc in ('||v_tipo_cc||') and ';
+                    END IF;
+                 END IF;
+                 
+                 
     		--Sentencia de la consulta
 			v_consulta:='select
-						pareje.id_partida_ejecucion,
-						pareje.id_int_comprobante,
-						pareje.id_moneda,
-                        mon.moneda,
-						pareje.id_presupuesto,
-                        pre.descripcion as desc_pres,
-                        cat.codigo_categoria,
-						pareje.id_partida,
-                        par.codigo,
-                        par.nombre_partida,
-						pareje.nro_tramite,
-						pareje.tipo_cambio,
-						pareje.columna_origen,
-						pareje.tipo_movimiento,
-						pareje.id_partida_ejecucion_fk,
-						pareje.estado_reg,
-						pareje.fecha,
-						pareje.monto_mb,
-						pareje.monto,
-						pareje.valor_id_origen,
-						pareje.id_usuario_reg,
-						pareje.fecha_reg,
-						pareje.usuario_ai,
-						pareje.id_usuario_ai,
-						pareje.fecha_mod,
-						pareje.id_usuario_mod,
-						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod
-						from pre.tpartida_ejecucion pareje
-                        inner join pre.tpresupuesto pre on pre.id_presupuesto = pareje.id_presupuesto
-                        inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
-                        inner join pre.tpartida par on par.id_partida = pareje.id_partida
-                        inner join param.tmoneda mon on mon.id_moneda = pareje.id_moneda
-						inner join segu.tusuario usu1 on usu1.id_usuario = pareje.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = pareje.id_usuario_mod
-				        where  ';
+                                  id_partida_ejecucion,
+                                  id_int_comprobante,
+                                  id_moneda,
+                                  moneda,
+                                  id_presupuesto,
+                                  desc_pres,
+                                  codigo_categoria,
+                                  id_partida,
+                                  codigo,
+                                  nombre_partida,
+                                  nro_tramite,
+                                  tipo_cambio,
+                                  columna_origen,
+                                  tipo_movimiento,
+                                  id_partida_ejecucion_fk,
+                                  estado_reg,
+                                  fecha,
+                                  egreso_mb, 
+                                  ingreso_mb,
+                                  monto_mb,
+                                  monto,
+                                  valor_id_origen,
+                                  id_usuario_reg,
+                                  fecha_reg,
+                                  usuario_ai,
+                                  id_usuario_ai,
+                                  fecha_mod,
+                                  id_usuario_mod,
+                                  usr_reg,
+                                  usr_mod,
+                                  id_tipo_cc,
+                                  desc_tipo_cc,
+                                  nro_cbte,
+                                  id_proceso_wf,
+                                  monto_anticipo_mb,
+                                  monto_desc_anticipo_mb,
+                                  monto_iva_revertido_mb
+                          from pre.vpartida_ejecucion
+                          where  '||v_filtro_tipo_cc;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
@@ -107,16 +142,46 @@ BEGIN
 	elsif(p_transaccion='PRE_PAREJE_CONT')then
 
 		begin
+        
+             v_filtro_tipo_cc = ' 0=0 and ';
+        
+        
+             IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
+                 
+                      IF v_parametros.id_tipo_cc is not NULL THEN
+                    
+                          WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                            SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                            FROM param.ttipo_cc tcc
+                            WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                          UNION ALL
+                            SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                            FROM tipo_cc_rec lrec 
+                            INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                            where tcc2.estado_reg = 'activo'
+                          )
+                        SELECT  pxp.list(id_tipo_cc::varchar) 
+                          into 
+                            v_tipo_cc
+                        FROM tipo_cc_rec;
+                        
+                        
+                        
+                        v_filtro_tipo_cc = ' id_tipo_cc in ('||v_tipo_cc||')  and ';
+                    END IF;
+                 END IF;
+                 
+                 
 			--Sentencia de la consulta de conteo de registros
-			v_consulta:='select count(id_partida_ejecucion)
-					    from pre.tpartida_ejecucion pareje
-              inner join pre.tpresupuesto pre on pre.id_presupuesto = pareje.id_presupuesto
-              inner join pre.vcategoria_programatica cat on cat.id_categoria_programatica = pre.id_categoria_prog
-              inner join pre.tpartida par on par.id_partida = pareje.id_partida
-              inner join param.tmoneda mon on mon.id_moneda = pareje.id_moneda
-					    inner join segu.tusuario usu1 on usu1.id_usuario = pareje.id_usuario_reg
-						left join segu.tusuario usu2 on usu2.id_usuario = pareje.id_usuario_mod
-					    where ';
+			v_consulta:='select             
+                           count(id_partida_ejecucion),
+                           sum(egreso_mb) as total_egreso_mb,  
+                           sum(ingreso_mb) as total_ingreso_mb,
+                           sum(monto_anticipo_mb) as total_monto_anticipo_mb ,
+                           sum(monto_desc_anticipo_mb) as  total_monto_desc_anticipo_mb,
+                           sum( monto_iva_revertido_mb) as  total_monto_iva_revertido_mb
+                        from pre.vpartida_ejecucion
+					    where '||v_filtro_tipo_cc;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

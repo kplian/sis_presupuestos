@@ -18,6 +18,14 @@ class MODPartidaEjecucion extends MODbase{
 		$this->procedimiento='pre.ft_partida_ejecucion_sel';
 		$this->transaccion='PRE_PAREJE_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
+		
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		
+		$this->capturaCount('total_egreso_mb','numeric');
+		$this->capturaCount('total_ingreso_mb','numeric');
+		$this->capturaCount('total_monto_anticipo_mb','numeric');
+		$this->capturaCount('total_monto_desc_anticipo_mb','numeric');
+		$this->capturaCount('total_monto_iva_revertido_mb','numeric');
 				
 		//Definicion de la lista del resultado del query
 		$this->captura('id_partida_ejecucion','int4');
@@ -37,6 +45,8 @@ class MODPartidaEjecucion extends MODbase{
 		$this->captura('id_partida_ejecucion_fk','int4');
 		$this->captura('estado_reg','varchar');
 		$this->captura('fecha','date');
+		$this->captura('egreso_mb','numeric');
+		$this->captura('ingreso_mb','numeric');
 		$this->captura('monto_mb','numeric');
 		$this->captura('monto','numeric');
 		$this->captura('valor_id_origen','int4');
@@ -47,8 +57,20 @@ class MODPartidaEjecucion extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
-		$this->captura('usr_mod','varchar');
+		$this->captura('usr_mod','varchar');		
+		$this->captura('id_tipo_cc','int4');
+		$this->captura('desc_tipo_cc','varchar');
 		
+		$this->captura('nro_cbte','varchar');
+		$this->captura('id_proceso_wf','int4');
+		
+		$this->captura('monto_anticipo_mb','numeric');
+		$this->captura('monto_desc_anticipo_mb','numeric');
+		$this->captura('monto_iva_revertido_mb','numeric');
+		
+		
+		
+	
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

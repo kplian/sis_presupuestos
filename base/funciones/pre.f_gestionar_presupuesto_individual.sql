@@ -14,7 +14,14 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_individual (
   p_fk_llave integer,
   p_nro_tramite varchar,
   p_id_int_comprobante integer = NULL::integer,
-  p_monto_total_mb numeric = NULL::numeric
+  p_monto_total_mb numeric = NULL::numeric,
+  p_glosa varchar = ''::character varying,
+  p_monto_anticipo numeric = 0::numeric,
+  p_monto_desc_anticipo numeric = 0::numeric,
+  p_monto_iva_revertido numeric = 0::numeric,
+  p_monto_anticipo_mb numeric = NULL::numeric,
+  p_monto_desc_anticipo_mb numeric = NULL::numeric,
+  p_monto_iva_revertido_mb numeric = NULL::numeric
 )
 RETURNS numeric [] AS
 $body$
@@ -25,6 +32,9 @@ $body$
  AUTOR: 		Rensi ARteaga (kplian)
  FECHA:	        23-03-2016
  COMENTARIOS:	
+ 
+  #32  ETR       05/02/2018        RAC KPLIAN        agregar parametros de anticipo, desc_anticipo y glosa   para ampliar a mejor detalle la informacion de ejecucion presupeustaria  
+ 
 ***************************************************************************/
 
 
@@ -50,6 +60,9 @@ DECLARE
   v_reg_par_eje_fk				record;
   v_error_presupuesto			numeric;
   v_reg_tipo_cc					record;
+  v_monto_anticipo_mb			numeric;
+  v_monto_desc_anticipo_mb		numeric;
+  v_monto_iva_revertido_mb      numeric;
   
 BEGIN
 
@@ -133,9 +146,51 @@ BEGIN
                   ELSE
                     v_monto_mb = p_monto_total_mb;
                   END IF;
+                  
+                  
+                   IF  p_monto_anticipo_mb is null THEN
+                     v_monto_anticipo_mb  =   param.f_convertir_moneda (
+                                     p_id_moneda, 
+                                     v_id_moneda_base,  
+                                     p_monto_anticipo, 
+                                     p_fecha,
+                                     'CUS',50, 
+                                     p_tipo_cambio, 'no');
+                             
+                    ELSE
+                    v_monto_anticipo_mb = p_monto_anticipo_mb;
+                  END IF;
+                            
+                   IF  p_monto_desc_anticipo_mb is null THEN           
+                     v_monto_desc_anticipo_mb =   param.f_convertir_moneda (                                         
+                                         p_id_moneda, 
+                                         v_id_moneda_base,  
+                                         p_monto_desc_anticipo, 
+                                         p_fecha,
+                                         'CUS',50, 
+                                         p_tipo_cambio, 'no');
+                  ELSE
+                    v_monto_desc_anticipo_mb = p_monto_desc_anticipo_mb;
+                  END IF;         
+                             
+                   IF  p_monto_iva_revertido_mb is null THEN         
+                      v_monto_iva_revertido_mb =   param.f_convertir_moneda (
+                                       p_id_moneda, 
+                                       v_id_moneda_base,  
+                                       p_monto_iva_revertido, 
+                                       p_fecha,
+                                       'CUS',50, 
+                                       p_tipo_cambio, 'no');
+                  ELSE
+                      v_monto_iva_revertido_mb = p_monto_iva_revertido_mb;
+                  END IF;                   
+                             
      
            ELSE
               v_monto_mb = p_monto_total;
+              v_monto_anticipo_mb = p_monto_anticipo;
+              v_monto_desc_anticipo_mb = p_monto_desc_anticipo;
+              v_monto_iva_revertido_mb = p_monto_iva_revertido;
            END IF;
            
              --raise exception '...verifica %', v_monto_mb;
@@ -158,7 +213,6 @@ BEGIN
             --raise exception '%-%-%-%-%-%-%', p_nro_tramite, p_id_partida_ejecucion, p_id_presupuesto , p_id_partida, v_monto_mb, v_monto, p_sw_momento;
             
             --evaluar error permitido
-            
                     
             IF v_verif_pres[1] = 'true' THEN
                v_permitido = true;
@@ -206,9 +260,6 @@ BEGIN
             
             --TODO ...   caso especial pagado permite sobregirar si por diferencia cambiaria 
             
-            
-            
-            
             ---------------------------------
             -- Registor de partida ejecución
             ---------------------------------
@@ -234,7 +285,14 @@ BEGIN
                                             fecha,
                                             id_int_comprobante,
                                             columna_origen,
-                                            valor_id_origen
+                                            valor_id_origen,
+                                            monto_anticipo,
+                                            monto_anticipo_mb,
+                                            monto_desc_anticipo,
+                                            monto_desc_anticipo_mb,
+                                            monto_iva_revertido,
+                                            monto_iva_revertido_mb,
+                                            glosa
                                          )
                                          VALUES (
                                             p_id_usuario,
@@ -252,7 +310,14 @@ BEGIN
                                             p_fecha,
                                             p_id_int_comprobante,
                                             p_columna_relacion,
-                                            p_fk_llave
+                                            p_fk_llave,
+                                            p_monto_anticipo,
+                                            v_monto_anticipo_mb,
+                                            p_monto_desc_anticipo,
+                                            v_monto_desc_anticipo_mb,
+                                            p_monto_iva_revertido,
+                                            v_monto_iva_revertido_mb,
+                                            p_glosa
                                             
                                           ) RETURNING id_partida_ejecucion into v_id_partida_ejecucion;
                  

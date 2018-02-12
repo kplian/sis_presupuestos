@@ -19,7 +19,34 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		this.grid.getTopToolbar().disable();
 		this.grid.getBottomToolbar().disable();
 		this.init();
-		//this.load({params:{start:0, limit:this.tam_pag}})
+				
+		
+		 this.addButton('btnChequeoDocumentosWf',
+	            {
+	                text: 'Documentos',
+	                grupo:[0,1,2,3],
+	                iconCls: 'bchecklist',
+	                disabled: true,
+	                handler: this.loadCheckDocumentosWf,
+	                tooltip: '<b>Documentos del Trámite</b><br/>Permite ver los documentos asociados al NRO de trámite.'
+	            }
+	        );	
+	        
+	      this.addButton('btnImprimir', {
+				text : 'Imprimir',
+				iconCls : 'bprint',
+				disabled : true,
+				handler : this.imprimirCbte,
+				tooltip : '<b>Imprimir Comprobante</b><br/>Imprime el Comprobante en el formato oficial'
+		});  
+		
+		this.addButton('chkpresupuesto',{text:'Chk Presupuesto',
+				iconCls: 'blist',
+				disabled: true,
+				handler: this.checkPresupuesto,
+				tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>'
+			});
+	        
 	},
 			
 	Atributos:[
@@ -46,7 +73,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 			type:'DateField',
-			filters:{pfiltro:'pareje.fecha_reg',type:'date'},
+			filters:{pfiltro:'fecha_reg',type:'date'},
 			id_grupo:1,
 			grid:true,
 			form:false
@@ -61,7 +88,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 			type:'Field',
-			filters:{pfiltro:'usu1.cuenta',type:'string'},
+			filters:{pfiltro:'usr_reg',type:'string'},
 			bottom_filter: true,
 			id_grupo:1,
 			grid:true,
@@ -101,43 +128,132 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				wisth: 380
 			},
 			type:'ComboBox',
-			filters:{pfiltro:'pareje.tipo_movimiento',type:'string'},
+			filters:{pfiltro:'tipo_movimiento',type:'string'},
 			id_grupo:0,
 			grid:true,
 			form:false
 		},
+		
+		{
+			config:{
+				name: 'egreso_mb',
+				fieldLabel: 'Egresos MB',
+				allowBlank: false,
+				allowNegative: false,
+				anchor: '80%',
+				gwidth: 100,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
+			},
+			type:'NumberField',
+			filters:{pfiltro:'egreso_mb',type:'numeric'},
+			id_grupo:1,			
+			grid:true,
+			form:false
+		},
+		
+		{
+			config:{
+				name: 'ingreso_mb',
+				fieldLabel: 'Ingresos MB',
+				allowBlank: false,
+				allowNegative: false,
+				anchor: '80%',
+				gwidth: 100,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
+			},
+			type:'NumberField',
+			filters:{pfiltro:'ingreso_mb',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
+		
 
 		{
 			config:{
-				name: 'monto_mb',
-				fieldLabel: 'Monto Moneda Base',
-				allowBlank: true,
+				name: 'monto_anticipo_mb',
+				fieldLabel: 'Anticipos Eje',
+				allowBlank: false,
+				allowNegative: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:-5
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
 			},
 			type:'NumberField',
-			filters:{pfiltro:'pareje.monto_mb',type:'numeric'},
+			filters:{pfiltro:'monto_anticipo_mb',type:'numeric'},
 			id_grupo:1,
 			grid:true,
-			form:true
+			form:false
 		},
-		/*{
+		
+		{
 			config:{
-				name: 'monto',
-				fieldLabel: 'Monto',
-				allowBlank: true,
+				name: 'monto_desc_anticipo_mb',
+				fieldLabel: 'Desc Anticipo',
+				allowBlank: false,
+				allowNegative: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:-5
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
 			},
 			type:'NumberField',
-			filters:{pfiltro:'pareje.monto',type:'numeric'},
-			bottom_filter: true,
+			filters:{pfiltro:'monto_desc_anticipo_mb',type:'numeric'},
 			id_grupo:1,
 			grid:true,
-			form:true
-		},*/
+			form:false
+		},
+		{
+			config:{
+				name: 'monto_iva_revertido_mb',
+				fieldLabel: 'IVA Revertido',
+				allowBlank: false,
+				allowNegative: false,
+				anchor: '80%',
+				gwidth: 100,
+				renderer:function (value,p,record){
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
+			},
+			type:'NumberField',
+			filters:{pfiltro:'monto_iva_revertido_mb',type:'numeric'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		},
+		
 		{
 			config:{
 				name: 'monto',
@@ -148,27 +264,21 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 100,
 				maxLength:1179650,
 				renderer:function (value,p,record){
-
-					Number.prototype.formatDinero = function(c, d, t){
-						var n = this,
-							c = isNaN(c = Math.abs(c)) ? 2 : c,
-							d = d == undefined ? "." : d,
-							t = t == undefined ? "," : t,
-							s = n < 0 ? "-" : "",
-							i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
-							j = (j = i.length) > 3 ? j % 3 : 0;
-						return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-					};
-
-					return  String.format('<div style="vertical-align:middle;text-align:right;"><span >{0}</span></div>',(parseFloat(value)).formatDinero(2, ',', '.'));
-				}
+						if(record.data.tipo_reg != 'summary'){
+							return  String.format('{0}', Ext.util.Format.number(value,'0,000.00'));
+						}
+						else{
+							return  String.format('<b><font size=2 >{0}</font><b>', Ext.util.Format.number(value,'0,000.00'));
+						}
+					}
 			},
 			type:'NumberField',
-			filters:{pfiltro:'pareje.monto',type:'numeric'},
+			filters:{pfiltro:'monto',type:'numeric'},
 			id_grupo:1,
 			grid:true,
 			form:false
 		},
+		
 		{
 			config:{
 				name: 'moneda',
@@ -178,7 +288,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 80
 			},
 			type:'TextField',
-			filters:{pfiltro:'mon.moneda',type:'string'},
+			filters:{pfiltro:'moneda',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -194,7 +304,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 			},
 			type:'Field',
 			grid: true,
-			filters:{pfiltro:'pre.id_presupuesto',type:'string'},
+			filters:{pfiltro:'id_presupuesto',type:'string'},
 			bottom_filter: true,
 			form:true
 		},
@@ -207,7 +317,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 200
 			},
 			type:'TextField',
-			filters:{pfiltro:'pre.descripcion',type:'string'},
+			filters:{pfiltro:'desc_pres',type:'string'},
 			id_grupo:1,
 			bottom_filter: true,
 			grid:true,
@@ -215,15 +325,15 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'codigo_categoria',
-				fieldLabel: 'Código Categoría',
+				name: 'desc_tipo_cc',
+				fieldLabel: 'Tipo Centro',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 150,
 				maxLength:-5
 			},
 			type:'TextField',
-			filters:{pfiltro:'pareje.nro_tramite',type:'string'},
+			filters:{pfiltro:'desc_tipo_cc',type:'string'},
 			bottom_filter: true,
 			id_grupo:1,
 			grid:true,
@@ -236,8 +346,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 
 			},
 			type: 'TextField',
-			id_grupo: 0,
-			filters: {pfiltro: 'movtip.nombre',type: 'string'},
+			id_grupo: 0,			
 			grid: false,
 			gwidth: 50,
 			form: true
@@ -252,7 +361,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:-5
 			},
 			type:'TextField',
-			filters:{pfiltro:'par.codigo',type:'string'},
+			filters:{pfiltro:'codigo',type:'string'},
 			bottom_filter: true,
 			id_grupo:1,
 			grid:true,
@@ -268,7 +377,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:-5
 			},
 			type:'TextField',
-			filters:{pfiltro:'par.nombre_partida',type:'string'},
+			filters:{pfiltro:'nombre_partida',type:'string'},
 			bottom_filter: true,
 			id_grupo:1,
 			grid:true,
@@ -284,12 +393,30 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:-5
 			},
 				type:'TextField',
-				filters:{pfiltro:'pareje.nro_tramite',type:'string'},
+				filters:{pfiltro:'nro_tramite',type:'string'},
 				bottom_filter: true,
 				id_grupo:1,
 				grid:true,
 				form:true
 		},
+		{
+			config:{
+				name: 'nro_cbte',
+				fieldLabel: 'Cbte',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:-5
+			},
+				type:'TextField',
+				filters:{pfiltro:'nro_cbte',type:'string'},
+				bottom_filter: true,
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		
+		
 		{
 			config:{
 				name: 'fecha',
@@ -301,7 +428,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
 			type:'DateField',
-			filters:{pfiltro:'pareje.fecha',type:'date'},
+			filters:{pfiltro:'fecha',type:'date'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -316,7 +443,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 			},
 			type: 'TextField',
 			id_grupo: 0,
-			filters: {pfiltro: 'pareje.id_int_comprobante',type: 'string'},
+			filters: {pfiltro: 'id_int_comprobante',type: 'string'},
 			grid: true,
 			form: true
 		},
@@ -330,7 +457,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:-5
 			},
 			type:'NumberField',
-			filters:{pfiltro:'pareje.tipo_cambio',type:'numeric'},
+			filters:{pfiltro:'tipo_cambio',type:'numeric'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -345,7 +472,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'NumberField',
-				filters:{pfiltro:'pareje.valor_id_origen',type:'numeric'},
+				filters:{pfiltro:'valor_id_origen',type:'numeric'},
 				id_grupo:1,
 				grid:true,
 				form:true
@@ -361,7 +488,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:-5
 			},
 			type:'TextField',
-			filters:{pfiltro:'pareje.columna_origen',type:'string'},
+			filters:{pfiltro:'columna_origen',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:true
@@ -376,7 +503,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:10
 			},
 			type:'TextField',
-			filters:{pfiltro:'pareje.estado_reg',type:'string'},
+			filters:{pfiltro:'estado_reg',type:'string'},
 			id_grupo:1,
 			grid:true,
 			form:false
@@ -391,7 +518,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:300
 			},
 				type:'TextField',
-				filters:{pfiltro:'pareje.usuario_ai',type:'string'},
+				filters:{pfiltro:'usuario_ai',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -406,7 +533,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'Field',
-				filters:{pfiltro:'pareje.id_usuario_ai',type:'numeric'},
+				filters:{pfiltro:'id_usuario_ai',type:'numeric'},
 				id_grupo:1,
 				grid:false,
 				form:false
@@ -422,7 +549,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
-				filters:{pfiltro:'pareje.fecha_mod',type:'date'},
+				filters:{pfiltro:'fecha_mod',type:'date'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -437,7 +564,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'Field',
-				filters:{pfiltro:'usu2.cuenta',type:'string'},
+				filters:{pfiltro:'usr_mod',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -473,15 +600,108 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},'moneda','desc_pres','codigo_categoria','codigo','nombre_partida',
+		'ingreso_mb','egreso_mb','desc_tipo_cc','id_tipo_cc','tipo_reg','nro_cbte','id_proceso_wf',
+		'monto_anticipo_mb',
+		'monto_desc_anticipo_mb',
+		'monto_iva_revertido_mb'
 		
 	],
+	
+	imprimirCbte : function() {
+			var rec = this.sm.getSelected();
+			var data = rec.data;
+			if (data) {
+				Phx.CP.loadingShow();
+				Ext.Ajax.request({
+					url : '../../sis_contabilidad/control/IntComprobante/reporteCbte',
+					params : {
+						'id_proceso_wf' : data.id_proceso_wf
+					},
+					success : this.successExport,
+					failure : this.conexionFailure,
+					timeout : this.timeout,
+					scope : this
+				});
+			}
+
+		},
+		
+	 loadCheckDocumentosWf:function() {
+            var rec=this.sm.getSelected();
+            rec.data.nombreVista = this.nombreVista;
+            Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+                    'Documentos del Proceso',
+                    {
+                        width:'90%',
+                        height:500
+                    },
+                    rec.data,
+                    this.idContenedor,
+                    'DocumentoWf'
+           );
+    },	
+    
+    checkPresupuesto:function(){                   
+			  var rec=this.sm.getSelected();
+			  var configExtra = [];
+			  this.objChkPres = Phx.CP.loadWindows('../../../sis_presupuestos/vista/presup_partida/ChkPresupuesto.php',
+										'Estado del Presupuesto',
+										{
+											modal:true,
+											width:700,
+											height:450
+										}, {
+											data:{
+											   nro_tramite: rec.data.nro_tramite								  
+											}}, this.idContenedor,'ChkPresupuesto',
+										{
+											config:[{
+													  event:'onclose',
+													  delegate: this.onCloseChk												  
+													}],
+											
+											scope:this
+										 });
+			   
+	 },
+	
 	arrayDefaultColumHidden:['id_partida_ejecucion','columna_origen','valor_id_origen',
 		'tipo_cambio','monto_mb','fecha_mod', 'id_usuario_ai','usr_mod','estado_reg'],
-
+		
+		
+	preparaMenu : function(n) {
+		var rec=this.sm.getSelected();
+		if(rec.data.tipo_reg != 'summary'){
+			var tb = Phx.vista.PartidaEjecucion.superclass.preparaMenu.call(this);
+			this.getBoton('chkpresupuesto').enable();
+			this.getBoton('btnChequeoDocumentosWf').enable();
+			if(rec.data.nro_cbte != ''){
+				this.getBoton('btnImprimir').enable();
+			}			
+			return tb;
+		}
+		else{
+			 this.getBoton('chkpresupuesto').disable();
+			 this.getBoton('btnChequeoDocumentosWf').disable();			 
+			 this.getBoton('btnImprimir').disable();
+		 }
+			
+         return undefined;
+	},
+	
+	
+	liberaMenu : function() {
+			var tb = Phx.vista.PartidaEjecucion.superclass.liberaMenu.call(this);
+			this.getBoton('chkpresupuesto').disable();
+			this.getBoton('btnChequeoDocumentosWf').disable();
+			this.getBoton('btnImprimir').disable();
+			
+			
+	},
 
 	sortInfo:{
-		field: 'fecha_reg',
-		direction: 'DESC'
+		field: 'fecha',
+		direction: 'asc'
 	},
 
 	loadValoresIniciales:function(){

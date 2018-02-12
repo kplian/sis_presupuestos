@@ -17,7 +17,14 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_v2 (
   p_id_int_comprobante integer = NULL::integer,
   p_sw_comprometer varchar = 'defecto'::character varying,
   p_sw_ejecutar varchar = 'defecto'::character varying,
-  p_sw_pagar varchar = 'defecto'::character varying
+  p_sw_pagar varchar = 'defecto'::character varying,
+  p_glosa varchar = ''::character varying,
+  p_monto_anticipo numeric = 0::numeric,
+  p_monto_desc_anticipo numeric = 0::numeric,
+  p_monto_iva_revertido numeric = 0::numeric,
+  p_monto_anticipo_mb numeric = NULL::numeric,
+  p_monto_desc_anticipo_mb numeric = NULL::numeric,
+  p_monto_iva_revertido_mb numeric = NULL::numeric
 )
 RETURNS numeric [] AS
 $body$
@@ -28,6 +35,9 @@ $body$
  AUTOR: 		Rensi Arteaga Copari (kplian)
  FECHA:	        06-04-2016
  COMENTARIOS:
+ 
+ 
+ #32, ETR       06/02/2018              RAC KPLIAN           mandar glosa, datos de anticipo, descuento y iva revertido al ejecutar presupesuto
 ***************************************************************************/
 
 
@@ -59,7 +69,7 @@ BEGIN
 
 
   v_id_moneda_base = param.f_get_moneda_base();
-  --
+  
 
 
  IF v_pre_integrar_presupuestos = 'true' THEN
@@ -93,7 +103,14 @@ BEGIN
                                               p_fk_llave,
                                               p_nro_tramite,
                                               p_id_int_comprobante,
-                                              p_monto_total_mb);
+                                              p_monto_total_mb,
+                                              p_glosa,
+                                              p_monto_anticipo,
+                                              p_monto_desc_anticipo,
+                                              p_monto_iva_revertido,
+                                              p_monto_anticipo_mb,
+                                              p_monto_desc_anticipo_mb,
+                                              p_monto_iva_revertido_mb);
 
                      --si tiene error retornamos
                      IF v_resultado_ges[1] = 0 THEN
@@ -101,9 +118,7 @@ BEGIN
                      END IF;
 
                      --ejecutamos
-
-
-
+                     --#32 adicionamos gloas y atrubtos informativos
                      v_resultado_ges = pre.f_gestionar_presupuesto_individual(
                                               p_id_usuario,
                                               p_tipo_cambio,
@@ -118,7 +133,16 @@ BEGIN
                                               p_fk_llave,
                                               p_nro_tramite,
                                               p_id_int_comprobante,
-                                              p_monto_total_mb);
+                                              p_monto_total_mb,
+                                              p_glosa,
+                                              p_monto_anticipo,
+                                              p_monto_desc_anticipo,
+                                              p_monto_iva_revertido,
+                                              p_monto_anticipo_mb,
+                                              p_monto_desc_anticipo_mb,
+                                              p_monto_iva_revertido_mb
+                                              
+                                              );
 
 
 
@@ -139,7 +163,14 @@ BEGIN
                                               p_fk_llave,
                                               p_nro_tramite,
                                               p_id_int_comprobante,
-                                              p_monto_total_mb);
+                                              p_monto_total_mb,
+                                              p_glosa,
+                                              p_monto_anticipo,
+                                              p_monto_desc_anticipo,
+                                              p_monto_iva_revertido,
+                                              p_monto_anticipo_mb,
+                                              p_monto_desc_anticipo_mb,
+                                              p_monto_iva_revertido_mb);
 
 
 
@@ -166,7 +197,14 @@ BEGIN
                                               p_fk_llave,
                                               p_nro_tramite,
                                               p_id_int_comprobante,
-                                              p_monto_total_mb);
+                                              p_monto_total_mb,
+                                              p_glosa,
+                                              p_monto_anticipo,
+                                              p_monto_desc_anticipo,
+                                              p_monto_iva_revertido,
+                                              p_monto_anticipo_mb,
+                                              p_monto_desc_anticipo_mb,
+                                              p_monto_iva_revertido_mb);
 
                       --si tiene error retornamos
                      IF v_resultado_ges[1] = 0 THEN
@@ -191,7 +229,14 @@ BEGIN
                                               p_fk_llave,
                                               p_nro_tramite,
                                               p_id_int_comprobante,
-                                              p_monto_total_mb);
+                                              p_monto_total_mb,
+                                              p_glosa,
+                                              p_monto_anticipo,
+                                              p_monto_desc_anticipo,
+                                              p_monto_iva_revertido,
+                                              p_monto_anticipo_mb,
+                                              p_monto_desc_anticipo_mb,
+                                              p_monto_iva_revertido_mb);
 
 
 
@@ -217,7 +262,14 @@ BEGIN
                                             p_fk_llave,
                                             p_nro_tramite,
                                             p_id_int_comprobante,
-                                            p_monto_total_mb);
+                                            p_monto_total_mb,
+                                            p_glosa,
+                                            p_monto_anticipo,
+                                            p_monto_desc_anticipo,
+                                            p_monto_iva_revertido,
+                                            p_monto_anticipo_mb,
+                                            p_monto_desc_anticipo_mb,
+                                            p_monto_iva_revertido_mb);
 
 
                 END IF;
@@ -260,7 +312,14 @@ BEGIN
                                                 p_fk_llave,
                                                 p_nro_tramite,
                                                 p_id_int_comprobante,
-                                                p_monto_total_mb);
+                                                p_monto_total_mb,
+                                                p_glosa,
+                                                p_monto_anticipo,
+                                                p_monto_desc_anticipo,
+                                                p_monto_iva_revertido,
+                                                p_monto_anticipo_mb,
+                                                p_monto_desc_anticipo_mb,
+                                                p_monto_iva_revertido_mb);
 
 
                          --si tiene error retornamos
@@ -284,7 +343,14 @@ BEGIN
                                             p_fk_llave,
                                             p_nro_tramite,
                                             p_id_int_comprobante,
-                                            p_monto_total_mb);
+                                            p_monto_total_mb,
+                                            p_glosa,
+                                            p_monto_anticipo,
+                                            p_monto_desc_anticipo,
+                                            p_monto_iva_revertido,
+                                            p_monto_anticipo_mb,
+                                            p_monto_desc_anticipo_mb,
+                                            p_monto_iva_revertido_mb);
 
                    --si tiene error retornamos
                    IF v_resultado_ges[1] = 0 THEN
@@ -306,7 +372,14 @@ BEGIN
                                             p_fk_llave, 
                                             p_nro_tramite, 
                                             p_id_int_comprobante,
-                                            p_monto_total_mb);
+                                            p_monto_total_mb,
+                                            p_glosa,
+                                            p_monto_anticipo,
+                                            p_monto_desc_anticipo,
+                                            p_monto_iva_revertido,
+                                            p_monto_anticipo_mb,
+                                            p_monto_desc_anticipo_mb,
+                                            p_monto_iva_revertido_mb);
              
               ELSE
                   
@@ -326,7 +399,14 @@ BEGIN
                                             p_fk_llave, 
                                             p_nro_tramite, 
                                             p_id_int_comprobante,
-                                            p_monto_total_mb);
+                                            p_monto_total_mb,
+                                            p_glosa,
+                                            p_monto_anticipo,
+                                            p_monto_desc_anticipo,
+                                            p_monto_iva_revertido,
+                                            p_monto_anticipo_mb,
+                                            p_monto_desc_anticipo_mb,
+                                            p_monto_iva_revertido_mb);
                   
                   
              END IF ;

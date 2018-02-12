@@ -10,31 +10,35 @@
 class ACTPartidaEjecucion extends ACTbase{    
 			
 	function listarPartidaEjecucion(){
-		$this->objParam->defecto('ordenacion','id_partida_ejecucion');
+		$this->objParam->defecto('ordenacion','fecha, fecha_reg');
 		$this->objParam->defecto('dir_ordenacion','asc');
 
         if($this->objParam->getParametro('id_partida')!=''){
-            $this->objParam->addFiltro("pareje.id_partida = ".$this->objParam->getParametro('id_partida'));
+            $this->objParam->addFiltro("id_partida = ".$this->objParam->getParametro('id_partida'));
+        }
+		
+		if($this->objParam->getParametro('momento')!=''){
+            $this->objParam->addFiltro("tipo_movimiento = ''".$this->objParam->getParametro('momento')."''");
         }
 
         if($this->objParam->getParametro('id_centro_costo')!=''){
-            $this->objParam->addFiltro("pareje.id_presupuesto = ".$this->objParam->getParametro('id_centro_costo'));
+            $this->objParam->addFiltro("id_presupuesto = ".$this->objParam->getParametro('id_centro_costo'));
         }
 
         if($this->objParam->getParametro('nro_tramite')!=''){
-            $this->objParam->addFiltro("pareje.nro_tramite ilike ''%".$this->objParam->getParametro('nro_tramite')."%''");
+            $this->objParam->addFiltro("nro_tramite ilike ''%".$this->objParam->getParametro('nro_tramite')."%''");
         }
 
         if($this->objParam->getParametro('desde')!='' && $this->objParam->getParametro('hasta')!=''){
-            $this->objParam->addFiltro("(pareje.fecha_reg::date  BETWEEN ''%".$this->objParam->getParametro('desde')."%''::date  and ''%".$this->objParam->getParametro('hasta')."%''::date)");
+            $this->objParam->addFiltro("(fecha::date  BETWEEN ''%".$this->objParam->getParametro('desde')."%''::date  and ''%".$this->objParam->getParametro('hasta')."%''::date)");
         }
 
         if($this->objParam->getParametro('desde')!='' && $this->objParam->getParametro('hasta')==''){
-            $this->objParam->addFiltro("(pareje.fecha_reg::date  >= ''%".$this->objParam->getParametro('desde')."%''::date)");
+            $this->objParam->addFiltro("(fecha::date  >= ''%".$this->objParam->getParametro('desde')."%''::date)");
         }
 
         if($this->objParam->getParametro('desde')=='' && $this->objParam->getParametro('hasta')!=''){
-            $this->objParam->addFiltro("(pareje.fecha_reg::date  <= ''%".$this->objParam->getParametro('hasta')."%''::date)");
+            $this->objParam->addFiltro("(fecha::date  <= ''%".$this->objParam->getParametro('hasta')."%''::date)");
         }
 
 
@@ -46,6 +50,23 @@ class ACTPartidaEjecucion extends ACTbase{
 			
 			$this->res=$this->objFunc->listarPartidaEjecucion($this->objParam);
 		}
+		
+		                        
+		    //adicionar una fila al resultado con el summario
+			$temp = Array();
+			$temp['egreso_mb'] = $this->res->extraData['total_egreso_mb'];
+			$temp['ingreso_mb'] = $this->res->extraData['total_ingreso_mb'];
+			$temp['monto_anticipo_mb'] = $this->res->extraData['total_monto_anticipo_mb'];
+			$temp['monto_desc_anticipo_mb'] = $this->res->extraData['total_monto_desc_anticipo_mb'];
+			$temp['monto_iva_revertido_mb'] = $this->res->extraData['total_monto_iva_revertido_mb'];
+			$temp['tipo_reg'] = 'summary';
+			$temp['id_partida_ejecucion'] = 0;
+			
+			$this->res->total++;
+			
+			$this->res->addLastRecDatos($temp);
+		
+		
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
 	
