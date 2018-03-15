@@ -20,6 +20,7 @@ $body$
   	
  ISSUE            FECHA:		      AUTOR       DESCRIPCION
  0				12/10/2017			RAC			Validacion para comprometer o revertir presupuesto
+ #25 PRE        15/03/2018          RAC         BUG, ajsute comprometido dolares
 ***************************************************************************/
 
 
@@ -323,9 +324,7 @@ BEGIN
                                                 NULL, --p_id_partida_ejecucion
                                                 'id_ajuste_det', 
                                                 v_registros_det.id_ajuste_det, 
-                                                v_registros.nro_tramite, 
-                                                NULL,
-                                                v_registros_det.importe);
+                                                v_registros.nro_tramite);
                                                 
                                                 
                                                 
