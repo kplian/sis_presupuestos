@@ -114,10 +114,10 @@ class REjecucionPorPartida extends  ReportePDF {
     function generarCabecera(){
     	
 		//armca caecera de la tabla
-		$this->tablewidths=array(15+53,18,18,18,18,18,18,18,18,18,18,15);
-        $this->tablealigns=array('C','C','C','C','C','C','C','C','C','C','C','C');
-        $this->tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0);
-        $this->tableborders=array('TB','TB','TB','TB','TB','TB','TB','TB','TB','TB','TB','TB');
+		$this->tablewidths=array(15+53,18,18,18,18,18,28,25,28,25);
+        $this->tablealigns=array('C','C','C','C','C','C','C','C','C','C');
+        $this->tablenumbers=array(0,0,0,0,0,0,0,0,0,0);
+        $this->tableborders=array('TB','TB','TB','TB','TB','TB','TB','TB','TB','TB');
         $this->tabletextcolor=array();
 		
 	    $RowArray = array(
@@ -128,10 +128,10 @@ class REjecucionPorPartida extends  ReportePDF {
                         's5' => 'VIGENTE',
                         's6' => 'COMPROMETIDO',
                         's7' => 'EJECUTADO',  
-                        's8' => 'PAGADO', 
+                        //'s8' => 'PAGADO', 
                         's9' => 'SALDO POR COMPROMETER',
-                        's10' => 'SALDO POR DEVENGAR', 
-                        's11' => 'SALDO POR PAGAR',   
+                        's10' => 'SALDO POR EJECUTAR', 
+                        //'s11' => 'SALDO POR PAGAR',   
                         's12' => '% EJE');
 
         $this-> MultiRow($RowArray,false,1);
@@ -184,17 +184,17 @@ class REjecucionPorPartida extends  ReportePDF {
             's6' => $this->totales_vigente,
             's7' => $this->totales_comprometido,
             's8' => $this->totales_ejecutado,
-            's9' => $this->totales_pagado,
+            //'s9' => $this->totales_pagado,
             's10' => $this->totales_saldoXcomprometer,
             's11' => $this->totales_saldoXdevengar,
-            's12' => $this->totales_saldoXpagar,
+            //'s12' => $this->totales_saldoXpagar,
             's13' => $por_eje.' %');
 
         $this->SetFont('','B',5);
-        $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
-        $conf_par_tablewidths=array(15+53,18,18,18,18,18,18,18,18,18,18,15);
-        $this->tablealigns=array('L','R','R','R','R','R','R','R','R','R','R','R');
-        $this->tablenumbers=array(0,2,2,2,2,2,2,2,2,2,2,0);
+        $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
+        $conf_par_tablewidths=array(15+53,18,18,18,18,18,18,18,18,15);
+        $this->tablealigns=array('L','R','R','R','R','R','R','R','R','R');
+        $this->tablenumbers=array(0,2,2,2,2,2,2,2,2,0);
 
         $this-> MultiRow($RowArray,$fill,1);
 		
@@ -225,10 +225,10 @@ class REjecucionPorPartida extends  ReportePDF {
 		
 		
 			 $this->SetFont('','',5);
-			 $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
-			 $conf_par_tablewidths=array(15+53,18,18,18,18,18,18,18,18,18,18,15);
-		     $this->tablealigns=array('L','R','R','R','R','R','R','R','R','R','R','R');
-		     $this->tablenumbers=array(0,2,2,2,2,2,2,2,2,2,2,0);
+			 $this->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
+			 $conf_par_tablewidths=array(15+53,18,18,18,18,18,18,18,18,15);
+		     $this->tablealigns=array('L','R','R','R','R','R','R','R','R','R');
+		     $this->tablenumbers=array(0,2,2,2,2,2,2,2,2,0);
 
 		     //Calculo de los totales de Ejecucion Presupuestaria
                 $this->totales_segun_memoria += $val['importe'];
@@ -237,10 +237,10 @@ class REjecucionPorPartida extends  ReportePDF {
                 $this->totales_vigente += $val['formulado'];
                 $this->totales_comprometido += $val['comprometido'];
                 $this->totales_ejecutado += $val['ejecutado'];
-                $this->totales_pagado += $val['pagado'];
+               // $this->totales_pagado += $val['pagado'];
                 $this->totales_saldoXcomprometer += $sal_comprometido;
                 $this->totales_saldoXdevengar += $sal_ejecutado;
-                $this->totales_saldoXpagar += $sal_pagado;
+                //$this->totales_saldoXpagar += $sal_pagado;
                 $this->totales_porcentaje_ejecucion += $por_eje;
 
 
@@ -252,10 +252,10 @@ class REjecucionPorPartida extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $por_eje.' %');
 			
            $this-> MultiRow($RowArray,$fill,1);

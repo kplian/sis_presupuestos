@@ -33,7 +33,8 @@ $body$
  FECHA:	        23-03-2016
  COMENTARIOS:	
  
-  #32  ETR       05/02/2018        RAC KPLIAN        agregar parametros de anticipo, desc_anticipo y glosa   para ampliar a mejor detalle la informacion de ejecucion presupeustaria  
+  #32  ETR       05/02/2018        RAC KPLIAN        agregar parametros de anticipo, desc_anticipo y glosa   para ampliar a mejor detalle la informacion de ejecucion presupeustaria
+  #25  PRE       15/03/2018        RAC               error al calcular tipo de cambio               
  
 ***************************************************************************/
 
@@ -135,16 +136,19 @@ BEGIN
                   -- tenemos tipo de cambio
                   -- si el tipo de cambio es null utilza el cambio oficial para la fecha
                   IF  p_monto_total_mb is null THEN
-                  v_monto_mb  =   param.f_convertir_moneda (
-                             
+                  
+                  v_monto_mb  =   param.f_convertir_moneda (                             
                              p_id_moneda, 
                              v_id_moneda_base,  
                              p_monto_total, 
                              p_fecha,
                              'CUS',50, 
-                             p_tipo_cambio, 'no');
+                             p_tipo_cambio, 'si');
+                             
+                   
+                        
                   ELSE
-                    v_monto_mb = p_monto_total_mb;
+                    v_monto_mb = p_monto_total_mb;                      
                   END IF;
                   
                   
@@ -155,7 +159,7 @@ BEGIN
                                      p_monto_anticipo, 
                                      p_fecha,
                                      'CUS',50, 
-                                     p_tipo_cambio, 'no');
+                                     p_tipo_cambio, 'si');
                              
                     ELSE
                     v_monto_anticipo_mb = p_monto_anticipo_mb;
@@ -168,7 +172,7 @@ BEGIN
                                          p_monto_desc_anticipo, 
                                          p_fecha,
                                          'CUS',50, 
-                                         p_tipo_cambio, 'no');
+                                         p_tipo_cambio, 'si');
                   ELSE
                     v_monto_desc_anticipo_mb = p_monto_desc_anticipo_mb;
                   END IF;         
@@ -180,10 +184,13 @@ BEGIN
                                        p_monto_iva_revertido, 
                                        p_fecha,
                                        'CUS',50, 
-                                       p_tipo_cambio, 'no');
+                                       p_tipo_cambio, 'si');
                   ELSE
                       v_monto_iva_revertido_mb = p_monto_iva_revertido_mb;
-                  END IF;                   
+                     
+                  END IF; 
+                  
+                             
                              
      
            ELSE
@@ -191,9 +198,12 @@ BEGIN
               v_monto_anticipo_mb = p_monto_anticipo;
               v_monto_desc_anticipo_mb = p_monto_desc_anticipo;
               v_monto_iva_revertido_mb = p_monto_iva_revertido;
+              
+               
+               
            END IF;
            
-             --raise exception '...verifica %', v_monto_mb;
+           
            
            --TODO , ....  que ahcer cuando queremos pagar directamente ... pero no tenemos comprometido ni ejecutado?
             
