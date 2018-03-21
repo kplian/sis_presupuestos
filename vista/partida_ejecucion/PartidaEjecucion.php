@@ -700,7 +700,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 	},
 
 	sortInfo:{
-		field: 'fecha',
+		field: 'id_partida_ejecucion',
 		direction: 'asc'
 	},
 
