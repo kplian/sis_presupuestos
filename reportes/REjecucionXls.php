@@ -105,7 +105,7 @@ class REjecucionXls
 								         )
 								     ));
 
-       $this->docexcel->getActiveSheet()->getStyle('A1:O1')->applyFromArray($styleTitulos);
+       $this->docexcel->getActiveSheet()->getStyle('A1:K1')->applyFromArray($styleTitulos);
 		
 		//*************************************Cabecera*****************************************
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[0])->setWidth(20);		
@@ -124,17 +124,17 @@ class REjecucionXls
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,1,'Comprometido');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[7])->setWidth(20);
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,1,'Ejecutado');		
-		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[8])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Pagado');		
+		//$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[8])->setWidth(20);
+		//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Pagado');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[9])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,1,'Saldo por Comprometer');		
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Saldo por Comprometer');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[10])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,1,'Saldo por Ejecutar');		
-		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[11])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,1,'Saldo por Pagar');		
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,1,'Saldo por Ejecutar');		
+		//$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[11])->setWidth(20);
+		//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,1,'Saldo por Pagar');		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[12])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(12,1,'% Ejecución');		
-		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[13])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,1,'% Ejecución');		
+		//$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[13])->setWidth(20);
 		//*************************************Fin Cabecera*****************************************
 		
 		$fila = 2;
@@ -152,11 +152,11 @@ class REjecucionXls
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$value['formulado']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['comprometido']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['ejecutado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['pagado']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,"=F".$fila."-G".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,"=G".$fila."-H".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,"=H".$fila."-I".$fila);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(12,$fila,$value['porc_ejecucion']);
+			//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['pagado']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,"=F".$fila."-G".$fila);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,"=G".$fila."-H".$fila);
+			//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(11,$fila,"=H".$fila."-I".$fila);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(10,$fila,$value['porc_ejecucion']);
 						
 			//$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(14,$fila,"=SUM(C".$fila.":N".$fila.")");
 			

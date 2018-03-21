@@ -107,7 +107,7 @@ class REjecucion extends  ReportePDF {
     function generarCabecera(){
     	
 		//armca caecera de la tabla
-		$this->tablewidths=array(15,53,18,18,18,18,18,18,18,18,18,18,15);
+		$this->tablewidths=array(15,53,28,20,18,20,18,18,28,18,28,18,15);
         $this->tablealigns=array('C','C','C','C','C','C','C','C','C','C','C','C','C');
         $this->tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0);
         $this->tableborders=array('TB','TB','TB','TB','TB','TB','TB','TB','TB','TB','TB','TB','TB');
@@ -122,10 +122,10 @@ class REjecucion extends  ReportePDF {
                         's5' => 'VIGENTE',
                         's6' => 'COMPROMETIDO',
                         's7' => 'EJECUTADO',  
-                        's8' => 'PAGADO', 
+                        //'s8' => 'PAGADO', 
                         's9' => 'SALDO POR COMPROMETER',
-                        's10' => 'SALDO POR DEVENGAR', 
-                        's11' => 'SALDO POR PAGAR',   
+                        's10' => 'SALDO POR EJECUTAR', 
+                        //'s11' => 'SALDO POR PAGAR',   
                         's12' => '% EJE');
                          
         $this-> MultiRow2($RowArray,false,1);
@@ -190,10 +190,10 @@ class REjecucion extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $val['porc_ejecucion'].' %');
 			
         }
@@ -216,10 +216,10 @@ class REjecucion extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $val['porc_ejecucion'].' %');
 			 
 		}
@@ -243,10 +243,10 @@ class REjecucion extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $val['porc_ejecucion'].' %');
 			
 		}
@@ -268,10 +268,10 @@ class REjecucion extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $val['porc_ejecucion'].' %');
 			 
 		}
@@ -293,10 +293,10 @@ class REjecucion extends  ReportePDF {
                         's6' => $val['formulado'],
                         's7' => $val['comprometido'],
                         's8' => $val['ejecutado'],
-						's9' => $val['pagado'],
+						//'s9' => $val['pagado'],
 						's10' => $sal_comprometido,
                         's11' => $sal_ejecutado,
-						's12' => $sal_pagado,
+						//'s12' => $sal_pagado,
                         's13' => $val['porc_ejecucion'].' %');
 			 
 		}
