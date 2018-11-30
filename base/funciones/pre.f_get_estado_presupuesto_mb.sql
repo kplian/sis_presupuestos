@@ -1,4 +1,3 @@
-
 CREATE OR REPLACE FUNCTION pre.f_get_estado_presupuesto_mb (
   p_id_presupuesto integer,
   p_id_partida integer,
@@ -15,11 +14,14 @@ $body$
  FECHA:	        29-02-2016 19:40:34
  COMENTARIOS:	
 ***************************************************************************
- HISTORIAL DE MODIFICACIONES:
-
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+    HISTORIAL DE MODIFICACIONES:
+   	
+ ISSUE            FECHA:		      AUTOR                 DESCRIPCION
+   
+ #0        		05-09-2013        RAC KPLIAN       CREACION
+ #0       		2015              RAC KPLIAN       SE AGRGA VALOR DE PARTIDA NULL DE MANERA OPCIONAL 
+ 
+ 
 ***************************************************************************/
 
 DECLARE
@@ -50,7 +52,9 @@ BEGIN
                   and pe.estado_reg = 'activo';
       
       ELSE          
-             select
+           
+        IF p_id_partida is not null THEN
+            select
                  sum(COALESCE(pe.monto_mb,0))
             into
                 v_importe     
@@ -60,6 +64,20 @@ BEGIN
                   and pe.tipo_movimiento = p_tipo_movimiento
                   and pe.nro_tramite = p_nro_tramite
                   and pe.estado_reg = 'activo';
+         ELSE
+         
+           select
+                 sum(COALESCE(pe.monto_mb,0))
+            into
+                v_importe     
+            from pre.tpartida_ejecucion pe
+            where pe.id_presupuesto = p_id_presupuesto                 
+                  and pe.tipo_movimiento = p_tipo_movimiento
+                  and pe.nro_tramite = p_nro_tramite
+                  and pe.estado_reg = 'activo';
+         
+         
+         END IF;
       END IF;
       
       return COALESCE(v_importe,0);

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -53,6 +51,8 @@ DECLARE
     v_nro_cite_dce_fin					varchar;
     v_nro_cite_dce_in					varchar;
     v_nro_tramite					varchar;
+    v_aux							varchar;
+     v_valor						varchar;
 BEGIN
 
 	v_nombre_funcion = 'pre.ft_presupuesto_sel';
@@ -64,24 +64,20 @@ BEGIN
  	#AUTOR:		admin
  	#FECHA:		26-11-2012 21:35:35
 	***********************************/
-
-	if(p_transaccion='PRE_PRE_SEL')then
+if(p_transaccion='PRE_PRE_SEL')then
 
     	begin
-
-
            v_filadd =  '0 = 0 AND ';
            v_join_responsables = '';
            v_sw_distinc = '';
-
-
+			
            IF v_parametros.tipo_interfaz = 'PresupuestoInicio' THEN
              v_join_ewf = 'LEFT';
            ELSE
              v_join_ewf = 'INNER';
            END IF;
-
-
+		   v_aux= 'ewf.obs::varchar as obs_wf,';
+			v_valor='join wf.testado_wf ewf on ewf.id_estado_wf = pre.id_estado_wf ';
            --  si el usuario no es administrador y la interfaz no es PresupuestoInicio
            --  filtramos por el funcionario
 
@@ -99,14 +95,18 @@ BEGIN
 
             IF v_parametros.tipo_interfaz = 'PresupuestoVb' THEN
                  IF p_administrador !=1 THEN
-                      --v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
-                  	   v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''vobopre'')) and ';
+                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
+                  	   --v_filadd = '  (lower(pre.estado) not in (''vobopre'')) and ';
                   	
                     --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   ELSE
                      -- v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
                   	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
                   END IF;
+                /*v_join_ewf='';
+                v_valor='';
+                 v_aux='NULL::varchar as obs_wf,';	*/
+                                
             END IF;
 
             IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
@@ -151,7 +151,7 @@ BEGIN
                               pre.descripcion,
                               tp.movimiento as movimiento_tipo_pres,
                               vcc.id_gestion,
-                              ewf.obs::varchar as obs_wf,
+                              '||v_aux||'
                               pre.sw_consolidado,
                               pre.id_categoria_prog,
                               cp.codigo_categoria,
@@ -167,7 +167,7 @@ BEGIN
 						from pre.tpresupuesto pre
                         inner join param.vcentro_costo vcc on vcc.id_centro_costo=pre.id_centro_costo
 						inner join segu.tusuario usu1 on usu1.id_usuario = pre.id_usuario_reg
-                        '||v_join_ewf||' join wf.testado_wf ewf on ewf.id_estado_wf = pre.id_estado_wf
+                        '||v_join_ewf||' '||v_valor||' 
                         '||v_join_responsables||'
                         left join pre.ttipo_presupuesto tp on tp.codigo = pre.tipo_pres
 						left join segu.tusuario usu2 on usu2.id_usuario = pre.id_usuario_mod
@@ -176,17 +176,17 @@ BEGIN
 
 
 			--Definicion de la respuesta
+            
 			v_consulta:=v_consulta||v_parametros.filtro;
+            --raise notice 'v_consulta %',v_consulta ;
+             -- raise EXCEPTION 'v_consulta %',v_consulta ;
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
              raise notice 'v_consulta %',v_consulta ;
 
 
 			--Devuelve la respuesta
 			return v_consulta;
-
 		end;
-
-
 
 	/*********************************
  	#TRANSACCION:  'PRE_PRE_CONT'
@@ -249,8 +249,8 @@ BEGIN
                 IF p_administrador !=1 THEN
                       v_sw_distinc = ' DISTINCT ';
                       -- si noes adminsitrador solo funcionarios autorizados pueden visualizar
-                      --v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-                      v_join_responsables = '';
+                      v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
+
                   END IF;
                   v_filadd = ' (lower(pre.estado)  in (''aprobado'')) and ';
              END IF;

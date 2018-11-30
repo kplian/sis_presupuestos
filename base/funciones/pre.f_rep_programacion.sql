@@ -9,9 +9,9 @@ $body$
 DECLARE
 
 
-v_parametros      record;
-v_nombre_funcion    text;
-v_resp        varchar;
+v_parametros  		record;
+v_nombre_funcion   	text;
+v_resp				varchar;
 
 
 v_sw integer;
@@ -21,15 +21,15 @@ v_consulta varchar;
 v_registros  record;  -- PARA ALMACENAR EL CONJUNTO DE DATOS RESULTADO DEL SELECT
 
 
-v_i         integer;
-v_nivel_inicial   integer;
-v_total       numeric;
-v_tipo_cuenta   varchar;
-v_incluir_cierre  varchar;
-va_id_presupuesto INTEGER[];
-va_id_periodo   integer[];
-v_nivel       integer;
-v_id_gestion    integer;
+v_i 				integer;
+v_nivel_inicial		integer;
+v_total 			numeric;
+v_tipo_cuenta		varchar;
+v_incluir_cierre	varchar;
+va_id_presupuesto	INTEGER[];
+va_id_periodo		integer[];
+v_nivel				integer;
+v_id_gestion		integer;
 
 v_where_aux         varchar;
 v_with              varchar;
@@ -46,7 +46,7 @@ BEGIN
      #FECHA:           26-04-2016
     ***********************************/
 
-  IF(p_transaccion='PRE_PROGR_REP')then
+	IF(p_transaccion='PRE_PROGR_REP')then
 
         --raise exception 'error';
 
@@ -63,7 +63,7 @@ BEGIN
                                 id_partida_fk integer,
                                 nivel_partida integer,
                                 sw_transaccional varchar,
-                                c1  numeric,
+                                c1	numeric,
                                 c2 NUMERIC,
                                 c3 NUMERIC,
                                 c4 NUMERIC,
@@ -75,7 +75,7 @@ BEGIN
                                 c10 NUMERIC,
                                 c11 NUMERIC,
                                 c12 NUMERIC,
-                                total numeric,
+                                total	numeric,
                                 procesado varchar) ON COMMIT DROP;
 
 
@@ -163,7 +163,8 @@ BEGIN
                           va_id_presupuesto
                     from pre.tpresupuesto pre
                     inner join param.tcentro_costo cc on cc.id_centro_costo = pre.id_centro_costo
-                    inner join  tipo_centro_costo_aux a on a.id_tipo_cc = cc.id_tipo_cc;
+                    inner join  tipo_centro_costo_aux a on a.id_tipo_cc = cc.id_tipo_cc
+                    where cc.id_gestion = v_parametros.id_gestion;
                     
                     
                     --RAISE exception 'error provocado por juan % ',va_id_presupuesto;                                    
@@ -306,7 +307,7 @@ BEGIN
        --raise exception 'llega';
         FOR v_registros in (
                               SELECT
-                      id_partida,
+       							  id_partida,
                                   codigo_partida,
                                   nombre_partida,
                                   nivel_partida,
@@ -348,7 +349,7 @@ BEGIN
      #FECHA:           27-07-2017
     ***********************************/
 
-  ELSIF(p_transaccion='PRE_PROGR_WF')then
+	ELSIF(p_transaccion='PRE_PROGR_WF')then
     BEGIN
 
     CREATE TEMPORARY TABLE temp_prog (id_partida integer,
@@ -362,21 +363,21 @@ BEGIN
                                       gestion integer,
                                       nivel_partida integer,
                                       sw_transaccional varchar,
-                                      c1  NUMERIC,
-                                      c2  NUMERIC,
-                                      c3  NUMERIC,
-                                      c4  NUMERIC,
-                                      c5  NUMERIC,
-                                      c6  NUMERIC,
-                                      c7  NUMERIC,
-                                      c8  NUMERIC,
-                                      c9  NUMERIC,
+                                      c1	NUMERIC,
+                                      c2 	NUMERIC,
+                                      c3 	NUMERIC,
+                                      c4 	NUMERIC,
+                                      c5 	NUMERIC,
+                                      c6 	NUMERIC,
+                                      c7 	NUMERIC,
+                                      c8 	NUMERIC,
+                                      c9 	NUMERIC,
                                       c10 NUMERIC,
                                       c11 NUMERIC,
                                       c12 NUMERIC,
-                                      total numeric,
+                                      total	numeric,
                                       procesado varchar) ON COMMIT DROP;
-      select a.id_gestion
+    	select a.id_gestion
         into
         v_id_gestion
         from pre.tpresup_partida p
@@ -396,7 +397,7 @@ BEGIN
                     order by per.periodo asc) periodo;
 
 
-    FOR v_registros in (select   fm.id_partida,
+    FOR v_registros in (select 	 fm.id_partida,
                                  fm.id_partida_fk,
                                  fm.id_gestion,
                                  fm.codigo_partida,
@@ -480,7 +481,7 @@ BEGIN
 
 
          -- recursivamente busca los padres de las partida y consolida
-        IF 4 != 5 THEN
+       IF 4 != 5 THEN
 
             PERFORM pre.f_rep_programacion_recursivo_wf(v_id_gestion,v_nivel -1);
 
@@ -489,7 +490,7 @@ BEGIN
 
         FOR v_registros in (
                               SELECT
-                      id_partida,
+       							  id_partida,
                                   codigo_partida,
                                   nombre_partida,
                                   nivel_partida,
@@ -530,12 +531,12 @@ END IF;
 
 EXCEPTION
 
-  WHEN OTHERS THEN
-    v_resp='';
-    v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-    v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-    v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
-    raise exception '%',v_resp;
+	WHEN OTHERS THEN
+		v_resp='';
+		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
+		raise exception '%',v_resp;
 
 END;
 $body$

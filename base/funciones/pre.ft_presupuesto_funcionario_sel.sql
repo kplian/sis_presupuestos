@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_funcionario_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -46,8 +44,7 @@ BEGIN
      				
     	begin
        
-    		--Sentencia de la consulta
-			v_consulta:='select
+    		v_consulta:='select
                           pf.id_presupuesto_funcionario,
                           pf.estado_reg,
                           pf.accion,
@@ -67,6 +64,28 @@ BEGIN
 						inner join segu.tusuario usu1 on usu1.id_usuario = pf.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = pf.id_usuario_mod
 				        where  ';
+                        
+            /*v_consulta:='select
+                          pf.id_presupuesto_funcionario,
+                          pf.estado_reg,
+                          pf.accion,
+                          pf.id_funcionario,
+                          pf.id_presupuesto,
+                          pf.id_usuario_reg,
+                          pf.fecha_reg,
+                          pf.usuario_ai,
+                          pf.id_usuario_ai,
+                          pf.id_usuario_mod,
+                          pf.fecha_mod,
+                          usu1.cuenta as usr_reg,
+                          usu2.cuenta as usr_mod,	
+            			(p.apellido_paterno || '' ''|| p.apellido_materno || '' ''|| p.nombre)::varchar as desc_funcionario
+						from pre.tpresupuesto_funcionario pf
+                        inner join orga.vfuncionario f on f.id_funcionario = pf.id_funcionario     
+                        inner join segu.tusuario usu1 on usu1.id_usuario = pf.id_usuario_reg
+                        left join segu.tusuario usu2 on usu2.id_usuario = pf.id_usuario_mod
+                        join segu.tpersona p on p.id_persona=usu1.id_persona
+				        where  ';*/
 			
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

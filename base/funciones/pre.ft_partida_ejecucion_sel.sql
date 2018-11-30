@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_partida_ejecucion_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -117,16 +115,20 @@ BEGIN
                                   id_proceso_wf,
                                   monto_anticipo_mb,
                                   monto_desc_anticipo_mb,
-                                  monto_iva_revertido_mb
+                                  monto_iva_revertido_mb,
+                                  glosa1,
+                                  glosa,
+                                  cantidad_descripcion
                           from pre.vpartida_ejecucion
                           where  '||v_filtro_tipo_cc;
 
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;
+                    
 			v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
 			raise notice 'La consulta es:  %', v_consulta;
-
+           
 			--Devuelve la respuesta
 			return v_consulta;
 

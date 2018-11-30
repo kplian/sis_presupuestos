@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_presupuesto_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -201,7 +199,7 @@ BEGIN
             where  p.id_presupuesto = v_parametros.id_presupuesto;
             
             IF v_reg_pres.estado != 'borrador' and v_reg_pres.tipo_pres != v_parametros.tipo_pres THEN
-              raise exception 'Solo puede editar el tipo de presupuesto  en estado borrador';
+              --raise exception 'Solo puede editar el tipo de presupuesto  en estado borrador';
             END IF;
             
             select 
@@ -570,6 +568,10 @@ BEGIN
           --  validamos que el presupeusto tenga por 
           --  lo menos una partida asignada
           --------------------------------------------
+          
+          --RAC 05/0/2018 
+          --comentado apra al formulacion presupeusto 2019
+          /*
           IF not EXISTS(
                         select 1
                         from pre.tpresup_partida pp
@@ -577,7 +579,7 @@ BEGIN
                               and pp.id_presupuesto = v_parametros.id_presupuesto) THEN
               
               raise exception 'Por lo menos necesita asignar una partida para formulación';
-          END IF;
+          END IF;*/
          
          
          
@@ -726,7 +728,7 @@ BEGIN
         inner  join wf.tproceso_wf pwf  on  pwf.id_proceso_wf = pp.id_proceso_wf
         where pp.id_proceso_wf  = v_parametros.id_proceso_wf;
         
-        
+        --RAC comentar este raise apra retrocere el presupeusto si esta aprobado, solo si no cargo partida ejecucion
         IF v_registros_pp.estado = 'aprobado' THEN
             raise exception 'El presupuesto ya se encuentra aprobado, solo puede modificar a traves de la interface de ajustes presupuestarios';
         END IF;

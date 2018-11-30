@@ -20,31 +20,31 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto (
 RETURNS numeric [] AS
 $body$
 /**************************************************************************
- SISTEMA:   Sistema de Presupuestos
- FUNCION:     pre.f_gestionar_presupuesto
+ SISTEMA:		Sistema de Presupuestos
+ FUNCION: 		pre.f_gestionar_presupuesto
  DESCRIPCION:   Funcion que llama a la funcion presto.f_i_pr_gestionarpresupuesto mediante dblink
- AUTOR:     Gonzalo Sarmiento Sejas (kplian)
- FECHA:         15-03-2013
- COMENTARIOS: 
+ AUTOR: 		Gonzalo Sarmiento Sejas (kplian)
+ FECHA:	        15-03-2013
+ COMENTARIOS:	
 ***************************************************************************/
 
 
 DECLARE
-  resultado           record;
-  v_consulta          varchar;
-  v_conexion          varchar;
-  v_resp            varchar;
-  v_sincronizar         varchar;
-  v_function_name         text;
-  v_size            integer;
-  v_array_resp          numeric[]; 
-  v_str_id_presupuesto      varchar;
-  v_str_id_partida        varchar;
-  v_pre_integrar_presupuestos varchar;
-  v_id_moneda_base        integer;
-  v_monto_mb          numeric;
-  v_sw_momento          varchar;
-  v_resultado_ges       numeric[];
+  resultado 					record;
+  v_consulta 					varchar;
+  v_conexion 					varchar;
+  v_resp						varchar;
+  v_sincronizar 				varchar;
+  v_function_name 				text;
+  v_size 						integer;
+  v_array_resp 					numeric[]; 
+  v_str_id_presupuesto 			varchar;
+  v_str_id_partida				varchar;
+  v_pre_integrar_presupuestos	varchar;
+  v_id_moneda_base				integer;
+  v_monto_mb 					numeric;
+  v_sw_momento					varchar;
+  v_resultado_ges				numeric[];
   
 BEGIN
 
@@ -234,14 +234,24 @@ BEGIN
                
                    -- raise exception '- % , % , % , % -',v_sw_momento,  p_id_partida_ejecucion[v_cont], p_id_partida[v_cont],p_monto_total[v_cont];
                    --raise exception ' % ',v_resultado_ges;
+                   
+                   IF p_id_usuario = 429  THEN
+                      --raise exception '%',v_resultado_ges;
+                   
+                   END  IF;
                   
                     IF v_resultado_ges[4] is not null and  v_resultado_ges[4] = 1  THEN
-                        raise exception 'el presupuesto no alcanza por diferencia cambiaria, en moneda base tenemos:  % ',v_resultado_ges[3];
+                        raise exception 'El presupuesto no es suficiente por diferencia cambiaria, en moneda base tenemos:  % saldo % PE %  momentos(%,%)',v_resultado_ges[3], v_resultado_ges[5], p_id_partida_ejecucion,p_sw_ejecutar, v_sw_momento;
                     ELSE
                         IF v_id_moneda_base = p_id_moneda[v_cont] THEN
-                            raise exception 'solo se tiene disponible un monto en moneda base de:  % , # % ,necesario: %', v_resultado_ges[3], p_nro_tramite[v_cont] , p_monto_total[v_cont];   
+                            raise exception 'Presupuesto insuficiente: se tiene disponible un monto en moneda base de:  %, # %, necesario: %', round(v_resultado_ges[3],2), p_nro_tramite[v_cont], round(p_monto_total[v_cont],2);   
                         ELSE
-                            raise exception 'solo se tiene disponible un monto de:  % , %', v_resultado_ges[5], p_nro_tramite[v_cont];
+                            IF round(v_resultado_ges[5],2) > 0 THEN
+                              raise exception 'Presupuesto insuficiente: se tiene disponible un monto de:  %, %', round(v_resultado_ges[5],2), p_nro_tramite[v_cont];
+                            ELSE
+                               raise exception 'Presupuesto insuficiente: se tiene disponible un monto en moneda BOB de:  %, # %, necesario: USD %', round(v_resultado_ges[3],2), p_nro_tramite[v_cont], round(p_monto_total[v_cont],2);   
+                            END IF;
+                            
                         END IF;
                       
                    END IF;
@@ -269,13 +279,13 @@ BEGIN
 
 
 EXCEPTION
-          
-  WHEN OTHERS THEN
-      v_resp='';
-      v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
-      v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
-      v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_function_name);
-      raise exception '%',v_resp;
+					
+	WHEN OTHERS THEN
+			v_resp='';
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
+			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
+			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_function_name);
+			raise exception '%',v_resp;
 END;
 $body$
 LANGUAGE 'plpgsql'

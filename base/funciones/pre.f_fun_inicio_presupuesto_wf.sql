@@ -97,7 +97,7 @@ BEGIN
          --TODO validar que 
           
           IF v_registros.sw_oficial = 'si' THEN
-               IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) and v_registros.control_techo = 'si' THEN 
+               IF (v_importe_aprobado_total is null or  v_importe_aprobado_total = 0) THEN -- and v_registros.control_techo = 'si' THEN 
                   raise exception 'No tiene ningun monto aprobado mayor a cero.';
                END IF; 
           ELSE

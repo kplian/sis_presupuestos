@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_memoria_calculo_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -249,8 +247,10 @@ BEGIN
                              v_grupos = 'id_tipo_cc_raiz,
                                           aux.descripcion,';
                                            
-                              v_ordenacion = 'id_tipo_cc_raiz asc,';                 
+                             v_ordenacion = 'id_tipo_cc_raiz asc,';                 
                           
+                      		raise notice '.eee % ', v_filtro;
+                            --raise exception 'error %',v_filtro;
                  END IF;
                  
                 
@@ -300,8 +300,7 @@ BEGIN
                             '||v_ordenacion||'
                               codigo_partida asc ';
 
-			raise notice '..... % ......', v_consulta;
-            
+
 			 --  Devuelve la respuesta
 			return v_consulta;
 
@@ -367,7 +366,7 @@ BEGIN
     elseif(p_transaccion='PRE_MECALMEN_REP')then
 
     	begin
-        
+
     	IF(v_parametros.tipo_rep = 'periodos')THEN
         	v_filtro = ' g.id_gestion =  '||v_parametros.id_gestion;
            v_ordenacion = '';
@@ -489,15 +488,17 @@ BEGIN
                             nombre_partida,
                             descripcion_pres,
                             desc_ingas,
-                            justificacion,
+                            --justificacion,
                             unidad_medida,
-                            importe_unitario,
-                            cantidad_mem,
+                            --importe_unitario,
+                            --cantidad_mem,
                             sum(importe) as importe,
                             g.gestion,
-                            pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, m.cantidad_mem::integer, m.importe_unitario::integer) AS importe_periodo
+                            --pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, m.cantidad_mem::integer, m.importe_unitario::integer) AS importe_periodo
+                            --pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, 50::integer, 10::integer) AS importe_periodo
+                            pre.f_get_mem_det_totalesxperiodo_mensual(m.id_memoria_calculo, 1::integer, (select sum(mm.importe_unitario) from pre.vmemoria_por_categoria mm where  mm.id_partida=m.id_partida and mm.codigo_cc=m.codigo_cc)::INTEGER,m.id_partida,m.codigo_cc,g.id_gestion) AS importe_periodo
                           FROM
-                            pre.vmemoria_por_categoria m
+                            pre.vmemoria_por_categoria_repo m
                             inner join param.tgestion g on g.id_gestion=m.id_gestion
                             '||v_inner|| '
                           WHERE '||v_filtro||'
@@ -511,20 +512,61 @@ BEGIN
                               nombre_partida,
                               descripcion_pres,
                               desc_ingas,
-                              justificacion,
+                              --justificacion,
                               unidad_medida,
-                              importe_unitario,
-                              cantidad_mem,
+                              --importe_unitario,
+                              --cantidad_mem,
                               importe,
 							  m.id_memoria_calculo,
-                              g.gestion
+                              g.gestion,
+                               codigo_cc,
+                              g.id_gestion
                           order by
-
-                              '||v_ordenacion||'
-                              codigo_partida asc ';
-
+                          m.codigo_cc asc ';
+        
         ELSE
         v_consulta:='SELECT
+                            m.id_presupuesto as id_concepto,
+                            m.codigo_cc::varchar as concepto,
+                            m.id_concepto_ingas,
+                            m.id_partida,
+                            m.codigo_partida,
+                            m.nombre_partida,
+                            m.descripcion_pres,
+                            m.desc_ingas,
+                            --m.justificacion,
+                            m.unidad_medida,
+                            --sum(m.importe_unitario)::numeric as importe_unitario,
+                            --sum(m.cantidad_mem)::numeric as cantidad_mem,
+                            sum(m.importe) as importe,
+                            g.gestion,
+                            --pre.f_get_mem_det_totalesxperiodo(m.id_memoria_calculo, (m.cantidad_mem)::integer, m.importe_unitario::integer) AS importe_periodo
+                            pre.f_get_mem_det_totalesxperiodo_mensual(m.id_memoria_calculo, 50::integer, 10::integer) AS importe_periodo
+                          FROM pre.vmemoria_por_categoria_repo m
+						  INNER JOIN pre.vpresupuesto p on p.id_presupuesto = m.id_presupuesto
+                          INNER JOIN param.tgestion g on g.id_gestion = m.id_gestion
+                          WHERE p.id_proceso_wf  = '||v_parametros.id_proceso_wf||'
+                          group by
+                          	  m.id_memoria_calculo,
+                              m.id_presupuesto,
+                              m.codigo_cc,
+                              m.id_concepto_ingas,
+                              m.id_partida,
+                              m.codigo_partida,
+                              m.nombre_partida,
+                              m.descripcion_pres,
+                              m.desc_ingas,
+                              --m.justificacion,
+                              m.unidad_medida,
+                              --m.importe_unitario,
+                              --m.cantidad_mem,
+                              m.importe,
+                              g.gestion
+                          order by
+                              m.id_presupuesto asc,
+                              m.codigo_partida asc ';
+                              
+        /*v_consulta:='SELECT
                             m.id_presupuesto as id_concepto,
                             m.codigo_cc::varchar as concepto,
                             m.id_concepto_ingas,
@@ -562,11 +604,12 @@ BEGIN
                               g.gestion
                           order by
                               m.id_presupuesto asc,
-                              m.codigo_partida asc ';
+                              m.codigo_partida asc ';*/
+                              
         END IF;
-        
-        --RAISE EXCEPTION 'error provocado %','provocado';
-        raise notice 'consulta: %', v_consulta;
+         raise notice 'consulta: %', v_consulta;
+         --RAISE EXCEPTION 'error provocado %',v_consulta;
+       
 		--  Devuelve la respuesta
 		return v_consulta;
     end;

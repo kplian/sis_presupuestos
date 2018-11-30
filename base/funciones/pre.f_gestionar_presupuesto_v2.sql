@@ -70,8 +70,9 @@ BEGIN
 
   v_id_moneda_base = param.f_get_moneda_base();
   
-
-
+  raise notice 'MONTO : %' , p_monto_total;
+  
+  
  IF v_pre_integrar_presupuestos = 'true' THEN
 
 
@@ -143,6 +144,8 @@ BEGIN
                                               p_monto_iva_revertido_mb
                                               
                                               );
+                                              
+                      
 
 
 
@@ -205,6 +208,10 @@ BEGIN
                                               p_monto_anticipo_mb,
                                               p_monto_desc_anticipo_mb,
                                               p_monto_iva_revertido_mb);
+                                              
+                       raise notice 'entra....  %,   %, %', p_monto_total_mb, p_id_partida_ejecucion,p_id_presupuesto; 
+                       
+                      
 
                       --si tiene error retornamos
                      IF v_resultado_ges[1] = 0 THEN
@@ -246,6 +253,8 @@ BEGIN
 
 
                 ELSE
+                
+                 raise notice 'MOMENTO : % com % error %',p_sw_momento , p_sw_comprometer , v_resultado_ges;
 
                    --  ejecutamos por defecto solo lo solicitado
                    v_resultado_ges = pre.f_gestionar_presupuesto_individual(
@@ -275,6 +284,8 @@ BEGIN
                 END IF;
 
         ELSEIF    p_monto_total < 0 THEN
+        
+         
 
             ----------------------------------
             --  SI SON REVERSIONES
@@ -351,6 +362,8 @@ BEGIN
                                             p_monto_anticipo_mb,
                                             p_monto_desc_anticipo_mb,
                                             p_monto_iva_revertido_mb);
+                                            
+                    raise notice '---------------------  REVERSION : % com % error %',p_sw_momento , p_sw_comprometer , v_resultado_ges;                        
 
                    --si tiene error retornamos
                    IF v_resultado_ges[1] = 0 THEN
@@ -410,8 +423,12 @@ BEGIN
                   
                   
              END IF ;
+             
+           
                           
        END IF;        
+       
+       
        
         v_array_resp = v_resultado_ges; --resultado de array
                

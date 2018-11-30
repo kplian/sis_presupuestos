@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_partida (
   p_id_presupuesto integer,
   p_id_partida integer,
@@ -48,8 +46,6 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   from pre.vpresupuesto_cc p
   where p.id_presupuesto = p_id_presupuesto::integer ;
   
-  
-  
   IF(v_sincronizar='true' and v_gestion::integer <= 2016::integer)THEN
   	
       --si la sincronizacion esta activa busca lso datos en endesis
@@ -79,7 +75,7 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
   
   ELSE 
     --  si la sincronizacion no esta activa busca en el sistema de presupeusto local en PXP
-      
+       
            v_id_moneda_base = param.f_get_moneda_base();
             
            IF  v_id_moneda_base != p_id_moneda THEN
@@ -116,7 +112,12 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
                                 v_monto_mb, 
                                 p_monto_total, 
                                 'comprometido');
-                                
+/*if p_id_presupuesto = 4606 then
+	raise exception 'revisando presupuesto ....%, %, %, %',p_id_presupuesto, 
+                                                          p_id_partida, 
+                                                          v_monto_mb, 
+                                                          p_monto_total;
+end if;*/
                                 
            IF p_resp_com = 'no' THEN
                 if v_verif_pres[1]= 'true' then

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_migrar_presupuesto_iniciatra (
 )
 RETURNS boolean AS
@@ -94,7 +92,7 @@ BEGIN
     
 
   END LOOP;
-  --raise exception 'terminó';
+  raise exception 'terminó todo ok (comentar esta línea para correr en limpio)';
   return true;
 END;
 $body$

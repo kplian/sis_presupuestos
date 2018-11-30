@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_individual (
   p_nro_tramite varchar,
   p_id_partida_ejecucion integer,
@@ -31,6 +29,11 @@ $body$
                 es permitido  por presupeusto , por categoria programatica y se adiciona 
                 la logica para arboles en tipo_cc  ,
                 tambien opcionalmente la logica para controlar por partida o no
+                
+                 COMENTARIOS:	
+ 
+  #33  ETR       18/07/2018        RAC KPLIAN        Bloquear tipos de centros de costos  no operativos
+
 ***************************************************************************/
 
 
@@ -68,6 +71,10 @@ DECLARE
   v_id_partida_aux 					integer;
   v_tipo							varchar;
   v_tipo_movimiento				    varchar;
+  v_codigo_tcc		                varchar;  --·#33 ++
+  v_operativo_base                  varchar;  --# 33 ++
+  v_operativo_techo                 varchar;  --# 33 ++
+  v_codigo_techo                    varchar;  --# 33 ++
   
 BEGIN
 
@@ -135,15 +142,44 @@ BEGIN
                      
                      select 
                         tcc.id_tipo_cc_techo,
-                        tcc.control_partida
+                        tcc.control_partida,
+                        tcc2.operativo,
+                        tcc2.codigo
+                        
                      into
                        v_id_tipo_cc_techo ,
-                       v_control_partida 
+                       v_control_partida,
+                       v_operativo_techo,
+                       v_codigo_techo 
                      from pre.tpresupuesto p
                      inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                      inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                     inner join param.ttipo_cc tcc2 on tcc2.id_tipo_cc = tcc.id_tipo_cc_techo
                      where  p.id_presupuesto = p_id_presupuesto;
-               
+                     
+                     
+                     --#33  verificamos si el presupuesto  es operativo
+                     IF p_sw_momento  = 'comprometido' and p_monto_total_mb > 0 THEN 
+                         select 
+                           tcc.operativo,
+                           tcc.codigo 
+                          into
+                           v_operativo_base,
+                           v_codigo_tcc
+                         from pre.tpresupuesto p
+                         inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
+                         inner join param.ttipo_cc  tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                         where  p.id_presupuesto = p_id_presupuesto;
+                    
+                         IF v_operativo_base  = 'no' THEN
+                            raise exception 'El Tipo de Centro de costos: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_tcc;
+                         END IF; 
+                         
+                         IF v_operativo_techo  = 'no' THEN
+                            raise exception 'El Tipo de Centro de costos techo: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_techo;
+                         END IF;  
+                     END IF;
+                     
                  END IF;
             
             

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.f_migrar_presupuesto_formulado (
 )
 RETURNS varchar AS
@@ -73,200 +71,198 @@ BEGIN
 
     IF v_id_tipo_cc  is null THEN
       raise notice 'no se encontro TIPO_CC para el codigo %',trim(upper(v_registros.codigo_presupuesto));
-    END IF;
-
-    --obntemos el presupeusto correpondiente para la gestion
-    v_params = ARRAY[v_id_tipo_cc::varchar,--id_tipo_cc
-      '646'::varchar,--id_uo -> GG
-      v_id_gestion::varchar,--id_gestion
-      v_registros.tipo_pres::varchar,--tipo_pres
-      v_registros.codigo_presupuesto || ' ' || v_registros.descripcion::varchar,--descripcion
-      'no'::varchar,--sw_consolidado
-      1::varchar,--id_categoria_prog
-      '01/01/2018'::varchar,
-      '31/12/2018'::varchar
-      ];
-    v_tabla = pxp.f_crear_parametro(ARRAY['id_tipo_cc','id_uo','id_gestion','tipo_pres','descripcion','sw_consolidado','id_categoria_prog','fecha_inicio_pres','fecha_fin_pres'],
-      v_params,
-      ARRAY['int4','int4','int4','varchar','varchar','varchar','int4','date','date']
-    );
-    --Insertamos el registro
-    v_resp = pre.ft_presupuesto_ime(1, 1, v_tabla, 'PRE_PRE_INS');
-    --Obtencion del ID generado
-    v_id_presupuesto = pxp.f_obtiene_clave_valor(v_resp,'id_presupuesto','','','valor')::integer;
-    /*--cap - el presupuesto se inserta, ya no se selecciona
-    select pre.id_presupuesto, pre.estado
-    into v_id_presupuesto, v_estado
-    from pre.tpresupuesto pre
-    inner join param.tcentro_costo cc on pre.id_presupuesto = cc.id_centro_costo
-    where cc.id_gestion = v_id_gestion and cc.id_tipo_cc = v_id_tipo_cc;
-    */
-    IF v_id_presupuesto  is null THEN
-      raise notice 'no se encontro PRESUPUESTO para el codigo % en la gestion %',trim(upper(v_registros.codigo_presupuesto)), v_registros.gestion;
-      update pre.tformulacion_tmp
-      set obs = COALESCE(obs, '') || '***no se encontro PRESUPUESTO para el codigo ' || trim(upper(COALESCE(v_registros.codigo_presupuesto, 'NULO')))
-      where id = v_registros.id_formulacion_tmp;
-    ELSE
-
-      /*IF v_estado = 'aprobado' THEN
-        -- raise exception 'No puede agregar conceptos a la memoria de calculo de un presupuesto aprobado';
-      END IF;*/
-
-      -- obtenemso la partida
-      --cap - ya se sabe cuál es la partida
-      v_id_partida = v_registros.id_partida;
-      /*select par.id_partida
-      into v_id_partida
-      from pre.tpartida par
-      where par.id_gestion = v_id_gestion and upper(trim(par.codigo)) = upper(trim(v_registros.partida));*/
-
-      -- obtenemso el concepto  de gasto para el codigo de partida identificado
-      select cp.id_concepto_ingas
-      into v_id_conceto_ingas
-      from pre.tconcepto_partida cp
-      where cp.id_partida = v_id_partida;
-
-      IF v_id_conceto_ingas  is null THEN
-        raise notice 'no se encontro CONCEPTO  para la partida % ',trim(upper(v_id_partida));
+    else
+      --obntemos el presupeusto correpondiente para la gestion
+      v_params = ARRAY[v_id_tipo_cc::varchar,--id_tipo_cc
+        '646'::varchar,--id_uo -> GG
+        v_id_gestion::varchar,--id_gestion
+        v_registros.tipo_pres::varchar,--tipo_pres
+        v_registros.codigo_presupuesto || ' ' || v_registros.descripcion::varchar,--descripcion
+        'no'::varchar,--sw_consolidado
+        1::varchar,--id_categoria_prog
+        '01/01/2018'::varchar,
+        '31/12/2018'::varchar
+        ];
+      v_tabla = pxp.f_crear_parametro(ARRAY['id_tipo_cc','id_uo','id_gestion','tipo_pres','descripcion','sw_consolidado','id_categoria_prog','fecha_inicio_pres','fecha_fin_pres'],
+        v_params,
+        ARRAY['int4','int4','int4','varchar','varchar','varchar','int4','date','date']
+      );
+      --Insertamos el registro
+      v_resp = pre.ft_presupuesto_ime(1, 1, v_tabla, 'PRE_PRE_INS');
+      --Obtencion del ID generado
+      v_id_presupuesto = pxp.f_obtiene_clave_valor(v_resp,'id_presupuesto','','','valor')::integer;
+      /*--cap - el presupuesto se inserta, ya no se selecciona
+      select pre.id_presupuesto, pre.estado
+      into v_id_presupuesto, v_estado
+      from pre.tpresupuesto pre
+      inner join param.tcentro_costo cc on pre.id_presupuesto = cc.id_centro_costo
+      where cc.id_gestion = v_id_gestion and cc.id_tipo_cc = v_id_tipo_cc;
+      */
+      IF v_id_presupuesto  is null THEN
+        raise notice 'no se encontro PRESUPUESTO para el codigo % en la gestion %',trim(upper(v_registros.codigo_presupuesto)), v_registros.gestion;
         update pre.tformulacion_tmp
-        set obs = COALESCE(obs, '') || '***no se encontro CONCEPTO  para la partida ' || trim(upper(COALESCE(v_id_partida, 'NULO')))
+        set obs = COALESCE(obs, '') || '***no se encontro PRESUPUESTO para el codigo ' || trim(upper(COALESCE(v_registros.codigo_presupuesto, 'NULO')))
         where id = v_registros.id_formulacion_tmp;
       ELSE
-        --preguntamos is no existe una partida para el presupeusto la agregamos
-        IF NOT EXISTS (
-          select 1
-          from pre.tpresup_partida
-          where id_partida = v_id_partida and id_presupuesto = v_id_presupuesto) THEN
-          INSERT INTO pre.tpresup_partida(id_presupuesto, id_partida, id_centro_costo, id_usuario_reg)
-          VALUES (v_id_presupuesto, v_id_partida, v_id_presupuesto, 1);
-        END IF;
 
-        v_total_memoria = v_registros.total_memoria;
+        /*IF v_estado = 'aprobado' THEN
+          -- raise exception 'No puede agregar conceptos a la memoria de calculo de un presupuesto aprobado';
+        END IF;*/
 
-        --insertamos memoria de calculo si no existe
-        IF NOT EXISTS (
-          select 1
-          from pre.tmemoria_calculo m
-          where m.id_partida = v_id_partida and
-                m.id_concepto_ingas = v_id_conceto_ingas and
-                m.id_presupuesto = v_id_presupuesto and
-                m.estado_reg = 'activo') THEN
+        -- obtenemso la partida
+        --cap - ya se sabe cuál es la partida
+        v_id_partida = v_registros.id_partida;
+        /*select par.id_partida
+        into v_id_partida
+        from pre.tpartida par
+        where par.id_gestion = v_id_gestion and upper(trim(par.codigo)) = upper(trim(v_registros.partida));*/
 
-          insert into pre.tmemoria_calculo(id_concepto_ingas, importe_total, obs, id_presupuesto, estado_reg, fecha_reg, id_partida, id_usuario_reg)
-          values (v_id_conceto_ingas, v_total_memoria, 'migrado', v_id_presupuesto, 'activo', now(), v_id_partida, 1)
-          RETURNING id_memoria_calculo into v_id_memoria_calculo;
-          
+        -- obtenemso el concepto  de gasto para el codigo de partida identificado
+        select cp.id_concepto_ingas
+        into v_id_conceto_ingas
+        from pre.tconcepto_partida cp
+        where cp.id_partida = v_id_partida;
+
+        IF v_id_conceto_ingas  is null THEN
+          raise notice 'no se encontro CONCEPTO  para la partida % ',trim(upper(v_id_partida));
           update pre.tformulacion_tmp
-          set id_memoria_calculo = v_id_memoria_calculo, migrado = 'si'
+          set obs = COALESCE(obs, '') || '***no se encontro CONCEPTO  para la partida ' || trim(upper(COALESCE(v_id_partida, 'NULO')))
           where id = v_registros.id_formulacion_tmp;
-
-          raise notice 'se inserto nueva memoria de calculo importe %, partida %, presupeusto %', v_total_memoria, v_id_partida, v_registros.codigo_presupuesto;
-
-          v_contador = 1;
-          -- inserta valores para todos los periodos de la gestion con valor 0
-          FOR v_registros_per in (
-          select per.id_periodo
-          from param.tperiodo per
-          where per.id_gestion = v_id_gestion and per.estado_reg = 'activo' order by per.fecha_ini)
-          LOOP
-            if v_contador = 1 then
-              v_aux = v_registros.m1;
-            elseif   v_contador = 2 then
-              v_aux =  v_registros.m2;
-            elseif   v_contador = 3 then
-              v_aux =  v_registros.m3;
-            elseif   v_contador = 4 then
-              v_aux =  v_registros.m4;
-            elseif   v_contador = 5 then
-              v_aux =  v_registros.m5;
-            elseif   v_contador = 6 then
-              v_aux =  v_registros.m6;
-            elseif   v_contador = 7 then
-              v_aux =  v_registros.m7;
-            elseif   v_contador = 8 then
-              v_aux =  v_registros.m8;
-            elseif   v_contador = 9 then
-              v_aux =  v_registros.m9;
-            elseif   v_contador = 10 then
-              v_aux =  v_registros.m10;
-            elseif   v_contador = 11 then
-              v_aux =  v_registros.m11;
-            else
-              v_aux =  v_registros.m12;
-            end if;
-            insert into pre.tmemoria_det(importe, importe_unitario, estado_reg, id_periodo, id_memoria_calculo, fecha_reg, id_usuario_reg)
-            values (v_aux, v_aux, 'activo', v_registros_per.id_periodo, v_id_memoria_calculo, now(), 1);
-
-            v_contador = v_contador +1;
-          END LOOP;
-
         ELSE
-          raise exception 'en teoría no debería entrar aquí';
-          --raise notice 'LA meoria ya existe y el presupeusto no fue migrado, importe %, partida %, presupeusto %',v_total_memoria, v_registros.partida, v_registros.codigo_presupuesto;
-          --sumamos al presupuesto existente
-          insert into pre.tmemoria_calculo(id_concepto_ingas, importe_total, obs, id_presupuesto, estado_reg, fecha_reg, id_partida, id_usuario_reg)
-          values (v_id_conceto_ingas, v_total_memoria, 'migrado', v_id_presupuesto, 'activo', now(), v_id_partida, 1)
-          RETURNING id_memoria_calculo into v_id_memoria_calculo;
-          
-          update pre.tformulacion_tmp
-          set id_memoria_calculo = v_id_memoria_calculo, obs = 'ya esxistia una memoria para la misma partida y presupeusto', migrado = 'si'
-          where id = v_registros.id_formulacion_tmp;
+          --preguntamos is no existe una partida para el presupeusto la agregamos
+          IF NOT EXISTS (
+            select 1
+            from pre.tpresup_partida
+            where id_partida = v_id_partida and id_presupuesto = v_id_presupuesto) THEN
+            INSERT INTO pre.tpresup_partida(id_presupuesto, id_partida, id_centro_costo, id_usuario_reg)
+            VALUES (v_id_presupuesto, v_id_partida, v_id_presupuesto, 1);
+          END IF;
 
-          raise notice 'se inserto nueva memoria de calculo importe %, partida %, presupeusto %', v_total_memoria, v_registros.partida, v_registros.codigo_presupuesto;
+          v_total_memoria = v_registros.total_memoria;
 
-          v_contador = 1;
-          -- inserta valores para todos los periodos de la gestion con valor 0
-          FOR v_registros_per in (
-          select per.id_periodo
-          from param.tperiodo per
-          where per.id_gestion = v_id_gestion and
-                per.estado_reg = 'activo'
-          order by per.fecha_ini)
-          LOOP
+          --insertamos memoria de calculo si no existe
+          IF NOT EXISTS (
+            select 1
+            from pre.tmemoria_calculo m
+            where m.id_partida = v_id_partida and
+                  m.id_concepto_ingas = v_id_conceto_ingas and
+                  m.id_presupuesto = v_id_presupuesto and
+                  m.estado_reg = 'activo') THEN
 
-            if v_contador = 1 then
-              v_aux = v_registros.m1;
+            insert into pre.tmemoria_calculo(id_concepto_ingas, importe_total, obs, id_presupuesto, estado_reg, fecha_reg, id_partida, id_usuario_reg)
+            values (v_id_conceto_ingas, v_total_memoria, 'migrado', v_id_presupuesto, 'activo', now(), v_id_partida, 1)
+            RETURNING id_memoria_calculo into v_id_memoria_calculo;
+            
+            update pre.tformulacion_tmp
+            set id_memoria_calculo = v_id_memoria_calculo, migrado = 'si'
+            where id = v_registros.id_formulacion_tmp;
+
+            raise notice 'se inserto nueva memoria de calculo importe %, partida %, presupeusto %', v_total_memoria, v_id_partida, v_registros.codigo_presupuesto;
+
+            v_contador = 1;
+            -- inserta valores para todos los periodos de la gestion con valor 0
+            FOR v_registros_per in (
+            select per.id_periodo
+            from param.tperiodo per
+            where per.id_gestion = v_id_gestion and per.estado_reg = 'activo' order by per.fecha_ini)
+            LOOP
+              if v_contador = 1 then
+                v_aux = v_registros.m1;
               elseif   v_contador = 2 then
-              v_aux =  v_registros.m2;
+                v_aux =  v_registros.m2;
               elseif   v_contador = 3 then
-              v_aux =  v_registros.m3;
+                v_aux =  v_registros.m3;
               elseif   v_contador = 4 then
-              v_aux =  v_registros.m4;
+                v_aux =  v_registros.m4;
               elseif   v_contador = 5 then
-              v_aux =  v_registros.m5;
+                v_aux =  v_registros.m5;
               elseif   v_contador = 6 then
-              v_aux =  v_registros.m6;
+                v_aux =  v_registros.m6;
               elseif   v_contador = 7 then
-              v_aux =  v_registros.m7;
+                v_aux =  v_registros.m7;
               elseif   v_contador = 8 then
-              v_aux =  v_registros.m8;
+                v_aux =  v_registros.m8;
               elseif   v_contador = 9 then
-              v_aux =  v_registros.m9;
+                v_aux =  v_registros.m9;
               elseif   v_contador = 10 then
-              v_aux =  v_registros.m10;
+                v_aux =  v_registros.m10;
               elseif   v_contador = 11 then
-              v_aux =  v_registros.m11;
+                v_aux =  v_registros.m11;
               else
-              v_aux =  v_registros.m12;
-            end if;
-            insert into pre.tmemoria_det(importe, importe_unitario, estado_reg,
-              id_periodo, id_memoria_calculo, fecha_reg, id_usuario_reg)
-            values (v_aux, v_aux, 'activo', v_registros_per.id_periodo,
-              v_id_memoria_calculo, now(), 1);
+                v_aux =  v_registros.m12;
+              end if;
+              insert into pre.tmemoria_det(importe, importe_unitario, estado_reg, id_periodo, id_memoria_calculo, fecha_reg, id_usuario_reg)
+              values (v_aux, v_aux, 'activo', v_registros_per.id_periodo, v_id_memoria_calculo, now(), 1);
 
-            v_contador = v_contador +1;
+              v_contador = v_contador +1;
+            END LOOP;
 
-          END LOOP;
+          ELSE
+            raise exception 'en teoría no debería entrar aquí';
+            --raise notice 'LA meoria ya existe y el presupeusto no fue migrado, importe %, partida %, presupeusto %',v_total_memoria, v_registros.partida, v_registros.codigo_presupuesto;
+            --sumamos al presupuesto existente
+            insert into pre.tmemoria_calculo(id_concepto_ingas, importe_total, obs, id_presupuesto, estado_reg, fecha_reg, id_partida, id_usuario_reg)
+            values (v_id_conceto_ingas, v_total_memoria, 'migrado', v_id_presupuesto, 'activo', now(), v_id_partida, 1)
+            RETURNING id_memoria_calculo into v_id_memoria_calculo;
+            
+            update pre.tformulacion_tmp
+            set id_memoria_calculo = v_id_memoria_calculo, obs = 'ya esxistia una memoria para la misma partida y presupeusto', migrado = 'si'
+            where id = v_registros.id_formulacion_tmp;
 
-        END IF;
+            raise notice 'se inserto nueva memoria de calculo importe %, partida %, presupeusto %', v_total_memoria, v_registros.partida, v_registros.codigo_presupuesto;
 
-      END IF; --fin revision partida nula
+            v_contador = 1;
+            -- inserta valores para todos los periodos de la gestion con valor 0
+            FOR v_registros_per in (
+            select per.id_periodo
+            from param.tperiodo per
+            where per.id_gestion = v_id_gestion and
+                  per.estado_reg = 'activo'
+            order by per.fecha_ini)
+            LOOP
 
-    END IF;  --else de presupeustos
+              if v_contador = 1 then
+                v_aux = v_registros.m1;
+                elseif   v_contador = 2 then
+                v_aux =  v_registros.m2;
+                elseif   v_contador = 3 then
+                v_aux =  v_registros.m3;
+                elseif   v_contador = 4 then
+                v_aux =  v_registros.m4;
+                elseif   v_contador = 5 then
+                v_aux =  v_registros.m5;
+                elseif   v_contador = 6 then
+                v_aux =  v_registros.m6;
+                elseif   v_contador = 7 then
+                v_aux =  v_registros.m7;
+                elseif   v_contador = 8 then
+                v_aux =  v_registros.m8;
+                elseif   v_contador = 9 then
+                v_aux =  v_registros.m9;
+                elseif   v_contador = 10 then
+                v_aux =  v_registros.m10;
+                elseif   v_contador = 11 then
+                v_aux =  v_registros.m11;
+                else
+                v_aux =  v_registros.m12;
+              end if;
+              insert into pre.tmemoria_det(importe, importe_unitario, estado_reg,
+                id_periodo, id_memoria_calculo, fecha_reg, id_usuario_reg)
+              values (v_aux, v_aux, 'activo', v_registros_per.id_periodo,
+                v_id_memoria_calculo, now(), 1);
 
+              v_contador = v_contador +1;
 
+            END LOOP;
+
+          END IF;
+
+        END IF; --fin revision partida nula
+
+      END IF;  --else de presupeustos
+    END IF;
   END LOOP;
---  raise exception 'terminó';
+  raise exception 'terminó todo ok (comentar esta línea para correr en limpio)';
   return 'exito';
 END;
 $body$
