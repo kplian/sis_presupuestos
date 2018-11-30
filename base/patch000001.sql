@@ -1047,7 +1047,67 @@ ALTER TABLE pre.tpartida_ejecucion
 COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido_mb
 IS 'monto iva revertido en moenda base';
 
+--------------- SQL ---------------
 
+CREATE TABLE pre.tpartida_temp (
+  codigo_1 VARCHAR,
+  desc_1 VARCHAR,
+  tipo_1 VARCHAR,
+  tipo_mov_1 VARCHAR,
+  id_partida_1 INTEGER,
+  codigo_2 VARCHAR,
+  desc_2 VARCHAR,
+  tipo_2 VARCHAR,
+  tipo_mov_2 VARCHAR,
+  mov VARCHAR
+) 
+WITH (oids = false); 
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_temp
+  ADD COLUMN id_partida_2 INTEGER;
+
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_temp
+  ADD COLUMN migrado VARCHAR(2) DEFAULT 'no' NOT NULL;
+  
+  
+  --------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_temp
+  ADD COLUMN obs VARCHAR;
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_temp
+  ADD COLUMN gestion_ini INTEGER DEFAULT 2018 NOT NULL;
+  
+  
+  --------------- SQL ---------------
+
+CREATE TABLE pre.tcambio_partida (
+  id SERIAL NOT NULL,
+  id_partida_origen INTEGER NOT NULL,
+  id_partida_destino INTEGER NOT NULL,
+  migrado VARCHAR(2) DEFAULT 'no' NOT NULL,
+  obs VARCHAR,
+  PRIMARY KEY(id)
+) 
+WITH (oids = false);
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpresup_partida
+  ADD COLUMN obs_dba VARCHAR;
+  
+ --------------- SQL ---------------
+
+ALTER TABLE pre.tmemoria_calculo
+  ADD COLUMN obs_dba VARCHAR;
   
  /*****************************F-SCP-RAC-PRE-0-05/02/2018*************/
   

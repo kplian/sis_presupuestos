@@ -389,10 +389,10 @@ class MODMemoriaCalculo extends MODbase{
 		$this->captura('nombre_partida','varchar');
 		$this->captura('descripcion_pres','varchar');
 		$this->captura('desc_ingas','varchar');
-		$this->captura('justificacion','varchar');
+		//$this->captura('justificacion','varchar');
 		$this->captura('unidad_medida','varchar');
-		$this->captura('importe_unitario','NUMERIC');
-		$this->captura('cantidad_mem','NUMERIC');
+		//$this->captura('importe_unitario','NUMERIC');
+		//$this->captura('cantidad_mem','NUMERIC');
 		$this->captura('importe','NUMERIC');
 		$this->captura('gestion','int4');
 		$this->captura('importe_periodo','varchar');
@@ -405,7 +405,42 @@ class MODMemoriaCalculo extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+	
+	//mp
+	function insertarMemoriaCalculoXLS(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_memoria_calculo_ime';
+		$this->transaccion='PRE_MEMOXLS_INS';
+		$this->tipo_procedimiento='IME';		
+		//Define los parametros para la funcion	
+		//$this->setParametro('id_memoria_calculo', 'id_memoria_calculo','int4');
+		$this->setParametro('cod_presupuesto', 'cod_presupuesto','varchar');
+		$this->setParametro('desc_pre', 'desc_pre','varchar');
+		$this->setParametro('cod_partida', 'cod_partida','int4');
+		$this->setParametro('desc_partida', 'desc_partida','varchar');
+		$this->setParametro('enero', 'enero','numeric');
+		$this->setParametro('febrero', 'febrero','numeric');
+		$this->setParametro('marzo', 'marzo','numeric');		
+		$this->setParametro('abril', 'abril','numeric');
+		$this->setParametro('mayo', 'mayo','numeric');
+		$this->setParametro('junio', 'junio','numeric');
+		$this->setParametro('julio', 'julio','numeric');
+		$this->setParametro('agosto', 'agosto','numeric');
+		$this->setParametro('septiembre', 'septiembre','numeric');
+		$this->setParametro('octubre', 'octubre','numeric');
+		$this->setParametro('noviembre', 'noviembre','numeric');
+		$this->setParametro('diciembre', 'diciembre','numeric');
+		//$this->setParametro('id_usuario', 'id_usuario','int4');
+		$this->setParametro('id_gestion', 'id_gestion','int4');
+		$this->setParametro('id_funcionario', 'id_funcionario','int4');
+		$this->setParametro('id_sesion', 'id_sesion','int4');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
 
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}		
 			
 }
 ?>

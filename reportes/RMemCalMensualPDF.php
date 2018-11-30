@@ -82,12 +82,12 @@ class RMemCalMensualPDF extends  ReportePDF {
         //$this->tableborders=$conf_tableborders;
         //$this->tabletextcolor=$conf_tabletextcolor;
         $this->Cell(10,3,"Nº","LT",0,'C');
-        $this->Cell(35,3,"DEPARTAMENTO","LT",0,'C');
+        $this->Cell(35,3,"PARTIDA","LT",0,'C');
         $this->Cell(45,3,"CONCEPTO DE GASTO","LT",0,'C');
         $this->Cell(70,3,"JUSTIFICACION","LT",0,'C');
         $this->Cell(15,3,"UNIDAD DE","LT",0,'C');
-        $this->Cell(20,3,"COSTO","LT",0,'C');
-        $this->Cell(10,3,"CANT.","LT",0,'C');
+        /*$this->Cell(20,3,"COSTO","LT",0,'C');
+        $this->Cell(10,3,"CANT.","LT",0,'C');*/
         $this->Cell(15,3,"ENE","LT",0,'C');
         $this->Cell(15,3,"FEB","LT",0,'C');
         $this->Cell(15,3,"MAR","LT",0,'C');
@@ -107,8 +107,8 @@ class RMemCalMensualPDF extends  ReportePDF {
         $this->Cell(45,3,"","LB",0,'C');
         $this->Cell(70,3,"","LB",0,'C');
         $this->Cell(15,3,"MEDIDA","LB",0,'C');
-        $this->Cell(20,3,"UNITARIO","LB",0,'C');
-        $this->Cell(10,3,"REQ.","LB",0,'C');
+        /*$this->Cell(20,3,"UNITARIO","LB",0,'C');
+        $this->Cell(10,3,"REQ.","LB",0,'C');*/
         $this->Cell(15,3,"","LB",0,'C');//comienza periodo
         $this->Cell(15,3,"","LB",0,'C');
         $this->Cell(15,3,"","LB",0,'C');
@@ -126,12 +126,12 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         $RowArray = array(
             's0'  => 'Nº',
-            's1' => 'DEPARTAMENTO',
+            's1' => 'PARTIDA',
             's2' => 'CONCEPTO DE GASTO',
             's3' => 'JUSTIFICACION',
             's4' => 'UNIDAD DE MEDIDA',
-            's5' => 'COSTO UNITARIO',
-            's6' => 'CANT. REQ.',
+            /*'s5' => 'COSTO UNITARIO',
+            's6' => 'CANT. REQ.',*/
             's7' => 'ENE',
             's8' => 'FEB',
             's9' => 'MAR',
@@ -178,9 +178,9 @@ class RMemCalMensualPDF extends  ReportePDF {
 
 
         //armca caecera de la tabla
-        $conf_par_tablewidths=array(10,35,45,70,15,20,10,15,15,15,15,15,15,15,15,15,15,15,15,25);
-        $conf_par_tablealigns=array('C','C','C','J','C','C','C','C','C','C','C','C','C','C','C','C','C','C');
-        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        $conf_par_tablewidths=array(10,35,45,70,15,15,15,15,15,15,15,15,15,15,15,15,15,25);
+        $conf_par_tablealigns=array('C','C','C','J','C','C','C','C','C','C','C','C','C','C','C','C');
+        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
         $conf_tableborders=array();
         $conf_tabletextcolor=array();
 
@@ -192,12 +192,12 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         $RowArray = array(
             's0'  => 'Nº',
-            's1' => 'DEPARTAMENTO',
+            's1' => 'PARTIDA',
             's2' => 'CONCEPTO DE GASTO',
             's3' => 'JUSTIFICACION',
             's4' => 'UNIDAD DE MEDIDA',
-            's5' => 'COSTO UNITARIO',
-            's6' => 'CANT. REQ.',
+            /*'s5' => 'COSTO UNITARIO',
+            's6' => 'CANT. REQ.',*/
             's7' => 'ENE',
             's8' => 'FEB',
             's9' => 'MAR',
@@ -236,7 +236,8 @@ class RMemCalMensualPDF extends  ReportePDF {
         foreach ($detalle as $val) {
 
             if($sw == 1){
-                if($this->ult_codigo_partida != $val["codigo_partida"]){
+                //if($this->ult_codigo_partida != $val["codigo_partida"]){
+                if($this->ult_codigo_partida != $val["descripcion_pres"]){
                     $sw = 0;
                     $count = 1;
                     $this->cerrarCuadro();
@@ -246,7 +247,8 @@ class RMemCalMensualPDF extends  ReportePDF {
             }
 
             if($sw1 == 1){
-                if($this->ult_concepto != $val["concepto"]){
+                //if($this->ult_concepto != $val["concepto"]){
+                if($this->ult_concepto != $val["descripcion_pres"]){
                     $sw1 = 0;
                     $this->cerrarConcepto();
                     $this->Ln(4);
@@ -259,25 +261,28 @@ class RMemCalMensualPDF extends  ReportePDF {
 
             if($sw1 == 0){
                 $fill = 0;
-                $this->imprimirConcepto($val["concepto"],$fill);
+                $this->imprimirConcepto($val["descripcion_pres"],$fill); //codigo cc de vmemoria_por_categoria j1
+                //$this->imprimirConcepto($val["concepto"],$fill); //codigo cc de vmemoria_por_categoria j1
                 $this->Ln(4);
                 $fill = !$fill;
                 $sw1 = 1;
-                $this->ult_concepto = $val["concepto"];
+                $this->ult_concepto = $val["descripcion_pres"];
             }
 
             if($sw == 0){
                 $fill = 0;
-                $this->imprimirPartida($val["codigo_partida"]." - ".$val["nombre_partida"],$fill);
+				//$this->imprimirPartida($val["codigo_partida"],$fill); // codigo partidad - nombre partida   j3
+                //$this->imprimirPartida($val["codigo_partida"]." - ".$val["nombre_partida"],$fill); // codigo partidad - nombre partida   j3
                 $fill = !$fill;
                 $sw = 1;
-                $this->ult_codigo_partida = $val["codigo_partida"];
+                //$this->ult_codigo_partida = $val["codigo_partida"];
+                $this->ult_codigo_partida = $val["descripcion_pres"];
             }
 
 
 
 
-            $this->imprimirLinea($val,$count,$fill);
+            $this->imprimirLinea($val,$count,$fill); //imprime el contenido
             $fill = !$fill;
             $count = $count + 1;
             $this->total = $this->total -1;
@@ -295,10 +300,10 @@ class RMemCalMensualPDF extends  ReportePDF {
         $this->SetTextColor(0);
         $this->SetFont('','',8);
 
-        $conf_par_tablewidths=array(10,35,45,70,15,20,10,15,15,15,15,15,15,15,15,15,15,15,15,25);
-        $conf_par_tablealigns=array('C','L','L','L','R','R','C','R','R','R','R','R','R','R','R','R','R','R','R','R');
-        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-        $conf_tableborders=array('T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T');
+        $conf_par_tablewidths=array(10,35,45,70,15,15,15,15,15,15,15,15,15,15,15,15,15,25);
+        $conf_par_tablealigns=array('C','L','L','L','R','R','R','R','R','R','R','R','R','R','R','R','R','R');
+        $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+        $conf_tableborders=array('T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T','T');
 
         $this->tablewidths=$conf_par_tablewidths;
         $this->tablealigns=$conf_par_tablealigns;
@@ -316,25 +321,26 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         $RowArray = array(
             's0' => $count,
-            's1' => $val['descripcion_pres'],
+            's1' => $val['codigo_partida'],
             's2' => $val['desc_ingas'],
             's3' => $val['justificacion'],
             's4' => $val['unidad_medida'],
-            's5' => number_format ($val['importe_unitario'], 0 , "." , "." ),
-            's6' => $val['cantidad_mem'],
-            's7' => number_format ($importeXperiodo[0], 0 , "." , "." ),
-            's8' => number_format ($importeXperiodo[1], 0 , "." , "." ),
-            's9' => number_format ($importeXperiodo[2], 0 , "." , "." ),
-            's10' => number_format ($importeXperiodo[3], 0 , "." , "." ),
-            's11' => number_format ($importeXperiodo[4], 0 , "." , "." ),
-            's12' => number_format ($importeXperiodo[5], 0 , "." , "." ),
-            's13' => number_format ($importeXperiodo[6], 0 , "." , "." ),
-            's14' => number_format ($importeXperiodo[7], 0 , "." , "." ),
-            's15' => number_format ($importeXperiodo[8], 0 , "." , "." ),
-            's16' => number_format ($importeXperiodo[9], 0 , "." , "." ),
-            's17' => number_format ($importeXperiodo[10], 0 , "." , "." ),
-            's18' => number_format ($importeXperiodo[11], 0 , "." , "." ),
-            's19' => number_format ($val['importe'], 0 , "." , "." ));
+            /*'s5' => number_format ($val['importe_unitario'], 0 , "." , "." ),
+            's6' => $val['cantidad_mem'],*/
+            //'s7' => number_format ($importeXperiodo[0], 0 , "." , "." ),
+            's7' => number_format ($importeXperiodo[0], 2 ),
+            's8' => number_format ($importeXperiodo[1], 2 ),
+            's9' => number_format ($importeXperiodo[2], 2 ),
+            's10' => number_format ($importeXperiodo[3], 2),
+            's11' => number_format ($importeXperiodo[4], 2 ),
+            's12' => number_format ($importeXperiodo[5], 2 ),
+            's13' => number_format ($importeXperiodo[6], 2 ),
+            's14' => number_format ($importeXperiodo[7], 2 ),
+            's15' => number_format ($importeXperiodo[8], 2 ),
+            's16' => number_format ($importeXperiodo[9], 2 ),
+            's17' => number_format ($importeXperiodo[10],2 ),
+            's18' => number_format ($importeXperiodo[11],2 ),
+            's19' => number_format ($val['importe'], 2 ));
 
         $this-> MultiRow($RowArray,$fill,1);
 
@@ -433,12 +439,11 @@ class RMemCalMensualPDF extends  ReportePDF {
         $this->tableborders=array('T','LRTB');
         $this->SetFont('','B',8);
 
-        $RowArray = array(
+        /*$RowArray = array(
             'espacio' => 'TOTAL PARTIDA '.$this->ult_codigo_partida.':',
             's1' => number_format ($this->s1, 0 , "." , ".")
         );
-
-        $this-> MultiRow($RowArray,false,1);
+        $this-> MultiRow($RowArray,false,1);*/
 
         $this->s1 = 0;
 
@@ -449,7 +454,8 @@ class RMemCalMensualPDF extends  ReportePDF {
 
         //si noes inicio termina el cuardro anterior
 
-        $this->tablewidths=array(10+50+50+80+15+20+15+145,25);
+        
+        $this->tablewidths=array(10+50+50+80+20+145,25);
         $this->tablealigns=array('R','R');
         $this->tablenumbers=array(0,2,);
         $this->tableborders=array('T','LRTB');
@@ -469,7 +475,7 @@ class RMemCalMensualPDF extends  ReportePDF {
     function cerrarCuadroTotal(){
 
         //si noes inicio termina el cuardro anterior
-        $this->tablewidths=array(10+50+50+80+15+20+15+145,25);
+        $this->tablewidths=array(10+50+50+80+20+145,25);
         $this->tablealigns=array('C','R');
         $this->tablenumbers=array(0,2);
         $this->tableborders=array('TB','LRTB');

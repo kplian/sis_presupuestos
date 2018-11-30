@@ -85,9 +85,9 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
            IF  v_id_moneda_base != p_id_moneda THEN
                   -- tenemos tipo de cambio
                   -- si el tipo de cambio es null utilza el cambio oficial para la fecha
-                  v_monto_mb  =   param.f_convertir_moneda (
-                             v_id_moneda_base, 
-                             p_id_moneda,   
+                  v_monto_mb  =   param.f_convertir_moneda (                             
+                             p_id_moneda, 
+                             v_id_moneda_base,  
                              p_monto_total, 
                              now()::date,
                              'CUS',50, 
@@ -98,6 +98,14 @@ v_nombre_funcion = 'pre.f_verificar_presupuesto_partida';
            END IF;
       
       
+    
+          
+                                         
+                                            
+                 IF p_monto_total = 121450.00 THEN
+                  --  raise exception ' %  xx ... %, zz   % ,yy % ,xx %',p_id_moneda,  p_id_presupuesto, p_id_partida, v_monto_mb, p_monto_total;
+                 END  IF;
+            
          
     
             v_verif_pres  =  pre.f_verificar_presupuesto_individual(

@@ -477,7 +477,41 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-
+		{
+			config:{
+				name: 'glosa1',
+				fieldLabel: 'Descripcion',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 300,
+				//maxLength:4
+				maxLength:1000,
+				renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+					metaData.css = 'multilineColumn'; 
+					return String.format('{0} <br> {1}', record.data['glosa1'],'');
+				}
+			},
+				type:'TextArea',
+				filters:{pfiltro:'glosa1',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{
+			config:{
+				name: 'glosa',
+				fieldLabel: 'Glosa',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:4
+			},
+				type:'Field',
+				filters:{pfiltro:'glosa1',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
 		{
 			config:{
 				name: 'columna_origen',
@@ -591,6 +625,9 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha', type: 'date',dateFormat:'Y-m-d'},
 		{name:'monto_mb', type: 'numeric'},
 		{name:'monto', type: 'numeric'},
+		{name:'glosa1', type: 'string'},
+		{name:'glosa', type: 'string'},
+		{name:'cantidad_descripcion', type: 'string'},
 		{name:'valor_id_origen', type: 'numeric'},
 		{name:'id_usuario_reg', type: 'numeric'},
 		{name:'fecha_reg', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
@@ -684,9 +721,9 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 			 this.getBoton('chkpresupuesto').disable();
 			 this.getBoton('btnChequeoDocumentosWf').disable();			 
 			 this.getBoton('btnImprimir').disable();
-		 }
+		}
 			
-         return undefined;
+		return undefined;
 	},
 	
 	

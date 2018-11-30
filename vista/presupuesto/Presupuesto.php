@@ -214,7 +214,8 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 					totalProperty: 'total',
 					fields: ['codigo_categoria','id_categoria_programatica','descripcion'],
 					remoteSort: true,
-					baseParams:{par_filtro:'descripcion#codigo_categoria'}
+					baseParams:{par_filtro:'descripcion#codigo_categoria#id_gestion'}
+					//baseParams:{id_gestion:'id_gestion'}
 				}),
 				valueField: 'id_categoria_programatica',
 				displayField: 'codigo_categoria',
@@ -706,7 +707,12 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
         Phx.CP.loadingHide();
         resp.argument.wizard.panel.destroy()
         this.reload();
-     }
+    },
+	
+	loadValoresIniciales: function () {
+		this.Cmp.id_categoria_prog.store.setBaseParam('id_gestion', this.cmbGestion.getValue());
+		this.Cmp.id_categoria_prog.modificado = true;	
+	},	
 
 })
 </script>

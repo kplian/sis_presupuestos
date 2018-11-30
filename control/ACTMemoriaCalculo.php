@@ -14,6 +14,9 @@ require_once(dirname(__FILE__).'/../reportes/RMemoriaProgramacionXls.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaCalculaWf.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaProgramacionWf.php');
 require_once(dirname(__FILE__).'/../reportes/RMemCalMensualPDF.php');
+require_once(dirname(__FILE__).'/../reportes/RMemoriaCalculoMensualXls.php');
+
+
 class ACTMemoriaCalculo extends ACTbase{
 
 	function listarMemoriaCalculo(){
@@ -144,7 +147,44 @@ class ACTMemoriaCalculo extends ACTbase{
 					$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
 
 				} else {
-					$this->reporteMemoriaCalculoMensual();
+					if($this->objParam->getParametro('formato_reporte')=='pdf'){
+					    $this->reporteMemoriaCalculoMensual();
+					}
+					else{
+						//$this->reporteMemoriaCalculoMensualXLS();
+						
+						$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.xls';
+						
+						/*$dataSource = $this->recuperarMemoriaCalculoXLS();
+						$dataGestion = $this->recuperarDatosGestion();
+						$dataEmpresa = $this->recuperarDatosEmpresa();*/
+						
+						$dataSource = $this->recuperarMemoriaCalculoXLS();
+						$dataGestion = $this->recuperarDatosGestion();
+						$dataEmpresa = $this->recuperarDatosEmpresa();
+					
+						$tamano = 'LETTER';
+						$orientacion = 'L';
+						$titulo = 'Consolidado';
+	
+	
+						$this->objParam->addParametro('orientacion',$orientacion);
+						$this->objParam->addParametro('tamano',$tamano);
+						$this->objParam->addParametro('titulo_archivo',$titulo);
+						$this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+						/*$reporte = new RMemoriaCalculoMensualXls($this->objParam);
+						$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+						$reporte->generarReporte();*/
+						
+						$reporte = new RMemoriaCalculoMensualXls($this->objParam);
+						$reporte->datosHeader($dataSource->getDatos(),  $dataSource->extraData,$dataGestion->getDatos(),$dataEmpresa->getDatos());
+						$reporte->generarReporte();
+						
+						$this->mensajeExito=new Mensaje();
+						$this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+						$this->mensajeExito->setArchivoGenerado($nombreArchivo);
+						$this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+					}
 				}
 
 	}
@@ -340,7 +380,8 @@ class ACTMemoriaCalculo extends ACTbase{
 		$this->objFunc = $this->create('MODMemoriaCalculo');
 		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
 		if($cbteHeader->getTipo() == 'EXITO'){										
-			$nombreArchivo = uniqid(md5(session_id()).'[MemoriaCalculo-Mensual]') . '.pdf';
+			$nombreArchivo = uniqid(md5(session_id()).'Memoria') . '.pdf';
+			
 			$dataSource = $cbteHeader;
 			$dataEmpresa = $this->recuperarDatosEmpresa();
 			//parametros basicos
@@ -366,6 +407,101 @@ class ACTMemoriaCalculo extends ACTbase{
 		}	
 
 		
+	}
+
+	function recuperarMemoriaCalculoXLS(){    	
+		$this->objFunc = $this->create('MODMemoriaCalculo');
+		$cbteHeader = $this->objFunc->listarMemoriaCalculoMensual($this->objParam);
+		if($cbteHeader->getTipo() == 'EXITO'){				
+			return $cbteHeader;
+		}
+        else{
+		    $cbteHeader->imprimirRespuesta($cbteHeader->generarJson());
+			exit;
+		}              
+		
+    }
+	//mp
+	function SubirArchivoPre(){
+		$arregloFiles = $this->objParam->getArregloFiles();
+		$ext = pathinfo($arregloFiles['archivo']['name']);
+		$extension = $ext['extension'];
+		$error = 'no';
+		$mensaje_completo = '';
+		//validar errores unicos del archivo: existencia, copia y extension
+		if(isset($arregloFiles['archivo']) && is_uploaded_file($arregloFiles['archivo']['tmp_name'])){
+			if ($extension != 'csv' && $extension != 'CSV') {
+				$mensaje_completo = "La extensión del archivo debe ser CSV";
+				$error = 'error_fatal';
+			}			
+			$upload_dir = "/tmp/";  			
+			$file_path = $upload_dir . $arregloFiles['archivo']['name'];
+			if (!move_uploaded_file($arregloFiles['archivo']['tmp_name'], $file_path)) {	
+				$mensaje_completo = "Error al guardar el archivo csv en disco";
+				$error = 'error_fatal';	  
+			} 				
+		} else {
+			$mensaje_completo = "No se subio el archivo";
+			$error = 'error_fatal';
+		}
+				
+		if ($error == 'error_fatal') {			
+			$this->mensajeRes=new Mensaje();
+			$this->mensajeRes->setMensaje('ERROR','ACTMemoriaCalculo.php',$mensaje_completo,$mensaje_completo,'control');
+			
+		} else {
+			$lines = file($file_path);			
+			foreach ($lines as $line_num => $line) {
+				$arr_temp = explode('|', $line);	
+				
+				if (count($arr_temp) != 16) {
+					$error = 'error';
+					$mensaje_completo .= "No se proceso la linea: $line_num, por un error en el formato \n";					
+				} else {														
+					$this->objParam->addParametro('cod_presupuesto', $arr_temp[0]);					
+					$this->objParam->addParametro('desc_pre', $arr_temp[1]);
+					$this->objParam->addParametro('cod_partida', $arr_temp[2]);	
+					$this->objParam->addParametro('desc_partida', $arr_temp[3]);
+					$this->objParam->addParametro('enero', $arr_temp[4]);
+					$this->objParam->addParametro('febrero', $arr_temp[5]);
+					$this->objParam->addParametro('marzo', $arr_temp[6]);
+					$this->objParam->addParametro('abril', $arr_temp[7]);
+					$this->objParam->addParametro('mayo', $arr_temp[8]);
+					$this->objParam->addParametro('junio', $arr_temp[9]);
+					$this->objParam->addParametro('julio', $arr_temp[10]);
+					$this->objParam->addParametro('agosto', $arr_temp[11]);
+					$this->objParam->addParametro('septiembre', $arr_temp[12]);
+					$this->objParam->addParametro('octubre', $arr_temp[13]);
+					$this->objParam->addParametro('noviembre', $arr_temp[14]);
+					$this->objParam->addParametro('diciembre', $arr_temp[15]);
+					//$this->objParam->addParametro('id_usuario', $arr_temp[16]);
+					$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
+					$this->objParam->addParametro('id_funcionario', $this->objParam->getParametro('id_funcionario'));
+					$this->objParam->addParametro('id_sesion', $this->objParam->getParametro('id_sesion'));
+									
+					$this->objFunc = $this->create('MODMemoriaCalculo');											
+					$this->res = $this->objFunc->insertarMemoriaCalculoXLS($this->objParam);
+					
+					if ($this->res->getTipo() == 'ERROR') {
+						$error = 'error';
+						$mensaje_completo .= $this->res->getMensaje() . " \n";						
+					}
+				}
+			}
+		}
+
+		//armar respuesta en caso de exito o error en algunas tuplas
+		if ($error == 'error') {
+			$this->mensajeRes=new Mensaje();
+			$this->mensajeRes->setMensaje('ERROR','ACTMemoriaCalculo.php','Ocurrieron los siguientes errores : ' . $mensaje_completo,$mensaje_completo,'control');
+		} else if ($error == 'no') {
+			$this->mensajeRes=new Mensaje();
+			$this->mensajeRes->setMensaje('EXITO','ACTMemoriaCalculo.php','El archivo fue ejecutado con éxito',	'El archivo fue ejecutado con éxito','control');
+		}		
+		
+		//devolver respuesta
+		$this->mensajeRes->imprimirRespuesta($this->mensajeRes->generarJson());
+
 	}
 }
 

@@ -29,7 +29,7 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.vista.FormFiltro.superclass.constructor.call(this,config);
             this.init();
             this.iniciarEventos();
-            
+            console.log('-->'+this.Cmp.id_gestion.getValue());
             if(config.detalle){
         	
 				//cargar los valores para el filtro
@@ -39,9 +39,11 @@ header("content-type: text/javascript; charset=UTF-8");
 					me.onSubmit()
 				}, 1500);
 				
-			}  
-
-
+			}
+			this.maestro=config;
+			console.log('**'+this.maestro);
+			this.getComponente('id_partida').store.baseParams.id_gestion= this.maestro.id_gestion;
+			this.getComponente('id_partida').modificado=true;	
 
         },
 
@@ -128,8 +130,9 @@ header("content-type: text/javascript; charset=UTF-8");
                     name: 'id_partida',
                     origen: 'PARTIDA',
                     allowBlank: true,
-                    fieldLabel: 'Partida',
-                    width: 150
+                    fieldLabel: 'Partidas',
+                    width: 150,
+                    //baseParams: {id_gestion},
                 },
                 type:'ComboRec',
                 id_grupo:0,
@@ -192,11 +195,28 @@ header("content-type: text/javascript; charset=UTF-8");
             }
         },
         iniciarEventos:function(){
-            this.Cmp.id_gestion.on('select', function(cmb, rec, ind){                
+        	
+            this.Cmp.id_gestion.on('select', function(cmb, rec, ind){
+				console.log('-->'+rec.data.id_gestion);
                 Ext.apply(this.Cmp.id_partida.store.baseParams,{id_gestion: rec.data.id_gestion});
                 Ext.apply(this.Cmp.id_centro_costo.store.baseParams,{id_gestion: rec.data.id_gestion});
-
+				
             },this);
-        }
+		},
+		//mp filtran el el combo partida de acuerdo a la gestion
+		loadValoresIniciales: function () {		
+			//console.log('manu',this.Cmp.id_gestion.getValue());
+			//console.log('-->'+this.Cmp.id_gestion.getValue());
+			//this.Cmp.id_partida.store.setBaseParam('id_gestion', this.Cmp.id_gestion.getValue());
+			//this.Cmp.id_partida.modificado = true;	
+			Phx.vista.FormFiltro.superclass.loadValoresIniciales.call(this);
+			//console.log('->'+this.maestro.id_gestion);
+			//if(this.maestro.id_gestion!=''){
+				//this.getComponente('id_partida').store.baseParams.id_gestion= this.maestro.id_gestion;
+				//this.getComponente('id_partida').modificado=true;	
+			//}			
+			
+		},
+	
     })
 </script>

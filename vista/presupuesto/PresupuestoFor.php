@@ -27,9 +27,29 @@ Phx.vista.PresupuestoFor = {
 	   Phx.vista.PresupuestoFor.superclass.constructor.call(this,config);
 	   
        this.init();
-       this.load({params:{start:0, limit:this.tam_pag, tipo_interfaz: me.nombreVista }}) 
+       this.load({params:{start:0, limit:this.tam_pag, tipo_interfaz: me.nombreVista }})
+       this.addButton('btnXls',
+			{
+				text: 'Subir Archivo',
+				iconCls: 'bchecklist',
+				disabled: false	,
+				handler: this.SubirArchivo,
+				tooltip: '<b>Subir Archivo</b>'
+			}
+		);  
    },
-   
+   //mp
+   SubirArchivo : function(rec)
+	{
+		Phx.CP.loadWindows('../../../sis_presupuestos/vista/memoria_calculo/SubirArchivoPre.php',
+		'Subir Presupuestos',
+		{
+			modal:true,
+			width:450,
+			height:200
+		},this.maestro,this.idContenedor,'SubirArchivoPre');
+	},
+	
    preparaMenu:function(n){
           var data = this.getSelectedData();
           var tb =this.tbar;

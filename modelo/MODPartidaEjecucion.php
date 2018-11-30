@@ -68,9 +68,10 @@ class MODPartidaEjecucion extends MODbase{
 		$this->captura('monto_desc_anticipo_mb','numeric');
 		$this->captura('monto_iva_revertido_mb','numeric');
 		
+		$this->captura('glosa1','varchar');		
+		$this->captura('glosa','varchar');
 		
-		
-	
+		$this->captura('cantidad_descripcion','numeric');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

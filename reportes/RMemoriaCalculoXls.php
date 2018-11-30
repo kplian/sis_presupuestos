@@ -111,8 +111,29 @@ class RMemoriaCalculoXls
 		//*************************************Cabecera*****************************************
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[0])->setWidth(20);		
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(0,1,'Nro');
+		
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[1])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,1,'Concepto');
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,1,'Centro de costo');
+		
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[1])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,1,'Descripción centro de costo'); //concepto
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[2])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,1,'Partida');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[3])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,1,'Concepto de Gasto');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[4])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,1,'Justificación');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[5])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,1,'Unidad de Medida');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[6])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,1,'Costo Unitario');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[7])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Cantidad Requerida');
+		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[8])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,1,'Total Estacionalidad');
+		
+		/*$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[1])->setWidth(20);
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,1,'Descripción centro de costo');
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[2])->setWidth(20);
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,1,'Partida');
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[3])->setWidth(20);
@@ -126,24 +147,38 @@ class RMemoriaCalculoXls
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[7])->setWidth(20);
 		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,1,'Cantidad Requerida');
 		$this->docexcel->getActiveSheet()->getColumnDimension($this->equivalencias[8])->setWidth(20);
-		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Total Estacionalidad');
+		$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,1,'Total Estacionalidad');*/
 		//*************************************Fin Cabecera*****************************************
 		
 		$fila = 2;
 		$contador = 1;
 		
+
+		
 		/////////////////////***********************************Detalle***********************************************
 		foreach($datos as $value) {
 							
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(0,$fila,$contador);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,$fila,$value['concepto']);
+			
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,$fila,$value['descripcion_pres']); //Centro de costo
+			
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,$fila,$value['concepto']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,$fila,"(".$value['codigo_partida'].") ".$value['nombre_partida']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,$fila,$value['desc_ingas']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$value['justificacion']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['unidad_medida']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['importe_unitario']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['cantidad_mem']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(9,$fila,$value['importe']);
+			
+			/*$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1,$fila,$value['concepto']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2,$fila,"(".$value['codigo_partida'].") ".$value['nombre_partida']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(3,$fila,$value['desc_ingas']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(4,$fila,$value['justificacion']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(5,$fila,$value['unidad_medida']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(6,$fila,$value['importe_unitario']);
 			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(7,$fila,$value['cantidad_mem']);
-			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['importe']);
+			$this->docexcel->setActiveSheetIndex(0)->setCellValueByColumnAndRow(8,$fila,$value['importe']);*/
 			
 			$fila++;
 			$contador++;

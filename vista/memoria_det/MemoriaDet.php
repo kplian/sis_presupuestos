@@ -4,6 +4,7 @@
 *@file gen-MemoriaDet.php
 *@author  (admin)
 *@date 01-03-2016 14:23:08
+*@date 10/07/2018  RAC, JGA   Gravado automatico al cambiar de casilla  
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
 
@@ -17,10 +18,52 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.MemoriaDet.superclass.constructor.call(this,config);
 		this.init();
+		
 		this.bloquearMenus();   
 		this.iniciarEventos();
+		this.grid.addListener('afteredit', this.onAfterEdit, this);
 	},
+    onAfterEdit:function(prueba){	
+    	this.InsertarDistribucion();
+    },	
+    InsertarDistribucion: function (){
+    	
+
+    	var filas=this.store.getModifiedRecords();
+		if(filas.length>0){	
 			
+					var data={};
+					for(var i=0;i<filas.length;i++){
+
+						 data[i]=filas[i].data;
+
+						 data[i]._fila=this.store.indexOf(filas[i])+1
+
+						 this.agregarArgsExtraSubmit(filas[i].data);
+						 Ext.apply(data[i],this.argumentExtraSubmit);
+
+					}
+					//Phx.CP.loadingShow();
+			        Ext.Ajax.request({
+
+			        	url:this.ActSave,
+			        	params:{_tipo:'matriz','row':String(Ext.util.JSON.encode(data))},
+					
+						isUpload:this.fileUpload,
+						success: function(resp){
+									this.store.rejectChanges();
+									//Phx.CP.loadingHide();
+								},
+
+						failure: this.conexionFailure,
+						timeout:this.timeout,
+						scope:this
+			        });
+					
+		}
+		
+  
+    },		
 	Atributos:[
 		{
 			//configuracion del componente
@@ -120,7 +163,8 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
 				sortable: false,
 				maxLength:1179650,
                 renderer:function (value,p,record){
-                    return  String.format('<div style="vertical-align:middle;text-align:center;"><span ><b>{0}</b></span></div>',value);
+                   // return  String.format('<b>{0}</b>',value);
+                    return  String.format('<div style="vertical-align:middle;text-align:right;"><b >{0}</b></div>',value);
                 },
                 validateValue: function(pw){
                         function tiene_punto(pw)
@@ -404,8 +448,8 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     successSave:function(resp){
 
     	 Phx.vista.MemoriaDet.superclass.successSave.call(this,resp);
-    	 Phx.CP.getPagina(this.idContenedorPadre).reload();
-		 Phx.CP.getPagina(Phx.CP.getPagina(this.idContenedorPadre).idContenedorPadre).reload();
+    	 //Phx.CP.getPagina(this.idContenedorPadre).reload();
+		 //Phx.CP.getPagina(Phx.CP.getPagina(this.idContenedorPadre).idContenedorPadre).reload();
     },
     
     iniciarEventos:function(){
@@ -427,7 +471,7 @@ Phx.vista.MemoriaDet=Ext.extend(Phx.gridInterfaz,{
     bnew: false,
     bedit: false,
 	bdel: false,
-	bsave: true
+	bsave: false
 	}
 )
 </script>

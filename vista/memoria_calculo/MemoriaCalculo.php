@@ -4,6 +4,7 @@
 *@file gen-MemoriaCalculo.php
 *@author  (admin)
 *@date 01-03-2016 14:22:24
+*@date 29/06/2018 calvarez - se añadió filtro para conig.sw_autorizacion='formulacion_presupuesto' para listar conceptos en la formulación de la memoria de cálculo
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
 */
 header("content-type: text/javascript; charset=UTF-8");
@@ -69,7 +70,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
                             totalProperty: 'total',
                             fields: ['id_concepto_ingas','tipo','desc_ingas','movimiento','desc_partida','id_grupo_ots','filtro_ot','requiere_ot','desc_gestion'],
                             remoteSort: true,
-                            baseParams: { par_filtro: 'desc_ingas#par.codigo' }
+                            baseParams: { par_filtro: 'desc_ingas#par.codigo', sw_autorizacion: 'formulacion_presupuesto' }
                 }),
                valueField: 'id_concepto_ingas',
                displayField: 'desc_ingas',
