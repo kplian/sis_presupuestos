@@ -2736,4 +2736,165 @@ AS
 /***********************************F-DEP-RAC-PRE-0-07/02/2018*****************************************/
   
   
+  /***********************************I-DEP-RAC-PRE-0-01/12/2018*****************************************/
+  
+  DROP VIEW pre.vpartida_ejecucion;
+
+  
+  CREATE OR REPLACE VIEW pre.vpartida_ejecucion (
+    id_partida_ejecucion,
+    id_int_comprobante,
+    id_moneda,
+    moneda,
+    id_presupuesto,
+    desc_pres,
+    codigo_categoria,
+    id_partida,
+    codigo,
+    nombre_partida,
+    nro_tramite,
+    tipo_cambio,
+    columna_origen,
+    tipo_movimiento,
+    id_partida_ejecucion_fk,
+    estado_reg,
+    fecha,
+    egreso_mb,
+    ingreso_mb,
+    monto_mb,
+    monto,
+    valor_id_origen,
+    id_usuario_reg,
+    fecha_reg,
+    usuario_ai,
+    id_usuario_ai,
+    fecha_mod,
+    id_usuario_mod,
+    usr_reg,
+    usr_mod,
+    id_tipo_cc,
+    desc_tipo_cc,
+    nro_cbte,
+    id_proceso_wf,
+    monto_anticipo_mb,
+    monto_desc_anticipo_mb,
+    monto_iva_revertido_mb,
+    id_centro_costo,
+    glosa1,
+    glosa,
+    cantidad_descripcion)
+AS
+ SELECT pareje.id_partida_ejecucion,
+    pareje.id_int_comprobante,
+    pareje.id_moneda,
+    mon.moneda,
+    pareje.id_presupuesto,
+    pre.descripcion AS desc_pres,
+    cat.codigo_categoria,
+    pareje.id_partida,
+    par.codigo,
+    par.nombre_partida,
+    pareje.nro_tramite,
+    pareje.tipo_cambio,
+    pareje.columna_origen,
+    pareje.tipo_movimiento,
+    pareje.id_partida_ejecucion_fk,
+    pareje.estado_reg,
+    pareje.fecha,
+        CASE
+            WHEN par.tipo::text = 'gasto'::text THEN pareje.monto_mb
+            ELSE 0::numeric
+        END AS egreso_mb,
+        CASE
+            WHEN par.tipo::text = 'recurso'::text THEN pareje.monto_mb
+            ELSE 0::numeric
+        END AS ingreso_mb,
+    pareje.monto_mb,
+    pareje.monto,
+    pareje.valor_id_origen,
+    pareje.id_usuario_reg,
+    pareje.fecha_reg,
+    pareje.usuario_ai,
+    pareje.id_usuario_ai,
+    pareje.fecha_mod,
+    pareje.id_usuario_mod,
+    usu1.cuenta AS usr_reg,
+    usu2.cuenta AS usr_mod,
+    tcc.id_tipo_cc,
+    tcc.codigo AS desc_tipo_cc,
+    COALESCE(cbte.nro_cbte, ''::character varying) AS nro_cbte,
+    COALESCE(cbte.id_proceso_wf, pre.id_proceso_wf) AS id_proceso_wf,
+    COALESCE(pareje.monto_anticipo_mb, 0::numeric) AS monto_anticipo_mb,
+    COALESCE(pareje.monto_desc_anticipo_mb, 0::numeric) AS monto_desc_anticipo_mb,
+    COALESCE(pareje.monto_iva_revertido_mb, 0::numeric) AS monto_iva_revertido_mb,
+    cc.id_centro_costo,
+    cbte.glosa1,
+    pareje.glosa,
+    pareje.cantidad_descripcion
+   FROM pre.tpartida_ejecucion pareje
+     JOIN pre.tpresupuesto pre ON pre.id_presupuesto = pareje.id_presupuesto
+     JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_presupuesto
+     JOIN param.ttipo_cc tcc ON tcc.id_tipo_cc = cc.id_tipo_cc
+     JOIN pre.vcategoria_programatica cat ON cat.id_categoria_programatica = pre.id_categoria_prog
+     JOIN pre.tpartida par ON par.id_partida = pareje.id_partida
+     JOIN param.tmoneda mon ON mon.id_moneda = pareje.id_moneda
+     JOIN segu.tusuario usu1 ON usu1.id_usuario = pareje.id_usuario_reg
+     LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = pareje.id_usuario_mod
+     LEFT JOIN conta.tint_comprobante cbte ON cbte.id_int_comprobante = pareje.id_int_comprobante
+  WHERE pareje.monto <> 0::numeric;
+
+  
+  CREATE OR REPLACE VIEW pre.vmemoria_por_categoria_repo (
+    id_categoria_programatica,
+    id_cp_programa,
+    desc_programa,
+    id_gestion,
+    descripcion_cat,
+    codigo_categoria,
+    id_presupuesto,
+    codigo_cc,
+    id_concepto_ingas,
+    id_memoria_calculo,
+    codigo_tipo_pres,
+    nombre_tipo_pres,
+    id_partida,
+    codigo_partida,
+    nombre_partida,
+    desc_ingas,
+    unidad_medida,
+    importe,
+    descripcion_pres)
+AS
+ SELECT cp.id_categoria_programatica,
+    cp.id_cp_programa,
+    (((cp.codigo_programa::text || ' - '::text) || cp.desc_programa::text))::character varying(500) AS desc_programa,
+    cp.id_gestion,
+    cp.descripcion AS descripcion_cat,
+    ((cp.codigo_categoria::text || '  '::text) || cp.descripcion)::character varying AS codigo_categoria,
+    p.id_presupuesto,
+    p.codigo_cc,
+    cig.id_concepto_ingas,
+    mc.id_memoria_calculo,
+    tp.codigo AS codigo_tipo_pres,
+    tp.nombre AS nombre_tipo_pres,
+    par.id_partida,
+    par.codigo AS codigo_partida,
+    par.nombre_partida,
+    cig.desc_ingas,
+    md.unidad_medida,
+    sum(md.importe) AS importe,
+    p.descripcion AS descripcion_pres
+   FROM pre.vpresupuesto_cc p
+     JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = p.tipo_pres::text
+     JOIN pre.vmemoria_calculo mc ON mc.id_presupuesto = p.id_presupuesto
+     JOIN param.tconcepto_ingas cig ON cig.id_concepto_ingas = mc.id_concepto_ingas
+     JOIN pre.tpartida par ON par.id_partida = mc.id_partida
+     JOIN pre.tmemoria_det md ON md.id_memoria_calculo = mc.id_memoria_calculo AND md.importe <> 0::numeric
+     JOIN pre.vcategoria_programatica cp ON cp.id_categoria_programatica = p.id_categoria_prog
+  GROUP BY cp.id_categoria_programatica, cp.id_gestion, cp.id_cp_programa, cp.desc_programa, cp.descripcion, cp.codigo_categoria, p.id_presupuesto, p.codigo_cc, cig.id_concepto_ingas, mc.id_memoria_calculo, tp.codigo, tp.nombre, par.id_partida, par.codigo, par.nombre_partida, cig.desc_ingas, md.unidad_medida, p.descripcion, cp.codigo_programa;
+
+  
+  
+  /***********************************F-DEP-RAC-PRE-0-01/12/2018*****************************************/
+  
   

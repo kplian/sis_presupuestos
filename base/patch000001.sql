@@ -1001,7 +1001,7 @@ IS 'monto anticipo en moenda original, (si la ejecucion correponde a un anticipo
 ALTER TABLE pre.tpartida_ejecucion
   ADD COLUMN monto_anticipo_mb NUMERIC;
 
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipado_mb
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo_mb
 IS 'monto anticipado en moenda base';
 
 --------------- SQL ---------------
@@ -1110,6 +1110,76 @@ ALTER TABLE pre.tmemoria_calculo
   ADD COLUMN obs_dba VARCHAR;
   
  /*****************************F-SCP-RAC-PRE-0-05/02/2018*************/
+ 
+ 
+ /*****************************I-SCP-RAC-PRE-0-01/12/2018*************/
+ 
+ 
+ CREATE TABLE pre.tconcepto_tmp (
+  id SERIAL,
+  id_concepto_ingas_uno INTEGER,
+  id_concepto_ingas_dos INTEGER,
+  migrado VARCHAR(5) DEFAULT 'no'::character varying NOT NULL
+) 
+WITH (oids = false);
+
+
+ALTER TABLE pre.tpresupuesto
+  ALTER COLUMN id_categoria_prog SET DEFAULT 1;
+
+
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN obs VARCHAR;
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN descripcion TEXT;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.descripcion
+IS 'para lamacenar descripcion de la compra para ayudar en el analisis de costos';
+
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN cantidad_descripcion NUMERIC;
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN tabla_descripcion VARCHAR(100);
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.tabla_descripcion
+IS 'nombre de la tabla donde se origina la descripcion';
+
+
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN id_tabla_descripcion INTEGER;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.id_tabla_descripcion
+IS 'Id de la tabla donde se origina la descripcion';
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN importe_mb_bk NUMERIC;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.importe_mb_bk
+IS 'para guardar dato modificado enmoneda bas';
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN obs_dba TEXT;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.obs_dba
+IS 'para guardar la caussas de lasmodificaciones';
+
+CREATE INDEX ttipo_presupuesto_idx ON pre.ttipo_presupuesto
+  USING btree (codigo COLLATE pg_catalog."default");
+
+CREATE INDEX tpresupuesto_idx1 ON pre.tpresupuesto
+  USING btree (id_categoria_prog);
+
+
+ 
+ 
+  /*****************************F-SCP-RAC-PRE-0-01/12/2018*************/
+ 
+ 
   
   
 
