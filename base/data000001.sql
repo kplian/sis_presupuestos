@@ -352,17 +352,22 @@ select param.f_import_tcatalogo ('insert','PRE','pieza','pieza','unidad_medida')
 
 /*******************************************I-DAT-RAC-PRE-0-27/04/2016***********************************************/
 
-----------------------------------
---COPY LINES TO data.sql FILE  
----------------------------------
-
 select pxp.f_insert_tgui ('<i class="fa fa-line-chart fa-2x"></i> PRESUPUESTOS', '', 'PRE', 'si', 6, '', 1, '', '', 'PRE');
 select pxp.f_insert_tgui ('Catálogos', 'Catálogos varios', 'PRE.1', 'si', 1, '', 2, '', '', 'PRE');
 select pxp.f_insert_tgui ('Presupuestos', 'Presupuestos varios', 'PRE.2', 'si', 2, '', 2, '', '', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Registro de partidas', 'PRE.1.1', 'si', 1, 'sis_presupuestos/vista/partida/Partida.php', 3, '', 'Partida', 'PRE');
 select pxp.f_insert_tgui ('Presupuestos', 'Registro de presupuestos', 'PRE.2.1', 'si', 1, 'sis_presupuestos/vista/presupuesto/PresupuestoInicio.php', 3, '', 'PresupuestoInicio', 'PRE');
+select pxp.f_insert_tgui ('Concepto Cuenta', 'concepto cuenta', 'CCTA', 'no', 3, 'sis_presupuestos/vista/concepto_cta/ConceptoCta.php', 3, '', 'ConceptoCta', 'PRE');
+select pxp.f_insert_tgui ('Concepto Ingas', 'concepto ingreso gasto', 'CINGAS', 'si', 2, 'sis_presupuestos/vista/concepto_ingas/ConceptoIngasDir.php', 3, '', 'ConceptoIngasDir', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'CINGAS.1', 'no', 0, 'sis_presupuestos/vista/concepto_partida/ConceptoPartida.php', 4, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Hijos', 'Hijos', 'CINGAS.2', 'no', 0, 'sis_presupuestos/vista/concepto_cta/ConceptoCta.php', 4, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'CINGAS.3', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 4, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Tipo de Presupuesto', 'Tipos de presupuesto', 'TIPR', 'si', 5, 'sis_presupuestos/vista/tipo_presupuesto/TipoPresupuesto.php', 3, '', 'TipoPresupuesto', 'PRE');
 select pxp.f_insert_tgui ('Presupuesto VoBo', 'VoBo de presupuestos', 'PREVB', 'si', 3, 'sis_presupuestos/vista/presupuesto/PresupuestoVb.php', 3, '', 'PresupuestoVb', 'PRE');
 select pxp.f_insert_tgui ('Presupuesto Formulación', 'Formulación de presupuesto ', 'PRESFR', 'si', 2, 'sis_presupuestos/vista/presupuesto/PresupuestoFor.php', 3, '', 'PresupuestoFor', 'PRE');
 select pxp.f_insert_tgui ('Autorización de Presupuesto', 'Autorización de Presupuesto', 'AUTPRE', 'si', 4, 'sis_presupuestos/vista/presupuesto/PresupuestoAprobacion.php', 3, '', 'PresupuestoAprobacion', 'PRE');
+select pxp.f_insert_tgui ('Estado de Presupuesto', 'Estado del presupuesto', 'ESTPRE', 'si', 6, 'sis_presupuestos/vista/presupuesto/PresupuestoReporte.php', 3, '', 'PresupuestoReporte', 'PRE');
+select pxp.f_insert_tgui ('Clases de Gasto', 'Clases Gastos', 'CLAGAS', 'si', 4, 'sis_presupuestos/vista/clase_gasto/ClaseGasto.php', 3, '', 'ClaseGasto', 'PRE');
 select pxp.f_insert_tgui ('Ajustes Presupuestarios', 'Ajustes al presupuesto', 'AJTPRE', 'si', 1, 'sis_presupuestos/vista/ajuste/AjusteInicio.php', 3, '', 'AjusteInicio', 'PRE');
 select pxp.f_insert_tgui ('Formulación', 'Formulación', 'FORMU', 'si', 1, '', 3, '', '', 'PRE');
 select pxp.f_insert_tgui ('Ajustes', 'Ajustes de presupuesto', 'AJUSTE', 'si', 2, '', 3, '', '', 'PRE');
@@ -379,37 +384,309 @@ select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'MEMCAL', 
 select pxp.f_insert_tgui ('Programación Presupuesto', 'Programación', 'PROGPRE', 'si', 2, 'sis_presupuestos/vista/memoria_calculo/FormRepProgramacion.php', 3, '', 'FormRepProgramacion', 'PRE');
 select pxp.f_insert_tgui ('Ejecución Presupuestaria', 'Ejecución Presupuestaria', 'EJEPRE', 'si', 3, 'sis_presupuestos/vista/presup_partida/FormRepEjecucion.php', 3, '', 'FormRepEjecucion', 'PRE');
 select pxp.f_insert_tgui ('Ejecución por Partida', 'Ejecución por Partida', 'EJEPAR', 'si', 4, 'sis_presupuestos/vista/presup_partida/FormRepEjecucionPorPartida.php', 3, '', 'FormRepEjecucionPorPartida', 'PRE');
-
-----------------------------------
---COPY LINES TO dependencies.sql FILE  
----------------------------------
-
-select pxp.f_delete_testructura_gui ('PRE.2.1', 'PRE.2');
-select pxp.f_delete_testructura_gui ('PRESFR', 'PRE.2');
-select pxp.f_delete_testructura_gui ('PREVB', 'PRE.2');
-select pxp.f_delete_testructura_gui ('AUTPRE', 'PRE.2');
-select pxp.f_delete_testructura_gui ('AJTPRE', 'PRE.2');
-select pxp.f_insert_testructura_gui ('FORMU', 'PRE.2');
-select pxp.f_insert_testructura_gui ('PRESFR', 'FORMU');
-select pxp.f_insert_testructura_gui ('PREVB', 'FORMU');
-select pxp.f_insert_testructura_gui ('AUTPRE', 'FORMU');
-select pxp.f_insert_testructura_gui ('AJUSTE', 'PRE.2');
-select pxp.f_insert_testructura_gui ('AJTPRE', 'AJUSTE');
-select pxp.f_insert_testructura_gui ('PRE.2.1', 'FORMU');
-select pxp.f_insert_testructura_gui ('VBAJT', 'AJUSTE');
-select pxp.f_insert_testructura_gui ('CCTPR', 'PRE.1');
-select pxp.f_insert_testructura_gui ('CPP', 'CCTPR');
-select pxp.f_insert_testructura_gui ('CPPR', 'CCTPR');
-select pxp.f_insert_testructura_gui ('CPAC', 'CCTPR');
-select pxp.f_insert_testructura_gui ('ORFI', 'CCTPR');
-select pxp.f_insert_testructura_gui ('CPFF', 'CCTPR');
-select pxp.f_insert_testructura_gui ('CATPRO', 'CCTPR');
-select pxp.f_insert_testructura_gui ('REPPRE', 'PRE');
-select pxp.f_insert_testructura_gui ('MEMCAL', 'REPPRE');
-select pxp.f_insert_testructura_gui ('PROGPRE', 'REPPRE');
-select pxp.f_insert_testructura_gui ('EJEPRE', 'REPPRE');
-select pxp.f_insert_testructura_gui ('EJEPAR', 'REPPRE');
-
+select pxp.f_insert_tgui ('Partida Ejecucion', 'Partida Ejecucion', 'PAREJE', 'si', 6, 'sis_presupuestos/vista/partida_ejecucion/FormFiltro.php', 3, '', 'FormFiltro', 'PRE');
+select pxp.f_insert_tgui ('Composición del Presupuesto', 'Composición del Presupuesto', 'PRE.2.1.1', 'no', 0, 'sis_presupuestos/vista/rel_pre/RelPre.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'PRE.2.1.2', 'no', 0, 'sis_presupuestos/vista/presup_partida/PresupPartidaInicio.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PRE.2.1.3', 'no', 0, 'sis_presupuestos/vista/presupuesto_funcionario/PresupuestoFuncionario.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Composición', 'Composición', 'PRE.2.1.4', 'no', 0, 'sis_presupuestos/vista/rel_pre/RelPreInicio.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PRE.2.1.5', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PRE.2.1.6', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'PRE.2.1.7', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'PRE.2.1.8', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php', 4, '', '98%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PRE.2.1.9', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PRE.2.1.3.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'PRE.2.1.3.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'PRE.2.1.3.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRE.2.1.3.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'PRE.2.1.3.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRE.2.1.3.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PRE.2.1.3.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRE.2.1.3.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PRE.2.1.3.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PRE.2.1.3.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PRE.2.1.5.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'PRE.2.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'PRE.2.1.5.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'PRE.2.1.5.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'PRE.2.1.5.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'PRE.2.1.5.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'PRE.2.1.5.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'PRE.2.1.5.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PRE.2.1.7.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Distribución', 'Distribución', 'PRE.2.1.8.1', 'no', 0, 'sis_presupuestos/vista/memoria_det/MemoriaDet.php', 5, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'PRE.2.1.8.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Subir', 'Subir', 'CINGAS.4', 'no', 0, 'sis_parametros/vista/concepto_ingas/subirImagenConcepto.php', 4, '', 'subirImagenConcepto', 'PRE');
+select pxp.f_insert_tgui ('Unidades de Medida', 'Unidades de Medida', 'CINGAS.5', 'no', 0, 'sis_parametros/vista/unidad_medida/UnidadMedida.php', 4, '', 'UnidadMedida', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'CINGAS.5.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 5, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'PREVB.1', 'no', 0, 'sis_presupuestos/vista/presup_partida/PresupPartidaVb.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PREVB.2', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PREVB.3', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'PREVB.4', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'PREVB.5', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php', 4, '', '98%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PREVB.6', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PREVB.2.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'PREVB.2.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'PREVB.2.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'PREVB.2.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'PREVB.2.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'PREVB.2.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'PREVB.2.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'PREVB.2.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PREVB.4.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'PREVB.4.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'PREVB.4.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PREVB.4.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'PREVB.4.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PREVB.4.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PREVB.4.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PREVB.4.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PREVB.4.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PREVB.4.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Distribución', 'Distribución', 'PREVB.5.1', 'no', 0, 'sis_presupuestos/vista/memoria_det/MemoriaDet.php', 5, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'PREVB.5.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'PRESFR.1', 'no', 0, 'sis_presupuestos/vista/presup_partida/PresupPartidaForm.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Composición', 'Composición', 'PRESFR.2', 'no', 0, 'sis_presupuestos/vista/rel_pre/RelPreFor.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PRESFR.3', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PRESFR.4', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'PRESFR.5', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'PRESFR.6', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php', 4, '', '98%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'PRESFR.7', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PRESFR.3.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'PRESFR.3.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'PRESFR.3.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'PRESFR.3.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'PRESFR.3.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'PRESFR.3.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'PRESFR.3.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'PRESFR.3.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PRESFR.5.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'PRESFR.5.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'PRESFR.5.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.5.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'PRESFR.5.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.5.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PRESFR.5.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRESFR.5.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PRESFR.5.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PRESFR.5.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Distribución', 'Distribución', 'PRESFR.6.1', 'no', 0, 'sis_presupuestos/vista/memoria_det/MemoriaDet.php', 5, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'PRESFR.6.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'AUTPRE.1', 'no', 0, 'sis_presupuestos/vista/presup_partida/PresupPartidaAprobacion.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'AUTPRE.2', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'AUTPRE.3', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'AUTPRE.4', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'AUTPRE.5', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php', 4, '', '98%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'AUTPRE.6', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'AUTPRE.2.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'AUTPRE.2.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'AUTPRE.2.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'AUTPRE.2.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'AUTPRE.2.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'AUTPRE.2.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'AUTPRE.2.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'AUTPRE.2.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'AUTPRE.4.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'AUTPRE.4.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'AUTPRE.4.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AUTPRE.4.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'AUTPRE.4.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AUTPRE.4.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'AUTPRE.4.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AUTPRE.4.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'AUTPRE.4.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'AUTPRE.4.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Distribución', 'Distribución', 'AUTPRE.5.1', 'no', 0, 'sis_presupuestos/vista/memoria_det/MemoriaDet.php', 5, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'AUTPRE.5.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'ESTPRE.1', 'no', 0, 'sis_presupuestos/vista/presup_partida/PresupPartidaEstado.php', 4, '', '70%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'ESTPRE.2', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'ESTPRE.3', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'ESTPRE.4', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Memoria de Calculo', 'Memoria de Calculo', 'ESTPRE.5', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/MemoriaCalculo.php', 4, '', '98%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'ESTPRE.6', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'ESTPRE.2.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'ESTPRE.2.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'ESTPRE.2.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'ESTPRE.2.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'ESTPRE.2.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'ESTPRE.2.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'ESTPRE.2.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'ESTPRE.2.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'ESTPRE.4.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'ESTPRE.4.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'ESTPRE.4.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'ESTPRE.4.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'ESTPRE.4.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'ESTPRE.4.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'ESTPRE.4.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'ESTPRE.4.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'ESTPRE.4.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'ESTPRE.4.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Distribución', 'Distribución', 'ESTPRE.5.1', 'no', 0, 'sis_presupuestos/vista/memoria_det/MemoriaDet.php', 5, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'ESTPRE.5.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'PRE');
+select pxp.f_insert_tgui ('Partidas', 'Partidas', 'CLAGAS.1', 'no', 0, 'sis_presupuestos/vista/clase_gasto_partida/ClaseGastoPartida.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'AJTPRE.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 4, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'AJTPRE.2', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 4, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'AJTPRE.3', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 4, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'AJTPRE.4', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 4, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Decrementos (-)', 'Decrementos (-)', 'AJTPRE.5', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetDec.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Incrementos (+)', 'Incrementos (+)', 'AJTPRE.6', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetInc.php', 4, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'AJTPRE.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 5, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'AJTPRE.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'AJTPRE.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 5, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'AJTPRE.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 5, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'AJTPRE.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'AJTPRE.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 6, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'AJTPRE.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 7, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'AJTPRE.2.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'AJTPRE.2.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'AJTPRE.2.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AJTPRE.2.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'AJTPRE.2.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AJTPRE.2.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'AJTPRE.2.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 9, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AJTPRE.2.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 9, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'AJTPRE.2.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 10, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'AJTPRE.2.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 10, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'AJTPRE.4.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'VBAJT.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'VBAJT.2', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 5, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'VBAJT.3', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 5, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'VBAJT.4', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 5, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Decrementos (-)', 'Decrementos (-)', 'VBAJT.5', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetDec.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Incrementos (+)', 'Incrementos (+)', 'VBAJT.6', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetInc.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'VBAJT.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'VBAJT.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'VBAJT.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'VBAJT.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'VBAJT.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'VBAJT.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'VBAJT.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'VBAJT.2.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 6, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'VBAJT.2.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 7, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'VBAJT.2.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 7, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'VBAJT.2.1.3', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 7, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'VBAJT.2.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 8, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'VBAJT.2.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'VBAJT.2.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'VBAJT.2.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'VBAJT.2.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'VBAJT.2.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'VBAJT.4.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Detalle Ejecucion', 'Detalle Ejecucion', 'PAREJE.1', 'no', 0, 'sis_presupuestos/vista/partida_ejecucion/PartidaEjecucion.php', 4, '', '70%', 'PRE');
+select pxp.f_insert_tgui ('<i class="fa fa-search fa-2x"></i>Consulta Concepto Ingas', 'Consulta Concepto Ingas', 'CON_INGAS', 'si', 14, 'sis_presupuestos/vista/concepto_ingas/ConsultaConceptoIngas.php', 3, '', 'ConsultaConceptoIngas', 'PRE');
+select pxp.f_insert_tgui ('Consulta de Procesos de Ajustes', 'Consulta de Ajustes', 'CONAJU', 'si', 3, 'sis_presupuestos/vista/ajuste/AjusteConsulta.php', 4, '', 'AjusteConsulta', 'PRE');
+select pxp.f_insert_tgui ('Evaluación Ejecución', 'Evaluación Ejecución', 'EPE', 'si', 6, 'sis_presupuestos/vista/partida_ejecutado/FormPartidaEjecutado.php', 3, '', 'FormPartidaEjecutado', 'PRE');
+select pxp.f_insert_tgui ('Objetivos', 'Objetivos', 'PRE.2.1.10', 'no', 0, 'sis_presupuestos/vista/presupuesto_objetivo/PresupuestoObjetivo.php', 4, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRE.2.1.3.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PREVB.4.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Objetivos', 'Objetivos', 'PRESFR.8', 'no', 0, 'sis_presupuestos/vista/presupuesto_objetivo/PresupuestoObjetivoForm.php', 4, '', '50%', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRESFR.5.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AUTPRE.4.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'ESTPRE.4.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Estado del Presupuesto', 'Estado del Presupuesto', 'AJTPRE.7', 'no', 0, 'sis_presupuestos/vista/presup_partida/ChkPresupuesto.php', 4, '', 'ChkPresupuesto', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AJTPRE.2.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Estado del Presupuesto', 'Estado del Presupuesto', 'VBAJT.7', 'no', 0, 'sis_presupuestos/vista/presup_partida/ChkPresupuesto.php', 5, '', 'ChkPresupuesto', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'VBAJT.2.1.4', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 7, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Decrementos (-)', 'Decrementos (-)', 'CONAJU.1', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetDecConsulta.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Incrementos (+)', 'Incrementos (+)', 'CONAJU.2', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetIncConsulta.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'CONAJU.3', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Observaciones del WF', 'Observaciones del WF', 'CONAJU.4', 'no', 0, 'sis_workflow/vista/obs/Obs.php', 5, '', '80%', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'CONAJU.5', 'no', 0, 'sis_workflow/vista/estado_wf/AntFormEstadoWf.php', 5, '', 'AntFormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Estado de Wf', 'Estado de Wf', 'CONAJU.6', 'no', 0, 'sis_workflow/vista/estado_wf/FormEstadoWf.php', 5, '', 'FormEstadoWf', 'PRE');
+select pxp.f_insert_tgui ('Estado del Presupuesto', 'Estado del Presupuesto', 'CONAJU.7', 'no', 0, 'sis_presupuestos/vista/presup_partida/ChkPresupuesto.php', 5, '', 'ChkPresupuesto', 'PRE');
+select pxp.f_insert_tgui ('Decrementos (-)', 'Decrementos (-)', 'CONAJU.8', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetDec.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Incrementos (+)', 'Incrementos (+)', 'CONAJU.9', 'no', 0, 'sis_presupuestos/vista/ajuste_det/AjusteDetInc.php', 5, '', '60%', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'CONAJU.3.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'CONAJU.3.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'CONAJU.3.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'CONAJU.3.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'CONAJU.3.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'CONAJU.3.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'CONAJU.3.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'CONAJU.4.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 6, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'CONAJU.4.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 7, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'CONAJU.4.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 7, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'CONAJU.4.1.3', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 7, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'CONAJU.4.1.4', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 7, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'CONAJU.4.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 8, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'CONAJU.4.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'CONAJU.4.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'CONAJU.4.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'CONAJU.4.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'CONAJU.4.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'CONAJU.6.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'PRE.2.1.3.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRE.2.1.3.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PRE.2.1.3.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRE.2.1.3.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PRE.2.1.3.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PRE.2.1.3.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'PREVB.4.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PREVB.4.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PREVB.4.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PREVB.4.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PREVB.4.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PREVB.4.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'PRESFR.5.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.5.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PRESFR.5.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRESFR.5.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PRESFR.5.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PRESFR.5.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'AUTPRE.4.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AUTPRE.4.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'AUTPRE.4.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AUTPRE.4.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'AUTPRE.4.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'AUTPRE.4.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'ESTPRE.4.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'ESTPRE.4.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'ESTPRE.4.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'ESTPRE.4.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'ESTPRE.4.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'ESTPRE.4.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'AJTPRE.2.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'AJTPRE.2.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'AJTPRE.2.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'AJTPRE.2.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'AJTPRE.2.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'AJTPRE.2.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'VBAJT.2.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 9, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'VBAJT.2.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 10, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'VBAJT.2.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 11, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'VBAJT.2.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 11, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'VBAJT.2.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 12, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'VBAJT.2.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 12, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'CONAJU.4.1.1.1.2', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 9, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'CONAJU.4.1.1.1.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 10, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'CONAJU.4.1.1.1.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 11, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'CONAJU.4.1.1.1.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 11, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'CONAJU.4.1.1.1.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 12, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'CONAJU.4.1.1.1.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 12, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Subir Presupuestos', 'Subir Presupuestos', 'PRESFR.9', 'no', 0, 'sis_presupuestos/vista/memoria_calculo/SubirArchivoPre.php', 4, '', 'SubirArchivoPre', 'PRE');
+select pxp.f_insert_tgui ('Funcionarios', 'Funcionarios', 'PRESFR.9.1', 'no', 0, 'sis_organigrama/vista/funcionario/Funcionario.php', 5, '', 'funcionario', 'PRE');
+select pxp.f_insert_tgui ('Cuenta Bancaria del Empleado', 'Cuenta Bancaria del Empleado', 'PRESFR.9.1.1', 'no', 0, 'sis_organigrama/vista/funcionario_cuenta_bancaria/FuncionarioCuentaBancaria.php', 6, '', 'FuncionarioCuentaBancaria', 'PRE');
+select pxp.f_insert_tgui ('Especialidad del Empleado', 'Especialidad del Empleado', 'PRESFR.9.1.2', 'no', 0, 'sis_organigrama/vista/funcionario_especialidad/FuncionarioEspecialidad.php', 6, '', 'FuncionarioEspecialidad', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRESFR.9.1.3', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.9.1.4', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 6, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Instituciones', 'Instituciones', 'PRESFR.9.1.1.1', 'no', 0, 'sis_parametros/vista/institucion/Institucion.php', 7, '', 'Institucion', 'PRE');
+select pxp.f_insert_tgui ('InstitucionPersona', 'InstitucionPersona', 'PRESFR.9.1.1.1.1', 'no', 0, 'sis_parametros/vista/institucion_persona/InstitucionPersona.php', 8, '', 'Persona Institucion', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.9.1.1.1.2', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 8, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'PRESFR.9.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 9, '', 'persona', 'PRE');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'PRESFR.9.1.1.1.1.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 10, '', 'subirFotoPersona', 'PRE');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'PRESFR.9.1.1.1.1.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 10, '', 'Archivo', 'PRE');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'PRESFR.9.1.1.1.1.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 11, '', 'subirArchivo', 'PRE');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'PRESFR.9.1.1.1.1.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 11, '', 'ArchivoHistorico', 'PRE');
+select pxp.f_insert_tgui ('Documentos del Proceso', 'Documentos del Proceso', 'PAREJE.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 5, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Estado del Presupuesto', 'Estado del Presupuesto', 'PAREJE.1.2', 'no', 0, 'sis_presupuestos/vista/presup_partida/ChkPresupuesto.php', 5, '', 'ChkPresupuesto', 'PRE');
+select pxp.f_insert_tgui ('Subir ', 'Subir ', 'PAREJE.1.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/SubirArchivoWf.php', 6, '', 'SubirArchivoWf', 'PRE');
+select pxp.f_insert_tgui ('Documentos de Origen', 'Documentos de Origen', 'PAREJE.1.1.2', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Histórico', 'Histórico', 'PAREJE.1.1.3', 'no', 0, 'sis_workflow/vista/documento_historico_wf/DocumentoHistoricoWf.php', 6, '', '30%', 'PRE');
+select pxp.f_insert_tgui ('Estados por momento', 'Estados por momento', 'PAREJE.1.1.4', 'no', 0, 'sis_workflow/vista/tipo_documento_estado/TipoDocumentoEstadoWF.php', 6, '', '40%', 'PRE');
+select pxp.f_insert_tgui ('Pagos similares', 'Pagos similares', 'PAREJE.1.1.5', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepFilPlanPago.php', 6, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('73%', '73%', 'PAREJE.1.1.5.1', 'no', 0, 'sis_tesoreria/vista/plan_pago/RepPlanPago.php', 7, '', 'RepPlanPago', 'PRE');
+select pxp.f_insert_tgui ('Chequear documento del WF', 'Chequear documento del WF', 'PAREJE.1.1.5.1.1', 'no', 0, 'sis_workflow/vista/documento_wf/DocumentoWf.php', 8, '', '90%', 'PRE');
+select pxp.f_insert_tgui ('Pendientes de ejecución', 'Pendientes de ejecución', 'PENEJE', 'si', 6, 'sis_presupuestos/reportes/RPendienteEjecucion.php', 3, '', 'RPendienteEjecucion', 'PRE');
 /*******************************************F-DAT-RAC-PRE-0-27/04/2016***********************************************/
 
 
@@ -431,12 +708,6 @@ VALUES
 /*******************************************F-DAT-RAC-PRE-0-29/06/2017***********************************************/
 
 
-/***********************************I-DAT-FEA-PARAM-1-05/10/2017*****************************************/
-
-select pxp.f_insert_tgui ('<i class="fa fa-search fa-2x"></i>Consulta Concepto Ingas', 'Consulta Concepto Ingas', 'CON_INGAS', 'si', 14, 'sis_presupuestos/vista/concepto_ingas/ConsultaConceptoIngas.php', 3, '', 'ConsultaConceptoIngas', 'PRE');
-select pxp.f_insert_testructura_gui ('CON_INGAS', 'REPPRE');
-
-/***********************************F-DAT-FEA-PARAM-1-05/10/2017*****************************************/
 
 
 
@@ -450,13 +721,6 @@ VALUES
 
 /***********************************F-DAT-RAC-PARAM-1-11/10/2017*****************************************/
 
-
-/***********************************I-DAT-RAC-PARAM-1-13/10/2017*****************************************/
-
-select pxp.f_insert_tgui ('Consulta de Procesos de Ajustes', 'Consulta de Ajustes', 'CONAJU', 'si', 3, 'sis_presupuestos/vista/ajuste/AjusteConsulta.php', 4, '', 'AjusteConsulta', 'PRE');
-select pxp.f_insert_testructura_gui ('CONAJU', 'AJUSTE');
-
-/***********************************F-DAT-RAC-PARAM-1-13/10/2017*****************************************/
 
 
 
