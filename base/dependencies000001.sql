@@ -3164,6 +3164,10 @@ select pxp.f_insert_testructura_gui ('PAREJE.1.1.4', 'PAREJE.1.1');
 select pxp.f_insert_testructura_gui ('PAREJE.1.1.5', 'PAREJE.1.1');
 select pxp.f_insert_testructura_gui ('PAREJE.1.1.5.1', 'PAREJE.1.1.5');
 select pxp.f_insert_testructura_gui ('PAREJE.1.1.5.1.1', 'PAREJE.1.1.5.1');
+
+
+ALTER TABLE pre.tajuste
+  ALTER COLUMN id_moneda SET DEFAULT param.f_get_moneda_base();
   
   /***********************************F-DEP-RAC-PRE-0-01/12/2018*****************************************/
   

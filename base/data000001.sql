@@ -307,7 +307,6 @@ select wf.f_import_testructura_estado ('insert','formulacion','revision','PRE',1
 select wf.f_import_testructura_estado ('delete','revision','aprobado','PRE',NULL,NULL);
 select wf.f_import_testructura_estado ('insert','revision','vobopre','PRE',1,'');
 select wf.f_import_testructura_estado ('insert','vobopre','aprobado','PRE',1,'');
-select wf.f_import_tfuncionario_tipo_estado ('insert','vobopre','PRE','4280479',NULL,'');
 
 
 /***********************************F-DAT-RAC-PRE-3-16/03/2016*****************************************/

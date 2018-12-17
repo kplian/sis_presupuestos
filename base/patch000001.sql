@@ -963,10 +963,10 @@ ALTER TABLE pre.tpresupuesto
 --------------- SQL ---------------
 
 ALTER TABLE pre.tajuste
-  ADD COLUMN id_moneda INTEGER DEFAULT param.f_get_moneda_base() NOT NULL;
+  ADD COLUMN id_moneda INTEGER NOT NULL;
 
 COMMENT ON COLUMN pre.tajuste.id_moneda
-IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupeusto comprometido,  si fue comprometido en dolares la moenda se tiene que mantener';
+IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupueusto comprometido,  si fue comprometido en dolares la moenda se tiene que mantener';
 
 /*****************************F-SCP-RAC-PRE-0-12/10/2017*************/
 
@@ -1177,10 +1177,56 @@ CREATE INDEX tpresupuesto_idx1 ON pre.tpresupuesto
 
  
  
-  /*****************************F-SCP-RAC-PRE-0-01/12/2018*************/
- 
- 
-  
-  
+/*****************************F-SCP-RAC-PRE-0-01/12/2018*************/
 
 
+/*****************************I-SCP-CAP-PRE-0-06/12/2018*************/
+
+ALTER TABLE pre.tconcepto_tmp
+  ADD CONSTRAINT tconcepto_tmp_pkey 
+    PRIMARY KEY (id) NOT DEFERRABLE;
+
+-- Drop the source table
+DROP TABLE pre.tformulacion_tmp;
+-- Create the destination table
+CREATE TABLE pre.tformulacion_tmp (
+  id SERIAL NOT NULL,
+  nro VARCHAR(1000),
+  codigo VARCHAR(1000),
+  tipo1 VARCHAR(1000),
+  tipo2 VARCHAR(1000),
+  techo VARCHAR(1000),
+  carga VARCHAR(1000),
+  descripcion VARCHAR(1000),
+  m1 VARCHAR(1000),
+  m2 VARCHAR(1000),
+  m3 VARCHAR(1000),
+  m4 VARCHAR(1000),
+  m5 VARCHAR(1000),
+  m6 VARCHAR(1000),
+  m7 VARCHAR(1000),
+  m8 VARCHAR(1000),
+  m9 VARCHAR(1000),
+  m10 VARCHAR(1000),
+  m11 VARCHAR(1000),
+  m12 VARCHAR(1000),
+  presupuesto VARCHAR(1000),
+  id_memoria_calculo INTEGER,
+  migrado VARCHAR(3) DEFAULT 'no'::character varying,
+  obs VARCHAR,
+  CONSTRAINT tpresupuesto_tmp_pkey PRIMARY KEY(id)
+) 
+WITH (oids = false);
+
+ALTER TABLE pre.tpartida_ejecucion
+  ADD COLUMN marca_tmp VARCHAR;
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.marca_tmp
+IS 'usado para operacion temporal para ajsutar datos manualmente';
+
+
+
+
+
+
+/*****************************F-SCP-CAP-PRE-0-06/12/2018*************/
