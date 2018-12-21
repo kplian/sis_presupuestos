@@ -3170,5 +3170,4 @@ ALTER TABLE pre.tajuste
   ALTER COLUMN id_moneda SET DEFAULT param.f_get_moneda_base();
   
   /***********************************F-DEP-RAC-PRE-0-01/12/2018*****************************************/
-  
-  
+
