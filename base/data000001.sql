@@ -720,6 +720,10 @@ VALUES
 
 /***********************************F-DAT-RAC-PARAM-1-11/10/2017*****************************************/
 
-
-
+/*******************************************I-DAT-MMV-PRE-2-20/12/2018***********************************************/
+select pxp.f_insert_tgui ('Replicacion Partidas', 'Replicacion Partidas', 'RPS', 'si', 11, 'sis_presupuestos/vista/partida_ids/PartidaIds.php', 3, '', 'PartidaIds', 'PRE');
+select pxp.f_insert_testructura_gui ('RPS', 'PRE.1');
+select pxp.f_insert_tgui ('Replicacion Presupuesto', 'Replicacion Presupuesto', 'RPP', 'si', 12, 'sis_presupuestos/vista/presupuesto_ids/PresupuestoIds.php', 3, '', 'PresupuestoIds', 'PRE');
+select pxp.f_insert_testructura_gui ('RPP', 'PRE.1');
+/*******************************************F-DAT-MMV-PRE-2-20/12/2018***********************************************/
 

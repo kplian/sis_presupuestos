@@ -1223,10 +1223,73 @@ ALTER TABLE pre.tpartida_ejecucion
 
 COMMENT ON COLUMN pre.tpartida_ejecucion.marca_tmp
 IS 'usado para operacion temporal para ajsutar datos manualmente';
-
-
-
-
-
-
 /*****************************F-SCP-CAP-PRE-0-06/12/2018*************/
+
+/***********************************I-SCP-MMV-PRE-0-20/12/2018*****************************************/
+ALTER TABLE pre.tpartida_ids
+  ADD COLUMN insercion VARCHAR(20);
+
+ALTER TABLE pre.tpartida_ids
+  ADD COLUMN id_usuario_reg INTEGER;
+
+ALTER TABLE pre.tpartida_ids
+  ADD COLUMN fecha_reg DATE;
+
+ALTER TABLE pre.tpartida_ids
+  ALTER COLUMN fecha_reg SET DEFAULT now();
+
+ALTER TABLE pre.tpartida_ids
+  ADD COLUMN estado_reg VARCHAR(20);
+
+ALTER TABLE pre.tpartida_ids
+  ALTER COLUMN estado_reg SET DEFAULT 'activo';
+
+ALTER TABLE pre.tpresupuesto_ids
+  ADD COLUMN insercion VARCHAR(20);
+
+ALTER TABLE pre.tpresupuesto_ids
+  ADD COLUMN id_usuario_reg INTEGER;
+
+ALTER TABLE pre.tpresupuesto_ids
+  ADD COLUMN fecha_reg DATE;
+
+ALTER TABLE pre.tpresupuesto_ids
+  ALTER COLUMN fecha_reg SET DEFAULT now();
+
+ALTER TABLE pre.tpresupuesto_ids
+  ADD COLUMN estado_reg VARCHAR(20);
+
+ALTER TABLE pre.tpresupuesto_ids
+  ALTER COLUMN estado_reg SET DEFAULT 'activo';
+/***********************************F-SCP-MMV-PRE-0-20/12/2018*****************************************/
+
+/*****************************I-SCP-RAC-PRE-3-20/12/2018*************/
+
+CREATE TABLE pre.tpartida_ejecucion_tmp (
+  id SERIAL NOT NULL,
+  tipo VARCHAR NOT NULL,
+  monto_mb NUMERIC NOT NULL,
+  monto_mo NUMERIC NOT NULL,
+  id_moneda INTEGER NOT NULL,
+  id_presupuesto INTEGER NOT NULL,
+  codigo_partida VARCHAR NOT NULL,
+  nro_tramite VARCHAR NOT NULL,
+  id_int_cbte INTEGER  ,
+  glosa VARCHAR,
+  migrado VARCHAR(2) DEFAULT 'no' NOT NULL,
+  PRIMARY KEY(id)
+) 
+WITH (oids = false);
+
+--------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion_tmp
+  ADD COLUMN obs VARCHAR;
+  
+  --------------- SQL ---------------
+
+ALTER TABLE pre.tpartida_ejecucion_tmp
+  ADD COLUMN id_partida_ejecucion INTEGER;
+
+
+ /*****************************F-SCP-RAC-PRE-3-20/12/2018*************/
