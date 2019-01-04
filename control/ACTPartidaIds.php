@@ -9,7 +9,9 @@
 /**
 HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
-#2			 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
+#2			     20/12/2018	            Miguel Mamani			Replicación de partidas y presupuestos
+#4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
 **/
 class ACTPartidaIds extends ACTbase{    
 			
@@ -35,11 +37,17 @@ class ACTPartidaIds extends ACTbase{
 	}
 						
 	function eliminarPartidaIds(){
-			$this->objFunc=$this->create('MODPartidaIds');	
+        $this->objFunc=$this->create('MODPartidaIds');
 		$this->res=$this->objFunc->eliminarPartidaIds($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
-			
+	////////////////#4/////////////////////////////
+    function relacionarPartidaIds(){
+        $this->objFunc=$this->create('MODPartidaIds');
+        $this->res=$this->objFunc->relacionarPartidaIds($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    ////////////////#4/////////////////////////////
 }
 
 ?>

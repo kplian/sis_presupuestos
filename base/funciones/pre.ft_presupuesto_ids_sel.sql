@@ -16,8 +16,9 @@ $body$
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
- #2				 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
- #
+#0				17-12-2018 19:20:26								Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.tpresupuesto_ids'
+#4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
  ***************************************************************************/
 
 DECLARE
@@ -26,6 +27,7 @@ DECLARE
 	v_parametros  		record;
 	v_nombre_funcion   	text;
 	v_resp				varchar;
+    v_record			record; --#4
 
 BEGIN
 
@@ -114,6 +116,66 @@ BEGIN
 			return v_consulta;
 
 		end;
+
+    /*********************************
+ 	#TRANSACCION:  'PRE_RPM_SEL'  #4
+ 	#DESCRIPCION:	Reporte centro costo o presupesto con saldo
+ 	#AUTOR:		miguel.mamani
+ 	#FECHA:		17-12-2018 19:20:26
+	***********************************/
+    elsif(p_transaccion='PRE_RPM_SEL')then
+
+        begin
+             CREATE TEMPORARY TABLE tmp_pres (   id_centro_costo integer,
+                                                 codigo_tcc varchar,
+                                                 descripcion_tcc varchar,
+                                                 saldo_mb numeric )ON COMMIT DROP;
+
+        	FOR v_record in ( with centro_costo as (select 	t.id_centro_costo,
+                                cc.codigo_tcc,
+                                cc.descripcion_tcc,
+                                t.importe_debe_mb,
+                                t.importe_haber_mb
+                              from conta.tint_transaccion t
+                              inner join conta.tint_comprobante cb on cb.id_int_comprobante = t.id_int_comprobante
+                              inner join param.vcentro_costo cc on cc.id_centro_costo = t.id_centro_costo
+                              inner join param.tperiodo pe on pe.id_periodo = cb.id_periodo
+                              and pe.id_gestion = v_parametros.id_gestion)
+                     select  cc.id_centro_costo,
+                             cc.codigo_tcc,
+                             cc.descripcion_tcc,
+                             sum(cc.importe_debe_mb) - sum(cc.importe_haber_mb) as saldo_mb
+                       from  centro_costo cc
+                       group by cc.id_centro_costo,
+                                 cc.codigo_tcc,
+                                 cc.descripcion_tcc)LOOP
+
+             if(not exists (select 1
+                            from pre.tpresupuesto_ids ipe
+                            where ipe.id_presupuesto_uno = v_record.id_centro_costo) )then
+
+                            insert into tmp_pres ( 	id_centro_costo,
+                                                 	codigo_tcc,
+                                                 	descripcion_tcc,
+                                                 	saldo_mb)
+                                                    values(
+                                                    v_record.id_centro_costo,
+                                                    v_record.codigo_tcc,
+                                                    v_record.descripcion_tcc,
+                                                    v_record.saldo_mb
+                                                    );
+
+             end if;
+            END LOOP;
+            v_consulta:='select s.id_centro_costo,
+                                s.codigo_tcc,
+                                s.descripcion_tcc,
+                                s.saldo_mb
+                         from tmp_pres s';
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
 
 	else
 

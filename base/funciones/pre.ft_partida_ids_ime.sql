@@ -16,7 +16,8 @@ $body$
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
- #2				 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
+ #0				17-12-2018 19:20:23								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tpartida_ids'
+ #4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
 
  ***************************************************************************/
 
@@ -176,21 +177,46 @@ BEGIN
 
 		begin
 			--Sentencia de la eliminacion
-
-
-            select p.id_partida_dos
-            into
-            v_id_partida_dos
-            from pre.tpartida_ids p
-            where p.id_partida_uno = v_parametros.id_partida_uno;
-
-            delete from pre.tpartida
-            where id_partida= v_id_partida_dos;
-
-
             delete from pre.tpartida_ids
             where id_partida_uno=v_parametros.id_partida_uno;
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Replicacion Partidas eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_partida_uno',v_parametros.id_partida_uno::varchar);
 
+            --Devuelve la respuesta
+            return v_resp;
+
+		end;
+    /*********************************
+ 	#TRANSACCION:  'PRE_RPA_INS' #4
+ 	#DESCRIPCION:	Relacion partodas por dos gestiones
+ 	#AUTOR:		miguel.mamani
+ 	#FECHA:		17-12-2018 19:20:23
+	***********************************/
+
+	elsif(p_transaccion='PRE_RPA_INS')then
+
+		begin
+         if(exists(select 1
+                            from pre.tpartida_ids ipe
+                            where ipe.id_partida_uno = v_parametros.id_partida_uno))then
+
+        	raise exception 'Ya existe una relacion con el partida';
+
+          else
+                      insert into pre.tpartida_ids (	id_partida_uno,
+                                                      id_partida_dos,
+                                                      sw_cambio_gestion,
+                                                      insercion,
+                                                      id_usuario_reg
+                                                      ) VALUES (
+                                                      v_parametros.id_partida_uno,
+                                                      v_parametros.id_partida_dos,
+                                                      'gestion',
+                                                      'manual',
+                                                      p_id_usuario
+                                                    );
+			end if;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Replicacion Partidas eliminado(a)');

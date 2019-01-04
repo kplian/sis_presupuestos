@@ -9,14 +9,16 @@
 /**
 HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
-#2				 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
+#2				 20/12/2018	        Miguel Mamani			Replicación de partidas y presupuestos
+#4				 03/01/2019	        Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
  **/
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
-
+    anhio:0, //#4
 	constructor:function(config){
 		this.maestro=config.maestro;
         this.initButtons=[this.cmbGestion];
@@ -24,15 +26,27 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
         //llama al constructor de la clase padre
 		Phx.vista.PresupuestoIds.superclass.constructor.call(this,config);
 		this.init();
-        //this.load({params:{start:0, limit:this.tam_pag}})
+        this.addButton('inserAuto',{ text: 'Relacionar Pre', iconCls: 'blist', disabled: false, handler: this.mostarFormAuto, tooltip: '<b>Relacion entre dos presupueste de gestion actual y el siguiente</b>'}); ///#4
+        this.addButton('btnReport',{text : 'Reporte Movimiento', iconCls : 'bpdf32', disabled: false, handler : this.onButtonReporte}); //#4
         this.cmbGestion.on('select', function(combo, record, index){
             this.iniciarEvento();
             this.capturaFiltros();
+            this.anhio = this.cmbGestion.getValue(); //#4
+            this.crearFormAuto(); //#4
         },this);
 	},
 			
 	Atributos:[
 		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_presupuesto_uno'
+			},
+			type:'Field',
+			form:true
+		},{
 			//configuracion del componente
 			config:{
 					labelSeparator:'',
@@ -67,10 +81,9 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
                 gdisplayField: 'desc_presupuesto_hijo',
                 width: 350,
                 listWidth: 350,
-                gwidth: 300,
+                gwidth: 350,
                 renderer : function(value, p, record) {
-                    return '<div><p><b> Tipo: <font color="#00008b">'+record.data['nombre']+'</font></b></span></p>' +
-                        '<p><b>' + record.data['descripcion'] +'</b></p></div>';
+                    return '<div><p><b>'+record.data['descripcion']+'</b></p></div>';
                 }
             },
             type: 'ComboRec',
@@ -79,25 +92,6 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
             grid: true,
             bottom_filter: true,
             form: true
-        },
-        {
-            config:{
-                name: 'nro_tramite',
-                fieldLabel: 'Centro Costo',
-                allowBlank: false,
-                anchor: '80%',
-                gwidth: 300,
-                maxLength:10,
-                renderer : function(value, p, record) {
-                    return '<div><p><b> Tipo: <font color="#00008b">'+record.data['nro_tramite']+'</font></b></span></p>' +
-                        '<p><b>' + record.data['descripcion_tcc'] +'</b></p></div>';
-                }
-            },
-            type:'TextField',
-           // bottom_filter: true,
-            id_grupo:1,
-            grid:true,
-            form:false
         },
         {
             config:{
@@ -125,35 +119,15 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
                 baseParams: { estado: 'borrador', sw_oficial: 'no' },
                 width: 350,
                 listWidth: 350,
-                gwidth: 300,
+                gwidth: 350,
                 renderer : function(value, p, record) {
-                    return '<div><p><b><font color="#006400">'+record.data['nombre_dos']+'</font></b></span></p>' +
-                        '<p><b>'+record.data['descripcion_dos']+'</b></p></div>';
+                    return '<div><p><b>'+record.data['descripcion_dos']+'</b></p></div>';
                 }
             },
             type: 'ComboRec',
             id_grupo:1,
             grid: true,
             form: false
-        },
-        {
-            config:{
-                name: 'nro_tramite_dos',
-                fieldLabel: 'Centro Costo',
-                allowBlank: false,
-                anchor: '80%',
-                gwidth: 300,
-                maxLength:10,
-                renderer : function(value, p, record) {
-                    return '<div><p><b><font color="#006400">'+record.data['nro_tramite_dos']+'</font></b></span></p>' +
-                        '<p><b>' + record.data['descripcion_tcc_dos'] +'</b></p></div>';
-                }
-            },
-            type:'TextField',
-
-            id_grupo:1,
-            grid:true,
-            form:false
         },
         {
             config:{
@@ -220,7 +194,7 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
 				type:'DateField',
-				filters:{pfiltro:'rpp.fecha_reg',type:'date'},
+				filters:{pfiltro:'pi.fecha_reg',type:'date'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -328,7 +302,166 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
     }),
     iniciarEvento: function (){
         Ext.apply(this.Cmp.id_presupuesto_uno.store.baseParams,{par_filtro: 'id_centro_costo#codigo_cc#desc_tipo_presupuesto#movimiento_tipo_pres',id_gestion: this.cmbGestion.getValue()});
+    },
+    ////#4
+    mostarFormAuto:function(){
+        if(!this.validarFiltros()){
+            alert('Especifique el año antes')
+        }else{
+            this.cmpAutoAct.setValue();
+            this.cmpAutoSig.setValue();
+            this.wAuto.show();
+        }
+    },
+    crearFormAuto:function(){
+        var storeCombo = new Ext.data.JsonStore({
+            url: '../../sis_presupuestos/control/Presupuesto/listarPresupuestoCmb',
+            id: 'id_presupuesto',
+            root: 'datos',
+            sortInfo:{
+                field: 'codigo_cc',
+                direction: 'ASC'
+            },
+            totalProperty: 'total',
+            fields: [ 'id_centro_costo','id_presupuesto','desc_tipo_presupuesto','descripcion','codigo_cc','tipo_pres',
+                      'desc_tipo_presupuesto','movimiento_tipo_pres','nro_tramite','id_gestion',
+                      'movimiento_tipo_pres','estado'],
+            remoteSort: true,
+            baseParams: {par_filtro: 'id_centro_costo#codigo_cc#desc_tipo_presupuesto#movimiento_tipo_pres',id_gestion:  this.anhio }
+        });
+        var combo = new Ext.form.ComboBox({
+            name:'id_presupuesto_uno',
+            fieldLabel:'Presupuesto Act',
+            allowBlank : false,
+            typeAhead: true,
+            store: storeCombo,
+            mode: 'remote',
+            pageSize: 15,
+            triggerAction: 'all',
+            valueField : 'id_presupuesto',
+            displayField : 'codigo_cc',
+            forceSelection: true,
+            allowBlank : false,
+            anchor: '100%',
+            resizable : true,
+            enableMultiSelect: false
+        });
+        var sig = parseInt(this.anhio)+1;
+        var storeComboSig = new Ext.data.JsonStore({
+            url: '../../sis_presupuestos/control/Presupuesto/listarPresupuestoCmb',
+            id: 'id_presupuesto',
+            root: 'datos',
+            sortInfo:{
+                field: 'codigo_cc',
+                direction: 'ASC'
+            },
+            totalProperty: 'total',
+            fields: [ 'id_centro_costo','id_presupuesto','desc_tipo_presupuesto','descripcion','codigo_cc','tipo_pres',
+                'desc_tipo_presupuesto','movimiento_tipo_pres','nro_tramite','id_gestion',
+                'movimiento_tipo_pres','estado'],
+            remoteSort: true,
+            baseParams: {par_filtro: 'id_centro_costo#codigo_cc#desc_tipo_presupuesto#movimiento_tipo_pres',id_gestion: sig}
+        });
+
+        var comboSig = new Ext.form.ComboBox({
+            name:'id_presupuesto_dos',
+            fieldLabel:'Presupuesto Sig',
+            allowBlank : false,
+            typeAhead: true,
+            store: storeComboSig,
+            mode: 'remote',
+            pageSize: 15,
+            triggerAction: 'all',
+            valueField : 'id_presupuesto',
+            displayField : 'codigo_cc',
+            forceSelection: true,
+            allowBlank : false,
+            anchor: '100%',
+            resizable : true,
+            enableMultiSelect: false
+        });
+        this.formAuto = new Ext.form.FormPanel({
+            baseCls: 'x-plain',
+            autoDestroy: true,
+            border: false,
+            layout: 'form',
+            autoHeight: true,
+            items: [combo,comboSig]
+        });
+        this.wAuto = new Ext.Window({
+            title: 'Relacion Rresupuestaria',
+            collapsible: true,
+            maximizable: true,
+            autoDestroy: true,
+            width: 420,
+            height: 170,
+            layout: 'fit',
+            plain: true,
+            bodyStyle: 'padding:5px;',
+            buttonAlign: 'center',
+            items: this.formAuto,
+            modal:true,
+            closeAction: 'hide',
+            buttons: [{
+                text: 'Guardar',
+                handler: this.saveAuto,
+                scope: this},
+                {
+                    text: 'Cancelar',
+                    handler: function(){ this.wAuto.hide() },
+                    scope: this
+                }]
+        });
+        this.cmpAutoAct = this.formAuto.getForm().findField('id_presupuesto_uno');
+        this.cmpAutoSig = this.formAuto.getForm().findField('id_presupuesto_dos');
+    },
+    saveAuto: function(){
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url: '../../sis_presupuestos/control/PresupuestoIds/relacionarPresupuestoIds',
+            params: {
+                id_presupuesto_uno : this.cmpAutoAct.getValue(),
+                id_presupuesto_dos : this.cmpAutoSig.getValue()
+            },
+            success: this.successSinc,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+
+    },
+    successSinc:function(resp){
+        Phx.CP.loadingHide();
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        if(!reg.ROOT.error){
+            if(this.wAuto){
+                this.wAuto.hide();
+            }
+            this.reload();
+        }else{
+            alert('ocurrio un error durante el proceso')
+        }
+    },
+    onButtonReporte:function () {
+        if(!this.validarFiltros()){
+            alert('Especifique el año antes')
+        }
+        else{
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url : '../../sis_presupuestos/control/PresupuestoIds/reporteMovmiento',
+                params : {
+                    'id_gestion' : this.cmbGestion.getValue(),
+                    'gestion': this.cmbGestion.getRawValue()
+                },
+                success : this.successExport,
+                failure : this.conexionFailure,
+                timeout : this.timeout,
+                scope : this
+            });
+        }
     }
+    //#4
 	}
 )
 </script>
