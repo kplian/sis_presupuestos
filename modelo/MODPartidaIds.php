@@ -9,7 +9,9 @@
 /**
 HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
-#2				 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
+#2				 20/12/2018	            Miguel Mamani			Replicación de partidas y presupuestos
+#4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
  **/
 class MODPartidaIds extends MODbase{
 	
@@ -82,6 +84,23 @@ class MODPartidaIds extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+	////////////////#4/////////////////////////
+    function relacionarPartidaIds(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_partida_ids_ime';
+        $this->transaccion='PRE_RPA_INS';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_partida_uno','id_partida_uno','int4');
+        $this->setParametro('id_partida_dos','id_partida_dos','int4');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    ////////////////#4/////////////////////////
 }
 ?>

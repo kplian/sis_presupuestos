@@ -8,10 +8,11 @@
 */
 /**
 HISTORIAL DE MODIFICACIONES:
-#ISSUE				FECHA				AUTOR				DESCRIPCION
-#2			 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
- **/
+#ISSUE				FECHA				AUTOR				    DESCRIPCION
+#2			       20/12/2018	       Miguel Mamani			Replicación de partidas y presupuestos
+#4				   03/01/2019	       Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
 
+ **/
 class MODPresupuestoIds extends MODbase{
 	
 	function __construct(CTParametro $pParam){
@@ -88,6 +89,46 @@ class MODPresupuestoIds extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+
+	///////////////#4///////////////////
+    function relacionarPresupuestoIds(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_presupuesto_ids_ime';
+        $this->transaccion='PRE_PPR_INS';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_presupuesto_uno','id_presupuesto_uno','int4');
+        $this->setParametro('id_presupuesto_dos','id_presupuesto_dos','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function reporteMovmiento(){
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento = 'pre.ft_presupuesto_ids_sel';
+        $this->transaccion = 'PRE_RPM_SEL';
+        $this->tipo_procedimiento = 'SEL';//tipo de transaccion
+        $this->setCount(false);
+        $this->setParametro('id_gestion','id_gestion','int4');
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_centro_costo','int4');
+        $this->captura('codigo_tcc','varchar');
+        $this->captura('descripcion_tcc', 'varchar');
+        $this->captura('saldo_mb','numeric');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    ///////////////#4///////////////////
 			
 }
 ?>

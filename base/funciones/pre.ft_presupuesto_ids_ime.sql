@@ -16,8 +16,9 @@ $body$
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
- #2			 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
- #
+ #0				17-12-2018 19:20:26								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tpresupuesto_ids'
+ #4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
  ***************************************************************************/
 
 DECLARE
@@ -210,9 +211,6 @@ BEGIN
             return v_resp;
 
 		end;
-
-
-
 	/*********************************
  	#TRANSACCION:  'PRE_RPP_ELI'
  	#DESCRIPCION:	Eliminacion de registros
@@ -225,29 +223,47 @@ BEGIN
 		begin
 			--Sentencia de la eliminacion
 
-
-            select id.id_presupuesto_dos
-            into
-            v_id_presupuesto_dos
-            from pre.tpresupuesto_ids id
-            where id.id_presupuesto_uno = v_parametros.id_presupuesto_uno;
-
-
-             select cc.id_centro_costo
-             		into
-                v_reg_cc_ori
-             from param.tcentro_costo cc
-             where cc.id_centro_costo = (select pr.id_centro_costo
-                                         from pre.tpresupuesto pr
-                                         where pr.id_presupuesto = v_id_presupuesto_dos);
-            delete from pre.tpresupuesto pr
-            where pr.id_presupuesto = v_id_presupuesto_dos;
-
             delete from pre.tpresupuesto_ids
             where id_presupuesto_uno=v_parametros.id_presupuesto_uno;
 
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Replicacion Presupuesto eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto_uno',v_parametros.id_presupuesto_uno::varchar);
 
+            --Devuelve la respuesta
+            return v_resp;
 
+		end;
+    /*********************************
+ 	#TRANSACCION:  'PRE_PPR_INS'  #4
+ 	#DESCRIPCION:	Relacion de presupuesto
+ 	#AUTOR:		miguel.mamani
+ 	#FECHA:		17-12-2018 19:20:26
+	***********************************/
+
+	elsif(p_transaccion='PRE_PPR_INS')then
+
+		begin
+
+        if(exists(select 1
+                            from pre.tpresupuesto_ids ipe
+                            where ipe.id_presupuesto_uno = v_parametros.id_presupuesto_uno))then
+
+        	raise exception 'Ya existe una relacion con el presupuesto';
+
+        else
+            insert into pre.tpresupuesto_ids (id_presupuesto_uno,
+                                              id_presupuesto_dos,
+                                              sw_cambio_gestion,
+                                              insercion,
+                                              id_usuario_reg
+                                              ) values (
+                                              v_parametros.id_presupuesto_uno,
+                                              v_parametros.id_presupuesto_dos,
+                                              'gestion',
+                                              'manual',
+                                              p_id_usuario);
+		end if ;
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Replicacion Presupuesto eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_presupuesto_uno',v_parametros.id_presupuesto_uno::varchar);

@@ -9,26 +9,41 @@
 /**
 HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
-#2			 20/12/2018	Miguel Mamani			Replicación de partidas y presupuestos
+#2			     20/12/2018	            Miguel Mamani			Replicación de partidas y presupuestos
+#4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+
  **/
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
-
+    anhio:0, //#4
 	constructor:function(config){
 		this.maestro=config.maestro;
         this.initButtons=[this.cmbGestion];
         //llama al constructor de la clase padre
 		Phx.vista.PartidaIds.superclass.constructor.call(this,config);
 		this.init();
+        this.addButton('inserAuto',{ text: 'Relacionar Partida', iconCls: 'blist', disabled: false, handler: this.mostarFormAuto, tooltip: '<b>Relacion entre dos partidas de gestion actual y el siguiente</b>'}); //#4
         this.cmbGestion.on('select', function(combo, record, index){
             this.capturaFiltros();
             this.iniciarEvento();
+            this.anhio = this.cmbGestion.getValue(); //#4
+            this.crearFormAuto(); //#4
         },this);
 	},
 	Atributos:[
+        {
+            //configuracion del componente
+            config:{
+                labelSeparator:'',
+                inputType:'hidden',
+                name: 'id_partida_uno'
+            },
+            type:'Field',
+            form:true
+        },
         {
             //configuracion del componente
             config:{
@@ -197,7 +212,6 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
         {name:'nombre_partida_dos', type: 'string'},
         {name:'gestion_dos', type: 'numeric'},
         {name:'validar', type: 'string'}
-
 		
 	],
 	sortInfo:{
@@ -229,7 +243,6 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
     onButtonNew:function(){
         Phx.vista.PartidaIds.superclass.onButtonNew.call(this);
         this.Cmp.id_gestion_act.setValue(this.cmbGestion.getValue());
-        console.log('Hola');
     },
     onButtonAct:function(){
         if(!this.validarFiltros()){
@@ -275,9 +288,151 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
     }),
     iniciarEvento: function (){
         Ext.apply(this.Cmp.id_partida_uno.store.baseParams,{par_filtro:'codigo#nombre_partida',id_gestion: this.cmbGestion.getValue()});
+    },
+    //#4
+    mostarFormAuto:function(){
+        if(!this.validarFiltros()){
+            alert('Especifique el año antes')
+        }else{
+            this.cmpAutoAct.setValue();
+            this.cmpAutoSig.setValue();
+            this.wAuto.show();
+        }
+
+    },
+    crearFormAuto:function(){
+        var storeCombo = new Ext.data.JsonStore({
+            url: '../../sis_presupuestos/control/Partida/listarPartida',
+            id: 'id_partida',
+            root: 'datos',
+            sortInfo:{
+                field: 'codigo',
+                direction: 'ASC'
+            },
+            totalProperty: 'total',
+            fields: ['id_partida','codigo','nombre_partida','tipo','sw_movimiento'],
+            remoteSort: true,
+            baseParams: {par_filtro:'codigo#nombre_partida',id_gestion:this.anhio }
+        });
+        var combo = new Ext.form.ComboBox({
+            name:'id_partida_uno',
+            fieldLabel:'Partida Act',
+            allowBlank : false,
+            typeAhead: true,
+            store: storeCombo,
+            mode: 'remote',
+            pageSize: 15,
+            triggerAction: 'all',
+            valueField : 'id_partida',
+            displayField : 'nombre_partida',
+            forceSelection: true,
+            allowBlank : false,
+            anchor: '100%',
+            resizable : true,
+            enableMultiSelect: false,
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo} {nombre_partida}</p></div></tpl>'
+
+        });
+        var sig = parseInt(this.anhio)+1;
+
+        var storeComboSig = new Ext.data.JsonStore({
+            url: '../../sis_presupuestos/control/Partida/listarPartida',
+            id: 'id_partida',
+            root: 'datos',
+            sortInfo:{
+                field: 'codigo',
+                direction: 'ASC'
+            },
+            totalProperty: 'total',
+            fields: ['id_partida','codigo','nombre_partida','tipo','sw_movimiento'],
+            remoteSort: true,
+            baseParams: {par_filtro:'codigo#nombre_partida',id_gestion: sig}
+        });
+        var comboSig = new Ext.form.ComboBox({
+            name:'id_partida_dos',
+            fieldLabel:'Partida Sig',
+            allowBlank : false,
+            typeAhead: true,
+            store: storeComboSig,
+            mode: 'remote',
+            pageSize: 15,
+            triggerAction: 'all',
+            valueField : 'id_partida',
+            displayField : 'nombre_partida',
+            forceSelection: true,
+            allowBlank : false,
+            anchor: '100%',
+            resizable : true,
+            enableMultiSelect: false,
+            tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo} {nombre_partida}</p></div></tpl>'
+
+        });
+        this.formAuto = new Ext.form.FormPanel({
+            baseCls: 'x-plain',
+            autoDestroy: true,
+            border: false,
+            layout: 'form',
+            autoHeight: true,
+            items: [combo,comboSig]
+        });
+        this.wAuto = new Ext.Window({
+            title: 'Relacion Rresupuestaria',
+            collapsible: true,
+            maximizable: true,
+            autoDestroy: true,
+            width: 420,
+            height: 170,
+            layout: 'fit',
+            plain: true,
+            bodyStyle: 'padding:5px;',
+            buttonAlign: 'center',
+            items: this.formAuto,
+            modal:true,
+            closeAction: 'hide',
+            buttons: [{
+                text: 'Guardar',
+                handler: this.saveAuto,
+                scope: this},
+                {
+                    text: 'Cancelar',
+                    handler: function(){ this.wAuto.hide() },
+                    scope: this
+                }]
+        });
+        this.cmpAutoAct = this.formAuto.getForm().findField('id_partida_uno');
+        this.cmpAutoSig = this.formAuto.getForm().findField('id_partida_dos');
+    },
+    saveAuto: function(){
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url: '../../sis_presupuestos/control/PartidaIds/relacionarPartidaIds',
+            params: {
+                id_partida_uno : this.cmpAutoAct.getValue(),
+                id_partida_dos : this.cmpAutoSig.getValue()
+            },
+            success: this.successSinc,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+
+    },
+    successSinc:function(resp){
+        Phx.CP.loadingHide();
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        if(!reg.ROOT.error){
+            if(this.wAuto){
+                this.wAuto.hide();
+            }
+            this.reload();
+        }else{
+            alert('ocurrio un error durante el proceso')
+        }
     }
+    //#4
 	}
 )
 </script>
-		
-		
+
+
+
