@@ -2,9 +2,10 @@
 /**
 *@package pXP
 *@file gen-MODMemoriaCalculo.php
-*@author  (admin)
-*@date 01-03-2016 14:22:24
-*@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
+****************************************************************************
+                     HISTORIAL DE MODIFICACIONES:
+#ISSUE		FORK		FECHA				AUTOR				DESCRIPCION
+  #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos. 
 */
 
 class MODMemoriaCalculo extends MODbase{
@@ -406,7 +407,7 @@ class MODMemoriaCalculo extends MODbase{
 		return $this->respuesta;
 	}
 	
-	//mp
+	//#5
 	function insertarMemoriaCalculoXLS(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_memoria_calculo_ime';
@@ -441,6 +442,19 @@ class MODMemoriaCalculo extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}		
-			
+	//#5
+	function actualizarDatos(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_memoria_calculo_ime';
+		$this->transaccion='PRE_ACT_DAT';
+		$this->tipo_procedimiento='IME';				
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}		
+					
 }
 ?>

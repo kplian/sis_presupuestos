@@ -1,11 +1,11 @@
 <?php
-/**
-*@package pXP
-*@file gen-ACTMemoriaCalculo.php
-*@author  (admin)
-*@date 01-03-2016 14:22:24
-*@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
+/*
+****************************************************************************
+                     HISTORIAL DE MODIFICACIONES:
+#ISSUE		FORK		FECHA				AUTOR				DESCRIPCION
+  #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos. 
 */
+
 require_once(dirname(__FILE__).'/../../pxp/pxpReport/DataSource.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaCalculo.php');
 require_once(dirname(__FILE__).'/../reportes/RMemoriaCalculoXls.php');
@@ -421,7 +421,7 @@ class ACTMemoriaCalculo extends ACTbase{
 		}              
 		
     }
-	//mp
+	//#5
 	function SubirArchivoPre(){
 		$arregloFiles = $this->objParam->getArregloFiles();
 		$ext = pathinfo($arregloFiles['archivo']['name']);
@@ -485,9 +485,15 @@ class ACTMemoriaCalculo extends ACTbase{
 					if ($this->res->getTipo() == 'ERROR') {
 						$error = 'error';
 						$mensaje_completo .= $this->res->getMensaje() . " \n";						
-					}
+					}							
 				}
 			}
+			$this->objFunc = $this->create('MODMemoriaCalculo');											
+			$this->res = $this->objFunc->actualizarDatos($this->objParam);
+			if ($this->res->getTipo() == 'ERROR') {
+				$error = 'errors';
+				$mensaje_completo .= $this->res->getMensaje() . " \n";						
+			}	
 		}
 
 		//armar respuesta en caso de exito o error en algunas tuplas
