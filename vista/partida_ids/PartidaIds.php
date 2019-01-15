@@ -11,7 +11,7 @@ HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
 #2			     20/12/2018	            Miguel Mamani			Replicación de partidas y presupuestos
 #4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
-
+#6               12/01/2019             Miguel Mamani ENDETRANS  Correccion bug filtro replicación partidas
  **/
 
 header("content-type: text/javascript; charset=UTF-8");
@@ -54,6 +54,7 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
             type:'Field',
             form:true
         },
+        //#6
         {
             config:{
                 sysorigen: 'sis_presupuestos',
@@ -65,21 +66,17 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
                 gwidth: 400,
                 anchor: '80%',
                 renderer : function(value, p, record) {
-                    if(record.data['codigo_dos'] != '0'){
                         return '<div><p><b> Codigo: ' + record.data['codigo'] +' ('+record.data['nombre_partida']+')</b></p>' +
                             '<p> Gestion: <font color="#00008b"><b>'+record.data['gestion']+'</b></div>';
-                    }else {
-                        return '<p><font color="red"><b>NO SE REPLICO</b></font></div>';
-                    }
                 }
             },
             type:'ComboRec',
-            filters:{pfiltro:'par1.codigo',type:'string'},
+            filters:{pfiltro:'par1.codigo#par1.nombre_partida',type:'string'},
             id_grupo:0,
             form:true,
             bottom_filter: true,
             grid:true
-        },
+        }, //#6
         {
             config:{
                 sysorigen: 'sis_presupuestos',
@@ -91,12 +88,8 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
                 gwidth: 400,
                 anchor: '80%',
                 renderer : function(value, p, record) {
-                     if(record.data['codigo_dos'] != '0'){
                          return '<div><p><b> Codigo: ' + record.data['codigo_dos'] +' ('+record.data['nombre_partida_dos']+')</b></p>' +
                                 '<p> Gestion: <font color="#00008b"><b>'+record.data['gestion_dos']+'</b></font> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font color="#00008b">'+record.data['validar']+'</font> </div>';
-                     }else {
-                         return '<p><font color="red"><b>NO SE REPLICO</b></font></div>';
-                     }
                 }
             },
             type:'ComboRec',
@@ -104,21 +97,40 @@ Phx.vista.PartidaIds=Ext.extend(Phx.gridInterfaz,{
             form:false,
             grid:true
         },
+        //#6
+        {
+            config:{
+                name: 'sw_cambio_gestion',
+                fieldLabel: 'Cambio Gstion',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 150,
+                maxLength:10
+            },
+            type:'TextField',
+            filters:{pfiltro:'rps.sw_cambio_gestion',type:'string'},
+            id_grupo:1,
+            grid:true,
+            form:false
+        },
+        //#6
 		{
 			config:{
-				name: 'sw_cambio_gestion',
-				fieldLabel: 'Cambio Gstion',
+				name: 'nombre_partida',
+				fieldLabel: 'Nombre Partida',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 150,
 				maxLength:10
 			},
 				type:'TextField',
-				filters:{pfiltro:'rps.sw_cambio_gestion',type:'string'},
+				filters:{pfiltro:'par1.nombre_partida',type:'string'},
 				id_grupo:1,
-				grid:true,
+				grid:false,
+                bottom_filter: true,
 				form:false
 		},
+        //#6
 		{
 			config:{
 				name: 'insercion',
