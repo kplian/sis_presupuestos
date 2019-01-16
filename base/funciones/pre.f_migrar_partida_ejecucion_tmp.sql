@@ -36,7 +36,7 @@ DECLARE
 BEGIN
 
    v_id_usuario = 1;  --usuario solictante 
-   v_fecha_ejecucion = '17/12/2018'::date;
+   v_fecha_ejecucion = '31/12/2018'::date;
 
    --listar los registros temporales
    FOR v_registros in (
@@ -124,7 +124,7 @@ BEGIN
   
   
   
-  --raise exception 'terminó todo ok (comentar esta línea para correr en limpio)';
+  raise exception 'terminó todo ok (comentar esta línea para correr en limpio)';
   return true;
 END;
 $body$
