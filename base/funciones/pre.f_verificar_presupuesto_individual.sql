@@ -1,3 +1,5 @@
+--------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION pre.f_verificar_presupuesto_individual (
   p_nro_tramite varchar,
   p_id_partida_ejecucion integer,
@@ -33,7 +35,7 @@ $body$
                  COMENTARIOS:	
  
   #33  ETR       18/07/2018        RAC KPLIAN        Bloquear tipos de centros de costos  no operativos
-
+  #7   ETR       16/01/2019        RAC KPLIAN        Valdiacion de multiple gestion cuando se utilice tipos de centro de costo    
 ***************************************************************************/
 
 
@@ -72,9 +74,10 @@ DECLARE
   v_tipo							varchar;
   v_tipo_movimiento				    varchar;
   v_codigo_tcc		                varchar;  --·#33 ++
-  v_operativo_base                  varchar;  --# 33 ++
-  v_operativo_techo                 varchar;  --# 33 ++
-  v_codigo_techo                    varchar;  --# 33 ++
+  v_operativo_base                  varchar;  --#33 ++
+  v_operativo_techo                 varchar;  --#33 ++
+  v_codigo_techo                    varchar;  --#33 ++
+  v_id_gestion_tipo_cc              integer;  --#7
   
 BEGIN
 
@@ -144,13 +147,15 @@ BEGIN
                         tcc.id_tipo_cc_techo,
                         tcc.control_partida,
                         tcc2.operativo,
-                        tcc2.codigo
+                        tcc2.codigo,
+                        cc.id_gestion
                         
                      into
                        v_id_tipo_cc_techo ,
                        v_control_partida,
                        v_operativo_techo,
-                       v_codigo_techo 
+                       v_codigo_techo,
+                       v_id_gestion_tipo_cc 
                      from pre.tpresupuesto p
                      inner join param.tcentro_costo cc on cc.id_centro_costo = p.id_centro_costo
                      inner join param.vtipo_cc_techo tcc on tcc.id_tipo_cc = cc.id_tipo_cc
@@ -228,7 +233,8 @@ BEGIN
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
                                             WHEN v_pre_verificar_tipo_cc = 'si'  THEN
-                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo       
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
+                                                  and cc.id_gestion =  v_id_gestion_tipo_cc       
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -273,7 +279,8 @@ BEGIN
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica
                                             WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
-                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo           
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo   
+                                                  and cc.id_gestion =  v_id_gestion_tipo_cc          
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -299,7 +306,8 @@ BEGIN
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica
                                             WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
-                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo     
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo 
+                                                  and cc.id_gestion =  v_id_gestion_tipo_cc      
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);       
@@ -519,6 +527,7 @@ BEGIN
                                                   p.id_categoria_prog = v_id_categoria_programatica 
                                      		WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
                                                   tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
+                                                  and cc.id_gestion =  v_id_gestion_tipo_cc  
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);
@@ -544,7 +553,8 @@ BEGIN
                                             CASE WHEN v_pre_verificar_categoria = 'si'  THEN  
                                                   p.id_categoria_prog = v_id_categoria_programatica 
                                             WHEN v_pre_verificar_tipo_cc = 'si'  THEN  
-                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo  
+                                                  tcc.id_tipo_cc_techo = v_id_tipo_cc_techo 
+                                                  and cc.id_gestion =  v_id_gestion_tipo_cc   
                                             ELSE
                                                   pe.id_presupuesto = p_id_presupuesto 
                                             END);       

@@ -5,7 +5,9 @@
 *@author  Rensi Arteaga Copari
 *@date 27-02-2016 00:30:39
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
-*/
+	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
+  	#8			endeETR		17/01/2019			 EGS				envia el parametro tipo de intefaz Segun el nombre de interfaz 
+ */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
@@ -50,8 +52,13 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
                     handler : this.onOpenObs,
                     tooltip : '<b>Observaciones</b><br/><b>Observaciones del WF</b>'
          });
-
-        
+        ///# EGS 
+	    Ext.apply(this.store.baseParams, {
+	    	start:0,
+	    	limit:this.tam_pag,
+			tipo_interfaz: this.nombreVista
+		});
+        ///# EGS 
 	},
 	
 	
