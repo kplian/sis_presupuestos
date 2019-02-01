@@ -18,6 +18,7 @@ $body$
 #ISSUE				FECHA				AUTOR				DESCRIPCION
 #0				17-12-2018 19:20:26								Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla 'pre.tpresupuesto_ids'
 #4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+#9			       01/02/2019	       Miguel Mamani			MODIFICACIONES PRESUPUESTO CONTABLE CON SALDO QUE NO FIGURAN EN GESTIÓN
 
  ***************************************************************************/
 
@@ -126,52 +127,58 @@ BEGIN
     elsif(p_transaccion='PRE_RPM_SEL')then
 
         begin
-             CREATE TEMPORARY TABLE tmp_pres (   id_centro_costo integer,
-                                                 codigo_tcc varchar,
-                                                 descripcion_tcc varchar,
-                                                 saldo_mb numeric )ON COMMIT DROP;
+          --------------------#9--------------------------------------
+            v_consulta ='with basica as (select   t.id_centro_costo,
+                                                  cc.codigo_tcc,
+                                                  cc.descripcion_tcc,
+                                                  t.id_cuenta,
+                                                  cu.nro_cuenta,
+                                                  cu.nombre_cuenta,
+                                                  t.importe_debe_mb,
+                                                  t.importe_haber_mb,
+                                                  t.importe_debe_mt,
+                                                  t.importe_haber_mt,
+                                                  t.importe_debe_ma,
+                                                  t.importe_haber_ma
+                                            from conta.tint_transaccion t
+                                            inner join conta.tint_comprobante cb on cb.id_int_comprobante = t.id_int_comprobante
+                                            inner join  pre.tpartida par on par.id_partida = t.id_partida
+                                            inner join conta.tcuenta cu on cu.id_cuenta = t.id_cuenta
+                                            inner join conta.tconfig_subtipo_cuenta su on su.id_config_subtipo_cuenta = cu.id_config_subtipo_cuenta
+                                            inner join conta.tconfig_tipo_cuenta tc on tc.id_config_tipo_cuenta = su.id_config_tipo_cuenta
+                                            inner join param.tperiodo pe on pe.id_periodo = cb.id_periodo
+                                            inner join param.vcentro_costo cc on cc.id_centro_costo = t.id_centro_costo
+                                            where cb.estado_reg = ''validado'' and tc.tipo_cuenta in (''activo'',''patrimonio'',''pasivo'')
+                                            and pe.id_gestion = '||v_parametros.id_gestion||' and
+                                            cb.cbte_cierre <> ''balance''
+                                            )select t.id_cuenta,
+                                                    t.nro_cuenta,
+                                                    t.nombre_cuenta,
+                                                    t.id_centro_costo,
+                                                    t.codigo_tcc,
+                                                    t.descripcion_tcc,
+                                                    sum(COALESCE(t.importe_debe_mb,0)) as importe_debe_mb,
+                                                    sum(COALESCE(t.importe_haber_mb,0)) as importe_haber_mb,
+                                                    sum(COALESCE(t.importe_debe_mb,0)) - sum(COALESCE(t.importe_haber_mb,0)) as saldo_mb,
+                                                    sum(COALESCE(t.importe_debe_mt,0)) as importe_debe_mt,
+                                                    sum(COALESCE(t.importe_haber_mt,0)) as importe_haber_mt,
+                                                    sum(COALESCE(t.importe_debe_mt,0)) - sum(COALESCE(t.importe_haber_mt,0)) as saldo_mt,
+                                                    sum(COALESCE(t.importe_debe_ma,0)) as importe_debe_ma,
+                                                    sum(COALESCE(t.importe_haber_ma,0)) as importe_haber_ma,
+                                                    sum(COALESCE(t.importe_debe_ma,0)) - sum(COALESCE(t.importe_haber_ma,0)) as saldo_ma
+                                                    from basica t
+                                                    where t.id_centro_costo not in (select p.id_presupuesto_uno
+                                                                                    from pre.tpresupuesto_ids p)
+                                                    group by
+                                                          t.id_centro_costo,
+                                                          t.codigo_tcc,
+                                                          t.descripcion_tcc,
+                                                          t.nro_cuenta,
+                                                          t.nombre_cuenta,
+                                                          t.id_cuenta
+                                                          order by nro_cuenta';
+          --------------------#9--------------------------------------
 
-        	FOR v_record in ( with centro_costo as (select 	t.id_centro_costo,
-                                cc.codigo_tcc,
-                                cc.descripcion_tcc,
-                                t.importe_debe_mb,
-                                t.importe_haber_mb
-                              from conta.tint_transaccion t
-                              inner join conta.tint_comprobante cb on cb.id_int_comprobante = t.id_int_comprobante
-                              inner join param.vcentro_costo cc on cc.id_centro_costo = t.id_centro_costo
-                              inner join param.tperiodo pe on pe.id_periodo = cb.id_periodo
-                              and pe.id_gestion = v_parametros.id_gestion)
-                     select  cc.id_centro_costo,
-                             cc.codigo_tcc,
-                             cc.descripcion_tcc,
-                             sum(cc.importe_debe_mb) - sum(cc.importe_haber_mb) as saldo_mb
-                       from  centro_costo cc
-                       group by cc.id_centro_costo,
-                                 cc.codigo_tcc,
-                                 cc.descripcion_tcc)LOOP
-
-             if(not exists (select 1
-                            from pre.tpresupuesto_ids ipe
-                            where ipe.id_presupuesto_uno = v_record.id_centro_costo) )then
-
-                            insert into tmp_pres ( 	id_centro_costo,
-                                                 	codigo_tcc,
-                                                 	descripcion_tcc,
-                                                 	saldo_mb)
-                                                    values(
-                                                    v_record.id_centro_costo,
-                                                    v_record.codigo_tcc,
-                                                    v_record.descripcion_tcc,
-                                                    v_record.saldo_mb
-                                                    );
-
-             end if;
-            END LOOP;
-            v_consulta:='select s.id_centro_costo,
-                                s.codigo_tcc,
-                                s.descripcion_tcc,
-                                s.saldo_mb
-                         from tmp_pres s';
             --Devuelve la respuesta
             return v_consulta;
 

@@ -10,6 +10,8 @@
 HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
 #4				 03/01/2019	          Miguel Mamani			reporte de presupuesto que no figuran en gestión nueva
+#9			       01/02/2019	       Miguel Mamani			MODIFICACIONES PRESUPUESTO CONTABLE CON SALDO QUE NO FIGURAN EN GESTIÓN
+
  **/
 class RMomientoPre
 {
@@ -97,25 +99,25 @@ class RMomientoPre
         $gestionSig =(int)($this->objParam->getParametro('gestion')) + 1;
         $this->docexcel->getActiveSheet()->setCellValue('A1','EMPRESA: ENDE TRANSMISION S.A.');
         $this->docexcel->getActiveSheet()->setCellValue('A2','GESTION: '.$gestion);
-        $this->docexcel->getActiveSheet()->setCellValue('A4','REPORTE PRESUPUETO CON SALDO QUE NO FIGURAN EN GESTION '.$gestionSig );
-        $this->docexcel->getActiveSheet()->mergeCells('A4:D4');
-        $this->docexcel->getActiveSheet()->getStyle('A4:D4')->applyFromArray($titulossubcabezera);
-        $this->docexcel->getActiveSheet()->setCellValue('A5','(EXPRESADO EN BOLIVIANOS)');
-        $this->docexcel->getActiveSheet()->mergeCells('A5:D5');
-        $this->docexcel->getActiveSheet()->getStyle('A5:D5')->applyFromArray($titulossubcabezera);
+        $this->docexcel->getActiveSheet()->setCellValue('A4','REPORTE PRESUPUESTO CONTABLE CON SALDO QUE NO FIGURAN EN GESTION '.$gestionSig );
+        $this->docexcel->getActiveSheet()->mergeCells('A4:E4');
+        $this->docexcel->getActiveSheet()->getStyle('A4:E4')->applyFromArray($titulossubcabezera);
+        $this->docexcel->getActiveSheet()->setCellValue('A5','(TODAS LAS MONEDAS)'); //#9
+        $this->docexcel->getActiveSheet()->mergeCells('A5:E5');
+        $this->docexcel->getActiveSheet()->getStyle('A5:E5')->applyFromArray($titulossubcabezera);
         $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(12);
-        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(60);
-        $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-
+        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(80);//#9
+        $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(15);//#9
+        $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);//#9
+        $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);//#9
         //*************************************Cabecera*****************************************
-        $this->docexcel->getActiveSheet()->setCellValue('A7','ID');
-        $this->docexcel->getActiveSheet()->setCellValue('B7','CODIGO');
-        $this->docexcel->getActiveSheet()->setCellValue('C7','NOMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('D7','SALDO');
-
-        $this->docexcel->getActiveSheet()->getStyle('A7:D7')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A7:D7')->applyFromArray($styleTitulos3);
+        $this->docexcel->getActiveSheet()->setCellValue('A7','CODIGO');//#9
+        $this->docexcel->getActiveSheet()->setCellValue('B7','NOMBRE');//#9
+        $this->docexcel->getActiveSheet()->setCellValue('C7','SALDO MB');//#9
+        $this->docexcel->getActiveSheet()->setCellValue('D7','SALDO MT');//#9
+        $this->docexcel->getActiveSheet()->setCellValue('E7','SALDO MA');//#9
+        $this->docexcel->getActiveSheet()->getStyle('A7:E7')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A7:E7')->applyFromArray($styleTitulos3);
 
     }
 
@@ -136,18 +138,58 @@ class RMomientoPre
         $this->imprimeCabecera();
         $datos = $this->objParam->getParametro('datos');
         $fila = 8;
+        $cat= '';//#9
         foreach ($datos as $value){
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['id_centro_costo']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['codigo_tcc']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['descripcion_tcc']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['saldo_mb']);
-            $this->docexcel->getActiveSheet()->getStyle("D$fila:D$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:E$fila")->applyFromArray($border);
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:B$fila")->applyFromArray($centraar);
+            if ($value['nro_cuenta'] != $cat) {//#9
+                $this->imprimeSubtitulo($fila,$value['nombre_cuenta'].' ('.$value['nro_cuenta'].')');//#9
+                $cat = $value['nro_cuenta'];//#9
+                $fila++;//#9
+            }//#9
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $value['codigo_tcc']);//#9
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['descripcion_tcc']);//#9
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['saldo_mb']);//#9
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['saldo_mt']);//#9
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['saldo_ma']);//#9
+            $this->docexcel->getActiveSheet()->getStyle("C$fila:E$fila")->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($border);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:A$fila")->applyFromArray($centraar);
             $fila ++;
         }
 
     }
+
+    //#9
+    function imprimeSubtitulo($fila, $valor) {
+        $styleTitulos = array(
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 10,
+                'name'  => 'Arial'
+            ),
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+            ),
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array(
+                    'rgb' => '33FFE6'
+                )
+            ));
+        $border = array(
+            'borders' => array(
+                'vertical' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            )
+        );
+        $this->docexcel->getActiveSheet()->getStyle("A$fila:E$fila")->applyFromArray($styleTitulos);
+        $this->docexcel->getActiveSheet()->mergeCells("A$fila:E$fila");
+        $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($border);
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $valor);
+
+    }
+    //#9
     function generarReporte(){
         $this->objWriter = PHPExcel_IOFactory::createWriter($this->docexcel, 'Excel5');
         $this->objWriter->save($this->url_archivo);
