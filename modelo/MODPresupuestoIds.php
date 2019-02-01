@@ -11,6 +11,7 @@ HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				    DESCRIPCION
 #2			       20/12/2018	       Miguel Mamani			Replicación de partidas y presupuestos
 #4				   03/01/2019	       Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
+#9			       01/02/2019	       Miguel Mamani			MODIFICACIONES PRESUPUESTO CONTABLE CON SALDO QUE NO FIGURAN EN GESTIÓN
 
  **/
 class MODPresupuestoIds extends MODbase{
@@ -117,14 +118,25 @@ class MODPresupuestoIds extends MODbase{
         $this->setParametro('id_gestion','id_gestion','int4');
 
         //Definicion de la lista del resultado del query
+        $this->captura('id_cuenta','int4');//#9
+        $this->captura('nro_cuenta','varchar');//#9
+        $this->captura('nombre_cuenta', 'varchar');//#9
         $this->captura('id_centro_costo','int4');
         $this->captura('codigo_tcc','varchar');
         $this->captura('descripcion_tcc', 'varchar');
-        $this->captura('saldo_mb','numeric');
+        $this->captura('importe_debe_mb','numeric');//#9
+        $this->captura('importe_haber_mb','numeric');//#9
+        $this->captura('saldo_mb','numeric');//#9
+        $this->captura('importe_debe_mt','numeric');//#9
+        $this->captura('importe_haber_mt','numeric');//#9
+        $this->captura('saldo_mt','numeric');//#9
+        $this->captura('importe_debe_ma','numeric');//#9
+        $this->captura('importe_haber_ma','numeric');//#9
+        $this->captura('saldo_ma','numeric');//#9
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
-        //var_dump($this->respuesta); exit;
+       // var_dump($this->respuesta); exit;
         //Devuelve la respuesta
         return $this->respuesta;
     }
