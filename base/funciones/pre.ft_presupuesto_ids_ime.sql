@@ -18,7 +18,7 @@ $body$
 #ISSUE				FECHA				AUTOR				DESCRIPCION
  #0				17-12-2018 19:20:26								Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'pre.tpresupuesto_ids'
  #4				 03/01/2019	            Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
-
+ #10             05/02/2019           ENDETRANS  Miguel Mamani  Corrección bug al eliminar la replicacion y presupuesto
  ***************************************************************************/
 
 DECLARE
@@ -37,6 +37,8 @@ DECLARE
     v_reg_cc_ori			record;
     v_id_centro_costo		integer;
     v_id_presupuesto		integer;
+    v_id_presupuesto_sg		integer; --#10
+    v_estado 				varchar; --#10
 
 BEGIN
 
@@ -223,8 +225,33 @@ BEGIN
 		begin
 			--Sentencia de la eliminacion
 
-            delete from pre.tpresupuesto_ids
-            where id_presupuesto_uno=v_parametros.id_presupuesto_uno;
+            select pe.id_presupuesto_dos --#10
+                    into  --#10
+                    v_id_presupuesto_sg --#10
+            from pre.tpresupuesto_ids pe --#10
+            where pe.id_presupuesto_uno = v_parametros.id_presupuesto_uno; --#10
+
+        if v_id_presupuesto_sg is not null then --#10
+
+              select p.estado --#10
+              		into v_estado --#10
+              from pre.tpresupuesto p  --#10
+              where p.id_presupuesto = v_id_presupuesto_sg; --#10
+
+             if(v_estado = 'borrador')then --#10
+        	      delete from pre.tpresupuesto pr --#10
+                  where pr.id_presupuesto = v_id_presupuesto_sg; --#10
+
+                  delete from param.tcentro_costo cc --#10
+                  where cc.id_centro_costo = v_id_presupuesto_sg;  --#10
+
+                  delete from pre.tpresupuesto_ids se
+                  where se.id_presupuesto_dos = v_id_presupuesto_sg;
+          	 else --#10
+              	raise exception 'Solo puede eliminar la replicacion si el presupuesto esta en estado (borrador)'; --#10
+             end if; --#10
+
+        end if; --#10
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Replicacion Presupuesto eliminado(a)');
