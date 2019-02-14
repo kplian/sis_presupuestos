@@ -8,7 +8,7 @@
  * HISTORIAL DE MODIFICACIONES:
  * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
 */
-require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestariaXLS.php');
+require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 class ACTPartidaEjecucion extends ACTbase{    
 			
 	function listarPartidaEjecucion(){
@@ -117,7 +117,7 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
         $this->objParam->addParametro('datos', $this->res->datos);
         //Instancia la clase de excel
-        $this->objReporteFormato = new RIntegridadPresupuestariaXLS($this->objParam);
+        $this->objReporteFormato = new RIntegridadPresupuestaria($this->objParam);
         $this->objReporteFormato->generarDatos();
         $this->objReporteFormato->generarReporte();
 
