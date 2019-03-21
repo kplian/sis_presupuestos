@@ -84,10 +84,7 @@ if(p_transaccion='PRE_PRE_SEL')then
            IF v_parametros.tipo_interfaz = 'PresupuestoFor' THEN
                   IF p_administrador !=1 THEN
                       v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
-                  	 -- v_join_responsables = ' INNER JOIN pre.tpresupuesto_funcionario pf  on (pf.id_presupuesto = pre.id_presupuesto  and pf.id_funcionario = '||v_parametros.id_funcionario_usu::varchar||')  ';
-                       v_join_responsables = '';
-                      
-                      --v_filadd = ' (pf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado)  in (''formulacion'')) and ';
+                      v_join_responsables = '';
                   ELSE
                       v_filadd = ' (lower(pre.estado)  in (''formulacion'')) and ';
                   END IF;
@@ -95,18 +92,11 @@ if(p_transaccion='PRE_PRE_SEL')then
 
             IF v_parametros.tipo_interfaz = 'PresupuestoVb' THEN
                  IF p_administrador !=1 THEN
-                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
-                  	   --v_filadd = '  (lower(pre.estado) not in (''vobopre'')) and ';
-                  	
-                    --v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
+                      v_filadd = ' (ewf.id_funcionario='||v_parametros.id_funcionario_usu::varchar||' ) and  (lower(pre.estado) not in (''revision'')) and ';
+                  	   
                   ELSE
-                     -- v_filadd = ' (lower(pre.estado) not in (''borrador'',''aprobado'',''formulacion'',''vobopre'')) and ';
-                  	v_filadd = ' (lower(pre.estado)  in (''vobopre'')) and ';
-                  END IF;
-                /*v_join_ewf='';
-                v_valor='';
-                 v_aux='NULL::varchar as obs_wf,';	*/
-                                
+                  	v_filadd = ' (lower(pre.estado)  in (''revision'')) and ';
+                  END IF;     
             END IF;
 
             IF v_parametros.tipo_interfaz = 'PresupuestoAprobacion' THEN
