@@ -1293,3 +1293,24 @@ ALTER TABLE pre.tpartida_ejecucion_tmp
 
 
  /*****************************F-SCP-RAC-PRE-3-20/12/2018*************/
+ 
+ /*****************************I-SCP-JJA-PRE-0-26/03/2019*************/
+--------------- #12 endetr Juan creación de 2 tablas para la agrupación de partidas ---------------
+CREATE TABLE pre.tclasificacion_reporte_dw (
+  id_clasificacion_reporte_dw SERIAL,
+  codigo VARCHAR(50),
+  descripcion TEXT,
+  nivel INTEGER,
+  CONSTRAINT tclasificacion_reporte_dw_pkey PRIMARY KEY(id_clasificacion_reporte_dw)
+) 
+WITH (oids = false);
+
+CREATE TABLE pre.tpartida_reporte_ejecucion_dw (
+  id_partida_reporte_ejecucion_dw SERIAL,
+  id_tipo_presupuesto INTEGER,
+  id_partida INTEGER,
+  id_clasificacion_reporte_dw INTEGER,
+  CONSTRAINT tpartida_reporte_ejecucion_dw_pkey PRIMARY KEY(id_partida_reporte_ejecucion_dw)
+) 
+WITH (oids = false);
+ /*****************************F-SCP-JJA-PRE-0-26/03/2019*************/

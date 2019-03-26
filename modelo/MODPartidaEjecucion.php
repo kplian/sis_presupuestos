@@ -5,6 +5,8 @@
 *@author  (gvelasquez)
 *@date 03-10-2016 15:47:23
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
+ * HISTORIAL DE MODIFICACIONES:
+ * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -180,6 +182,36 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-			
+
+	//#11
+	function IntegridadPresupuestaria(){
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_INPRE_SEL';
+		$this->tipo_procedimiento='SEL';
+        $this-> setCount(false);
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_gestion','id_gestion','int4');
+        $this->setParametro('tipo_filtro','tipo_filtro','varchar');
+
+        $this->captura('gestion','int4');
+        $this->captura('codigo_techo','varchar');
+        $this->captura('control_partida','varchar');
+        $this->captura('descripcion_techo','varchar');
+        $this->captura('movimiento','varchar');
+        $this->captura('total_formulado','numeric');
+        $this->captura('total_comprometido','numeric');
+        $this->captura('saldo_por_comprometer','numeric');
+        $this->captura('total_ejecutado','numeric');
+        $this->captura('saldo_por_ejecutar','numeric');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+    //#11
 }
 ?>

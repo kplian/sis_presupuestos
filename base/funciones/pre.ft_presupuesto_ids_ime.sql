@@ -231,25 +231,41 @@ BEGIN
             from pre.tpresupuesto_ids pe --#10
             where pe.id_presupuesto_uno = v_parametros.id_presupuesto_uno; --#10
 
-        if v_id_presupuesto_sg is not null then --#10
+         if v_id_presupuesto_sg is not null then --#10
+               		 ---#10--
+                      if (exists (select 1
+                                  from pre.tmemoria_calculo me
+                                  where me.id_presupuesto = v_id_presupuesto_sg)) then
+                              raise exception 'No puede eliminar el presupuesto porque hay memorias relacionadas al presupuesto';
+                      end if;
 
-              select p.estado --#10
-              		into v_estado --#10
-              from pre.tpresupuesto p  --#10
-              where p.id_presupuesto = v_id_presupuesto_sg; --#10
 
-             if(v_estado = 'borrador')then --#10
-        	      delete from pre.tpresupuesto pr --#10
-                  where pr.id_presupuesto = v_id_presupuesto_sg; --#10
+                      if (exists (select 1
+                                  from conta.tint_transaccion t
+                                  where t.id_centro_costo = v_id_presupuesto_sg)) then
+                              raise exception 'No puede eliminar el presupuesto porque hay comprobantes relacionadas al presupuesto';
+                      end if;
 
-                  delete from param.tcentro_costo cc --#10
-                  where cc.id_centro_costo = v_id_presupuesto_sg;  --#10
+                      ---#10--
 
-                  delete from pre.tpresupuesto_ids se
-                  where se.id_presupuesto_dos = v_id_presupuesto_sg;
-          	 else --#10
-              	raise exception 'Solo puede eliminar la replicacion si el presupuesto esta en estado (borrador)'; --#10
-             end if; --#10
+
+                    select p.estado --#10
+                          into v_estado --#10
+                    from pre.tpresupuesto p  --#10
+                    where p.id_presupuesto = v_id_presupuesto_sg; --#10
+
+                   if(v_estado = 'borrador')then --#10
+                        delete from pre.tpresupuesto pr --#10
+                        where pr.id_presupuesto = v_id_presupuesto_sg; --#10
+
+                        delete from param.tcentro_costo cc --#10
+                        where cc.id_centro_costo = v_id_presupuesto_sg;  --#10
+
+                        delete from pre.tpresupuesto_ids se
+                        where se.id_presupuesto_dos = v_id_presupuesto_sg;
+                   else --#10
+                      raise exception 'Solo puede eliminar la replicacion si el presupuesto esta en estado (borrador)'; --#10
+                   end if; --#10
 
         end if; --#10
 
