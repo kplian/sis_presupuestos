@@ -13,43 +13,11 @@ header("content-type: text/javascript; charset=UTF-8");
 Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
+		var me = this;
+		console.log('?',me);
 		this.maestro=config.maestro;
-    	//llama al constructor de la clase padre
-		Phx.vista.PartidaEjecucion.superclass.constructor.call(this,config);
-		this.grid.getTopToolbar().disable();
-		this.grid.getBottomToolbar().disable();
-		this.init();
-				
-		
-		 this.addButton('btnChequeoDocumentosWf',
-	            {
-	                text: 'Documentos',
-	                grupo:[0,1,2,3],
-	                iconCls: 'bchecklist',
-	                disabled: true,
-	                handler: this.loadCheckDocumentosWf,
-	                tooltip: '<b>Documentos del Trámite</b><br/>Permite ver los documentos asociados al NRO de trámite.'
-	            }
-	        );	
-	        
-	      this.addButton('btnImprimir', {
-				text : 'Imprimir',
-				iconCls : 'bprint',
-				disabled : true,
-				handler : this.imprimirCbte,
-				tooltip : '<b>Imprimir Comprobante</b><br/>Imprime el Comprobante en el formato oficial'
-		});  
-		
-		this.addButton('chkpresupuesto',{text:'Chk Presupuesto',
-				iconCls: 'blist',
-				disabled: true,
-				handler: this.checkPresupuesto,
-				tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>'
-			});
-	        
-	},
-			
-	Atributos:[
+		//llama al constructor de la clase padre
+	    this.Atributos=[
 		{
 			//configuracion del componente
 			config:{
@@ -101,6 +69,11 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 
 				renderer:function (value, p, record){
+					/*
+					var color = 'green';
+					if(record.data["tipo_reg"] != 'summary'){
+						
+					}
 					var dato=value;
 					dato = (value=='1')?'Comprometido':dato;
 					dato = (dato==''&&value=='2')?'Revertido':dato;
@@ -110,6 +83,65 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 					dato = (dato==''&&value=='6')?'Reformulacion':dato;
 					dato = (dato==''&&value=='7')?'Incremento':dato;
 					return String.format('{0}', dato);
+					*/	
+					var egreso = record.data["egreso_mb"]?record.data["egreso_mb"]:0,
+		   			    ingreso = record.data["ingreso_mb"]?record.data["ingreso_mb"]:0;
+		   			var sum = '',sum1='';
+		   			if(egreso>ingreso){
+		   				sum = (egreso - ingreso);
+		   				sum1 = 0;		
+		   			}else{
+		   				sum = 0;
+		   				sum1 = (ingreso - egreso);
+		   			}
+		   			var anticipo = record.data["monto_anticipo_mb"]?record.data["monto_anticipo_mb"]:0;
+		   			var desc_anticipo = record.data["monto_desc_anticipo_mb"]?record.data["monto_desc_anticipo_mb"]:0;
+		   			var iva = record.data["monto_iva_revertido_mb"]?record.data["monto_iva_revertido_mb"]:0;		   		
+		   			Ext.util.Format.number(value,'0,000.00');
+					var html = String.format(
+						"<table style='width:70%; border-collapse:collapse;'> \
+    							  <tr>\
+								    <td >Egresos BS </td>\
+								    <td >Ingresos BS</td> \
+								  </tr>\
+								  <tr>\
+								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{0} </td>\
+								    <td style='padding: 8px; border-top:  solid #000000;'>{1}</td> \
+								  </tr>\
+								  <tr>\
+								  	<td style='padding: 6px;' >Anticipo Ejecutado(BS)</td>\
+								  </tr>\
+								  <tr>\
+								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{4}</td>\
+								  </tr>\
+								  <tr>\
+								  	<td style='padding: 6px;' >Desc Anticipo(BS)</td>\
+								  </tr>\
+								  <tr>\
+								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{5} </td>\
+								  </tr>\
+								  <tr>\
+								  	<td style='padding: 6px;' >IVA Revertido(BS)</td>\
+								  </tr>\
+								  <tr>\
+								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{6} </td>\
+								  </tr>\
+								  </table>\
+								   <br>\
+								  <table style='width:70%; border-collapse:collapse;'>" ,
+								   Ext.util.Format.number(egreso,'0,000.00'), 
+								   Ext.util.Format.number(ingreso,'0,000.00'), 										   													   
+								  								   
+								   Ext.util.Format.number(sum,'0,000.00'),
+								   Ext.util.Format.number(sum1,'0,000.00'),
+								   Ext.util.Format.number(anticipo,'0,000.00'), 
+								   
+								   Ext.util.Format.number(desc_anticipo,'0,000.00'),
+								   Ext.util.Format.number(iva,'0,000.00'),
+								   //Ext.util.Format.number(monto,'0,000.00'), 
+							);		   			    
+   			    	Phx.CP.getPagina(me.idContenedorPadre).panelResumen.update(html)
+   			    	return '<b><p align="right">Total: &nbsp;&nbsp; </p></b>';			
 				},
 
 				store:new Ext.data.ArrayStore({
@@ -602,8 +634,39 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				id_grupo:1,
 				grid:true,
 				form:false
-		}
-	],
+		}];     
+		Phx.vista.PartidaEjecucion.superclass.constructor.call(this,config);
+			
+		this.addButton('btnChequeoDocumentosWf',{
+		    text: 'Documentos',
+			grupo:[0,1,2,3],
+			iconCls: 'bchecklist',
+			disabled: true,
+			handler: this.loadCheckDocumentosWf,
+			tooltip: '<b>Documentos del Trámite</b><br/>Permite ver los documentos asociados al NRO de trámite.'
+		});	
+		    
+		this.addButton('btnImprimir', {
+			text : 'Imprimir',
+			iconCls : 'bprint',
+			disabled : true,
+			handler : this.imprimirCbte,
+			tooltip : '<b>Imprimir Comprobante</b><br/>Imprime el Comprobante en el formato oficial'
+		});  
+		
+		this.addButton('chkpresupuesto',{
+			text:'Chk Presupuesto',
+			iconCls: 'blist',
+			disabled: true,
+			handler: this.checkPresupuesto,
+			tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>'
+		});
+		
+		this.grid.getTopToolbar().disable();
+		this.grid.getBottomToolbar().disable();
+		this.init();
+	},
+				
 	tam_pag:50,	
 	title:'Partida Ejecucion',
 	ActSave:'../../sis_presupuestos/control/PartidaEjecucion/insertarPartidaEjecucion',
@@ -645,61 +708,59 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 	],
 	
 	imprimirCbte : function() {
-			var rec = this.sm.getSelected();
-			var data = rec.data;
-			if (data) {
-				Phx.CP.loadingShow();
-				Ext.Ajax.request({
-					url : '../../sis_contabilidad/control/IntComprobante/reporteCbte',
-					params : {
-						'id_proceso_wf' : data.id_proceso_wf
-					},
-					success : this.successExport,
-					failure : this.conexionFailure,
-					timeout : this.timeout,
-					scope : this
-				});
-			}
+		var rec = this.sm.getSelected();
+		var data = rec.data;
+		if (data) {
+			Phx.CP.loadingShow();
+			Ext.Ajax.request({
+				url : '../../sis_contabilidad/control/IntComprobante/reporteCbte',
+				params : {
+					'id_proceso_wf' : data.id_proceso_wf
+				},
+				success : this.successExport,
+				failure : this.conexionFailure,
+				timeout : this.timeout,
+				scope : this
+			});
+		}
+	
+	},
 
-		},
-		
-	 loadCheckDocumentosWf:function() {
-            var rec=this.sm.getSelected();
-            rec.data.nombreVista = this.nombreVista;
-            Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
-                    'Documentos del Proceso',
-                    {
-                        width:'90%',
-                        height:500
-                    },
-                    rec.data,
-                    this.idContenedor,
-                    'DocumentoWf'
-           );
-    },	
+	loadCheckDocumentosWf:function() {
+		var rec=this.sm.getSelected();
+		rec.data.nombreVista = this.nombreVista;
+		Phx.CP.loadWindows('../../../sis_workflow/vista/documento_wf/DocumentoWf.php',
+		    'Documentos del Proceso',
+		    {
+		        width:'90%',
+		        height:500
+		    },
+		    rec.data,
+		    this.idContenedor,
+		    'DocumentoWf'
+	   	);
+	},	
     
     checkPresupuesto:function(){                   
-			  var rec=this.sm.getSelected();
-			  var configExtra = [];
-			  this.objChkPres = Phx.CP.loadWindows('../../../sis_presupuestos/vista/presup_partida/ChkPresupuesto.php',
-										'Estado del Presupuesto',
-										{
-											modal:true,
-											width:700,
-											height:450
-										}, {
-											data:{
-											   nro_tramite: rec.data.nro_tramite								  
-											}}, this.idContenedor,'ChkPresupuesto',
-										{
-											config:[{
-													  event:'onclose',
-													  delegate: this.onCloseChk												  
-													}],
-											
-											scope:this
-										 });
-			   
+		var rec=this.sm.getSelected();
+		var configExtra = [];
+		this.objChkPres = Phx.CP.loadWindows('../../../sis_presupuestos/vista/presup_partida/ChkPresupuesto.php',
+			'Estado del Presupuesto',
+			{
+				modal:true,
+				width:700,
+				height:450
+			}, {
+				data:{
+				   nro_tramite: rec.data.nro_tramite								  
+				}}, this.idContenedor,'ChkPresupuesto',
+			{
+				config:[{
+					event:'onclose',
+					delegate: this.onCloseChk												  
+				}],				
+				scope:this
+			});	   
 	 },
 	
 	arrayDefaultColumHidden:['id_partida_ejecucion','columna_origen','valor_id_origen',
@@ -728,14 +789,12 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 	
 	
 	liberaMenu : function() {
-			var tb = Phx.vista.PartidaEjecucion.superclass.liberaMenu.call(this);
-			this.getBoton('chkpresupuesto').disable();
-			this.getBoton('btnChequeoDocumentosWf').disable();
-			this.getBoton('btnImprimir').disable();
-			
-			
+		var tb = Phx.vista.PartidaEjecucion.superclass.liberaMenu.call(this);
+		this.getBoton('chkpresupuesto').disable();
+		this.getBoton('btnChequeoDocumentosWf').disable();
+		this.getBoton('btnImprimir').disable();
 	},
-
+	
 	sortInfo:{
 		field: 'id_partida_ejecucion',
 		direction: 'asc'
