@@ -74,6 +74,10 @@ class MODPartidaEjecucion extends MODbase{
 		$this->captura('glosa','varchar');
 		
 		$this->captura('cantidad_descripcion','numeric');
+
+        $this->captura('total_pago','numeric');
+        $this->captura('desc_contrato','varchar');
+        $this->captura('obs','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
