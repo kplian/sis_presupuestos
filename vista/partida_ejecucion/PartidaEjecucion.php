@@ -433,21 +433,54 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'nro_cbte',
-				fieldLabel: 'Cbte',
+				name: 'total_pago',
+				fieldLabel: 'Total pago',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 150,
-				maxLength:-5
+				maxLength:-5,
+				renderer: function(value, metaData, record, rowIndex, colIndex, store) {
+
+					return Ext.util.Format.number(record.data['total_pago'],'0,000.00');
+				}
 			},
 				type:'TextField',
-				filters:{pfiltro:'nro_cbte',type:'string'},
+				filters:{pfiltro:'total_pago',type:'string'},
 				bottom_filter: true,
 				id_grupo:1,
 				grid:true,
 				form:true
 		},
-		
+		{
+			config:{
+				name: 'desc_contrato',
+				fieldLabel: 'Contrato',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+			},
+				type:'TextField',
+				filters:{pfiltro:'desc_contrato',type:'string'},
+				bottom_filter: true,
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'obs',
+				fieldLabel: 'Justificación',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+			},
+				type:'TextField',
+				filters:{pfiltro:'obs',type:'string'},
+				bottom_filter: true,
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
 		
 		{
 			config:{
@@ -703,7 +736,11 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		'ingreso_mb','egreso_mb','desc_tipo_cc','id_tipo_cc','tipo_reg','nro_cbte','id_proceso_wf',
 		'monto_anticipo_mb',
 		'monto_desc_anticipo_mb',
-		'monto_iva_revertido_mb'
+		'monto_iva_revertido_mb',
+
+		'total_pago',
+		'desc_contrato',
+		'obs'
 		
 	],
 	
