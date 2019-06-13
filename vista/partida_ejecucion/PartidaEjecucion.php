@@ -69,7 +69,7 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 
 				renderer:function (value, p, record){
-					/*
+					
 					var color = 'green';
 					if(record.data["tipo_reg"] != 'summary'){
 						
@@ -83,65 +83,8 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 					dato = (dato==''&&value=='6')?'Reformulacion':dato;
 					dato = (dato==''&&value=='7')?'Incremento':dato;
 					return String.format('{0}', dato);
-					*/	
-					var egreso = record.data["egreso_mb"]?record.data["egreso_mb"]:0,
-		   			    ingreso = record.data["ingreso_mb"]?record.data["ingreso_mb"]:0;
-		   			var sum = '',sum1='';
-		   			if(egreso>ingreso){
-		   				sum = (egreso - ingreso);
-		   				sum1 = 0;		
-		   			}else{
-		   				sum = 0;
-		   				sum1 = (ingreso - egreso);
-		   			}
-		   			var anticipo = record.data["monto_anticipo_mb"]?record.data["monto_anticipo_mb"]:0;
-		   			var desc_anticipo = record.data["monto_desc_anticipo_mb"]?record.data["monto_desc_anticipo_mb"]:0;
-		   			var iva = record.data["monto_iva_revertido_mb"]?record.data["monto_iva_revertido_mb"]:0;		   		
-		   			Ext.util.Format.number(value,'0,000.00');
-					var html = String.format(
-						"<table style='width:70%; border-collapse:collapse;'> \
-    							  <tr>\
-								    <td >Egresos BS </td>\
-								    <td >Ingresos BS</td> \
-								  </tr>\
-								  <tr>\
-								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{0} </td>\
-								    <td style='padding: 8px; border-top:  solid #000000;'>{1}</td> \
-								  </tr>\
-								  <tr>\
-								  	<td style='padding: 6px;' >Anticipo Ejecutado(BS)</td>\
-								  </tr>\
-								  <tr>\
-								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{4}</td>\
-								  </tr>\
-								  <tr>\
-								  	<td style='padding: 6px;' >Desc Anticipo(BS)</td>\
-								  </tr>\
-								  <tr>\
-								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{5} </td>\
-								  </tr>\
-								  <tr>\
-								  	<td style='padding: 6px;' >IVA Revertido(BS)</td>\
-								  </tr>\
-								  <tr>\
-								    <td style='padding: 8px; border-top:  solid #000000; border-right:  solid #000000;'>{6} </td>\
-								  </tr>\
-								  </table>\
-								   <br>\
-								  <table style='width:70%; border-collapse:collapse;'>" ,
-								   Ext.util.Format.number(egreso,'0,000.00'), 
-								   Ext.util.Format.number(ingreso,'0,000.00'), 										   													   
-								  								   
-								   Ext.util.Format.number(sum,'0,000.00'),
-								   Ext.util.Format.number(sum1,'0,000.00'),
-								   Ext.util.Format.number(anticipo,'0,000.00'), 
-								   
-								   Ext.util.Format.number(desc_anticipo,'0,000.00'),
-								   Ext.util.Format.number(iva,'0,000.00'),
-								   //Ext.util.Format.number(monto,'0,000.00'), 
-							);		   			    
-   			    	Phx.CP.getPagina(me.idContenedorPadre).panelResumen.update(html)
-   			    	return '<b><p align="right">Total: &nbsp;&nbsp; </p></b>';			
+					
+		
 				},
 
 				store:new Ext.data.ArrayStore({
