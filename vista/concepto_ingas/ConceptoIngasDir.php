@@ -14,9 +14,9 @@ Phx.vista.ConceptoIngasDir = {
 	requireclase:'Phx.vista.ConceptoIngas',
 	title:'Concepto Ingas',
 	nombreVista: 'concetoIngasDir',
-	bdel: true,
-	bedit: true,
-	bnew: true,
+	bdel: false,
+	bedit: false,
+	bnew: false,
 	constructor: function(config) {
 		Phx.vista.ConceptoIngasDir.superclass.constructor.call(this,config);
 		this.init();
