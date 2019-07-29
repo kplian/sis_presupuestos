@@ -137,7 +137,7 @@ Phx.vista.MemoriaCalculo=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'obs',
-				fieldLabel: 'Justificación',
+				fieldLabel: 'Observacions',
 				qtip:  'Justifique la necesidad del item',
 				allowBlank: false,
 				anchor: '80%',

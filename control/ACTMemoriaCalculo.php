@@ -3,7 +3,8 @@
 ****************************************************************************
                      HISTORIAL DE MODIFICACIONES:
 #ISSUE		FORK		FECHA				AUTOR				DESCRIPCION
-  #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos. 
+  #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos.
+  #18 	     ENDEETR	 29/07/2019		    Manuel Guerra	   Importacion de presupuestos  
 */
 
 require_once(dirname(__FILE__).'/../../pxp/pxpReport/DataSource.php');
@@ -481,26 +482,26 @@ class ACTMemoriaCalculo extends ACTbase{
 									
 					$this->objFunc = $this->create('MODMemoriaCalculo');											
 					$this->res = $this->objFunc->insertarMemoriaCalculoXLS($this->objParam);
-					
+				
 					if ($this->res->getTipo() == 'ERROR') {
 						$error = 'error';
 						$mensaje_completo .= $this->res->getMensaje() . " \n";						
-					}							
+					}		
 				}
 			}
 			$this->objFunc = $this->create('MODMemoriaCalculo');											
 			$this->res = $this->objFunc->actualizarDatos($this->objParam);
 			if ($this->res->getTipo() == 'ERROR') {
-				$error = 'errors';
+				$error = 'error';
 				$mensaje_completo .= $this->res->getMensaje() . " \n";						
-			}	
+			}
 		}
 
 		//armar respuesta en caso de exito o error en algunas tuplas
-		if ($error == 'error') {
+		if ($error == 'error') {			
 			$this->mensajeRes=new Mensaje();
 			$this->mensajeRes->setMensaje('ERROR','ACTMemoriaCalculo.php','Ocurrieron los siguientes errores : ' . $mensaje_completo,$mensaje_completo,'control');
-		} else if ($error == 'no') {
+		} else if ($error == 'no') {			
 			$this->mensajeRes=new Mensaje();
 			$this->mensajeRes->setMensaje('EXITO','ACTMemoriaCalculo.php','El archivo fue ejecutado con éxito',	'El archivo fue ejecutado con éxito','control');
 		}		
