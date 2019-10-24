@@ -25,6 +25,7 @@ $body$
  
   ISSUE            FECHA:		      AUTOR       DESCRIPCION
  #21   ETR        10/10/2019        RAC KPLIAN      creacion
+ #22   ETR        22/10/2019        RAC KPLIAN      considerar moneda de retorno en f_verificar_com_eje_pag_tipo_cc
 ***************************************************************************/
 
 
@@ -50,12 +51,15 @@ DECLARE
   v_registros					record;
   v_gestion						integer;
   v_id_tipo_cc_techo			integer;
-  v_contro_partida              varchar;
+  v_contro_partida              varchar;  
+  v_id_moneda_base              integer; --#22  
   
   
 BEGIN
 
   v_nombre_funcion = 'pre.f_verificar_com_eje_pag_tipo_cc';
+  
+  v_id_moneda_base = param.f_get_moneda_base(); --#22
 
   v_sincronizar=pxp.f_get_variable_global('sincronizar');
   v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
@@ -67,7 +71,7 @@ BEGIN
          select
            cc.gestion::integer
          into
-           v_gestion
+           v_gestion           
          from pre.tpartida_ejecucion p
          inner join pre.vpresupuesto_cc cc on cc.id_presupuesto = p.id_presupuesto
          where p.id_partida_ejecucion = p_id_partida_ejecucion;
@@ -99,11 +103,9 @@ BEGIN
        --  listamos el monto comprometido 
                                   
        select
-         sum(pe.monto_mb),
-         sum(pe.monto)
+         sum(pe.monto_mb)
        into
-         v_total_comprometido_mb,
-         v_total_comprometido
+         v_total_comprometido_mb
        from pre.tpartida_ejecucion pe
        inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
        inner join param.vtipo_cc_techo tct on tct.id_tipo_cc = cc.id_tipo_cc
@@ -117,11 +119,9 @@ BEGIN
       --listamso el monto ejectuado
                                 
        select
-           sum(pe.monto_mb),
-           sum(pe.monto)
+           sum(pe.monto_mb)
          into
-           v_total_ejecutado_mb,
-           v_total_ejecutado
+           v_total_ejecutado_mb
          from pre.tpartida_ejecucion pe
          inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
          inner join param.vtipo_cc_techo tct on tct.id_tipo_cc = cc.id_tipo_cc
@@ -133,11 +133,9 @@ BEGIN
                  
         --listamso el monto pagado
        select
-           sum(pe.monto_mb),
-           sum(pe.monto)
+           sum(pe.monto_mb)
          into
-           v_total_pagado_mb,
-           v_total_pagado
+           v_total_pagado_mb
          from pre.tpartida_ejecucion pe
          inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
          inner join param.vtipo_cc_techo tct on tct.id_tipo_cc = cc.id_tipo_cc
@@ -147,10 +145,43 @@ BEGIN
                and pe.nro_tramite = v_nro_tramite
                and pe.tipo_movimiento = 'pagado';
                
-                
-      ps_comprometido = v_total_comprometido;
-      ps_ejecutado = v_total_ejecutado;
-      ps_pagado = v_total_pagado;
+               
+      --si la moenda de retorno no esbase hacemos la conversiones necesarias         
+      IF v_id_moneda =  v_id_moneda_base  THEN
+        ps_comprometido = v_total_comprometido_mb;
+        ps_ejecutado = v_total_ejecutado_mb;
+        ps_pagado = v_total_pagado_mb;
+      
+      ELSE
+        
+          
+         ps_comprometido =  param.f_convertir_moneda(
+                          v_id_moneda_base,
+                          v_id_moneda,   
+                          v_total_comprometido_mb,
+                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          'O',-- tipo oficial, venta, compra
+                          NULL);--defecto dos decimales
+                          
+         ps_ejecutado =  param.f_convertir_moneda(
+                          v_id_moneda_base,
+                          v_id_moneda,   
+                          v_total_ejecutado_mb,
+                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          'O',-- tipo oficial, venta, compra
+                          NULL);--defecto dos decimales 
+                                          
+                           
+          ps_pagado =  param.f_convertir_moneda(
+                          v_id_moneda_base,
+                          v_id_moneda,   
+                          v_total_pagado_mb,
+                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          'O',-- tipo oficial, venta, compra
+                          NULL);--defecto dos decimales                   
+      
+      END IF;          
+      
       
      
      
