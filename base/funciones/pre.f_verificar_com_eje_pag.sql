@@ -28,7 +28,8 @@ $body$
  0	, ETR			13/11/2017			RAC			Sse activa la verficacion presupesutaria por nro de tramite, fueron relizadas pruebas en adqusicioens y obligaciones de pago (comprometer, ejecutar, revertir) , aparentemente todo se ve bien
  0,	  ETR			01/12/2017          RAC			Se agrega el parametro p_tipo_control, para definir si controlamso por nro de tramite o por partida ejecucion,  en rediciones de tesoria no se 
                                                     necesita el control por partida , ya al revertir presupuesto si dos facturas afectna la misma partida y presupuesto
-                                                    se revertia todo en el primer regitro y daba error al revertir el segundo por que ya no tenia presupesuto para revertir 	 		
+                                                    se revertia todo en el primer regitro y daba error al revertir el segundo por que ya no tenia presupesuto para revertir 
+ #22   ETR          22/10/2019        RAC KPLIAN      considerar moneda de retorno en f_verificar_com_eje_pag_tipo_cc	 		
 ***************************************************************************/
 
 
@@ -52,7 +53,8 @@ DECLARE
   v_id_moneda					integer;
   id_partida_ejecucion_raiz		integer;
   v_registros					record;
-  v_gestion						integer;
+  v_gestion						integer;  
+  v_id_moneda_base              integer; --#22  
   
   
 BEGIN
@@ -61,6 +63,8 @@ BEGIN
 
   v_sincronizar=pxp.f_get_variable_global('sincronizar');
   v_pre_integrar_presupuestos = pxp.f_get_variable_global('pre_integrar_presupuestos');
+  
+  v_id_moneda_base = param.f_get_moneda_base(); --#22
   
   
   IF v_pre_integrar_presupuestos = 'true' THEN 
@@ -104,11 +108,9 @@ BEGIN
                --  listamos el monto comprometido 
                                   
                select
-                 sum(pe.monto_mb),
-                 sum(pe.monto)
+                 sum(pe.monto_mb)
                into
-                 v_total_comprometido_mb,
-                 v_total_comprometido
+                 v_total_comprometido_mb
                from pre.tpartida_ejecucion pe
                where pe.estado_reg = 'activo'
                      and pe.id_partida = v_id_partida
@@ -120,11 +122,9 @@ BEGIN
               --listamso el monto ejectuado
                                 
                select
-                   sum(pe.monto_mb),
-                   sum(pe.monto)
+                   sum(pe.monto_mb)
                  into
-                   v_total_ejecutado_mb,
-                   v_total_ejecutado
+                   v_total_ejecutado_mb
                  from pre.tpartida_ejecucion pe
                  where pe.estado_reg = 'activo'
                        and pe.id_partida = v_id_partida
@@ -134,11 +134,9 @@ BEGIN
                  
                 --listamso el monto pagado
                select
-                   sum(pe.monto_mb),
-                   sum(pe.monto)
+                   sum(pe.monto_mb)
                  into
-                   v_total_pagado_mb,
-                   v_total_pagado
+                   v_total_pagado_mb
                  from pre.tpartida_ejecucion pe
                  where pe.estado_reg = 'activo'
                        and pe.id_partida = v_id_partida
@@ -147,9 +145,43 @@ BEGIN
                        and pe.tipo_movimiento = 'pagado';
                
                 
-              ps_comprometido = v_total_comprometido;
-              ps_ejecutado = v_total_ejecutado;
-              ps_pagado = v_total_pagado;
+              
+              
+              --si la moenda de retorno no esbase hacemos la conversiones necesarias         
+              IF v_id_moneda =  v_id_moneda_base  THEN
+                ps_comprometido = v_total_comprometido_mb;
+                ps_ejecutado = v_total_ejecutado_mb;
+                ps_pagado = v_total_pagado_mb;
+              
+              ELSE
+                
+                  
+                 ps_comprometido =  param.f_convertir_moneda(
+                                  v_id_moneda_base,
+                                  v_id_moneda,   
+                                  v_total_comprometido_mb,
+                                  now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
+                                  'O',-- tipo oficial, venta, compra
+                                  NULL);--defecto dos decimales
+                                  
+                 ps_ejecutado =  param.f_convertir_moneda(
+                                  v_id_moneda_base,
+                                  v_id_moneda,   
+                                  v_total_ejecutado_mb,
+                                  now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
+                                  'O',-- tipo oficial, venta, compra
+                                  NULL);--defecto dos decimales 
+                                                  
+                                   
+                  ps_pagado =  param.f_convertir_moneda(
+                                  v_id_moneda_base,
+                                  v_id_moneda,   
+                                  v_total_pagado_mb,
+                                  now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
+                                  'O',-- tipo oficial, venta, compra
+                                  NULL);--defecto dos decimales                   
+              
+              END IF;
       
        ELSE
          
