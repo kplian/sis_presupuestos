@@ -159,7 +159,7 @@ BEGIN
                           v_id_moneda_base,
                           v_id_moneda,   
                           v_total_comprometido_mb,
-                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
                           'O',-- tipo oficial, venta, compra
                           NULL);--defecto dos decimales
                           
@@ -167,7 +167,7 @@ BEGIN
                           v_id_moneda_base,
                           v_id_moneda,   
                           v_total_ejecutado_mb,
-                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
                           'O',-- tipo oficial, venta, compra
                           NULL);--defecto dos decimales 
                                           
@@ -176,7 +176,7 @@ BEGIN
                           v_id_moneda_base,
                           v_id_moneda,   
                           v_total_pagado_mb,
-                          now(),  --TODO revisar que fecha se podria usar, recibir como parametro
+                          now()::date,  --TODO revisar que fecha se podria usar, recibir como parametro
                           'O',-- tipo oficial, venta, compra
                           NULL);--defecto dos decimales                   
       
