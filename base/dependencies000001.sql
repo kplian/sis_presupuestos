@@ -3215,79 +3215,70 @@ CREATE OR REPLACE VIEW pre.vpartida_ejecucion (
     glosa1,
     glosa,
     cantidad_descripcion,
-    funcion_origen,
     id_gestion)
 AS
-SELECT pareje.id_partida_ejecucion,
-    pareje.id_int_comprobante,
-    pareje.id_moneda,
-    mon.moneda,
-    pareje.id_presupuesto,
-    pre.descripcion AS desc_pres,
-    cat.codigo_categoria,
-    pareje.id_partida,
-    par.codigo,
-    par.nombre_partida,
-    pareje.nro_tramite,
-    pareje.tipo_cambio,
-    pareje.columna_origen,
-    pareje.tipo_movimiento,
-    pareje.id_partida_ejecucion_fk,
-    pareje.estado_reg,
-    pareje.fecha,
-        CASE
-            WHEN par.tipo::text = 'gasto'::text THEN pareje.monto_mb
-            ELSE 0::numeric
-        END AS egreso_mb,
-        CASE
-            WHEN par.tipo::text = 'recurso'::text THEN pareje.monto_mb
-            ELSE 0::numeric
-        END AS ingreso_mb,
-    pareje.monto_mb,
-    pareje.monto,
-    pareje.valor_id_origen,
-    pareje.id_usuario_reg,
-    pareje.fecha_reg,
-    pareje.usuario_ai,
-    pareje.id_usuario_ai,
-    pareje.fecha_mod,
-    pareje.id_usuario_mod,
-    usu1.cuenta AS usr_reg,
-    usu2.cuenta AS usr_mod,
-    tcc.id_tipo_cc,
-    tcc.codigo AS desc_tipo_cc,
-    COALESCE(cbte.nro_cbte, ''::character varying) AS nro_cbte,
-    COALESCE(cbte.id_proceso_wf, pre.id_proceso_wf) AS id_proceso_wf,
-    COALESCE(pareje.monto_anticipo_mb, 0::numeric) AS monto_anticipo_mb,
-    COALESCE(pareje.monto_desc_anticipo_mb, 0::numeric) AS monto_desc_anticipo_mb,
-    COALESCE(pareje.monto_iva_revertido_mb, 0::numeric) AS monto_iva_revertido_mb,
-    cc.id_centro_costo,
-    cbte.glosa1,
-    pareje.glosa,
-    pareje.cantidad_descripcion,
-        CASE
-            WHEN pareje.columna_origen::text = 'id_plan_pago'::text THEN
-                'tes.f_gestionar_cuota_plan_pago'::character varying
-            WHEN pareje.columna_origen::text = 'id_int_transaccion'::text THEN
-                cbte.funcion_comprobante_validado
-            ELSE NULL::character varying
-        END AS funcion_origen,
-    cc.id_gestion
-FROM pre.tpartida_ejecucion pareje
-     JOIN pre.tpresupuesto pre ON pre.id_presupuesto = pareje.id_presupuesto
-     JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_presupuesto
-     JOIN param.ttipo_cc tcc ON tcc.id_tipo_cc = cc.id_tipo_cc
-     JOIN pre.vcategoria_programatica cat ON cat.id_categoria_programatica =
+  SELECT pareje.id_partida_ejecucion,
+         pareje.id_int_comprobante,
+         pareje.id_moneda,
+         mon.moneda,
+         pareje.id_presupuesto,
+         pre.descripcion AS desc_pres,
+         cat.codigo_categoria,
+         pareje.id_partida,
+         par.codigo,
+         par.nombre_partida,
+         pareje.nro_tramite,
+         pareje.tipo_cambio,
+         pareje.columna_origen,
+         pareje.tipo_movimiento,
+         pareje.id_partida_ejecucion_fk,
+         pareje.estado_reg,
+         pareje.fecha,
+         CASE
+           WHEN par.tipo::text = 'gasto'::text THEN pareje.monto_mb
+           ELSE 0::numeric
+         END AS egreso_mb,
+         CASE
+           WHEN par.tipo::text = 'recurso'::text THEN pareje.monto_mb
+           ELSE 0::numeric
+         END AS ingreso_mb,
+         pareje.monto_mb,
+         pareje.monto,
+         pareje.valor_id_origen,
+         pareje.id_usuario_reg,
+         pareje.fecha_reg,
+         pareje.usuario_ai,
+         pareje.id_usuario_ai,
+         pareje.fecha_mod,
+         pareje.id_usuario_mod,
+         usu1.cuenta AS usr_reg,
+         usu2.cuenta AS usr_mod,
+         tcc.id_tipo_cc,
+         tcc.codigo AS desc_tipo_cc,
+         COALESCE(cbte.nro_cbte, ''::character varying) AS nro_cbte,
+         COALESCE(cbte.id_proceso_wf, pre.id_proceso_wf) AS id_proceso_wf,
+         COALESCE(pareje.monto_anticipo_mb, 0::numeric) AS monto_anticipo_mb,
+         COALESCE(pareje.monto_desc_anticipo_mb, 0::numeric) AS
+           monto_desc_anticipo_mb,
+         COALESCE(pareje.monto_iva_revertido_mb, 0::numeric) AS
+           monto_iva_revertido_mb,
+         cc.id_centro_costo,
+         cbte.glosa1,
+         pareje.glosa,
+         pareje.cantidad_descripcion,
+         cc.id_gestion
+  FROM pre.tpartida_ejecucion pareje
+       JOIN pre.tpresupuesto pre ON pre.id_presupuesto = pareje.id_presupuesto
+       JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_presupuesto
+       JOIN param.ttipo_cc tcc ON tcc.id_tipo_cc = cc.id_tipo_cc
+       JOIN pre.vcategoria_programatica cat ON cat.id_categoria_programatica =
          pre.id_categoria_prog
-     JOIN pre.tpartida par ON par.id_partida = pareje.id_partida
-     JOIN param.tmoneda mon ON mon.id_moneda = pareje.id_moneda
-     JOIN segu.tusuario usu1 ON usu1.id_usuario = pareje.id_usuario_reg
-     LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = pareje.id_usuario_mod
-     LEFT JOIN conta.tint_comprobante cbte ON cbte.id_int_comprobante =
+       JOIN pre.tpartida par ON par.id_partida = pareje.id_partida
+       JOIN param.tmoneda mon ON mon.id_moneda = pareje.id_moneda
+       JOIN segu.tusuario usu1 ON usu1.id_usuario = pareje.id_usuario_reg
+       LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = pareje.id_usuario_mod
+       LEFT JOIN conta.tint_comprobante cbte ON cbte.id_int_comprobante =
          pareje.id_int_comprobante
-WHERE pareje.monto <> 0::numeric;
-
-ALTER VIEW pre.vpartida_ejecucion
-  OWNER TO postgres;
+  WHERE pareje.monto <> 0::numeric;
 
 /**********************************F-DEP-MANU-PRE-01-2/12/2019****************************************/
