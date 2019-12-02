@@ -3173,6 +3173,7 @@ ALTER TABLE pre.tajuste
 
 /**********************************I-DEP-MANU-PRE-01-2/12/2019****************************************/
 
+
 CREATE OR REPLACE VIEW pre.vpartida_ejecucion (
     id_partida_ejecucion,
     id_int_comprobante,
