@@ -21,6 +21,7 @@ $body$
  ISSUE            FECHA:		      AUTOR       DESCRIPCION
  0				12/10/2017			RAC			Validacion para comprometer o revertir presupuesto
  #25 PRE        15/03/2018          RAC         BUG, ajsute comprometido dolares
+ #26            03/01/2020          RAC         Corregir mensaje de error en ajustes presupuestarios para mostrar el monto faltante en la moneda base
 ***************************************************************************/
 
 
@@ -46,6 +47,7 @@ DECLARE
     v_sw_error 					boolean;
     sw_revertir 				boolean;
     sw_comprometer				boolean;
+    v_aux_msg                   numeric; --#26
    
 	
     
@@ -334,15 +336,23 @@ BEGIN
                                          
                          --  analizamos respuesta y retornamos error
                          IF v_resultado_ges[1] = 0 THEN
-                                           
+                                 
+                                 --#26
+                                 IF sw_revertir THEN
+                                   v_aux_msg = v_registros_det.importe*-1;
+                                 ELSE
+                                    v_aux_msg = v_registros_det.importe;
+                                 END  IF;  
+                                 --raise exception 'moneda %, monto %, aux %',v_registros.id_moneda , v_registros_det.importe, v_aux_msg;    
                                  --  recuperamos datos del presupuesto
                                  v_mensaje_error = v_mensaje_error|| conta.f_armar_error_presupuesto(v_resultado_ges, 
                                                                                v_registros_det.id_presupuesto, 
                                                                                v_registros_det.codigo_partida, 
-                                                                               v_id_moneda_base, 
+                                                                               v_registros.id_moneda,   --#26
                                                                                v_id_moneda_base, 
                                                                                'Comprometer', 
-                                                                               v_registros_det.importe);
+                                                                               v_aux_msg
+                                                                               );
                                  v_sw_error = true;
                                                  
                           ELSE
