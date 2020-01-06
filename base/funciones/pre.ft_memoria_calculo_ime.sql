@@ -20,7 +20,8 @@ $body$
  ISSUE 		FORK   		FECHA   			 AUTOR				 DESCRIPCION:
   #5 	   ENDEETR	   09/01/2019		  Manuel Guerra	      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos,
   #17 	   ENDEETR	   24/07/2019		  Manuel Guerra	      modificacion de estructura de importacion de presupuestos
-  #18 	   ENDEETR	   29/07/2019		  Manuel Guerra	      Importacion de presupuestos 
+  #18 	   ENDEETR	   29/07/2019		  Manuel Guerra	      Importacion de presupuestos
+  #28 	   ENDEETR	   04/01/2020		  Manuel Guerra	      validacion de valores negaticos de las memorias_det
 ***************************************************************************/
 
 DECLARE
@@ -37,33 +38,33 @@ DECLARE
     v_registros             record;
     v_registros_c           record;
     v_estado                varchar;
-    v_codigo                varchar;    
+    v_codigo                varchar;
     v_gestion               integer;
     v_id_partida            integer;
     v_id_conceto_ingas      integer;
     v_conceto_ingas      	integer;
     v_id_centro_costo       integer;
-    v_total_memoria         numeric;    
-    v_id                    integer;  
+    v_total_memoria         numeric;
+    v_id                    integer;
     v_id_presup_partida     integer;
-    v_id_mes                integer;     
-    v_id_mes_ene            integer;    
+    v_id_mes                integer;
+    v_id_mes_ene            integer;
     v_id_mes_feb            integer;
-    v_id_mes_mar            integer;    
+    v_id_mes_mar            integer;
     v_id_mes_abr            integer;
-    v_id_mes_may            integer;    
+    v_id_mes_may            integer;
     v_id_mes_jun            integer;
-    v_id_mes_jul            integer;    
+    v_id_mes_jul            integer;
     v_id_mes_ago            integer;
-    v_id_mes_sep            integer;    
+    v_id_mes_sep            integer;
     v_id_mes_oct            integer;
-    v_id_mes_nov            integer;    
+    v_id_mes_nov            integer;
     v_id_mes_dic            integer;
-    v_id_presupuesto        integer;  
-    v_aux                   varchar;  
-    v_consulta              integer; 
+    v_id_presupuesto        integer;
+    v_aux                   varchar;
+    v_consulta              integer;
     v_valor                 varchar;
-    v_id_presupuesto_funcionario integer;    
+    v_id_presupuesto_funcionario integer;
     v_id_cg    				integer[];
     v_id_part				integer[];
     v_pre					record;
@@ -215,40 +216,40 @@ BEGIN
             return v_resp;
 
         end;
-        
-    /*********************************    
+
+    /*********************************
     #TRANSACCION:  'PRE_MEMOXLS_INS'
     #DESCRIPCION:  #5 Actualizacion de registros desde excel  #17
-    #AUTOR:    manuel guerra  
+    #AUTOR:    manuel guerra
     #FECHA:    01-09-2013 18:10:12
     ***********************************/
 
     ELSIF(p_transaccion='PRE_MEMOXLS_INS')THEN
 		BEGIN
         	--
-            SELECT tp.id_presupuesto 
+            SELECT tp.id_presupuesto
             INTO v_id_centro_costo
             FROM param.ttipo_cc t
             JOIN param.tcentro_costo tcc ON t.id_tipo_cc=tcc.id_tipo_cc
             INNER JOIN pre.tpresupuesto tp ON tp.id_centro_costo =tcc.id_centro_costo
             INNER JOIN param.tgestion g ON g.id_gestion =tcc.id_gestion
-            WHERE 
-            t.codigo = v_parametros.cod_presupuesto AND 
-            t.estado_reg='activo' 
-            AND tcc.estado_reg='activo' 
+            WHERE
+            t.codigo = v_parametros.cod_presupuesto AND
+            t.estado_reg='activo'
+            AND tcc.estado_reg='activo'
             AND tp.estado IN('borrador','formulacion','vobopre')
             AND tp.estado_reg='activo'
-            AND g.id_gestion=v_parametros.id_gestion;                 
+            AND g.id_gestion=v_parametros.id_gestion;
 
             --valida centro de costo
         	IF v_id_centro_costo IS NULL THEN
                 DELETE FROM pre.tformulacion_tmp WHERE migrado='no';
         		RAISE EXCEPTION 'No existe el codigo de presupuesto o el estado de presupuesto ya esta finalizado%',v_parametros.cod_presupuesto;
-            END IF;    
+            END IF;
             --valida partida
             v_i = 0;
             v_codigo=v_parametros.cod_partida||'-F';
-            FOR v_pre in (SELECT cp.id_concepto_ingas,p.id_partida                             
+            FOR v_pre in (SELECT cp.id_concepto_ingas,p.id_partida
                           FROM pre.tconcepto_partida cp
                           JOIN pre.tpartida p ON p.id_partida=cp.id_partida
                           WHERE p.codigo LIKE v_codigo
@@ -258,8 +259,8 @@ BEGIN
                 v_id_part[v_i] = v_pre.id_partida;
                 IF NOT EXISTS(SELECT 1
                               FROM param.tconcepto_ingas t
-                              WHERE t.id_concepto_ingas= v_id_cg[v_i]) THEN    
-                ELSE        
+                              WHERE t.id_concepto_ingas= v_id_cg[v_i]) THEN
+                ELSE
                     v_id_conceto_ingas=v_id_cg[v_i];
                     v_id_partida=v_id_part[v_i];
                 END IF;
@@ -269,8 +270,8 @@ BEGIN
             IF v_id_conceto_ingas IS NULL THEN
             	DELETE FROM pre.tformulacion_tmp WHERE migrado='no';
                 RAISE EXCEPTION 'No existe el codigo de partida %',v_parametros.cod_partida;
-            END IF;  
-            
+            END IF;
+
             INSERT INTO pre.tformulacion_tmp(
             codigo,
             tipo1,
@@ -309,18 +310,34 @@ BEGIN
             v_parametros.septiembre,
             v_parametros.octubre,
             v_parametros.noviembre,
-            v_parametros.diciembre,        
+            v_parametros.diciembre,
             'no',
             v_parametros.id_gestion,
             v_parametros.id_funcionario,
             p_id_usuario
             )RETURNING id into v_id;
-            
+            --#28
+            if v_parametros.enero<0 or v_parametros.febrero<0 or
+            	v_parametros.marzo<0 or v_parametros.abril<0 or
+                v_parametros.mayo<0 or v_parametros.junio<0 or
+                v_parametros.julio<0 or v_parametros.agosto<0 or
+                v_parametros.septiembre<0 or v_parametros.octubre<0 or
+                v_parametros.noviembre<0 or v_parametros.diciembre<0
+            THEN
+            	delete
+                from pre.tformulacion_tmp
+                where migrado='no' and
+                id_gestion= v_parametros.id_gestion and
+                id_funcionario= v_parametros.id_funcionario and
+           	    id_sesion= p_id_usuario;
+            	raise exception 'Existe uno o varios valores negativos, favor verifique el archivo, en el centro costo% ',v_id_centro_costo;
+            end if;
+            --#28
          v_resp = pxp.f_agrega_clave(v_resp,'memoria_calculo','paso inicial');
         --Devuelve la respuesta
         return v_resp;
      END;
-     
+
     /*********************************
     #TRANSACCION:  'PRE_ACT_DAT'
     #DESCRIPCION:  #5 Modificacion de registros  #17
@@ -330,8 +347,8 @@ BEGIN
 
     ELSIF(p_transaccion='PRE_ACT_DAT')THEN
         BEGIN
-        	v_total_memoria=0;                                                                   	
-            --limpiar            
+        	v_total_memoria=0;
+            --limpiar
             FOR v_registros IN(SELECT
                               f.codigo,
                               f.tipo1,
@@ -340,40 +357,40 @@ BEGIN
                               f.id_funcionario,
                               f.id_sesion
                               FROM pre.tformulacion_tmp f
-                              WHERE f.migrado='no'                                        
-                              )LOOP                              
-                --****************                                                             
-                SELECT mc.id_memoria_calculo,mc.id_presupuesto                
+                              WHERE f.migrado='no'
+                              )LOOP
+                --****************
+                SELECT mc.id_memoria_calculo,mc.id_presupuesto
                 INTO v_id_memoria_calculo,v_id_presupuesto
                 FROM pre.tmemoria_calculo mc
-                WHERE mc.id_presupuesto::varchar=v_registros.codigo::varchar AND mc.id_partida=v_registros.carga::integer AND mc.id_concepto_ingas=v_registros.tipo1::integer;                 
+                WHERE mc.id_presupuesto::varchar=v_registros.codigo::varchar AND mc.id_partida=v_registros.carga::integer AND mc.id_concepto_ingas=v_registros.tipo1::integer;
                 --elimina memoria-det
                 DELETE FROM pre.tmemoria_det md WHERE md.id_memoria_calculo IN (SELECT mcal.id_memoria_calculo FROM pre.tmemoria_calculo mcal WHERE mcal.id_memoria_calculo=v_id_memoria_calculo);
-                DELETE FROM pre.tmemoria_calculo mcal WHERE mcal.id_memoria_calculo=v_id_memoria_calculo;                
-                --           
-                SELECT mc.id_presupuesto,mc.id_memoria_calculo                
+                DELETE FROM pre.tmemoria_calculo mcal WHERE mcal.id_memoria_calculo=v_id_memoria_calculo;
+                --
+                SELECT mc.id_presupuesto,mc.id_memoria_calculo
                 INTO v_id_presupuesto,v_id_memoria_calculo
                 FROM pre.tmemoria_calculo mc
-                WHERE mc.id_presupuesto::varchar=v_registros.codigo;  
-                --                     
+                WHERE mc.id_presupuesto::varchar=v_registros.codigo;
+                --
                 DELETE FROM pre.tmemoria_det mda WHERE mda.id_memoria_calculo IN (SELECT mcalc.id_memoria_calculo FROM pre.tmemoria_calculo mcalc WHERE mcalc.id_presupuesto=v_id_presupuesto);
-                DELETE FROM pre.tmemoria_calculo mca WHERE mca.id_presupuesto=v_id_presupuesto;               
-                --****************                  
-            END LOOP; 
+                DELETE FROM pre.tmemoria_calculo mca WHERE mca.id_presupuesto=v_id_presupuesto;
+                --****************
+            END LOOP;
 
-            --elimina pres-partida                               
-			DELETE 
+            --elimina pres-partida
+			DELETE
             FROM pre.tpresup_partida pp
             WHERE (pp.id_presupuesto) IN (SELECT f.codigo::integer
                                           FROM pre.tformulacion_tmp f
                                           WHERE f.migrado = 'no');
 			--elimina pres-funcionario
-        	DELETE 
+        	DELETE
             FROM pre.tpresupuesto_funcionario pf
             WHERE (pf.id_presupuesto::varchar) IN (SELECT f.codigo::varchar
                                           FROM pre.tformulacion_tmp f
-                                          WHERE f.migrado = 'no');	                                               		                                                                                      
-            ----------            
+                                          WHERE f.migrado = 'no');
+            ----------
         	FOR v_registros_c IN(
                                   SELECT
                                   f.codigo,
@@ -396,9 +413,9 @@ BEGIN
                                   f.id_funcionario,
                                   f.id_sesion
                                   FROM pre.tformulacion_tmp f
-                                  WHERE f.migrado='no'                                        
-                              )LOOP                              
-                --                        	
+                                  WHERE f.migrado='no'
+                              )LOOP
+                --
             	v_total_memoria=v_registros_c.m1::numeric+
                                 v_registros_c.m2::numeric+
                                 v_registros_c.m3::numeric+
@@ -410,21 +427,21 @@ BEGIN
                                 v_registros_c.m9::numeric+
                                 v_registros_c.m10::numeric+
                                 v_registros_c.m11::numeric+
-                                v_registros_c.m12::numeric;              
-                --                        
+                                v_registros_c.m12::numeric;
+                --
                 INSERT INTO pre.tpresup_partida (id_presupuesto,id_centro_costo,id_partida,fecha_reg,importe,id_usuario_reg,estado_reg)
-                VALUES(v_registros_c.codigo::integer, v_registros_c.codigo::integer, v_registros_c.carga::integer, now(),v_total_memoria::numeric,v_registros_c.id_sesion,'pendiente');                          
-                --                
+                VALUES(v_registros_c.codigo::integer, v_registros_c.codigo::integer, v_registros_c.carga::integer, now(),v_total_memoria::numeric,v_registros_c.id_sesion,'pendiente');
+                --
                 INSERT INTO pre.tmemoria_calculo (id_usuario_reg,id_presupuesto,id_concepto_ingas,id_partida,fecha_reg,importe_total,obs,estado_reg)
                 VALUES (v_registros_c.id_sesion,v_registros_c.codigo::integer,v_registros_c.tipo1::integer,v_registros_c.carga::integer,now(),v_total_memoria::numeric,' ','pendiente')
-                RETURNING id_memoria_calculo INTO v_id_memoria_calculo;                          
-                -- meses               
-                -- ene               
+                RETURNING id_memoria_calculo INTO v_id_memoria_calculo;
+                -- meses
+                -- ene
                 SELECT t.id_periodo
                 INTO v_id_mes_ene
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=1;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -434,17 +451,17 @@ BEGIN
                 INTO v_id_mes_feb
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=2;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
-            	(v_registros_c.id_sesion,v_id_mes_feb,v_id_memoria_calculo,now(),v_registros_c.m2::numeric,v_registros_c.m2::numeric,'pendiente');      
+            	(v_registros_c.id_sesion,v_id_mes_feb,v_id_memoria_calculo,now(),v_registros_c.m2::numeric,v_registros_c.m2::numeric,'pendiente');
                 --mar
                 SELECT t.id_periodo
                 INTO v_id_mes_mar
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=3;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -454,7 +471,7 @@ BEGIN
                 INTO v_id_mes_abr
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=4;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -464,7 +481,7 @@ BEGIN
                 INTO v_id_mes_may
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=5;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -474,7 +491,7 @@ BEGIN
                 INTO v_id_mes_jun
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=6;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -484,7 +501,7 @@ BEGIN
                 INTO v_id_mes_jul
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=7;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -494,7 +511,7 @@ BEGIN
                 INTO v_id_mes_ago
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=8;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -504,7 +521,7 @@ BEGIN
                 INTO v_id_mes_sep
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=9;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -514,7 +531,7 @@ BEGIN
                 INTO v_id_mes_oct
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=10;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -524,7 +541,7 @@ BEGIN
                 INTO v_id_mes_nov
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=11;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
@@ -534,37 +551,37 @@ BEGIN
                 INTO v_id_mes_dic
                 FROM param.tperiodo t
                 WHERE t.id_gestion = v_registros_c.id_gestion and t.periodo=12;
-                --      
+                --
                 INSERT INTO pre.tmemoria_det
                 (id_usuario_reg,id_periodo,id_memoria_calculo,fecha_reg,importe,importe_unitario,estado_reg)
                 VALUES
             	(v_registros_c.id_sesion,v_id_mes_dic,v_id_memoria_calculo,now(),v_registros_c.m12::numeric,v_registros_c.m12::numeric,'pendiente');
                 --
                 INSERT INTO pre.tpresupuesto_funcionario (accion,id_presupuesto,fecha_reg,id_usuario_reg,id_funcionario,estado_reg)
-            	VALUES ('formulacion',v_registros_c.codigo::integer,now(),v_registros_c.id_sesion,v_registros_c.id_funcionario,'pendiente');                        			
-            END LOOP;  
+            	VALUES ('formulacion',v_registros_c.codigo::integer,now(),v_registros_c.id_sesion,v_registros_c.id_funcionario,'pendiente');
+            END LOOP;
             --
-            UPDATE pre.tformulacion_tmp 
+            UPDATE pre.tformulacion_tmp
             SET migrado='si'
-            WHERE migrado='no';      
-            ----   
-            
-            UPDATE pre.tpresup_partida  
-            SET estado_reg='activo'         
+            WHERE migrado='no';
+            ----
+
+            UPDATE pre.tpresup_partida
+            SET estado_reg='activo'
             WHERE estado_reg='pendiente';
-                        
-            UPDATE pre.tmemoria_calculo  
-            SET estado_reg='activo'         
+
+            UPDATE pre.tmemoria_calculo
+            SET estado_reg='activo'
             WHERE estado_reg='pendiente';
-            
-            UPDATE pre.tmemoria_det  
-            SET estado_reg='activo'         
+
+            UPDATE pre.tmemoria_det
+            SET estado_reg='activo'
             WHERE estado_reg='pendiente';
-            
-            UPDATE pre.tpresupuesto_funcionario  
-            SET estado_reg='activo'         
+
+            UPDATE pre.tpresupuesto_funcionario
+            SET estado_reg='activo'
             WHERE estado_reg='pendiente';
-            
+
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','archivo existosamente cargado');
             --Devuelve la respuesta
             return v_resp;

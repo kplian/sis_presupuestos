@@ -1300,3 +1300,18 @@ CREATE TABLE pre.tpartida_reporte_ejecucion_dw (
 ) 
 WITH (oids = false);
  /*****************************F-SCP-JJA-PRE-0-26/03/2019*************/
+
+ /**********************************I-SCP-MANU-PRE-01-04/01/2020****************************************/
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_gestion INTEGER;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN obs_memoria VARCHAR;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_funcionario INTEGER;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_sesion INTEGER;
+
+/**********************************F-SCP-MANU-PRE-01-04/01/2020****************************************/
