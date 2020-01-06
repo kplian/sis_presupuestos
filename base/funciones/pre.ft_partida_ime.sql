@@ -21,6 +21,14 @@ $body$
  DESCRIPCION:	
  AUTOR:			
  FECHA:		
+     
+
+    HISTORIAL DE MODIFICACIONES:
+   	
+ ISSUE            FECHA:		      AUTOR                 DESCRIPCION
+   
+ #24      		02-01-2020        RAC KPLIAN    adicionar id_usuario_reg en la duplicación de partidas para siguiente gestión en el procedimiento ft_partida_ime
+ 
 ***************************************************************************/
 
 DECLARE
@@ -284,7 +292,21 @@ BEGIN
                    
                       
                       --insertar relacion en tre ambas gestion
-                      INSERT INTO pre.tpartida_ids (id_partida_uno,id_partida_dos, sw_cambio_gestion ) VALUES ( v_registros_partida.id_partida,v_id_partida, 'gestion');
+                      INSERT INTO pre.tpartida_ids (
+                           id_partida_uno,
+                           id_partida_dos, 
+                           sw_cambio_gestion,
+                           id_usuario_reg,    --#24 agrega nuevos parametros
+                           estado_reg,
+                           fecha_reg
+                      ) VALUES ( 
+                           v_registros_partida.id_partida,
+                           v_id_partida, 
+                           'gestion',
+                           p_id_usuario,
+                           'activo',
+                           now()
+                      );
                       v_conta = v_conta + 1;
                   END IF; 
             
