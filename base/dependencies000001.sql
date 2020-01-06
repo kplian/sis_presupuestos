@@ -3285,17 +3285,3 @@ AS
 /**********************************F-DEP-MANU-PRE-01-2/12/2019****************************************/
 
 
-/**********************************I-DEP-MANU-PRE-02-04/01/2020****************************************/
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_gestion INTEGER;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN obs_memoria VARCHAR;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_funcionario INTEGER;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_sesion INTEGER;
-
-/**********************************F-DEP-MANU-PRE-02-04/01/2020****************************************/
