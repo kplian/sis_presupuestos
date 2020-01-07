@@ -1099,16 +1099,6 @@ CREATE TABLE pre.tcambio_partida (
 ) 
 WITH (oids = false);
 
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresup_partida
-  ADD COLUMN obs_dba VARCHAR;
-  
- --------------- SQL ---------------
-
-ALTER TABLE pre.tmemoria_calculo
-  ADD COLUMN obs_dba VARCHAR;
-  
  /*****************************F-SCP-RAC-PRE-0-05/02/2018*************/
  
  
@@ -1162,11 +1152,7 @@ ALTER TABLE pre.tpartida_ejecucion
 COMMENT ON COLUMN pre.tpartida_ejecucion.importe_mb_bk
 IS 'para guardar dato modificado enmoneda bas';
 
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN obs_dba TEXT;
 
-COMMENT ON COLUMN pre.tpartida_ejecucion.obs_dba
-IS 'para guardar la caussas de lasmodificaciones';
 
 CREATE INDEX ttipo_presupuesto_idx ON pre.ttipo_presupuesto
   USING btree (codigo COLLATE pg_catalog."default");
@@ -1314,3 +1300,18 @@ CREATE TABLE pre.tpartida_reporte_ejecucion_dw (
 ) 
 WITH (oids = false);
  /*****************************F-SCP-JJA-PRE-0-26/03/2019*************/
+
+ /**********************************I-SCP-MANU-PRE-01-04/01/2020****************************************/
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_gestion INTEGER;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN obs_memoria VARCHAR;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_funcionario INTEGER;
+
+ALTER TABLE pre.tformulacion_tmp
+  ADD COLUMN id_sesion INTEGER;
+
+/**********************************F-SCP-MANU-PRE-01-04/01/2020****************************************/
