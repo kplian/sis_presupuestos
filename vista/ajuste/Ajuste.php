@@ -15,7 +15,6 @@ header("content-type: text/javascript; charset=UTF-8");
 Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config) {
-		alert('llega...')		
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Ajuste.superclass.constructor.call(this,config);
