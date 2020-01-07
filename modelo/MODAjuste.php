@@ -5,7 +5,10 @@
 *@author  (admin)
 *@date 13-04-2016 13:21:12
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
-*/
+ * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
+  	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
+ * 
+ * */
 
 class MODAjuste extends MODbase{
 	
@@ -70,6 +73,7 @@ class MODAjuste extends MODbase{
 		$this->setParametro('importe_ajuste','importe_ajuste','numeric');
 		$this->setParametro('movimiento','movimiento','varchar');
 		$this->setParametro('nro_tramite_aux','nro_tramite_aux','varchar');
+		$this->setParametro('id_moneda','id_moneda','int4');//#31
 		
 		
 		
