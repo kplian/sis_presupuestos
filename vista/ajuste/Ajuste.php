@@ -5,13 +5,17 @@
 *@author  (admin)
 *@date 13-04-2016 13:21:12
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
+ * 
+ * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
+  	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 
-	constructor:function(config){		
+	constructor:function(config) {
+		alert('llega...')		
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.Ajuste.superclass.constructor.call(this,config);
@@ -57,7 +61,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 
          });
          
-         
+         this.iniciarEventosForm();
 	},
 			
 	Atributos:[
@@ -67,6 +71,16 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'id_ajuste'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//c#31 
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_moneda'
 			},
 			type:'Field',
 			form:true 
@@ -659,6 +673,15 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		          
 		}
     },
+    
+    //#31 determinar moneda sgun el tramite selecionado
+    iniciarEventosForm: function() {
+           this.Cmp.nro_tramite_aux.on('select',function(cmp,rec){
+           	   	  this.Cmp.id_moneda.setValue(rec.data.id_moneda);
+           },this);
+      
+    },
+    
       
 	bdel:true,
 	bsave:true,

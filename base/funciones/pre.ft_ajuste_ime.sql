@@ -20,8 +20,10 @@ HISTORIAL DE MODIFICACIONES:
 
    	
  ISSUE            FECHA:		      AUTOR       DESCRIPCION
- 0                10/10/2017        RAC        Consirerar inserciones de ajustes de comprometido en PRE_AJU_INS
- 0                12/10/2017        RAC        validar inc y rev de comproemtido al cambiar de estado en  PRE_SIGAJT_IME
+ 0                10/10/2017        RAC          Consirerar inserciones de ajustes de comprometido en PRE_AJU_INS
+ 0                12/10/2017        RAC          validar inc y rev de comproemtido al cambiar de estado en  PRE_SIGAJT_IME
+ #31 endeETR      07/01/2020        RAC KPLIAN   modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
+ 
 ***************************************************************************/
 
 DECLARE
@@ -121,14 +123,8 @@ BEGIN
          END IF;
          
          --recuperamos la moenda del tramite en partida ejecucion
-         IF  v_parametros.tipo_ajuste in ('inc_comprometido','rev_comprometido') and  v_parametros.nro_tramite_aux is not null and v_parametros.nro_tramite_aux != ''THEN
-            select               
-               pe.id_moneda
-            into
-              v_id_moneda
-            from pre.tpartida_ejecucion pe
-            where pe.nro_tramite = v_parametros.nro_tramite_aux
-            limit 1 offset 0;
+         IF  v_parametros.tipo_ajuste in ('inc_comprometido','rev_comprometido') and  v_parametros.nro_tramite_aux is not null and v_parametros.nro_tramite_aux != '' THEN
+            v_id_moneda = v_parametros.id_moneda; --#31 recupera la moneda desde la interface
          ELSE   
             v_id_moneda = param.f_get_moneda_base();
          END IF;

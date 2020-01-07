@@ -23,6 +23,7 @@ $body$
  0                10/10/2017           RAC         Agrgar trasaccion para listado de nro de tramite
  #11 ETR      12/02/2019       MMV Kplian Reporte Integridad presupuestaria   
  #14 ENDETR       12/06/2019           JUAN        Incremento de columnas (Total pago, Contrato, Justificación) en reporte partida ejecución
+ #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
 ***************************************************************************/
 
 DECLARE
@@ -227,23 +228,22 @@ BEGIN
 
       begin
         
-            v_pre_codigo_proc_macajsutable =  pxp.f_get_variable_global('pre_codigo_proc_macajsutable');
-            raise notice '-> fil :%',COALESCE(v_pre_codigo_proc_macajsutable,'''TEST''');
+          v_pre_codigo_proc_macajsutable =  pxp.f_get_variable_global('pre_codigo_proc_macajsutable');
             
-            --recueerar la gestion de la fecha
+          --recueerar la gestion de la fecha
             
-            select 
-               p.id_gestion
-            into
-              v_id_gestion
-            from param.tperiodo p
-            where  v_parametros.fecha_ajuste::Date BETWEEN p.fecha_ini::Date and p.fecha_fin::date;
+          select 
+             p.id_gestion
+          into
+            v_id_gestion
+          from param.tperiodo p
+          where  v_parametros.fecha_ajuste::Date BETWEEN p.fecha_ini::Date and p.fecha_fin::date;
             
-            IF v_id_gestion is null  THEN
-               raise exception 'no se encontro gestion para la fecha: %',v_parametros.fecha_ajuste;
-            END IF;
+          IF v_id_gestion is null  THEN
+             raise exception 'no se encontro gestion para la fecha: %',v_parametros.fecha_ajuste;
+          END IF;
             
-            raise notice '-> ges :%',v_id_gestion;
+          
             
              
         --Sentencia de la consulta
@@ -265,9 +265,8 @@ BEGIN
 
       --Definicion de la respuesta
       v_consulta:=v_consulta||v_parametros.filtro;
-      v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
-
-      raise notice 'La consulta es:  %', v_consulta;
+      --#31 se fija la ordeacion por tramite y fecha de reg
+      v_consulta:=v_consulta||' order by pe.nro_tramite asc , pe.fecha_reg asc limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
       --Devuelve la respuesta
       return v_consulta;
