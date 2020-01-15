@@ -6,8 +6,8 @@
 *@date 03-10-2016 15:47:23
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
  * HISTORIAL DE MODIFICACIONES:
- * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
- * #33 ETR		  13/01/2020		   Corregir filtro por gestión en partida ejecución
+ * ##11 ETR		  12/02/2019		   MMV Kplian	 R eporte Integridad presupuestaria
+ * ##33 ETR		  13/01/2020		   JUAN          Corregir filtro por gestión en partida ejecución
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 class ACTPartidaEjecucion extends ACTbase{    
