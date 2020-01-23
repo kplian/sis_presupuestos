@@ -38,6 +38,7 @@ $body$
   #33  ETR       18/07/2018        RAC KPLIAN        Bloquear tipos de centros de costos  no operativos
   #7   ETR       16/01/2019        RAC KPLIAN        Valdiacion de multiple gestion cuando se utilice tipos de centro de costo  
   #20  ETR       26/09/2019        RAC KPLIAN        Nuevo para metro para laznar error  o solo retornar no disponible  
+  #32  ETR       13/01/2020        RAC               Control de ejecución  presupuestaria para tipo de centro de costos no operativos issue 
 ***************************************************************************/
 
 
@@ -165,8 +166,8 @@ BEGIN
                      where  p.id_presupuesto = p_id_presupuesto;
                      
                      
-                     --#33  verificamos si el presupuesto  es operativo
-                     IF p_sw_momento  = 'comprometido' and p_monto_total_mb > 0 THEN 
+                     --#32  verificamos si el presupuesto  es operativo
+                     IF p_sw_momento  in ('comprometido','ejecutado') and p_monto_total_mb > 0 THEN   --#32 solo se gloque cuando el presupeustos esta compromotedio o ejecutado en posibitivo (reversiones son admitidas)
                          select 
                            tcc.operativo,
                            tcc.codigo 
@@ -178,12 +179,22 @@ BEGIN
                          inner join param.ttipo_cc  tcc on tcc.id_tipo_cc = cc.id_tipo_cc
                          where  p.id_presupuesto = p_id_presupuesto;
                     
-                         IF v_operativo_base  = 'no' AND p_error_en_bloqueado THEN  --#20 ++ p_error_en_bloqueado
-                            raise exception 'El Tipo de Centro de costos: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_tcc;
+                         IF v_operativo_base  = 'no'  THEN  --#20 ++ p_error_en_bloqueado
+                            IF p_error_en_bloqueado THEN
+                               raise exception 'El Tipo de Centro de costos: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_tcc;
+                            ELSE
+                               v_respuesta[6] = 'El Tipo de Centro de costos: '|| v_codigo_tcc ||' esta configurado para no permitir operaciones comuniquese con finanzas'; --#32
+                            END IF;
+                            
                          END IF; 
                          
                          IF v_operativo_techo  = 'no' AND p_error_en_bloqueado THEN --#20 ++ p_error_en_bloqueado
-                            raise exception 'El Tipo de Centro de costos techo: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_techo;
+                            IF p_error_en_bloqueado THEN
+                               raise exception 'El Tipo de Centro de costos techo: %,  esta configurado para no permitir operaciones comuniquese con finanzas', v_codigo_techo;
+                            ELSE
+                                v_respuesta[6] = 'El Tipo de Centro de costos techo: '||v_codigo_techo||'  esta configurado para no permitir operaciones comuniquese con finanzas';
+                            END IF;
+                            
                          END IF;
                          
                          IF v_operativo_base  = 'no'  OR v_operativo_techo  = 'no' THEN                          
@@ -193,8 +204,7 @@ BEGIN
                              v_respuesta[3] = 'false';
                              v_respuesta[4] = '0';
                              v_respuesta[5] = 'Bloqueado';
-                         
-                            return v_respuesta;
+                             return v_respuesta;
                          END IF;
                          
                            

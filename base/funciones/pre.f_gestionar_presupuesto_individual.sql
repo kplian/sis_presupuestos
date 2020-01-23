@@ -34,7 +34,8 @@ $body$
  COMENTARIOS:	
  
   #32  ETR       05/02/2018        RAC KPLIAN        agregar parametros de anticipo, desc_anticipo y glosa   para ampliar a mejor detalle la informacion de ejecucion presupeustaria
-  #25  PRE       15/03/2018        RAC               error al calcular tipo de cambio               
+  #25  PRE       15/03/2018        RAC               error al calcular tipo de cambio   
+  #32 ETR        09/01/2020        RAC               Control de ejecución  presupuestaria para tipo de centro de costos no operativos issue 
  
 ***************************************************************************/
 
@@ -218,7 +219,8 @@ BEGIN
                     p_id_partida, 
                     v_monto_mb, 
                     v_monto, 
-                    p_sw_momento);
+                    p_sw_momento,
+                    FALSE);-- #32 p_error_en_bloqueado, habilita  agrupacion de error
                     
             --raise exception '%-%-%-%-%-%-%', p_nro_tramite, p_id_partida_ejecucion, p_id_presupuesto , p_id_partida, v_monto_mb, v_monto, p_sw_momento;
             
@@ -228,18 +230,24 @@ BEGIN
                v_permitido = true;
             ELSE
                v_permitido = false;
+               -- #32 revisa si tenemso bloquedos de tipos de centro de costo
+               IF v_verif_pres[5] != 'Bloqueado' THEN
                
-               IF v_monto_mb > 0 THEN
-                   
-                   IF  v_monto_mb - v_error_presupuesto <= v_verif_pres[2]::numeric THEN
-                      v_monto_mb =  v_verif_pres[2]::numeric;
-                      v_permitido = true;
+                   IF v_monto_mb > 0 THEN
+                       
+                       IF  v_monto_mb - v_error_presupuesto <= v_verif_pres[2]::numeric THEN
+                          v_monto_mb =  v_verif_pres[2]::numeric;
+                          v_permitido = true;
+                       END IF;
+                   ELSE
+                       IF  (v_monto_mb*(-1)) - v_error_presupuesto  <= v_verif_pres[2]::numeric THEN
+                            v_monto_mb =  (v_verif_pres[2]::numeric)*(-1);
+                            v_permitido = true;
+                       END IF;
                    END IF;
                ELSE
-                   IF  (v_monto_mb*(-1)) - v_error_presupuesto  <= v_verif_pres[2]::numeric THEN
-                        v_monto_mb =  (v_verif_pres[2]::numeric)*(-1);
-                        v_permitido = true;
-                   END IF;
+               
+               
                END IF;
             
             END IF;
@@ -353,13 +361,25 @@ BEGIN
                 
                 v_array_resp[5] = v_verif_pres[4]::numeric; --saldo en moneda trasaccion
                 
+                IF v_verif_pres[5] = 'Bloqueado' THEN
+                   v_array_resp[6] = 1; --#32 si la posicion 6 del array es igual a 1 , significa que es un error de bloqueo
+                ELSE
+                  v_array_resp[6] = 0;
+                END IF;
+                
+                
+                
              END IF;     
      ELSE
        raise notice 'no se integra con presupuestos';
        
        v_array_resp[1] = 1;
        v_array_resp[2] = NULL;
-       v_array_resp[3] = NULL; 
+       v_array_resp[3] = NULL;
+       v_array_resp[4] = NULL; 
+       v_array_resp[5] = NULL;
+       v_array_resp[6] = 0;  --#32, 0 no es un error de bloqueo
+       
        
      END IF;
     
