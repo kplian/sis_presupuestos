@@ -11,7 +11,7 @@ HISTORIAL DE MODIFICACIONES:
 #ISSUE				FECHA				AUTOR				DESCRIPCION
 #2				 20/12/2018	        Miguel Mamani			Replicación de partidas y presupuestos
 #4				 03/01/2019	        Miguel Mamani			Relación por gestiones paridas y presupuesto e reporte de presupuesto que no figuran en gestión nueva
-
+#36              07/02/2020         JJA                     Corrección de impresión del grid en replicación de presupuesto
  **/
 
 header("content-type: text/javascript; charset=UTF-8");
@@ -74,11 +74,11 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
             config:{
                 sysorigen: 'sis_presupuestos',
                 name: 'id_presupuesto_uno',
-                fieldLabel: 'Presupuesto Act.',
+                fieldLabel: 'Presupuesto Act.', //#36
                 allowBlank: false,
                 tinit: false,
                 origen: 'PRESUPUESTO',
-                gdisplayField: 'desc_presupuesto_hijo',
+                gdisplayField: 'descripcion',
                 width: 350,
                 listWidth: 350,
                 gwidth: 350,
@@ -115,7 +115,7 @@ Phx.vista.PresupuestoIds=Ext.extend(Phx.gridInterfaz,{
                 allowBlank: false,
                 tinit: false,
                 origen: 'PRESUPUESTO',
-                gdisplayField: 'desc_presupuesto_hijo',
+                gdisplayField: 'descripcion_dos', //#36 
                 baseParams: { estado: 'borrador', sw_oficial: 'no' },
                 width: 350,
                 listWidth: 350,
