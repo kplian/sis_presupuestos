@@ -39,6 +39,8 @@ $body$
   #7   ETR       16/01/2019        RAC KPLIAN        Valdiacion de multiple gestion cuando se utilice tipos de centro de costo  
   #20  ETR       26/09/2019        RAC KPLIAN        Nuevo para metro para laznar error  o solo retornar no disponible  
   #32  ETR       13/01/2020        RAC               Control de ejecución  presupuestaria para tipo de centro de costos no operativos issue 
+  #34  ETR		 03/02/2020		   MZM				 Inclusion de round en validacion de importes para ejecucion presupuestaria	
+  #35  ETR       03/02/2020        RAC               Considerar ventana de error en la verificación de ejecución presupuestaria 
 ***************************************************************************/
 
 
@@ -338,8 +340,8 @@ BEGIN
                                           END);       
                                
                             v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
-                                  
-                            IF p_monto_total_mb <= v_saldo_mb THEN
+                            --#34    
+                            IF round(p_monto_total_mb,2) <=round( v_saldo_mb,2) THEN
                               v_respuesta[1] = 'true';
                             ELSE  
                               v_respuesta[1] = 'false';
@@ -412,16 +414,17 @@ BEGIN
                                   
                             v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
                             v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
-                                           
-                            IF p_monto_total_mb <= v_saldo_mb THEN
+							-- #34
+                            -- #35 suma ventana de error en el control 
+                            IF trunc(p_monto_total_mb,2) <= round( v_saldo_mb,2) + 0.05 THEN
                               v_respuesta[1] = 'true';
                               v_respuesta[2] = v_saldo_mb::varchar;
                             ELSE  
                               v_respuesta[1] = 'false';
                               v_respuesta[2] = v_saldo_mb::varchar;
                             END IF; 
-                                  
-                            IF p_monto_total <= v_saldo THEN
+                            --#34      
+                            IF trunc(p_monto_total,2) <= round(v_saldo,2) THEN
                               v_respuesta[3] = 'true';
                               v_respuesta[4] = v_saldo::varchar;
                             ELSE  
@@ -492,16 +495,16 @@ BEGIN
                                       
                                 v_saldo_mb =    COALESCE(v_total_ejecutado_mb,0) -   COALESCE(v_total_pagado_mb,0);
                                 v_saldo =    COALESCE(v_total_ejecutado,0) -   COALESCE(v_total_pagado,0);       
-                                               
-                                IF p_monto_total_mb <= v_saldo_mb THEN
+                                --#34               
+                                IF round(p_monto_total_mb,2) <= round(v_saldo_mb,2) THEN
                                   v_respuesta[1] = 'true';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 ELSE  
                                   v_respuesta[1] = 'false';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 END IF; 
-                                      
-                                IF p_monto_total <= v_saldo THEN
+                                --#34      
+                                IF round(p_monto_total,2) <= round(v_saldo,2) THEN
                                   v_respuesta[3] = 'true';
                                   v_respuesta[4] = v_saldo::varchar;
                                 ELSE  
@@ -585,8 +588,8 @@ BEGIN
                                           END);       
                                
                             v_saldo_mb = COALESCE(v_total_formulado_mb,0) - COALESCE(v_total_comprometido_mb,0);
-                                  
-                            IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                            --#34      
+                            IF round((p_monto_total_mb*-1),2) <= round(v_saldo_mb,2) THEN
                               v_respuesta[1] = 'true';
                             ELSE  
                               v_respuesta[1] = 'false';
@@ -660,16 +663,16 @@ BEGIN
                                       
                                 v_saldo =   COALESCE(v_total_comprometido,0) -  COALESCE(v_total_ejecutado,0);
                                 v_saldo_mb =   COALESCE(v_total_comprometido_mb,0) -  COALESCE(v_total_ejecutado_mb,0);       
-                                               
-                                IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                --#34               
+                                IF round((p_monto_total_mb*-1),2) <= round(v_saldo_mb,2) THEN
                                   v_respuesta[1] = 'true';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 ELSE  
                                   v_respuesta[1] = 'false';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 END IF; 
-                                      
-                                IF (p_monto_total*-1) <= v_saldo THEN
+                                --#34   
+                                IF round((p_monto_total*-1),2) <= round(v_saldo,2) THEN
                                   v_respuesta[3] = 'true';
                                   v_respuesta[4] = v_saldo::varchar;
                                 ELSE  
@@ -740,16 +743,16 @@ BEGIN
                                       
                                 v_saldo_mb =   COALESCE(v_total_ejecutado_mb,0) -  COALESCE(v_total_pagado_mb,0);
                                 v_saldo =   COALESCE(v_total_ejecutado,0) -  COALESCE(v_total_pagado,0);       
-                                               
-                                IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                                --#34               
+                                IF round((p_monto_total_mb*-1),2) <= round(v_saldo_mb,2) THEN
                                   v_respuesta[1] = 'true';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 ELSE  
                                   v_respuesta[1] = 'false';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                 END IF; 
-                                      
-                                IF (p_monto_total*-1) <= v_saldo THEN
+                                --#34      
+                                IF round((p_monto_total*-1),2) <= round(v_saldo,2) THEN
                                   v_respuesta[3] = 'true';
                                   v_respuesta[4] = v_saldo::varchar;
                                 ELSE  
@@ -803,16 +806,16 @@ BEGIN
                                       
                                v_saldo_mb =  COALESCE(v_total_pagado_mb,0);
                                v_saldo =   COALESCE(v_total_pagado,0);       
-                                               
-                               IF (p_monto_total_mb*-1) <= v_saldo_mb THEN
+                               --#34                
+                               IF round((p_monto_total_mb*-1),2) <= round(v_saldo_mb,2) THEN
                                   v_respuesta[1] = 'true';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                ELSE  
                                   v_respuesta[1] = 'false';
                                   v_respuesta[2] = v_saldo_mb::varchar;
                                END IF; 
-                                      
-                               IF (p_monto_total*-1) <= v_saldo THEN
+                               --#34       
+                               IF round((p_monto_total*-1),2) <= round(v_saldo,2) THEN
                                   v_respuesta[3] = 'true';
                                   v_respuesta[4] = v_saldo::varchar;
                                ELSE  
