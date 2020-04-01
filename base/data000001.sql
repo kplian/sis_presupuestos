@@ -730,3 +730,7 @@ select pxp.f_insert_testructura_gui ('RPP', 'PRE.1');
 select pxp.f_insert_tgui ('Integridad Presupuestaria', 'Integridad Presupuestaria', 'IPR', 'si', 15, 'sis_presupuestos/vista/integridad_presupuestaria/IntegridadPresupuestaria.php', 3, '', 'IntegridadPresupuestaria', 'PRE');
 select pxp.f_insert_testructura_gui ('IPR', 'REPPRE');
 /*******************************************F-DAT-MMV-PRE-1-12/02/2018***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-11-31/03/2020***********************************************/
+select pxp.f_insert_tgui ('Ejecución proyectos', 'Ejecución proyectos', 'EJEPRO', 'si', 16, 'sis_presupuestos/reportes/formulario/Partida_ejecucion_proveedor.php', 3, '', 'Partida_ejecucion_proveedor', 'PRE'); --#37
+/*******************************************F-DAT-JJA-PRE-1-31/03/2020***********************************************/

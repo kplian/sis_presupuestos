@@ -7,6 +7,8 @@
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
  * HISTORIAL DE MODIFICACIONES:
  * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
+ * #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
+ * #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -217,5 +219,29 @@ class MODPartidaEjecucion extends MODbase{
 		return $this->respuesta;
 	}
     //#11
+    function ReporteEjecucionProyecto(){ //#37
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='pre.ft_partida_ejecucion_sel';
+        $this->transaccion='PRE_EJEPRO_SEL';
+        $this->tipo_procedimiento='SEL';
+        $this-> setCount(false);
+
+        $this->captura('ceco_techo','varchar');
+        $this->captura('ceco','varchar');
+        $this->captura('partida','varchar');
+        $this->captura('clas_nivel_1','varchar');
+        $this->captura('clas_nivel_2','varchar');
+        $this->captura('clas_nivel_3','varchar');
+        $this->captura('proveedor','varchar');
+        $this->captura('tipo_costo','varchar');
+        $this->captura('fecha','date');
+        $this->captura('monto_mb','numeric');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 }
 ?>

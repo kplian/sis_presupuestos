@@ -8,8 +8,10 @@
  * HISTORIAL DE MODIFICACIONES:
  * ##11 ETR		  12/02/2019		   MMV Kplian	 R eporte Integridad presupuestaria
  * ##33 ETR		  13/01/2020		   JUAN          Corregir filtro por gestión en partida ejecución
+ * #37 ENDETR	  31/03/2020		   JUAN          Reporte ejecución de proyectos con proveedor
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
 class ACTPartidaEjecucion extends ACTbase{    
 			
 	function listarPartidaEjecucion(){
@@ -132,6 +134,36 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
     //#11
+    function ReporteEjecucionProyecto(){ //#37
+
+        if($this->objParam->getParametro('fecha_ini')){
+            $this->objParam->addFiltro(" (pe.fecha::date  >= ''".$this->objParam->getParametro('fecha_ini')."''::date )");
+        }
+        if($this->objParam->getParametro('fecha_fin')){
+            $this->objParam->addFiltro(" (pe.fecha::date  <= ''".$this->objParam->getParametro('fecha_fin')."''::date )");
+        }
+
+        $this->objFunc = $this->create('MODPartidaEjecucion');
+        $this->res = $this->objFunc->ReporteEjecucionProyecto($this->objParam);
+        $titulo = 'Ejecución Proyecto';
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+        $nombreArchivo .= '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+        $this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
+        $this->objParam->addParametro('fecha_fin', $this->objParam->getParametro('fecha_fin'));
+       // var_dump($this->res->datos);
+
+        $this->objParam->addParametro('datos', $this->res->datos);
+        //Instancia la clase de excel
+        $this->objReporteFormato = new REjecucionProyectoXls($this->objParam);
+        $this->objReporteFormato->generarDatos();
+        $this->objReporteFormato->generarReporte();
+
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
 }
 
 ?>
