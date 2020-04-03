@@ -3284,3 +3284,121 @@ AS
 
 /**********************************F-DEP-MANU-PRE-01-2/12/2019****************************************/
 
+/**********************************I-DEP-JJA-PRE-01-31/12/2020****************************************/
+select pxp.f_insert_testructura_gui ('EJEPRO', 'REPPRE'); --#37
+/**********************************F-DEP-JJA-PRE-01-31/12/2020****************************************/
+
+/**********************************I-DEP-JJA-PRE-02-31/12/2020****************************************/
+/* #37 */
+CREATE OR REPLACE VIEW pre.vpartida_ejecucion_proveedor(
+    id_int_comprobante,
+    id_origen,
+    origen,
+    num_tramite,
+    id_proveedor,
+    tipo_costo,
+    valor_id_origen,
+    proveedor,
+    columna_origen)
+AS
+WITH origen AS(
+  SELECT pp.id_int_comprobante,
+         pp.id_plan_pago AS id_origen,
+         'plan_pago'::text AS origen,
+         op.num_tramite,
+         op.id_proveedor,
+         'cd'::text AS tipo_costo,
+         'id_int_transaccion'::text AS columna_origen
+  FROM tes.tplan_pago pp
+       JOIN tes.tobligacion_pago op ON op.id_obligacion_pago =
+         pp.id_obligacion_pago
+  UNION ALL
+  SELECT ps.id_int_comprobante,
+         ps.id_pago_simple AS id_origen,
+         'pago_simple'::text AS origen,
+         ps.nro_tramite,
+         ps.id_proveedor,
+         'ci'::text AS tipo_costo,
+         'id_int_transaccion'::text AS columna_origen
+  FROM cd.tpago_simple ps
+  UNION ALL
+  SELECT ps.id_int_comprobante_pago,
+         ps.id_pago_simple AS id_origen,
+         'pago_simple'::text AS origen,
+         ps.nro_tramite,
+         ps.id_proveedor,
+         'ci'::text AS tipo_costo,
+         'id_int_transaccion'::text AS columna_origen
+  FROM cd.tpago_simple ps)
+        SELECT CASE
+                 WHEN ori.id_int_comprobante IS NULL THEN
+                   ori2.id_int_comprobante
+                 ELSE ori.id_int_comprobante
+               END AS id_int_comprobante,
+               CASE
+                 WHEN ori.id_origen IS NULL THEN ori2.id_origen
+                 ELSE ori.id_origen
+               END AS id_origen,
+               CASE
+                 WHEN ori.origen IS NULL THEN ori2.origen
+                 ELSE ori.origen
+               END AS origen,
+               CASE
+                 WHEN ori.num_tramite IS NULL THEN ori2.num_tramite
+                 ELSE ori.num_tramite
+               END AS num_tramite,
+               CASE
+                 WHEN ori.id_proveedor IS NULL THEN ori2.id_proveedor
+                 ELSE ori.id_proveedor
+               END AS id_proveedor,
+               CASE
+                 WHEN ori.tipo_costo IS NULL THEN ori2.tipo_costo
+                 ELSE ori.tipo_costo
+               END AS tipo_costo,
+               t.id_int_transaccion AS valor_id_origen,
+               prov.rotulo_comercial AS proveedor,
+               CASE
+                 WHEN ori.columna_origen IS NULL THEN ori2.columna_origen
+                 ELSE ori.columna_origen
+               END AS columna_origen
+        FROM conta.tint_transaccion t
+             LEFT JOIN origen ori ON t.id_int_comprobante =
+               ori.id_int_comprobante
+             JOIN conta.tint_comprobante comp ON comp.id_int_comprobante =
+               t.id_int_comprobante
+             JOIN conta.tclase_comprobante cl ON cl.id_clase_comprobante =
+               comp.id_clase_comprobante
+             LEFT JOIN conta.ttipo_relacion_comprobante trc ON
+               trc.id_tipo_relacion_comprobante =
+               comp.id_tipo_relacion_comprobante
+             LEFT JOIN origen ori2 ON ori2.id_int_comprobante =
+               comp.id_int_comprobante_fks [ 1 ]
+             LEFT JOIN param.tproveedor prov ON prov.id_proveedor = CASE
+                                                                      WHEN
+                                                                        ori.id_proveedor
+                                                                        IS NULL
+                                                                        THEN
+                                                                        ori2.id_proveedor
+                                                                      ELSE
+                                                                        ori.id_proveedor
+                                                                    END
+        WHERE (t.nro_tramite::text ~~ '%ADQ%'::text OR
+              t.nro_tramite::text ~~ '%LEG%'::text OR
+              t.nro_tramite::text ~~ '%PU%'::text OR
+              t.nro_tramite::text ~~ '%TES%'::text) AND
+              comp.estado_reg::text = 'validado'::text
+        UNION ALL
+        SELECT pp.id_plan_pago AS id_int_comprobante,
+               pp.id_plan_pago AS id_origen,
+               'plan_pago'::text AS origen,
+               op.num_tramite,
+               op.id_proveedor,
+               'cd'::text AS tipo_costo,
+               pp.id_plan_pago AS valor_id_origen,
+               prov.rotulo_comercial AS proveedor,
+               'id_plan_pago'::text AS columna_origen
+        FROM tes.tplan_pago pp
+             JOIN tes.tobligacion_pago op ON op.id_obligacion_pago =
+               pp.id_obligacion_pago
+             JOIN param.tproveedor prov ON prov.id_proveedor = op.id_proveedor;
+/**********************************F-DEP-JJA-PRE-02-31/12/2020****************************************/
