@@ -24,6 +24,7 @@ $body$
  #11 ETR      12/02/2019       MMV Kplian Reporte Integridad presupuestaria   
  #14 ENDETR       12/06/2019           JUAN        Incremento de columnas (Total pago, Contrato, Justificación) en reporte partida ejecución
  #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
+ #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
 ***************************************************************************/
 
 DECLARE
@@ -423,6 +424,49 @@ BEGIN
       return v_consulta;
     end;     
 
+    /*********************************
+  #TRANSACCION:  'PRE_EJEPRO_SEL' #37
+  #DESCRIPCION: Reporte de ejecucion de proyectos
+  #AUTOR:   JUAN
+  #FECHA:   31/03/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_EJEPRO_SEL')then --#37
+
+    begin
+
+      --Sentencia de la consulta de conteo de registros
+      v_consulta:='select
+                    concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo,
+                    concat(te.codigo,'' - '',te.descripcion)::varchar as ceco,
+                    concat(par.codigo, '' - '',par.nombre_partida)::varchar as partida,
+                    concat(crr2.codigo, '' - '', crr2.descripcion)::varchar as clas_nivel_1,
+                    concat(crr1.codigo, '' - '', crr1.descripcion)::varchar as clas_nivel_2,
+                    concat(crr.codigo, '' - '', crr.descripcion)::varchar as clas_nivel_3,
+                    pep.proveedor::varchar,
+                    pep.tipo_costo::varchar,
+                    pe.fecha::date,
+                    pe.monto_mb::numeric
+
+                    from pre.tpartida_ejecucion pe
+                    inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
+                    inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_raiz ra on ra.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_techo te on te.id_tipo_cc = cc.id_tipo_cc
+                    inner join pre.tpartida par on par.id_partida = pe.id_partida
+                    inner join pre.tpresupuesto pres on pres.id_presupuesto = pe.id_presupuesto
+                    left join pre.tpartida_reporte_ejecucion_dw pred on pred.id_partida = pe.id_partida and pred.id_tipo_presupuesto = pres.tipo_pres::integer
+                    left join pre.tclasificacion_reporte_dw crr on crr.id_clasificacion_reporte_dw = pred.id_clasificacion_reporte_dw
+                    left join pre.tclasificacion_reporte_dw crr1 on crr1.id_clasificacion_reporte_dw = crr.id_padre
+                    left join pre.tclasificacion_reporte_dw crr2 on crr2.id_clasificacion_reporte_dw = crr1.id_padre
+                    left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
+                    where ra.ids::varchar like (''%{2568,1549%'')
+                    and pe.tipo_movimiento = ''ejecutado'' and ';
+
+		v_consulta:=v_consulta||v_parametros.filtro;
+
+      return v_consulta;
+    end;
   else
 
     raise exception 'Transaccion inexistente';
