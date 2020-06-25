@@ -25,6 +25,7 @@ $body$
  #14 ENDETR       12/06/2019           JUAN        Incremento de columnas (Total pago, Contrato, Justificación) en reporte partida ejecución
  #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
+ #38 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
 ***************************************************************************/
 
 DECLARE
@@ -144,6 +145,7 @@ BEGIN
                                   obpg.desc_contrato::VARCHAR, -- #14
                                   obpg.obs::VARCHAR -- #14
                           from pre.vpartida_ejecucion vpe
+                          JOIN param.tcentro_costo cc ON cc.id_centro_costo = vpe.id_presupuesto --#38
                           LEFT join obligacionPago obpg on obpg.id_partida_ejecucion_com=vpe.id_partida_ejecucion -- #14
                           where  '||v_filtro_tipo_cc;
 
@@ -201,13 +203,16 @@ BEGIN
                  
       --Sentencia de la consulta de conteo de registros
       v_consulta:='select             
-                           count(id_partida_ejecucion),
-                           sum(egreso_mb) as total_egreso_mb,  
-                           sum(ingreso_mb) as total_ingreso_mb,
-                           sum(monto_anticipo_mb) as total_monto_anticipo_mb ,
-                           sum(monto_desc_anticipo_mb) as  total_monto_desc_anticipo_mb,
-                           sum( monto_iva_revertido_mb) as  total_monto_iva_revertido_mb
-                        from pre.vpartida_ejecucion
+                           count(vpe.id_partida_ejecucion),
+                           sum(vpe.egreso_mb) as total_egreso_mb,
+                           sum(vpe.ingreso_mb) as total_ingreso_mb,
+                           sum(vpe.monto_anticipo_mb) as total_monto_anticipo_mb ,
+                           sum(vpe.monto_desc_anticipo_mb) as  total_monto_desc_anticipo_mb,
+                           sum(vpe.monto_iva_revertido_mb) as  total_monto_iva_revertido_mb
+                        from pre.vpartida_ejecucion vpe
+                        JOIN param.tcentro_costo cc ON cc.id_centro_costo = vpe.id_presupuesto --#38
+
+
               where '||v_filtro_tipo_cc;
 
       --Definicion de la respuesta
