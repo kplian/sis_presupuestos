@@ -9,7 +9,7 @@
  * ##11 ETR		  12/02/2019		   MMV Kplian	 R eporte Integridad presupuestaria
  * ##33 ETR		  13/01/2020		   JUAN          Corregir filtro por gestión en partida ejecución
  * #37 ENDETR	  31/03/2020		   JUAN          Reporte ejecución de proyectos con proveedor
- * #38 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
+ * #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -51,7 +51,7 @@ class ACTPartidaEjecucion extends ACTbase{
         if($this->objParam->getParametro('id_gestion')){//#33
             //Comparando el id_gestion no lista la gestion que corresponde
             $this->objParam->addFiltro("(select EXTRACT(year from fecha::date))::integer  =  (select EXTRACT(year from g.fecha_ini) from param.tgestion g where g.id_gestion= ".$this->objParam->getParametro('id_gestion')." )::integer"); //#33  verificar para quitar este filtro ya que existe el id_gestion en el tipo cc agregado en el issue #138
-            $this->objParam->addFiltro(" cc.id_gestion= ".$this->objParam->getParametro('id_gestion')."::integer"); //#38
+            $this->objParam->addFiltro(" cc.id_gestion= ".$this->objParam->getParametro('id_gestion')."::integer"); //#138
 
         }//#33
 
