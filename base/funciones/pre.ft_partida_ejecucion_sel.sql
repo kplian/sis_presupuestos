@@ -79,8 +79,8 @@ BEGIN
                         FROM tipo_cc_rec;
                         
                         
-                        
-                        v_filtro_tipo_cc = ' id_tipo_cc in ('||v_tipo_cc||') and ';
+                        --se agrego el alias vpe al tipo cc #138
+                        v_filtro_tipo_cc = ' vpe.id_tipo_cc in ('||v_tipo_cc||') and ';
                     END IF;
                  END IF;
                  
@@ -195,8 +195,8 @@ BEGIN
                         FROM tipo_cc_rec;
                         
                         
-                        
-                        v_filtro_tipo_cc = ' id_tipo_cc in ('||v_tipo_cc||')  and ';
+                        --se agrego el alias vpe al tipo cc #138
+                        v_filtro_tipo_cc = ' vpe.id_tipo_cc in ('||v_tipo_cc||')  and ';
                     END IF;
                  END IF;
                  

@@ -28,7 +28,8 @@ class ACTPartidaEjecucion extends ACTbase{
         }
 
         if($this->objParam->getParametro('id_centro_costo')!=''){
-            $this->objParam->addFiltro("id_presupuesto = ".$this->objParam->getParametro('id_centro_costo'));
+            //se agrego el alias vpe al tipo cc #138
+            $this->objParam->addFiltro("vpe.id_presupuesto = ".$this->objParam->getParametro('id_centro_costo'));
         }
 
         if($this->objParam->getParametro('nro_tramite')!=''){
@@ -49,7 +50,7 @@ class ACTPartidaEjecucion extends ACTbase{
 
         if($this->objParam->getParametro('id_gestion')){//#33
             //Comparando el id_gestion no lista la gestion que corresponde
-            $this->objParam->addFiltro("(select EXTRACT(year from fecha::date))::integer  =  (select EXTRACT(year from g.fecha_ini) from param.tgestion g where g.id_gestion= ".$this->objParam->getParametro('id_gestion')." )::integer"); //#33
+            $this->objParam->addFiltro("(select EXTRACT(year from fecha::date))::integer  =  (select EXTRACT(year from g.fecha_ini) from param.tgestion g where g.id_gestion= ".$this->objParam->getParametro('id_gestion')." )::integer"); //#33  verificar para quitar este filtro ya que existe el id_gestion en el tipo cc agregado en el issue #138
             $this->objParam->addFiltro(" cc.id_gestion= ".$this->objParam->getParametro('id_gestion')."::integer"); //#38
 
         }//#33
