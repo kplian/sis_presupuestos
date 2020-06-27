@@ -25,7 +25,7 @@ $body$
  #14 ENDETR       12/06/2019           JUAN        Incremento de columnas (Total pago, Contrato, Justificación) en reporte partida ejecución
  #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
- #38 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
+ #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
 ***************************************************************************/
 
 DECLARE
