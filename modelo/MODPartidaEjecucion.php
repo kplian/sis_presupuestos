@@ -9,6 +9,7 @@
  * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
  * #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  * #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
+   #40 ENDETR      09/07/2020       JUAN            Agregar Numero Tramite a reporte Ejecución de proyectos
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -236,6 +237,7 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('tipo_costo','varchar');
         $this->captura('fecha','date');
         $this->captura('monto_mb','numeric');
+        $this->captura('nro_tramite','varchar'); //#40
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();

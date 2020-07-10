@@ -26,6 +26,7 @@ $body$
  #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
  #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
+ #40  ENDETR     09/07/2020           JUAN         Agregar Numero Tramite a reporte Ejecución de proyectos
 ***************************************************************************/
 
 DECLARE
@@ -451,8 +452,8 @@ BEGIN
                     pep.proveedor::varchar,
                     pep.tipo_costo::varchar,
                     pe.fecha::date,
-                    pe.monto_mb::numeric
-
+                    pe.monto_mb::numeric,
+                    pe.nro_tramite --#40
                     from pre.tpartida_ejecucion pe
                     inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
                     inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
