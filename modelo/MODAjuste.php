@@ -175,6 +175,20 @@ class MODAjuste extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+	function Editar_tipo_ajuste_formulacion(){//#39
+
+		$this->procedimiento='pre.ft_ajuste_ime';
+		$this->transaccion='PRE_ETAFORM_MOD';
+		$this->tipo_procedimiento='IME';
+				
+		$this->setParametro('id_ajuste','id_ajuste','int4');
+		$this->setParametro('tipo_ajuste_formulacion','tipo_ajuste_formulacion','varchar'); 
+		
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		return $this->respuesta;
+	}
 			
 }
 ?>

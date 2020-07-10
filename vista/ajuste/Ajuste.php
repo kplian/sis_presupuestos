@@ -60,6 +60,15 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                     tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>',
 
          });
+        this.addButton('btnTipAjusForm',{
+                    text :'Tipo/Ajuste',
+                    grupo:[0,1,2],
+                    iconCls : 'bchecklist',
+                    disabled: true,
+                    handler : this.btnTipAjusForm,
+                    tooltip: '<b>Editar</b><p>Edita solo el campo tipo ajuste de la formulación</p>',
+
+        });
          
          this.iniciarEventosForm();
          this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);//#39
@@ -307,7 +316,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				type:'NumberField',
 				filters:{ pfiltro:'aju.importe_ajuste',type:'numeric' },
 				id_grupo:1,
-				egrid: true,
+				egrid: false, //#39
 				grid:true,
 				form:true
 		},
@@ -742,6 +751,30 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 											data:{
 											   nro_tramite: rec.data.nro_tramite								  
 											}}, this.idContenedor,'ChkPresupuesto');
+			   
+	 },
+	btnTipAjusForm:function(){ //#39                 
+		var rec=this.sm.getSelected();
+
+		if(this.sm.getSelected()){
+			 console.log("ver record ",rec.data.tipo_ajuste_formulacion);
+			 console.log("ver record ",rec.data.id_ajuste);
+            Ext.Ajax.request({
+                        url: '../../sis_presupuestos/control/Ajuste/Editar_tipo_ajuste_formulacion',
+                        params: {
+                            'id_ajuste': rec.data.id_ajuste,
+                            'tipo_ajuste_formulacion': rec.data.tipo_ajuste_formulacion
+                        },
+                        success: this.respuesta,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+            });
+		}
+		else{
+			alert("Seleccione un registro para editar");
+		}
+		this.reload();
 			   
 	 },
 	

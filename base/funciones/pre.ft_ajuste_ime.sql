@@ -303,7 +303,30 @@ BEGIN
             return v_resp;
             
 		end;
+  /*********************************    
+  #TRANSACCION:  'PRE_ETAFORM_MOD'
+  #DESCRIPCION: Modificacion de solo tipo ajuste formulacion 
+  #AUTOR:   JUAN  
+  #FECHA:   10-07-2020 13:21:12
+  ***********************************/
 
+  elsif(p_transaccion='PRE_ETAFORM_MOD')then
+
+    begin
+      
+            --Sentencia de la modificacion
+      update pre.tajuste set
+                tipo_ajuste_formulacion = v_parametros.tipo_ajuste_formulacion --#39
+      where id_ajuste = v_parametros.id_ajuste;
+               
+      --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Ajuste modificado'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'id_ajuste',v_parametros.id_ajuste::varchar);
+               
+            --Devuelve la respuesta
+            return v_resp;
+            
+    end;
 	/*********************************    
  	#TRANSACCION:  'PRE_AJU_ELI'
  	#DESCRIPCION:	Eliminacion de registros
