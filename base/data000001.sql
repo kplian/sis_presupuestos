@@ -734,3 +734,11 @@ select pxp.f_insert_testructura_gui ('IPR', 'REPPRE');
 /*******************************************I-DAT-JJA-PRE-11-31/03/2020***********************************************/
 select pxp.f_insert_tgui ('Ejecución proyectos', 'Ejecución proyectos', 'EJEPRO', 'si', 16, 'sis_presupuestos/reportes/formulario/Partida_ejecucion_proveedor.php', 3, '', 'Partida_ejecucion_proveedor', 'PRE'); --#37
 /*******************************************F-DAT-JJA-PRE-1-31/03/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-11-09/07/2020***********************************************/
+select param.f_import_tcatalogo_tipo ('insert','tipo_ajuste_formulacion','PRE','tajuste'); --#39
+select param.f_import_tcatalogo ('insert','PRE','Formulación','FORM','tipo_ajuste_formulacion');--#39
+select param.f_import_tcatalogo ('insert','PRE','Reformulación','REF','tipo_ajuste_formulacion');--#39
+select param.f_import_tcatalogo ('insert','PRE','Traspaso','TRA','tipo_ajuste_formulacion');--#39
+select param.f_import_tcatalogo ('insert','PRE','Ajuste','AJU','tipo_ajuste_formulacion');--#39
+/*******************************************F-DAT-JJA-PRE-1-09/07/2020***********************************************/

@@ -21,6 +21,7 @@ $body$
    	
  ISSUE            FECHA:		      AUTOR       DESCRIPCION
  0                13/10/2017        RAC       Se aumenta el tipo de interface AjusteConsulta donde se mostraran todo los datos sin fltros
+ #39              09/07/2020        JJA       Agregar un catalogo de (tipo_presupuesto_formulacion)
 ***************************************************************************/
 
 DECLARE
@@ -97,7 +98,8 @@ BEGIN
                             aju.movimiento,
                             aju.nro_tramite as nro_tramite_aux,
                             mon.codigo as desc_moneda,
-                            mon.id_moneda
+                            mon.id_moneda,
+                            aju.tipo_ajuste_formulacion --#39
 						from pre.tajuste aju
 						inner join segu.tusuario usu1 on usu1.id_usuario = aju.id_usuario_reg
                         inner join wf.testado_wf ew on ew.id_estado_wf = aju.id_estado_wf

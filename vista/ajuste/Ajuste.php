@@ -8,6 +8,7 @@
  * 
  * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
   	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
+  	#39         ENDETR      09/07/2020           JJA                Agregar un catalogo de (tipo_presupuesto_formulacion)
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -61,6 +62,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
          });
          
          this.iniciarEventosForm();
+         this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);//#39
 	},
 			
 	Atributos:[
@@ -164,6 +166,36 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
+
+
+		{//#39
+		   config : {
+			     name : 'tipo_ajuste_formulacion',
+			     fieldLabel : '*Tipo ajuste de la formulación',
+			     anchor : '90%',
+			     tinit : false,
+			     allowBlank : true,
+			     origen : 'CATALOGO',
+			     gdisplayField : 'tipo_ajuste_formulacion',
+			     gwidth : 100,
+			     anchor : '40%',
+				 sortable: false,
+			     baseParams : {
+			     cod_subsistema : 'PRE',
+			     catalogo_tipo : 'tipo_ajuste_formulacion'},
+			     renderer : function(value, p, record) {
+					return String.format('{0}',record.data['tipo_ajuste_formulacion']);
+				}
+		   },
+		   type : 'ComboRec',
+		   id_grupo : 0,
+		   filters : {pfiltro : 'mdt.tipo_ajuste_formulacion',type : 'string'},
+		   egrid: true,
+		   grid : true,
+		   form : true
+		},
+
+
         {
             config:{
                 name:'nro_tramite_aux',
@@ -443,7 +475,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha', type: 'date', dateFormat:'Y-m-d'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'}, 
-		'importe_ajuste','movimiento','id_gestion','nro_tramite_aux','desc_moneda','id_moneda'
+		'importe_ajuste','movimiento','id_gestion','nro_tramite_aux','desc_moneda','id_moneda','tipo_ajuste_formulacion'
 		
 	],
 	sortInfo:{
@@ -678,7 +710,19 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
            this.Cmp.nro_tramite_aux.on('select',function(cmp,rec){
            	   	  this.Cmp.id_moneda.setValue(rec.data.id_moneda);
            },this);
-      
+
+           this.Cmp.tipo_ajuste.on('select',function(cmp,rec){//#39
+
+           	   if(rec.data.valor=='Incremento' || rec.data.valor=='Decremento'){
+                    this.mostrarComponente(this.Cmp.tipo_ajuste_formulacion);
+                    this.Cmp.tipo_ajuste_formulacion.allowBlank=false;
+           	   }else{
+           	   	    this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);
+           	   	    this.Cmp.tipo_ajuste_formulacion.allowBlank=true;
+           	   }
+           	   this.Cmp.tipo_ajuste_formulacion.modificado=true;
+           	   	
+           },this);
     },
     
       

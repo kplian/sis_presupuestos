@@ -147,6 +147,13 @@ Phx.vista.AjusteInicio = {
        else{
            this.ocultarComponente(this.Cmp.nro_tramite_aux);
        }
+
+       if(this.Cmp.tipo_ajuste.getValue() == 'incremento' || this.Cmp.tipo_ajuste.getValue() == 'decremento'){//#39
+            this.mostrarComponente(this.Cmp.tipo_ajuste_formulacion);
+       }else{
+            this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);
+       }
+
        this.Cmp.nro_tramite_aux.disable();
        this.Cmp.tipo_ajuste.disable();
        this.Cmp.fecha.disable();
