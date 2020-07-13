@@ -6,7 +6,8 @@ CREATE OR REPLACE FUNCTION pre.f_fun_inicio_ajuste_wf (
   p_usuario_ai varchar,
   p_id_estado_wf integer,
   p_id_proceso_wf integer,
-  p_codigo_estado varchar
+  p_codigo_estado varchar,
+  p_tipo_ajuste_formulacion varchar --#41
 )
 RETURNS boolean AS
 $body$

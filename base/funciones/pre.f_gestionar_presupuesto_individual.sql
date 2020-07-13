@@ -21,7 +21,8 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_individual (
   p_monto_iva_revertido numeric = 0::numeric,
   p_monto_anticipo_mb numeric = NULL::numeric,
   p_monto_desc_anticipo_mb numeric = NULL::numeric,
-  p_monto_iva_revertido_mb numeric = NULL::numeric
+  p_monto_iva_revertido_mb numeric = NULL::numeric,
+  p_tipo_ajuste_formulacion varchar = NULL::character varying --#41
 )
 RETURNS numeric [] AS
 $body$
