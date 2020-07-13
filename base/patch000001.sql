@@ -1320,3 +1320,8 @@ ALTER TABLE pre.tformulacion_tmp
 ALTER TABLE pre.tajuste --#39
   ADD COLUMN tipo_ajuste_formulacion VARCHAR(50);--#39
 /**********************************F-SCP-JJA-PRE-01-09/07/2020****************************************/
+
+/**********************************I-SCP-JJA-PRE-01-12/07/2020****************************************/
+ALTER TABLE pre.tpartida_ejecucion --#41
+  ADD COLUMN tipo_ajuste_formulacion VARCHAR(50); --#41
+/**********************************F-SCP-JJA-PRE-01-12/07/2020****************************************/

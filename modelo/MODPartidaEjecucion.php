@@ -10,6 +10,7 @@
  * #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  * #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
    #40 ENDETR      09/07/2020       JUAN            Agregar Numero Tramite a reporte Ejecución de proyectos
+   #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -81,6 +82,7 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('total_pago','numeric');
         $this->captura('desc_contrato','varchar');
         $this->captura('obs','varchar');
+        $this->captura('tipo_ajuste_formulacion','varchar'); //#41
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

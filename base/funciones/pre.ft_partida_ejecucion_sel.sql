@@ -27,6 +27,7 @@ $body$
  #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
  #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
  #40  ENDETR     09/07/2020           JUAN         Agregar Numero Tramite a reporte Ejecución de proyectos
+ #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 ***************************************************************************/
 
 DECLARE
@@ -144,7 +145,8 @@ BEGIN
                                   
                                   obpg.total_pago::numeric as total_pago, -- #14
                                   obpg.desc_contrato::VARCHAR, -- #14
-                                  obpg.obs::VARCHAR -- #14
+                                  obpg.obs::VARCHAR, -- #14
+                                  vpe.tipo_ajuste_formulacion --#41
                           from pre.vpartida_ejecucion vpe
                           JOIN param.tcentro_costo cc ON cc.id_centro_costo = vpe.id_presupuesto --#38
                           LEFT join obligacionPago obpg on obpg.id_partida_ejecucion_com=vpe.id_partida_ejecucion -- #14

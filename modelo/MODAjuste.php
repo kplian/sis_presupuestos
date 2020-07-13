@@ -7,7 +7,7 @@
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
  * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
   	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
- * 
+ *  #41         ENDETR      12/07/2020           JJA            Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
  * */
 
 class MODAjuste extends MODbase{
@@ -143,7 +143,7 @@ class MODAjuste extends MODbase{
         $this->setParametro('id_depto_wf','id_depto_wf','int4');		
         $this->setParametro('obs','obs','text');
         $this->setParametro('json_procesos','json_procesos','text');
-		
+		$this->setParametro('tipo_ajuste_formulacion',"tipo_ajuste_formulacion",'varchar');//#41
 
         //Ejecuta la instruccion
         $this->armarConsulta();
