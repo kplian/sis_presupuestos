@@ -6,7 +6,8 @@
 *@date 20-09-2011 10:22:05
 *@description Archivo con la interfaz de usuario que permite 
 *dar el visto a solicitudes de compra
-*
+ *  ISSUE   FORK     FECHA        AUTHOR        DESCRIPCION
+    #39         ENDETR      09/07/2020           JJA                Agregar un catalogo de (tipo_presupuesto_formulacion)
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -30,7 +31,7 @@ Phx.vista.AjusteInicio = {
      bactGroups:  [0,1,2],
      btestGroups: [0],
      bexcelGroups: [0,1,2],
-	
+
 	constructor: function(config) {
 		Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
         this.init();        
@@ -113,6 +114,8 @@ Phx.vista.AjusteInicio = {
           else{
           	 this.getBoton('chkpresupuesto').disable();
           }
+
+        this.getBoton('btnTipAjusForm').enable();//#39
           
    },
     
@@ -147,6 +150,13 @@ Phx.vista.AjusteInicio = {
        else{
            this.ocultarComponente(this.Cmp.nro_tramite_aux);
        }
+
+       if(this.Cmp.tipo_ajuste.getValue() == 'incremento' || this.Cmp.tipo_ajuste.getValue() == 'decremento'){//#39
+            this.mostrarComponente(this.Cmp.tipo_ajuste_formulacion);
+       }else{
+            this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);
+       }
+
        this.Cmp.nro_tramite_aux.disable();
        this.Cmp.tipo_ajuste.disable();
        this.Cmp.fecha.disable();

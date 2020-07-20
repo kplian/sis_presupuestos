@@ -9,6 +9,9 @@
  * #11 ETR		  12/02/2019		   MMV Kplian	Reporte Integridad presupuestaria
  * #31 ETR          07/01/2019        RAC KPLIAN     listado de tramties para ajuste de presupeusto ordenado por fecha
  * #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
+   #40 ENDETR      09/07/2020       JUAN            Agregar Numero Tramite a reporte Ejecución de proyectos
+   #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
+   #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -80,6 +83,7 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('total_pago','numeric');
         $this->captura('desc_contrato','varchar');
         $this->captura('obs','varchar');
+        $this->captura('tipo_ajuste_formulacion','varchar'); //#41
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -236,6 +240,7 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('tipo_costo','varchar');
         $this->captura('fecha','date');
         $this->captura('monto_mb','numeric');
+        $this->captura('nro_tramite','varchar'); //#40
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -243,5 +248,46 @@ class MODPartidaEjecucion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+	function listarTipoCentroCosto(){ //#42
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_TCENCOS_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		
+		$this->capturaCount('total_mov_egreso_mb','numeric');
+		$this->capturaCount('total_mov_ingreso_mb','numeric');
+		
+        $this->captura('ceco','varchar'); 
+        $this->captura('fecha_inicio','date');
+        $this->captura('fecha_final','date');
+        $this->captura('operativo','varchar');
+	    $this->captura('nivel','int4');
+	    $this->captura('formulacion_egreso_mb','numeric');
+	    $this->captura('formulacion_ingreso_mb','numeric');
+        $this->captura('tipo_nodo','varchar');
+        $this->captura('mov_ingreso','varchar');
+        $this->captura('mov_egreso','varchar');
+
+
+        $this->captura('control_partida','varchar');
+        $this->captura('control_techo','varchar');
+	    $this->captura('sueldo_planta','varchar');
+	    $this->captura('sueldo_obradet','varchar');
+        $this->captura('usuario_reg','varchar');
+        $this->captura('usuario_mod','varchar');
+        $this->captura('fecha_reg','date');
+        $this->captura('fecha_mod','date');
+        $this->captura('gestion','int4');
+        $this->captura('id_tipo_cc','int4');
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>

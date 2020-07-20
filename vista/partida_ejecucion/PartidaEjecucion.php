@@ -5,6 +5,8 @@
 *@author  (gvelasquez)
 *@date 03-10-2016 15:47:23
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
+ 
+ #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 */
 
 header("content-type: text/javascript; charset=UTF-8");
@@ -374,6 +376,32 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+		{//#41
+		   config : {
+			     name : 'tipo_ajuste_formulacion',
+			     fieldLabel : '*Tipo ajuste de la formulación',
+			     anchor : '90%',
+			     tinit : false,
+			     allowBlank : true,
+			     origen : 'CATALOGO',
+			     gdisplayField : 'tipo_ajuste_formulacion',
+			     gwidth : 100,
+			     anchor : '40%',
+				 sortable: false,
+			     baseParams : {
+			     cod_subsistema : 'PRE',
+			     catalogo_tipo : 'tipo_ajuste_formulacion'},
+			     renderer : function(value, p, record) {
+					return String.format('{0}',record.data['tipo_ajuste_formulacion']);
+				}
+		   },
+		   type : 'ComboRec',
+		   id_grupo : 0,
+		   filters : {pfiltro : 'mdt.tipo_ajuste_formulacion',type : 'string'},
+		   egrid: false,
+		   grid : true,
+		   form : true
+		},
 		{
 			config:{
 				name: 'total_pago',
@@ -683,7 +711,8 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 
 		'total_pago',
 		'desc_contrato',
-		'obs'
+		'obs',
+		'tipo_ajuste_formulacion' //#41
 		
 	],
 	

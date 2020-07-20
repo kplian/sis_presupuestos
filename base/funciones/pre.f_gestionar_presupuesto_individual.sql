@@ -21,7 +21,8 @@ CREATE OR REPLACE FUNCTION pre.f_gestionar_presupuesto_individual (
   p_monto_iva_revertido numeric = 0::numeric,
   p_monto_anticipo_mb numeric = NULL::numeric,
   p_monto_desc_anticipo_mb numeric = NULL::numeric,
-  p_monto_iva_revertido_mb numeric = NULL::numeric
+  p_monto_iva_revertido_mb numeric = NULL::numeric,
+  p_tipo_ajuste_formulacion varchar = NULL::character varying --#41
 )
 RETURNS numeric [] AS
 $body$
@@ -36,7 +37,7 @@ $body$
   #32  ETR       05/02/2018        RAC KPLIAN        agregar parametros de anticipo, desc_anticipo y glosa   para ampliar a mejor detalle la informacion de ejecucion presupeustaria
   #25  PRE       15/03/2018        RAC               error al calcular tipo de cambio   
   #32 ETR        09/01/2020        RAC               Control de ejecución  presupuestaria para tipo de centro de costos no operativos issue 
- 
+  #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 ***************************************************************************/
 
 
@@ -310,7 +311,8 @@ BEGIN
                                             monto_desc_anticipo_mb,
                                             monto_iva_revertido,
                                             monto_iva_revertido_mb,
-                                            glosa
+                                            glosa,
+                                            tipo_ajuste_formulacion --#41
                                          )
                                          VALUES (
                                             p_id_usuario,
@@ -335,7 +337,8 @@ BEGIN
                                             v_monto_desc_anticipo_mb,
                                             p_monto_iva_revertido,
                                             v_monto_iva_revertido_mb,
-                                            p_glosa
+                                            p_glosa,
+                                            p_tipo_ajuste_formulacion --#41
                                             
                                           ) RETURNING id_partida_ejecucion into v_id_partida_ejecucion;
                  

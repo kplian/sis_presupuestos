@@ -2,6 +2,7 @@
 /**
 * HISTORIAL DE MODIFICACIONES:
   #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
+  #40 ENDETR      09/07/2020       JUAN            Agregar Numero Tramite a reporte Ejecución de proyectos
  */
 class REjecucionProyectoXls
 {
@@ -101,11 +102,11 @@ class REjecucionProyectoXls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN DE PROYECTOS ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:K2')->applyFromArray($styleTitulos1);
-        $this->docexcel->getActiveSheet()->mergeCells('A2:K2');
+        $this->docexcel->getActiveSheet()->getStyle('A2:L2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:L2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:K3')->applyFromArray($styleTitulosFecha);
-        $this->docexcel->getActiveSheet()->mergeCells('A3:K3');
+        $this->docexcel->getActiveSheet()->getStyle('A3:L3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:L3');//#40
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
 
         $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(25);
@@ -118,6 +119,7 @@ class REjecucionProyectoXls
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(30); //#40
         /*$this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(30);
@@ -128,8 +130,8 @@ class REjecucionProyectoXls
 
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:K5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:K5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:L5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:L5')->applyFromArray($styleTitulos2);
 
 
 
@@ -145,6 +147,7 @@ class REjecucionProyectoXls
         $this->docexcel->getActiveSheet()->setCellValue('I5','TIPO COSTO');
         $this->docexcel->getActiveSheet()->setCellValue('J5','FECHA');
         $this->docexcel->getActiveSheet()->setCellValue('K5','MONTO MB');
+        $this->docexcel->getActiveSheet()->setCellValue('L5','NRO. TRAMITE');//#40
 
         /*$this->docexcel->getActiveSheet()->setCellValue('J5','SUBTOTAL C = A - B');
         if($datos[0]['gestion']<2017) {
@@ -188,6 +191,7 @@ class REjecucionProyectoXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['tipo_costo']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['fecha']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['monto_mb']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['nro_tramite']);//#40
             $fila++;
             $this->numero++;
         }

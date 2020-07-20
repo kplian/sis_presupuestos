@@ -6,7 +6,8 @@ CREATE OR REPLACE FUNCTION pre.f_fun_inicio_ajuste_wf (
   p_usuario_ai varchar,
   p_id_estado_wf integer,
   p_id_proceso_wf integer,
-  p_codigo_estado varchar
+  p_codigo_estado varchar,
+  p_tipo_ajuste_formulacion varchar --#41
 )
 RETURNS boolean AS
 $body$
@@ -22,6 +23,7 @@ $body$
  0				12/10/2017			RAC			Validacion para comprometer o revertir presupuesto
  #25 PRE        15/03/2018          RAC         BUG, ajsute comprometido dolares
  #26            03/01/2020          RAC         Corregir mensaje de error en ajustes presupuestarios para mostrar el monto faltante en la moneda base
+ #41 ENDETR     12/07/2020          JJA         Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 ***************************************************************************/
 
 
@@ -165,7 +167,15 @@ BEGIN
                                                 v_registros_det.id_ajuste_det, 
                                                 v_registros.nro_tramite, 
                                                 NULL,
-                                                v_registros_det.importe);
+                                                v_registros_det.importe,
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                p_tipo_ajuste_formulacion); --#41
                                                 
                                                 
                                                 
@@ -243,7 +253,15 @@ BEGIN
                                                 v_registros_det.id_ajuste_det, 
                                                 v_registros.nro_tramite, 
                                                 NULL,
-                                                v_registros_det.importe);
+                                                v_registros_det.importe,
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                p_tipo_ajuste_formulacion); --#41
                                                 
                                                 
                                                 
@@ -326,7 +344,17 @@ BEGIN
                                                 NULL, --p_id_partida_ejecucion
                                                 'id_ajuste_det', 
                                                 v_registros_det.id_ajuste_det, 
-                                                v_registros.nro_tramite);
+                                                v_registros.nro_tramite,
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                NULL, --#41
+                                                p_tipo_ajuste_formulacion);--#41
                                                 
                                                 
                                                 

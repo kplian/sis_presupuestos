@@ -8,6 +8,8 @@
  * 
  * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
   	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
+  	#39         ENDETR      09/07/2020           JJA                Agregar un catalogo de (tipo_presupuesto_formulacion)
+  	#41         ENDETR      12/07/2020           JJA            Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -59,8 +61,18 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                     tooltip: '<b>Revisar Presupuesto</b><p>Revisar estado de ejecución presupeustaria para el tramite</p>',
 
          });
+        this.addButton('btnTipAjusForm',{
+                    text :'Tipo/Ajuste',
+                    //grupo:[0,1,2],
+                    iconCls : 'bchecklist',
+                    disabled: true,
+                    handler : this.btnTipAjusForm,
+                    tooltip: '<b>Editar</b><p>Edita solo el campo tipo ajuste de la formulación</p>',
+
+        });
          
          this.iniciarEventosForm();
+         this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);//#39
 	},
 			
 	Atributos:[
@@ -164,6 +176,36 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
             grid:true,
             form:true
         },
+
+
+		{//#39
+		   config : {
+			     name : 'tipo_ajuste_formulacion',
+			     fieldLabel : '*Tipo ajuste de la formulación',
+			     anchor : '90%',
+			     tinit : false,
+			     allowBlank : true,
+			     origen : 'CATALOGO',
+			     gdisplayField : 'tipo_ajuste_formulacion',
+			     gwidth : 100,
+			     anchor : '40%',
+				 sortable: false,
+			     baseParams : {
+			     cod_subsistema : 'PRE',
+			     catalogo_tipo : 'tipo_ajuste_formulacion'},
+			     renderer : function(value, p, record) {
+					return String.format('{0}',record.data['tipo_ajuste_formulacion']);
+				}
+		   },
+		   type : 'ComboRec',
+		   id_grupo : 0,
+		   filters : {pfiltro : 'mdt.tipo_ajuste_formulacion',type : 'string'},
+		   egrid: true,
+		   grid : true,
+		   form : true
+		},
+
+
         {
             config:{
                 name:'nro_tramite_aux',
@@ -275,7 +317,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 				type:'NumberField',
 				filters:{ pfiltro:'aju.importe_ajuste',type:'numeric' },
 				id_grupo:1,
-				egrid: true,
+				egrid: false, //#39
 				grid:true,
 				form:true
 		},
@@ -443,7 +485,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha', type: 'date', dateFormat:'Y-m-d'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'}, 
-		'importe_ajuste','movimiento','id_gestion','nro_tramite_aux','desc_moneda','id_moneda'
+		'importe_ajuste','movimiento','id_gestion','nro_tramite_aux','desc_moneda','id_moneda','tipo_ajuste_formulacion'
 		
 	],
 	sortInfo:{
@@ -585,6 +627,7 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
                                  });        
      },
     onSaveWizard:function(wizard,resp){
+
         Phx.CP.loadingShow();
         Ext.Ajax.request({
             url: '../../sis_presupuestos/control/Ajuste/siguienteEstadoAjuste',
@@ -597,7 +640,8 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 	                id_funcionario_wf:  resp.id_funcionario_wf,
 	                id_depto_wf:        resp.id_depto_wf,
 	                obs:                resp.obs,
-	                json_procesos:      Ext.util.JSON.encode(resp.procesos)
+	                json_procesos:      Ext.util.JSON.encode(resp.procesos),
+	                tipo_ajuste_formulacion: this.sm.getSelected().data.tipo_ajuste_formulacion //#41
                 },
             success: this.successWizard,
             failure: this.conexionFailure, //chequea si esta en verificacion presupeusto para enviar correo de transferencia
@@ -678,7 +722,19 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
            this.Cmp.nro_tramite_aux.on('select',function(cmp,rec){
            	   	  this.Cmp.id_moneda.setValue(rec.data.id_moneda);
            },this);
-      
+
+           this.Cmp.tipo_ajuste.on('select',function(cmp,rec){//#39
+
+           	   if(rec.data.valor=='Incremento' || rec.data.valor=='Decremento'){
+                    this.mostrarComponente(this.Cmp.tipo_ajuste_formulacion);
+                    this.Cmp.tipo_ajuste_formulacion.allowBlank=false;
+           	   }else{
+           	   	    this.ocultarComponente(this.Cmp.tipo_ajuste_formulacion);
+           	   	    this.Cmp.tipo_ajuste_formulacion.allowBlank=true;
+           	   }
+           	   this.Cmp.tipo_ajuste_formulacion.modificado=true;
+           	   	
+           },this);
     },
     
       
@@ -698,6 +754,28 @@ Phx.vista.Ajuste=Ext.extend(Phx.gridInterfaz,{
 											data:{
 											   nro_tramite: rec.data.nro_tramite								  
 											}}, this.idContenedor,'ChkPresupuesto');
+			   
+	 },
+	btnTipAjusForm:function(){ //#39                 
+		var rec=this.sm.getSelected();
+
+		if(this.sm.getSelected()){
+            Ext.Ajax.request({
+                        url: '../../sis_presupuestos/control/Ajuste/Editar_tipo_ajuste_formulacion',
+                        params: {
+                            'id_ajuste': rec.data.id_ajuste,
+                            'tipo_ajuste_formulacion': rec.data.tipo_ajuste_formulacion
+                        },
+                        success: this.respuesta,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+            });
+		}
+		else{
+			alert("Seleccione un registro para editar");
+		}
+		this.reload();
 			   
 	 },
 	

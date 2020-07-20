@@ -23,7 +23,8 @@ HISTORIAL DE MODIFICACIONES:
  0                10/10/2017        RAC          Consirerar inserciones de ajustes de comprometido en PRE_AJU_INS
  0                12/10/2017        RAC          validar inc y rev de comproemtido al cambiar de estado en  PRE_SIGAJT_IME
  #31 endeETR      07/01/2020        RAC KPLIAN   modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
- 
+ #39 ENDETR       09/07/2020        JJA          Agregar un catalogo de (tipo_presupuesto_formulacion)
+ #41  ENDETR      12/07/2020        JJA            Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
 ***************************************************************************/
 
 DECLARE
@@ -144,7 +145,8 @@ BEGIN
               id_gestion,
               importe_ajuste,
               movimiento,
-              id_moneda
+              id_moneda,
+              tipo_ajuste_formulacion --#39
           	) values(              
               'activo',
               'borrador',
@@ -158,7 +160,8 @@ BEGIN
               v_id_gestion,
               v_parametros.importe_ajuste,
               v_parametros.movimiento,
-              v_id_moneda
+              v_id_moneda,
+              v_parametros.tipo_ajuste_formulacion --#39
 		  )RETURNING id_ajuste into v_id_ajuste;
             
         -- iniciar el tramite en el sistema de WF
@@ -289,7 +292,8 @@ BEGIN
                 id_usuario_ai = v_parametros._id_usuario_ai,
                 usuario_ai = v_parametros._nombre_usuario_ai,
                 importe_ajuste = v_parametros.importe_ajuste,
-                movimiento = v_parametros.movimiento
+                movimiento = v_parametros.movimiento,
+                tipo_ajuste_formulacion = v_parametros.tipo_ajuste_formulacion --#39
 			where id_ajuste = v_parametros.id_ajuste;
                
 			--Definicion de la respuesta
@@ -300,7 +304,30 @@ BEGIN
             return v_resp;
             
 		end;
+  /*********************************    
+  #TRANSACCION:  'PRE_ETAFORM_MOD'
+  #DESCRIPCION: Modificacion de solo tipo ajuste formulacion 
+  #AUTOR:   JUAN  
+  #FECHA:   10-07-2020 13:21:12
+  ***********************************/
 
+  elsif(p_transaccion='PRE_ETAFORM_MOD')then
+
+    begin
+      
+            --Sentencia de la modificacion
+      update pre.tajuste set
+                tipo_ajuste_formulacion = v_parametros.tipo_ajuste_formulacion --#39
+      where id_ajuste = v_parametros.id_ajuste;
+               
+      --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Ajuste modificado'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'id_ajuste',v_parametros.id_ajuste::varchar);
+               
+            --Devuelve la respuesta
+            return v_resp;
+            
+    end;
 	/*********************************    
  	#TRANSACCION:  'PRE_AJU_ELI'
  	#DESCRIPCION:	Eliminacion de registros
@@ -610,7 +637,9 @@ BEGIN
                                             v_parametros._nombre_usuario_ai, 
                                             v_id_estado_actual, 
                                             v_id_proceso_wf, 
-                                            v_codigo_estado_siguiente) THEN
+                                            v_codigo_estado_siguiente,
+                                            v_parametros.tipo_ajuste_formulacion --#41
+                                            ) THEN
           
                                               
           END IF;
