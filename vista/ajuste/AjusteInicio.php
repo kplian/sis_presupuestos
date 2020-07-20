@@ -8,6 +8,7 @@
 *dar el visto a solicitudes de compra
  *  ISSUE   FORK     FECHA        AUTHOR        DESCRIPCION
     #39         ENDETR      09/07/2020           JJA                Agregar un catalogo de (tipo_presupuesto_formulacion)
+    #43 ENDETR       20/07/2020        JJA           Editar columna tipo_ajuste_formulacion en estado finalizados de tabla ajuste y partida ejecución
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -31,6 +32,7 @@ Phx.vista.AjusteInicio = {
      bactGroups:  [0,1,2],
      btestGroups: [0],
      bexcelGroups: [0,1,2],
+     bexcelGroups: [0,1,2,3], //#43
 
 	constructor: function(config) {
 		Phx.vista.AjusteInicio.superclass.constructor.call(this,config);
