@@ -5,6 +5,8 @@
 *@author  (admin)
 *@date 13-04-2016 13:21:12
 *@description Clase que recibe los parametros enviados por la vista para mandar a la capa de Modelo
+* ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
+  #39         ENDETR      09/07/2020           JJA                Agregar un catalogo de (tipo_presupuesto_formulacion)
 */
 
 class ACTAjuste extends ACTbase{    
@@ -59,6 +61,11 @@ class ACTAjuste extends ACTbase{
    function anteriorEstadoAjuste(){
         $this->objFunc=$this->create('MODAjuste');  
         $this->res=$this->objFunc->anteriorEstadoAjuste($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+   function Editar_tipo_ajuste_formulacion(){//#39
+        $this->objFunc=$this->create('MODAjuste');  
+        $this->res=$this->objFunc->Editar_tipo_ajuste_formulacion($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 			

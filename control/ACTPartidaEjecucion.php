@@ -10,6 +10,7 @@
  * ##33 ETR		  13/01/2020		   JUAN          Corregir filtro por gestión en partida ejecución
  * #37 ENDETR	  31/03/2020		   JUAN          Reporte ejecución de proyectos con proveedor
  * #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
+   #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -167,6 +168,59 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+    function listarTipoCentroCosto(){//#42
+       /* $this->objParam->defecto('ordenacion','orden');
+        $this->objParam->defecto('dir_ordenacion','asc');*/
+
+        if($this->objParam->getParametro('desde')){
+            $this->objParam->addFiltro("(tcc.fecha_inicio  >= ''%".$this->objParam->getParametro('desde')."%''::date  or cc.id_gestion is NULL )");
+        }
+
+        if($this->objParam->getParametro('hasta')){
+            $this->objParam->addFiltro("(tcc.fecha_final  <= ''%".$this->objParam->getParametro('hasta')."%''::date  or cc.id_gestion is NULL )");
+        }
+        if($this->objParam->getParametro('id_gestion')){
+            $this->objParam->addFiltro("(cc.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer or cc.id_gestion is NULL)"); 
+        }
+        if($this->objParam->getParametro('operativo') !='todos'){
+            $this->objParam->addFiltro("(tcc.operativo::varchar =  ''".$this->objParam->getParametro('operativo')."''::varchar or cc.id_gestion is NULL)"); 
+        }
+        if($this->objParam->getParametro('sueldo_planta') !='todos'){
+            $this->objParam->addFiltro("(tcc.sueldo_planta::varchar =  ''".$this->objParam->getParametro('sueldo_planta')."''::varchar or cc.id_gestion is NULL)"); 
+        }
+        if($this->objParam->getParametro('sueldo_obradet') !='todos'){
+            $this->objParam->addFiltro("(tcc.sueldo_obradet::varchar =  ''".$this->objParam->getParametro('sueldo_obradet')."''::varchar or cc.id_gestion is NULL)");
+        }
+        if($this->objParam->getParametro('mov_ingreso') !='todos'){
+            $this->objParam->addFiltro("(tcc.mov_ingreso::varchar =  ''".$this->objParam->getParametro('mov_ingreso')."''::varchar or cc.id_gestion is NULL)");
+        }
+        if($this->objParam->getParametro('mov_egreso') !='todos'){
+            $this->objParam->addFiltro("(tcc.mov_egreso::varchar =  ''".$this->objParam->getParametro('mov_egreso')."''::varchar or cc.id_gestion is NULL)");
+        }
+        
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','listarTipoCentroCosto');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+            
+            $this->res=$this->objFunc->listarTipoCentroCosto($this->objParam);
+        }
+
+        //adicionar una fila al resultado con el summario
+        $temp = Array();
+        $temp['formulacion_egreso_mb'] = $this->res->extraData['total_mov_egreso_mb'];
+        $temp['formulacion_ingreso_mb'] = $this->res->extraData['total_mov_ingreso_mb'];
+
+        $temp['tipo_reg'] = 'summary';
+        $temp['id_tipo_cc'] = 0;
+        
+        $this->res->total++;
+        
+        $this->res->addLastRecDatos($temp);
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 }
 

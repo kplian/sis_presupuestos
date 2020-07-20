@@ -7,7 +7,7 @@
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
  * 	ISSUE		FORK		 FECHA				AUTHOR 				DESCRIPCION
   	#31			endeETR		07/01/2020			 RAC KPLIAN   	Modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
- * 
+ *  #41         ENDETR      12/07/2020           JJA            Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
  * */
 
 class MODAjuste extends MODbase{
@@ -49,7 +49,7 @@ class MODAjuste extends MODbase{
 		$this->captura('nro_tramite_aux','varchar');
 		$this->captura('desc_moneda','varchar');
 		$this->captura('id_moneda','int4');
-		
+		$this->captura('tipo_ajuste_formulacion','varchar');//#39
 		
 		
 		//Ejecuta la instruccion
@@ -74,7 +74,7 @@ class MODAjuste extends MODbase{
 		$this->setParametro('movimiento','movimiento','varchar');
 		$this->setParametro('nro_tramite_aux','nro_tramite_aux','varchar');
 		$this->setParametro('id_moneda','id_moneda','int4');//#31
-		
+		$this->setParametro('tipo_ajuste_formulacion','tipo_ajuste_formulacion','varchar'); //#39
 		
 		
 		//Ejecuta la instruccion
@@ -99,6 +99,8 @@ class MODAjuste extends MODbase{
 		$this->setParametro('importe_ajuste','importe_ajuste','numeric');
 		$this->setParametro('movimiento','movimiento','varchar');
 		$this->setParametro('nro_tramite_aux','nro_tramite_aux','varchar');
+		$this->setParametro('tipo_ajuste_formulacion','tipo_ajuste_formulacion','varchar'); //#39
+		
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -141,7 +143,7 @@ class MODAjuste extends MODbase{
         $this->setParametro('id_depto_wf','id_depto_wf','int4');		
         $this->setParametro('obs','obs','text');
         $this->setParametro('json_procesos','json_procesos','text');
-		
+		$this->setParametro('tipo_ajuste_formulacion',"tipo_ajuste_formulacion",'varchar');//#41
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -173,6 +175,20 @@ class MODAjuste extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+	function Editar_tipo_ajuste_formulacion(){//#39
+
+		$this->procedimiento='pre.ft_ajuste_ime';
+		$this->transaccion='PRE_ETAFORM_MOD';
+		$this->tipo_procedimiento='IME';
+				
+		$this->setParametro('id_ajuste','id_ajuste','int4');
+		$this->setParametro('tipo_ajuste_formulacion','tipo_ajuste_formulacion','varchar'); 
+		
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		return $this->respuesta;
+	}
 			
 }
 ?>
