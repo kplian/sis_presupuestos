@@ -3527,3 +3527,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER, TRUNCATE
 GRANT SELECT
   ON pre.vpartida_ejecucion TO lectura;
 /**********************************F-DEP-JJA-PRE-02-12/07/2020****************************************/
+
+
+/**********************************I-DEP-JJA-PRE-02-17/07/2020****************************************/ 
+select pxp.f_insert_testructura_gui ('TIPCENCOS', 'REPPRE'); -- #42
+/**********************************F-DEP-JJA-PRE-02-17/07/2020****************************************/

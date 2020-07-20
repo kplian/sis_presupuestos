@@ -742,3 +742,7 @@ select param.f_import_tcatalogo ('insert','PRE','Reformulación','REF','tipo_aju
 select param.f_import_tcatalogo ('insert','PRE','Traspaso','TRA','tipo_ajuste_formulacion');--#39
 select param.f_import_tcatalogo ('insert','PRE','Ajuste','AJU','tipo_ajuste_formulacion');--#39
 /*******************************************F-DAT-JJA-PRE-1-09/07/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-11-17/07/2020***********************************************/
+select pxp.f_insert_tgui ('Tipo centro de costo', 'Tipo centro de costo', 'TIPCENCOS', 'si', 17, 'sis_presupuestos/reportes/formulario/Tipo_centro_costo.php', 3, '', 'Tipo_centro_costo', 'PRE'); --#42
+/*******************************************F-DAT-JJA-PRE-1-17/07/2020***********************************************/
