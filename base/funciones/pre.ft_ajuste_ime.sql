@@ -25,6 +25,7 @@ HISTORIAL DE MODIFICACIONES:
  #31 endeETR      07/01/2020        RAC KPLIAN   modificar Interface te ajuste para determine el id_moneda desde la  vista y mandar como parámetro al modelo y base de datos para la inserción y/o modificación del registro
  #39 ENDETR       09/07/2020        JJA          Agregar un catalogo de (tipo_presupuesto_formulacion)
  #41  ENDETR      12/07/2020        JJA            Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
+ #43 ENDETR       20/07/2020        JJA           Editar columna tipo_ajuste_formulacion en estado finalizados de tabla ajuste y partida ejecución
 ***************************************************************************/
 
 DECLARE
@@ -319,6 +320,16 @@ BEGIN
       update pre.tajuste set
                 tipo_ajuste_formulacion = v_parametros.tipo_ajuste_formulacion --#39
       where id_ajuste = v_parametros.id_ajuste;
+
+      select --#43
+      aj.nro_tramite
+      into v_num_tramite 
+      from pre.tajuste aj  
+      where id_ajuste = v_parametros.id_ajuste; 
+      
+      update pre.tpartida_ejecucion --#43
+      set tipo_ajuste_formulacion = (select tipo_ajuste_formulacion from pre.tajuste where id_ajuste = v_parametros.id_ajuste)::varchar 
+      where nro_tramite=v_num_tramite;
                
       --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Ajuste modificado'); 
