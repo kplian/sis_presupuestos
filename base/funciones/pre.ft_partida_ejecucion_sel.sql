@@ -581,7 +581,11 @@ BEGIN
                   left join param.tcentro_costo cc on cc.id_tipo_cc = tcc.id_tipo_cc
                   left join pre.vpartida_ejecucion vpe on vpe.id_centro_costo=cc.id_centro_costo
                   and vpe.tipo_movimiento=''formulado''
-   
+
+                  left join segu.tusuario ur on ur.id_usuario = tcc.id_usuario_reg --#44
+                  left join segu.tusuario um on um.id_usuario = tcc.id_usuario_mod --#44
+                  left join param.tgestion g on g.id_gestion=cc.id_gestion --#44
+                  
                   where 0=0
                   
                   AND '||v_filtro_tipo_cc||' ';
