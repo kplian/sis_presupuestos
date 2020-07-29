@@ -7,6 +7,7 @@
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
   ISSUE            FECHA:          AUTOR       DESCRIPCION
  #42  ENDETR    17/07/2020        JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
+ #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
 */
 
 header("content-type: text/javascript; charset=UTF-8");
@@ -72,10 +73,12 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4
+				maxLength:4,
+				format: 'd/m/Y', 
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
-			type:'Field',
-			filters:{pfiltro:'fecha_inicio',type:'string'},
+			type:'DateField',
+			filters:{pfiltro:'fecha_inicio',type:'date'},
 			id_grupo:1,
 			grid:true,
 			form:false
@@ -87,10 +90,12 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:4
+				maxLength:4,
+                format: 'd/m/Y', 
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
-				type:'Field',
-				filters:{pfiltro:'fecha_final',type:'string'},
+				type:'DateField',
+				filters:{pfiltro:'fecha_final',type:'date'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -104,8 +109,83 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 70,
 				maxLength:4
 			},
+				type:'NumberField', //#44
+				filters:{pfiltro:'gestion',type:'numeric'}, //#44
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{ //#44
+			config:{
+				name: 'nombre_programa',
+				fieldLabel: 'Programa',
+				allowBlank: true,
+				anchor: '100%',
+				gwidth: 70,
+				maxLength:4
+			},
 				type:'Field',
-				filters:{pfiltro:'gestion',type:'string'},
+				filters:{pfiltro:'tcc.nombre_programa',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{ //#44
+			config:{
+				name: 'nombre_proyecto',
+				fieldLabel: 'Proyecto',
+				allowBlank: true,
+				anchor: '100%',
+				gwidth: 70,
+				maxLength:4
+			},
+				type:'Field',
+				filters:{pfiltro:'tcc.nombre_proyecto',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{ //#44
+			config:{
+				name: 'nombre_actividad',
+				fieldLabel: 'Actividad',
+				allowBlank: true,
+				anchor: '100%',
+				gwidth: 70,
+				maxLength:4
+			},
+				type:'Field',
+				filters:{pfiltro:'tcc.nombre_actividad',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{ //#44
+			config:{
+				name: 'nombre_regional',
+				fieldLabel: 'Regional',
+				allowBlank: true,
+				anchor: '100%',
+				gwidth: 70,
+				maxLength:4
+			},
+				type:'Field',
+				filters:{pfiltro:'tcc.nombre_regional',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		{ //#44
+			config:{
+				name: 'nombre_financiador',
+				fieldLabel: 'Financiador',
+				allowBlank: true,
+				anchor: '100%',
+				gwidth: 70,
+				maxLength:4
+			},
+				type:'Field',
+				filters:{pfiltro:'tcc.nombre_financiador',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -134,8 +214,8 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 70,
 				maxLength:4
 			},
-				type:'Field',
-				filters:{pfiltro:'nivel',type:'string'},
+				type:'NumberField',
+				filters:{pfiltro:'tcc.nivel',type:'numeric'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -158,7 +238,7 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				}
 			},
 				type:'NumberField',
-				filters:{pfiltro:'formulacion_egreso_mb',type:'numeric'},
+				filters:{pfiltro:'vpe.egreso_mb',type:'numeric'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -181,7 +261,7 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				}
 			},
 				type:'NumberField',
-				filters:{pfiltro:'formulacion_ingreso_mb',type:'numeric'},
+				filters:{pfiltro:'vpe.ingreso_mb',type:'numeric'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -196,7 +276,7 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'Field',
-				filters:{pfiltro:'tipo_nodo',type:'string'},
+				filters:{pfiltro:'tcc.movimiento',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -301,7 +381,7 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'Field',
-				filters:{pfiltro:'usuario_reg',type:'string'},
+				filters:{pfiltro:'ur.cuenta',type:'string'},//#44
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -316,7 +396,7 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				maxLength:4
 			},
 				type:'Field',
-				filters:{pfiltro:'usuario_mod',type:'string'},
+				filters:{pfiltro:'um.cuenta',type:'string'}, //#44
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -328,10 +408,12 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+			    format: 'd/m/Y', 
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
-				type:'Field',
-				filters:{pfiltro:'fecha_reg',type:'string'},
+				type:'DateField',
+				filters:{pfiltro:'tcc.fecha_reg',type:'date'},//#44
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -343,10 +425,12 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+			    format: 'd/m/Y', 
+				renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
-				type:'Field',
-				filters:{pfiltro:'fecha_mod',type:'string'},
+				type:'DateField',
+				filters:{pfiltro:'tcc.fecha_mod',type:'date'},//#44
 				id_grupo:1,
 				grid:true,
 				form:false
@@ -366,11 +450,11 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 
         {name:'id_tipo_cc', type: 'numeric'},
 		{name:'ceco', type: 'string'},
-		{name:'fecha_inicio', type: 'string'},
-		{name:'fecha_final', type: 'string'},
+		{name:'fecha_inicio', type: 'date',dateFormat:'Y-m-d'},//#44
+		{name:'fecha_final', type: 'date',dateFormat:'Y-m-d'},//#44
 
 		{name:'operativo', type: 'string'},
-		{name:'nivel', type: 'string'},
+		{name:'nivel', type: 'numeric'},
 		{name:'formulacion_egreso_mb', type: 'numeric'},
 		{name:'formulacion_ingreso_mb', type: 'numeric'},
 		{name:'tipo_nodo', type: 'string'},
@@ -382,15 +466,21 @@ Phx.vista.DetalleTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 		{name:'sueldo_obradet', type: 'string'},
 		{name:'usuario_reg', type: 'string'},
 		{name:'usuario_mod', type: 'string'},
-		{name:'fecha_reg', type: 'string'},
-		{name:'fecha_mod', type: 'string'},
-		{name:'gestion', type: 'string'},
+		{name:'fecha_reg', type: 'date',dateFormat:'Y-m-d'},//#44
+		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d'},//#44
+		{name:'gestion', type: 'numeric'},//#44
+
+		{name:'nombre_programa', type: 'string'}, //#44
+		{name:'nombre_proyecto', type: 'string'}, //#44
+		{name:'nombre_actividad', type: 'string'}, //#44
+		{name:'nombre_regional', type: 'string'}, //#44
+		{name:'nombre_financiador', type: 'string'}, //#44
 		
 		
 	],
 
 	sortInfo:{
-		field: 'id_tipo_cc',
+		field: 'order',
 		direction: 'asc'
 	},
 

@@ -8,6 +8,7 @@
 
   ISSUE            FECHA:          AUTOR       DESCRIPCION
   #42              17/07/2020      JJA         Interface que muestre la información de "tipo centro de costo" con todos los parámetros
+  #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -50,6 +51,7 @@ header("content-type: text/javascript; charset=UTF-8");
             this.getComponente('sueldo_obradet').setValue('todos');
             this.getComponente('mov_ingreso').setValue('todos');
             this.getComponente('mov_egreso').setValue('todos');
+            this.getComponente('tipo_nodo').setValue('todos');//#44
 
         },
 
@@ -59,7 +61,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     name : 'id_gestion',
                     origen : 'GESTION',
                     fieldLabel : 'Gestion',
-                    allowBlank : true,
+                    allowBlank : false, //#44
                     width: 150
                 },
                 type : 'ComboRec',
@@ -198,7 +200,32 @@ header("content-type: text/javascript; charset=UTF-8");
                 type:'ComboBox',
                 form:true
             },
-	            
+            { //#44
+                config:{
+                    name:'tipo_nodo',
+                    fieldLabel:'Tipo nodo',
+                    allowBlank:true,
+                    emptyText:'...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode: 'local',
+                    width: 150,
+                    valueField: 'tipo_nodo',                    
+                    store:new Ext.data.ArrayStore({
+                        fields: ['variable', 'valor'],
+                        data : [ 
+                                    ['todos','todos'],
+                                    ['transaccional','transaccional'],
+                                    ['agrupador','agrupador']
+                                ]
+                    }),
+                    valueField: 'variable',
+                    displayField: 'valor'
+                },
+                type:'ComboBox',
+                form:true
+            },
             {
 	   		config:{
 	   				name:'id_tipo_cc',

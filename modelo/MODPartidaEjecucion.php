@@ -12,6 +12,7 @@
    #40 ENDETR      09/07/2020       JUAN            Agregar Numero Tramite a reporte Ejecución de proyectos
    #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
+   #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -281,6 +282,12 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('fecha_mod','date');
         $this->captura('gestion','int4');
         $this->captura('id_tipo_cc','int4');
+
+        $this->captura('nombre_programa','varchar'); //#44
+        $this->captura('nombre_proyecto','varchar'); //#44
+        $this->captura('nombre_actividad','varchar');//#44
+        $this->captura('nombre_regional','varchar'); //#44
+        $this->captura('nombre_financiador','varchar'); //#44
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
