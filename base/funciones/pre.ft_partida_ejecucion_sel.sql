@@ -29,6 +29,7 @@ $body$
  #40  ENDETR     09/07/2020           JUAN         Agregar Numero Tramite a reporte Ejecución de proyectos
  #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
  #42  ENDETR    17/07/2020        JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
+ #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
 ***************************************************************************/
 
 DECLARE
@@ -304,9 +305,24 @@ BEGIN
                     tcc.id_usuario_reg,
                     tcc.id_usuario_mod,
                     tcc.fecha_reg,
-                    tcc.fecha_mod
+                    tcc.fecha_mod,
+                    tcc.id_ep, --#44
+                    
+                    prog.nombre_programa, --#44
+                    proy.nombre_proyecto, --#44
+                    act.nombre_actividad, --#44
+                    reg.nombre_regional,  --#44
+                    finan.nombre_financiador --#44
                   from param.ttipo_cc tcc
+                  left join param.tep ep on ep.id_ep = tcc.id_ep --#44
+                  left join param.tprograma_proyecto_acttividad pra on pra.id_prog_pory_acti=ep.id_prog_pory_acti --#44
+                  left join param.tactividad act on act.id_actividad=pra.id_actividad --#44
+                  left join param.tprograma prog on prog.id_programa=pra.id_programa --#44
+                  left join param.tproyecto proy on proy.id_proyecto=pra.id_proyecto --#44
+                  left join param.tregional reg on reg.id_regional=ep.id_regional --#44
+                  left join param.tfinanciador finan on finan.id_financiador=ep.id_financiador --#44
                   where tcc.id_tipo_cc_fk is null and tcc.codigo not like ''X_%''
+                 
                   union all
                   select 
                   tcc.id_tipo_cc,
@@ -343,14 +359,30 @@ BEGIN
                     tcc.id_usuario_reg,
                     tcc.id_usuario_mod,
                     tcc.fecha_reg,
-                    tcc.fecha_mod
+                    tcc.fecha_mod,
+                    tcc.id_ep, --#44
+                    
+                    prog.nombre_programa, --#44
+                    proy.nombre_proyecto, --#44
+                    act.nombre_actividad, --#44
+                    reg.nombre_regional,  --#44
+                    finan.nombre_financiador --#44
                   from param.ttipo_cc tcc
                   join tipo_cc tcc1 on tcc1.id_tipo_cc=tcc.id_tipo_cc_fk
+                  
+                  left join param.tep ep on ep.id_ep = tcc.id_ep --#44
+                  left join param.tprograma_proyecto_acttividad pra on pra.id_prog_pory_acti=ep.id_prog_pory_acti --#44
+                  left join param.tactividad act on act.id_actividad=pra.id_actividad --#44
+                  left join param.tprograma prog on prog.id_programa=pra.id_programa --#44
+                  left join param.tproyecto proy on proy.id_proyecto=pra.id_proyecto --#44
+                  left join param.tregional reg on reg.id_regional=ep.id_regional --#44
+                  left join param.tfinanciador finan on finan.id_financiador=ep.id_financiador --#44
+                  where tcc.codigo not like ''X_%''
                   )
                   select 
                   (replace(tcc.nivel,''*'','' '')||'' ''||tcc.ceco)::varchar as ceco,
-                  tcc.fecha_inicio::date,
-                  tcc.fecha_final::date,
+                  to_char(tcc.fecha_inicio::DATE,''DD/MM/YYYY'')::DATE AS fecha_inicio,
+                  to_char(tcc.fecha_final::DATE,''DD/MM/YYYY'')::DATE AS fecha_final,
                   tcc.operativo::varchar,
                   length(replace(tcc.nivel,'' '',''''))::integer as nivel,
                   sum(vpe.egreso_mb)::numeric as formulacion_egreso_mb,
@@ -369,7 +401,14 @@ BEGIN
                     tcc.fecha_reg::date,
                     tcc.fecha_mod::date,
                     g.gestion::integer,
-                    tcc.id_tipo_cc
+                    tcc.id_tipo_cc,
+                    
+                    tcc.nombre_programa, --#44
+                    tcc.nombre_proyecto, --#44
+                    tcc.nombre_actividad, --#44
+                    tcc.nombre_regional,  --#44
+                    tcc.nombre_financiador --#44
+                  
                   from tipo_cc tcc
                   left join param.tcentro_costo cc on cc.id_tipo_cc = tcc.id_tipo_cc
                   left join pre.vpartida_ejecucion vpe on vpe.id_centro_costo=cc.id_centro_costo
@@ -377,6 +416,7 @@ BEGIN
                   left join segu.tusuario ur on ur.id_usuario = tcc.id_usuario_reg
                   left join segu.tusuario um on um.id_usuario = tcc.id_usuario_mod
                   left join param.tgestion g on g.id_gestion=cc.id_gestion
+
                   where 0=0
                  
                   AND '||v_filtro_tipo_cc||' ';
@@ -401,7 +441,12 @@ BEGIN
                                 tcc.fecha_reg,
                                 tcc.fecha_mod,
                                 tcc.orden,
-                                g.gestion';
+                                g.gestion,
+                                tcc.nombre_programa, --#44
+                                tcc.nombre_proyecto, --#44
+                                tcc.nombre_actividad, --#44
+                                tcc.nombre_regional,  --#44
+                                tcc.nombre_financiador ';
                     
       v_consulta:=v_consulta||' order by tcc.orden asc  limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
@@ -536,7 +581,11 @@ BEGIN
                   left join param.tcentro_costo cc on cc.id_tipo_cc = tcc.id_tipo_cc
                   left join pre.vpartida_ejecucion vpe on vpe.id_centro_costo=cc.id_centro_costo
                   and vpe.tipo_movimiento=''formulado''
-   
+
+                  left join segu.tusuario ur on ur.id_usuario = tcc.id_usuario_reg --#44
+                  left join segu.tusuario um on um.id_usuario = tcc.id_usuario_mod --#44
+                  left join param.tgestion g on g.id_gestion=cc.id_gestion --#44
+                  
                   where 0=0
                   
                   AND '||v_filtro_tipo_cc||' ';

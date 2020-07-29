@@ -11,6 +11,7 @@
  * #37 ENDETR	  31/03/2020		   JUAN          Reporte ejecución de proyectos con proveedor
  * #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
+   #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto 
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -197,6 +198,13 @@ class ACTPartidaEjecucion extends ACTbase{
         }
         if($this->objParam->getParametro('mov_egreso') !='todos'){
             $this->objParam->addFiltro("(tcc.mov_egreso::varchar =  ''".$this->objParam->getParametro('mov_egreso')."''::varchar or cc.id_gestion is NULL)");
+        }
+        if($this->objParam->getParametro('tipo_nodo') !='todos'){//#44
+            if($this->objParam->getParametro('tipo_nodo') == 'transaccional'){
+               $this->objParam->addFiltro("(tcc.movimiento =  ''si''::varchar or cc.id_gestion is NULL)");
+            }else{
+               $this->objParam->addFiltro("(tcc.movimiento !=  ''si''::varchar or cc.id_gestion is NULL)");
+            }
         }
         
         if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
