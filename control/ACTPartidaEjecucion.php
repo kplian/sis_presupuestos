@@ -12,6 +12,7 @@
  * #138 ENDETR     25/06/2020           JUAN          Mejora de filtros de gestión en partida ejecución con tipo_cc
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto 
+   #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -143,11 +144,21 @@ class ACTPartidaEjecucion extends ACTbase{
     function ReporteEjecucionProyecto(){ //#37
 
         if($this->objParam->getParametro('fecha_ini')){
-            $this->objParam->addFiltro(" (pe.fecha::date  >= ''".$this->objParam->getParametro('fecha_ini')."''::date )");
+            $this->objParam->addFiltro(" (pt.fecha::date  >= ''".$this->objParam->getParametro('fecha_ini')."''::date )");
         }
         if($this->objParam->getParametro('fecha_fin')){
-            $this->objParam->addFiltro(" (pe.fecha::date  <= ''".$this->objParam->getParametro('fecha_fin')."''::date )");
+            $this->objParam->addFiltro(" (pt.fecha::date  <= ''".$this->objParam->getParametro('fecha_fin')."''::date ) ");
         }
+        if($this->objParam->getParametro('id_gestion')){//#45
+            $this->objParam->addFiltro(" (pt.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) "); 
+        }
+        if($this->objParam->getParametro('id_tipo_cc_techo')){//#45
+            $this->objParam->addFiltro(" (pt.id_tipo_cc_techo::integer  =  ".$this->objParam->getParametro('id_tipo_cc_techo')."::integer) "); 
+        }
+        if($this->objParam->getParametro('origen')){//#45
+            $this->objParam->addFiltro(" (pt.origen::varchar  =  ''".$this->objParam->getParametro('origen')."''::varchar) "); 
+        }
+
 
         $this->objFunc = $this->create('MODPartidaEjecucion');
         $this->res = $this->objFunc->ReporteEjecucionProyecto($this->objParam);
@@ -157,6 +168,7 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
         $this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
         $this->objParam->addParametro('fecha_fin', $this->objParam->getParametro('fecha_fin'));
+        //$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
        // var_dump($this->res->datos);
 
         $this->objParam->addParametro('datos', $this->res->datos);
@@ -228,6 +240,20 @@ class ACTPartidaEjecucion extends ACTbase{
         
         $this->res->addLastRecDatos($temp);
 
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function listarCecoTecho(){ //#45
+        $this->objParam->defecto('ordenacion','id_tipo_cc_techo');
+        $this->objParam->defecto('dir_ordenacion','asc');
+        
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','listarCecoTecho');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+            
+            $this->res=$this->objFunc->listarCecoTecho($this->objParam);
+        }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 }

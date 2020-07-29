@@ -11,6 +11,7 @@ HISTORIAL DE MODIFICACIONES:
 
 ISSUE            FECHA:          AUTOR       DESCRIPCION
 #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
+#45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -19,58 +20,128 @@ header("content-type: text/javascript; charset=UTF-8");
 
         Atributos : [
 
-            {
+            {//#45
                 config:{
-                    name: 'id_entidad',
-                    fieldLabel: 'Entidad',
-                    qtip: 'entidad a la que pertenese el depto, ',
-                    allowBlank: false,
-                    emptyText:'Entidad...',
-                    store:new Ext.data.JsonStore(
-                        {
-                            url: '../../sis_parametros/control/Entidad/listarEntidad',
-                            id: 'id_entidad',
-                            root: 'datos',
-                            sortInfo:{
-                                field: 'nombre',
-                                direction: 'ASC'
-                            },
-                            totalProperty: 'total',
-                            fields: ['id_entidad','nit','nombre'],
-                            // turn on remote sorting
-                            remoteSort: true,
-                            baseParams: { par_filtro:'nit#nombre' }
-                        }),
-                    valueField: 'id_entidad',
-                    displayField: 'nombre',
-                    gdisplayField:'desc_entidad',
-                    hiddenName: 'id_entidad',
+                    name:'id_gestion',
+                    fieldLabel:'Gestión',
+                    allowBlank:false,
+                    emptyText:'Gestión...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_parametros/control/Gestion/listarGestion',
+                        id: 'id_gestion',
+                        root: 'datos',
+                        sortInfo:{
+                            field: 'gestion',
+                            direction: 'DESC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_gestion','gestion','moneda','codigo_moneda'],
+                        // turn on remote sorting
+                        remoteSort: true,
+                        baseParams:{par_filtro:'gestion'}
+                    }),
+                    valueField: 'id_gestion',
+                    displayField: 'gestion',
+                    //tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nro_cuenta}</b></p><p>{denominacion}</p></div></tpl>',
+                    hiddenName: 'id_gestion',
+                    forceSelection:true,
+                    typeAhead: false,
                     triggerAction: 'all',
                     lazyRender:true,
                     mode:'remote',
-                    pageSize:50,
-                    queryDelay:500,
-                    anchor:"90%",
-                    listWidth:280,
-                    gwidth:150,
-                    minChars:2,
-                    renderer:function (value, p, record){return String.format('{0}', record.data['desc_entidad']);}
+                    pageSize:10,
+                    queryDelay:1000,
+                    listWidth:600,
+                    resizable:true,
+                    anchor:'100%'
 
                 },
                 type:'ComboBox',
-                filters:{pfiltro:'ENT.nombre',type:'string'},
                 id_grupo:0,
-                egrid: true,
+                filters:{
+                    pfiltro:'gestion',
+                    type:'string'
+                },
                 grid:true,
                 form:true
             },
+            {//#45
+                config:{
+                    name:'id_tipo_cc_techo',
+                    fieldLabel:'Ceco techo',
+                    allowBlank:true,
+                    emptyText:'Ceco techo...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_presupuestos/control/PartidaEjecucion/listarCecoTecho',
+                        id: 'id_tipo_cc_techo',
+                        root: 'datos',
+                        sortInfo:{
+                            field: 'ceco_techo',
+                            direction: 'DESC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_tipo_cc_techo','ceco_techo'],
+                        // turn on remote sorting
+                        remoteSort: true,
+                        baseParams:{par_filtro:'ceco_techo'}
+                    }),
+                    valueField: 'id_tipo_cc_techo',
+                    displayField: 'ceco_techo',
+                    //tpl:'<tpl for="."><div class="x-combo-list-item"><p><b>{nro_cuenta}</b></p><p>{denominacion}</p></div></tpl>',
+                    hiddenName: 'id_tipo_cc_techo',
+                    forceSelection:true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode:'remote',
+                    pageSize:10,
+                    queryDelay:1000,
+                    listWidth:600,
+                    resizable:true,
+                    anchor:'100%'
 
+                },
+                type:'ComboBox',
+                id_grupo:0,
+                filters:{
+                    pfiltro:'ct.ceco_techo',
+                    type:'string'
+                },
+                grid:true,
+                form:true
+            },
+            {//#45
+                config:{
+                    name:'origen',
+                    fieldLabel:'Origen',
+                    allowBlank:true,
+                    emptyText:'...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode: 'local',
+                    width: 222,
+                    valueField: 'origen',                  
+                    store:new Ext.data.ArrayStore({
+                        fields: ['variable', 'valor'],
+                        data : [ 
+                                    ['ejecucion_proyectos','Ejecucion proyectos '],
+                                    ['ejecucion_proyectos_con_iva','Ejecucion proyectos con iva']
+                                   
+                                ]
+                    }),
+                    valueField: 'variable',
+                    displayField: 'valor'
+                },
+                type:'ComboBox',
+                form:true
+            },
             {
                 config:{
                     name: 'fecha_ini',
                     fieldLabel: 'Fecha Inicio',
-                    allowBlank: false,
-                    anchor: '80%',
+                    allowBlank: true,//#45
+                    anchor: '100%', //#45
                     gwidth: 100,
                     format: 'd/m/Y',
                     renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
@@ -85,8 +156,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 config:{
                     name: 'fecha_fin',
                     fieldLabel: 'Fecha Fin',
-                    allowBlank: false,
-                    anchor: '80%',
+                    allowBlank: true,//#45
+                    anchor: '100%',//#45
                     gwidth: 100,
                     format: 'd/m/Y',
                     renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}

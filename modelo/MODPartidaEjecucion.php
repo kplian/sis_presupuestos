@@ -13,6 +13,7 @@
    #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
+   #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -241,7 +242,8 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('tipo_costo','varchar');
         $this->captura('fecha','date');
         $this->captura('monto_mb','numeric');
-        $this->captura('nro_tramite','varchar'); //#40
+        $this->captura('nro_tramite','varchar'); //#40  
+        $this->captura('origen','varchar'); 
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -296,5 +298,19 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function listarCecoTecho(){ //#45
+
+        $this->procedimiento='pre.ft_partida_ejecucion_sel';
+        $this->transaccion='PRE_CETECHO_SEL';
+        $this->tipo_procedimiento='SEL';
+
+        $this->captura('id_tipo_cc_techo','int4');
+        $this->captura('ceco_techo','varchar');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
 }
 ?>

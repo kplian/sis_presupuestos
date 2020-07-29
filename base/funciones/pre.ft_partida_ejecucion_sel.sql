@@ -30,6 +30,7 @@ $body$
  #41 ENDETR     12/07/2020        JJA               Agregar columna tipo_ajuste_formulacion en la tabla de partida ejecucion
  #42  ENDETR    17/07/2020        JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
  #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
+ #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
 ***************************************************************************/
 
 DECLARE
@@ -813,8 +814,16 @@ BEGIN
 
     begin
 
-      --Sentencia de la consulta de conteo de registros
-      v_consulta:='select
+      --#45 consulta
+      v_consulta:='with transaccion_proveedor as (
+                    select DISTINCT  pep.id_int_comprobante,
+                           pep.id_proveedor,
+                           p.rotulo_comercial::varchar as proveedor
+                    from pre.vpartida_ejecucion_proveedor pep
+                    left join param.tproveedor p on p.id_proveedor = pep.id_proveedor ),
+                    
+                   ProyectoTransaccion as(
+                   select
                     concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo,
                     concat(te.codigo,'' - '',te.descripcion)::varchar as ceco,
                     concat(par.codigo, '' - '',par.nombre_partida)::varchar as partida,
@@ -825,7 +834,10 @@ BEGIN
                     pep.tipo_costo::varchar,
                     pe.fecha::date,
                     pe.monto_mb::numeric,
-                    pe.nro_tramite --#40
+                    pe.nro_tramite, --#40
+                    cc.id_gestion,
+                    te.id_tipo_cc_techo,
+                    ''ejecucion_proyectos''::varchar as origen
                     from pre.tpartida_ejecucion pe
                     inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
                     inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
@@ -839,11 +851,148 @@ BEGIN
                     left join pre.tclasificacion_reporte_dw crr2 on crr2.id_clasificacion_reporte_dw = crr1.id_padre
                     left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
                     where ra.ids::varchar like (''%{2568,1549%'')
-                    and pe.tipo_movimiento = ''ejecutado'' and ';
+                    and pe.tipo_movimiento = ''ejecutado'' 
+                    
+                    union all
+                    
 
-		v_consulta:=v_consulta||v_parametros.filtro;
+                    select 
+                    concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo,
+                    concat(te.codigo,'' - '',te.descripcion)::varchar as ceco,
+                    concat(par.codigo, '' - '',par.nombre_partida)::varchar as partida,
+                    concat(crr2.codigo, '' - '', crr2.descripcion)::varchar as clas_nivel_1,
+                    concat(crr1.codigo, '' - '', crr1.descripcion)::varchar as clas_nivel_2,
+                    concat(crr.codigo, '' - '', crr.descripcion)::varchar as clas_nivel_3,
+                    pep.proveedor::varchar,
+                    ''''::varchar as tipo_costo, 
+                    cbte.fecha::date, 
+                    sum (trans.importe_debe_mb - trans.importe_haber_mb) as monto_mb,
+                    trans.nro_tramite, 
+                    cc.id_gestion,
+                    te.id_tipo_cc_techo,
+                    ''ejecucion_proyectos_con_iva'' as origen
+                    from conta.tint_transaccion trans
+                    inner join conta.tint_comprobante cbte on cbte.id_int_comprobante = trans.id_int_comprobante
+                    inner join conta.tcuenta cta on cta.id_cuenta = trans.id_cuenta
+                    inner join pre.tpartida par on par.id_partida = trans.id_partida
+                    inner join param.tcentro_costo cc on cc.id_centro_costo = trans.id_centro_costo
+                    inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_raiz ra on ra.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_techo te on te.id_tipo_cc = cc.id_tipo_cc
+                    inner join pre.tpresupuesto p on p.id_presupuesto = trans.id_centro_costo
+                    left join transaccion_proveedor pep on pep.id_int_comprobante= cbte.id_int_comprobante
+                    left join pre.tpartida_reporte_ejecucion_dw pred on pred.id_partida = par.id_partida and pred.id_tipo_presupuesto = p.tipo_pres::integer
+                    left join pre.tclasificacion_reporte_dw crr on crr.id_clasificacion_reporte_dw = pred.id_clasificacion_reporte_dw
+                    left join pre.tclasificacion_reporte_dw crr1 on crr1.id_clasificacion_reporte_dw = crr.id_padre
+                    left join pre.tclasificacion_reporte_dw crr2 on crr2.id_clasificacion_reporte_dw = crr1.id_padre                 
+
+                    group by 
+                    te.codigo_techo,
+                    te.descripcion_techo,
+                    te.codigo,
+                    te.descripcion,
+                    crr2.codigo,
+                    crr2.descripcion,
+                    crr1.codigo,
+                    crr1.descripcion,
+                    crr.codigo,
+                    crr.descripcion,
+                    trans.nro_tramite,
+                    cc.id_gestion,
+
+                    par.codigo,
+                    par.nombre_partida,
+                    cbte.fecha,
+                    cbte.estado_reg,
+                    cta.nro_cuenta,
+                    pep.proveedor,
+                    te.id_tipo_cc_techo
+                    having cbte.estado_reg=''validado''
+                    AND cta.nro_cuenta like (''1.1.3.04%'') 
+
+
+                    
+                    
+                    )  
+                    select 
+                    pt.ceco_techo::varchar,
+                    pt.ceco::varchar,
+                    pt.partida::varchar,
+                    pt.clas_nivel_1::varchar,
+                    pt.clas_nivel_2::varchar,
+                    pt.clas_nivel_3::varchar,
+                    pt.proveedor::varchar,
+                    pt.tipo_costo::varchar,
+                    pt.fecha::date,
+                    pt.monto_mb::numeric,
+                    pt.nro_tramite::varchar,
+                    origen::varchar
+                    
+                    from ProyectoTransaccion pt
+                    where  ';
+
+    v_consulta:=v_consulta||v_parametros.filtro;
+--raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
+      return v_consulta;
+    end;
+    /*********************************
+  #TRANSACCION:  'PRE_CETECHO_SEL' 
+  #DESCRIPCION: Reporte de ejecucion de proyectos
+  #AUTOR:   JUAN
+  #FECHA:   26/07/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_CETECHO_SEL')then --#45
+
+    begin
+
+      v_consulta:='with ceco_techo as(
+                    select 
+                    DISTINCT
+                    te.id_tipo_cc_techo, 
+                    concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo
+                    from  param.vtipo_cc_techo te
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=te.id_tipo_cc 
+                    where ra.ids::varchar like (''%{2568,1549%'')
+                    )
+                    select ct.id_tipo_cc_techo,ct.ceco_techo from ceco_techo ct
+                    where ';
+
+      v_consulta:=v_consulta||v_parametros.filtro;           
+      v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
       return v_consulta;
+      
+    end;
+    /*********************************
+  #TRANSACCION:  'PRE_CETECHO_CONT' 
+  #DESCRIPCION: Reporte de ejecucion de proyectos
+  #AUTOR:   JUAN
+  #FECHA:   26/07/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_CETECHO_CONT')then --#45
+
+    begin
+                    
+      v_consulta:='with ceco_techo as(
+                    select 
+                    DISTINCT
+                    te.id_tipo_cc_techo, 
+                    concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo
+                    from  param.vtipo_cc_techo te
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=te.id_tipo_cc 
+                    where ra.ids::varchar like (''%{2568,1549%'')
+                    )    
+                    select 
+                    count(ct.id_tipo_cc_techo) 
+                    from ceco_techo  ct         
+                    where '; 
+
+      v_consulta:=v_consulta||v_parametros.filtro;    
+  
+      return v_consulta;
+      
     end;
   else
 
