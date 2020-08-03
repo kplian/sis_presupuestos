@@ -531,8 +531,23 @@ BEGIN
                     tcc.id_usuario_reg,
                     tcc.id_usuario_mod,
                     tcc.fecha_reg,
-                    tcc.fecha_mod
+                    tcc.fecha_mod,
+                    
+                    prog.nombre_programa, --#44
+                    proy.nombre_proyecto, --#44
+                    act.nombre_actividad, --#44
+                    reg.nombre_regional,  --#44
+                    finan.nombre_financiador --#44
                   from param.ttipo_cc tcc
+                  
+                  left join param.tep ep on ep.id_ep = tcc.id_ep --#44
+                  left join param.tprograma_proyecto_acttividad pra on pra.id_prog_pory_acti=ep.id_prog_pory_acti --#44
+                  left join param.tactividad act on act.id_actividad=pra.id_actividad --#44
+                  left join param.tprograma prog on prog.id_programa=pra.id_programa --#44
+                  left join param.tproyecto proy on proy.id_proyecto=pra.id_proyecto --#44
+                  left join param.tregional reg on reg.id_regional=ep.id_regional --#44
+                  left join param.tfinanciador finan on finan.id_financiador=ep.id_financiador --#44
+                  
                   where tcc.id_tipo_cc_fk is null and tcc.codigo not like ''X_%''
                   union all
                   select 
@@ -570,9 +585,24 @@ BEGIN
                     tcc.id_usuario_reg,
                     tcc.id_usuario_mod,
                     tcc.fecha_reg,
-                    tcc.fecha_mod
+                    tcc.fecha_mod,
+                    
+                    prog.nombre_programa, --#44
+                    proy.nombre_proyecto, --#44
+                    act.nombre_actividad, --#44
+                    reg.nombre_regional,  --#44
+                    finan.nombre_financiador --#44
+                    
                   from param.ttipo_cc tcc
                   join tipo_cc tcc1 on tcc1.id_tipo_cc=tcc.id_tipo_cc_fk
+                  
+                  left join param.tep ep on ep.id_ep = tcc.id_ep --#44
+                  left join param.tprograma_proyecto_acttividad pra on pra.id_prog_pory_acti=ep.id_prog_pory_acti --#44
+                  left join param.tactividad act on act.id_actividad=pra.id_actividad --#44
+                  left join param.tprograma prog on prog.id_programa=pra.id_programa --#44
+                  left join param.tproyecto proy on proy.id_proyecto=pra.id_proyecto --#44
+                  left join param.tregional reg on reg.id_regional=ep.id_regional --#44
+                  left join param.tfinanciador finan on finan.id_financiador=ep.id_financiador --#44
                   )
                   select 
                   COUNT(DISTINCT tcc.id_tipo_cc),
@@ -582,11 +612,10 @@ BEGIN
                   left join param.tcentro_costo cc on cc.id_tipo_cc = tcc.id_tipo_cc
                   left join pre.vpartida_ejecucion vpe on vpe.id_centro_costo=cc.id_centro_costo
                   and vpe.tipo_movimiento=''formulado''
-
+                  
                   left join segu.tusuario ur on ur.id_usuario = tcc.id_usuario_reg --#44
                   left join segu.tusuario um on um.id_usuario = tcc.id_usuario_mod --#44
                   left join param.tgestion g on g.id_gestion=cc.id_gestion --#44
-                  
                   where 0=0
                   
                   AND '||v_filtro_tipo_cc||' ';
