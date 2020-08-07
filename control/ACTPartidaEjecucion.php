@@ -13,9 +13,11 @@
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto 
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
+   #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
+require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCostoXls.php');
 class ACTPartidaEjecucion extends ACTbase{    
 			
 	function listarPartidaEjecucion(){
@@ -256,6 +258,31 @@ class ACTPartidaEjecucion extends ACTbase{
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    function ReportePartidaCentroCosto(){//#46
+
+        if($this->objParam->getParametro('id_gestion')){
+            $this->objParam->addFiltro(" (pe.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) "); 
+        }
+
+        $this->objFunc = $this->create('MODPartidaEjecucion');
+        $this->res = $this->objFunc->ReportePartidaCentroCosto($this->objParam);
+        $titulo = 'PARTIDA CENTRO DE COSTO';
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+        $nombreArchivo .= '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+
+        $this->objParam->addParametro('datos', $this->res->datos);
+        //Instancia la clase de excel
+        $this->objReporteFormato = new RPartidaCentroCostoXls($this->objParam);
+        $this->objReporteFormato->generarDatos();
+        $this->objReporteFormato->generarReporte();
+
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
 }
 
 ?>

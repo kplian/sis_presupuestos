@@ -14,6 +14,7 @@
    #42  ENDETR    17/07/2020            JJA          Interface que muestre la información de "tipo centro de costo" con todos los parámetros
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
+   #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -312,5 +313,29 @@ class MODPartidaEjecucion extends MODbase{
 
         return $this->respuesta;
     }
+	function ReportePartidaCentroCosto(){ //#46
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_PARCEN_SEL';
+		$this->tipo_procedimiento='SEL';
+		
+        $this-> setCount(false);
+
+        $this->captura('partida','varchar');
+        $this->captura('ceco','varchar');
+        $this->captura('tipo_movimiento','varchar');
+        $this->captura('nivel','int4');
+        $this->captura('formulado','numeric');
+        $this->captura('comprometido','numeric');
+        $this->captura('ejecutado','numeric');
+        $this->captura('nro_tramite','varchar');
+        $this->captura('tipo_ajuste_formulacion','varchar');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+	}
 }
 ?>
