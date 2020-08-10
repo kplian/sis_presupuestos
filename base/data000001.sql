@@ -746,3 +746,7 @@ select param.f_import_tcatalogo ('insert','PRE','Ajuste','AJU','tipo_ajuste_form
 /*******************************************I-DAT-JJA-PRE-11-17/07/2020***********************************************/
 select pxp.f_insert_tgui ('Tipo centro de costo', 'Tipo centro de costo', 'TIPCENCOS', 'si', 17, 'sis_presupuestos/reportes/formulario/Tipo_centro_costo.php', 3, '', 'Tipo_centro_costo', 'PRE'); --#42
 /*******************************************F-DAT-JJA-PRE-1-17/07/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-11-06/08/2020***********************************************/
+select pxp.f_insert_tgui ('Partida', 'Partida', 'PART', 'si', 18, 'sis_presupuestos/reportes/formulario/Partida.php', 3, '', 'Partida', 'PRE'); --#46
+/*******************************************F-DAT-JJA-PRE-1-06/08/2020***********************************************/
