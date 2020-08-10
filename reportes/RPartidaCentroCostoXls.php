@@ -101,11 +101,11 @@ class RPartidaCentroCostoXls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'PARTIDA CENTRO DE COSTO ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:J2')->applyFromArray($styleTitulos1);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A2:J2');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A2:N2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:N2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:J3')->applyFromArray($styleTitulosFecha);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A3:J3');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A3:N3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:N3');//#40
 
         /*if($this->objParam->getParametro('fecha_ini')){ 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
@@ -121,16 +121,19 @@ class RPartidaCentroCostoXls
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
-       /* $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(30); 
-        $this->docexcel->getActiveSheet()->getColumnDimension('M')->setWidth(30); */
+
+        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('M')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('N')->setWidth(30);
 
 
 
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->applyFromArray($styleTitulos2);
+
+        $this->docexcel->getActiveSheet()->getStyle('A5:N5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:N5')->applyFromArray($styleTitulos2);
 
 
 
@@ -138,13 +141,18 @@ class RPartidaCentroCostoXls
         $this->docexcel->getActiveSheet()->setCellValue('A5','Nº');
         $this->docexcel->getActiveSheet()->setCellValue('B5','PARTIDA');
         $this->docexcel->getActiveSheet()->setCellValue('C5','CECO');
-        $this->docexcel->getActiveSheet()->setCellValue('D5','TIPO MOVIMIENTO');
-        $this->docexcel->getActiveSheet()->setCellValue('E5','NIVEL');
-        $this->docexcel->getActiveSheet()->setCellValue('F5','FORMULADO');
-        $this->docexcel->getActiveSheet()->setCellValue('G5','COMPROMETIDO');
-        $this->docexcel->getActiveSheet()->setCellValue('H5','EJECUTADO');
-        $this->docexcel->getActiveSheet()->setCellValue('I5','NRO. TRAMITE');
-        $this->docexcel->getActiveSheet()->setCellValue('J5','TIPO AJUSTE FORMULACION');
+        $this->docexcel->getActiveSheet()->setCellValue('D5','NIVEL');
+        $this->docexcel->getActiveSheet()->setCellValue('E5','FORMULADO');
+        $this->docexcel->getActiveSheet()->setCellValue('F5','REFORMULADO');
+        $this->docexcel->getActiveSheet()->setCellValue('G5','AJUSTE');
+        $this->docexcel->getActiveSheet()->setCellValue('H5','VIGENTE');
+        $this->docexcel->getActiveSheet()->setCellValue('I5','COMPROMETIDO');
+        $this->docexcel->getActiveSheet()->setCellValue('J5','EJECUTADO');
+
+        $this->docexcel->getActiveSheet()->setCellValue('K5','DESVIACIÓN COMPROMETIDO');
+        $this->docexcel->getActiveSheet()->setCellValue('L5','DESVIACIÓN EJECUTADO');
+        $this->docexcel->getActiveSheet()->setCellValue('M5','PROVEEDOR');
+        $this->docexcel->getActiveSheet()->setCellValue('N5','NRO. TRAMITE');
       /*  $this->docexcel->getActiveSheet()->setCellValue('K5','MONTO MB');
         $this->docexcel->getActiveSheet()->setCellValue('L5','NRO. TRAMITE');
         $this->docexcel->getActiveSheet()->setCellValue('M5','ORIGEN');*/
@@ -170,17 +178,20 @@ class RPartidaCentroCostoXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $this->numero);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['partida']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['ceco']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['tipo_movimiento']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['nivel']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['formulado']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['comprometido']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['nivel']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['formulado']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['reformulado']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['ajuste']);
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['ejecutado']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['nro_tramite']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['tipo_ajuste_formulacion']);
-            /*$this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['monto_mb']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['nro_tramite']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['origen']);*/
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['vigente']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['comprometido']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['ejecutado']);
+
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['desviacion_comprometido']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['desviacion_ejecutado']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['proveedor']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['nro_tramite']);
+
             $fila++;
             $this->numero++;
         }

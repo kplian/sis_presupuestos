@@ -1000,46 +1000,53 @@ BEGIN
                     where par.id_partida_fk is not NULL and par.estado_reg=''activo''
                     ),
                     partida_ejecucion as(
-                    select 
-                    (replace(par.nivel,''*'','' '')||par.parida)::varchar as partida ,
-                    (tcc.codigo||'' ''||tcc.descripcion)::varchar as ceco,
-                    pe.tipo_movimiento,
-                    length(replace(par.nivel,'' '',''''))::integer as nivel,
-                    case when pe.tipo_movimiento=''ejecutado''then sum(pe.monto_mb) end as ejecutado,
-                    case when pe.tipo_movimiento=''comprometido''then sum(pe.monto_mb) end as comprometido,
-                    case when pe.tipo_movimiento=''formulado''then sum(pe.monto_mb) end as formulado,
-                    par.orden,
-                    pe.nro_tramite,
-                    par.id_gestion,
-                    pe.tipo_ajuste_formulacion
+                      select 
+                      (replace(par.nivel,''*'','' '')||par.parida)::varchar as partida,
+                      (tcc.codigo||'' ''||tcc.descripcion)::varchar as ceco,
+                      length(replace(par.nivel,'' '',''''))::integer as nivel,
+                      case when pe.tipo_movimiento=''ejecutado''then sum(pe.monto_mb) end as ejecutado,
+                      case when pe.tipo_movimiento=''comprometido''then sum(pe.monto_mb) end as comprometido,
+                      case when pe.tipo_movimiento=''formulado''then sum(pe.monto_mb) end as formulado,
+                      par.orden,
+                      pe.nro_tramite,
+                      par.id_gestion,
+                      pe.tipo_ajuste_formulacion
+                      ,prov.rotulo_comercial as proveedor
+                      from partida par
+                      left join pre.tpartida_ejecucion pe on pe.id_partida=par.id_partida  and pe.monto::numeric <> 0::numeric
 
-                    from partida par
-                    left join pre.tpartida_ejecucion pe on pe.id_partida=par.id_partida and pe.monto <> 0::numeric
-                    left join pre.tpresupuesto pre on pre.id_presupuesto=pe.id_presupuesto
-                    left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
-                    left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc  
-                    /*left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
-                    left join param.tproveedor prov on prov.id_proveedor = pep.id_proveedor*/
-                    where par.id_gestion=4
-                    GROUP BY par.nivel,par.parida,par.orden
-                    ,pe.tipo_movimiento
-                    ,tcc.codigo,tcc.descripcion,
-                    pe.nro_tramite,par.id_gestion,
-                    pe.tipo_ajuste_formulacion
-                    order by orden asc )
-                    select 
-                    pe.partida,
-                    pe.ceco,
-                    pe.tipo_movimiento,
-                    pe.nivel::INTEGER,
-                    pe.formulado::NUMERIC,
-                    pe.comprometido::NUMERIC,
-                    pe.ejecutado::NUMERIC,
-                    pe.nro_tramite,
-                    pe.tipo_ajuste_formulacion
-                    
+                      left join pre.tpresupuesto pre on pre.id_presupuesto=pe.id_presupuesto
+                      left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
+                      left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc  
+
+                      left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
+                      left join param.tproveedor prov on prov.id_proveedor = pep.id_proveedor
+
+                      GROUP BY par.nivel,par.parida,par.orden
+                      ,pe.tipo_movimiento
+                      ,tcc.codigo,tcc.descripcion,pe.nro_tramite,par.id_gestion,pe.tipo_ajuste_formulacion
+                      ,prov.rotulo_comercial
+                      order by orden asc
+                    )
+                    select
+                    pe.partida::varchar,
+                    pe.ceco::varchar,
+                    pe.nivel::integer,
+                    (case when pe.nro_tramite like ''%FP%'' OR  pe.tipo_ajuste_formulacion = ''Formulación'' then
+                    pe.formulado end)::numeric as formulado,
+                    (case when pe.tipo_ajuste_formulacion = ''Reformulación'' then
+                    pe.formulado end)::numeric as reformulado,
+                    (case when pe.tipo_ajuste_formulacion = ''Ajuste'' then
+                    pe.formulado end)::numeric  as ajuste,
+                    pe.formulado::numeric as vigente,
+                    pe.comprometido::numeric,
+                    pe.ejecutado::numeric,
+                    (pe.comprometido/pe.formulado)::numeric as desviacion_comprometido,
+                    (pe.ejecutado/pe.formulado)::numeric as desviacion_ejecutado,
+                    pe.proveedor::varchar,
+                    pe.nro_tramite::varchar
                     from partida_ejecucion pe
-                    WHERE   ';
+                     WHERE   ';
 
     v_consulta:=v_consulta||v_parametros.filtro;
         

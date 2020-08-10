@@ -323,13 +323,17 @@ class MODPartidaEjecucion extends MODbase{
 
         $this->captura('partida','varchar');
         $this->captura('ceco','varchar');
-        $this->captura('tipo_movimiento','varchar');
         $this->captura('nivel','int4');
         $this->captura('formulado','numeric');
+        $this->captura('reformulado','numeric');
+        $this->captura('ajuste','numeric');
+        $this->captura('vigente','numeric');
         $this->captura('comprometido','numeric');
         $this->captura('ejecutado','numeric');
+        $this->captura('desviacion_comprometido','numeric');
+        $this->captura('desviacion_ejecutado','numeric');
+        $this->captura('proveedor','varchar');
         $this->captura('nro_tramite','varchar');
-        $this->captura('tipo_ajuste_formulacion','varchar');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
