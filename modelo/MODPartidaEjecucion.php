@@ -15,6 +15,7 @@
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
    #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
+   #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -321,7 +322,11 @@ class MODPartidaEjecucion extends MODbase{
 		
         $this-> setCount(false);
 
-        $this->captura('partida','varchar');
+        $this->captura('partida_1','varchar'); //#PRES-5 
+		$this->captura('partida_2','varchar'); //#PRES-5 
+		$this->captura('partida_3','varchar'); //#PRES-5 
+		$this->captura('partida_4','varchar'); //#PRES-5 
+
         $this->captura('ceco','varchar');
         $this->captura('nivel','int4');
         $this->captura('formulado','numeric');
@@ -340,6 +345,113 @@ class MODPartidaEjecucion extends MODbase{
         //var_dump($this->respuesta); exit;
         //Devuelve la respuesta
         return $this->respuesta;
+	}
+	function ReportePartidaCentroCostoSinTramite(){ //#PRES-5 
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_STPARCEN_SEL';
+		$this->tipo_procedimiento='SEL';
+		
+        $this-> setCount(false);
+
+        $this->captura('partida_1','varchar'); 
+		$this->captura('partida_2','varchar'); 
+		$this->captura('partida_3','varchar'); 
+		$this->captura('partida_4','varchar'); 
+
+        $this->captura('ceco','varchar');
+        $this->captura('nivel','int4');
+        $this->captura('formulado','numeric');
+        $this->captura('reformulado','numeric');
+        $this->captura('ajuste','numeric');
+        $this->captura('vigente','numeric');
+        $this->captura('comprometido','numeric');
+        $this->captura('ejecutado','numeric');
+        $this->captura('desviacion_comprometido','numeric');
+        $this->captura('desviacion_ejecutado','numeric');
+        $this->captura('proveedor','varchar');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+	}
+	function AnalisisImputacionTipoCentroCosto(){//#PRES-5 
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_AITCENCOS_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		
+		$this->capturaCount('total_mov_egreso_mb','numeric');
+		$this->capturaCount('total_mov_ingreso_mb','numeric');
+		
+        $this->captura('ceco','varchar'); 
+        $this->captura('fecha_inicio','date');
+        $this->captura('fecha_final','date');
+        $this->captura('operativo','varchar');
+	    $this->captura('nivel','int4');
+	    $this->captura('formulacion_egreso_mb','numeric');
+	    $this->captura('formulacion_ingreso_mb','numeric');
+        $this->captura('tipo_nodo','varchar');
+        $this->captura('mov_ingreso','varchar');
+        $this->captura('mov_egreso','varchar');
+
+
+        $this->captura('control_partida','varchar');
+        $this->captura('control_techo','varchar');
+	    $this->captura('sueldo_planta','varchar');
+	    $this->captura('sueldo_obradet','varchar');
+        $this->captura('usuario_reg','varchar');
+        $this->captura('usuario_mod','varchar');
+        $this->captura('fecha_reg','date');
+        $this->captura('fecha_mod','date');
+        $this->captura('gestion','int4');
+        $this->captura('id_tipo_cc','int4');
+
+        $this->captura('nombre_programa','varchar'); 
+        $this->captura('nombre_proyecto','varchar'); 
+        $this->captura('nombre_actividad','varchar');
+        $this->captura('nombre_regional','varchar'); 
+        $this->captura('nombre_financiador','varchar'); 
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+	function AnalisisImputacionPartida(){#PRES-5 
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_AJUIMPPART_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		
+		/*$this->capturaCount('total_mov_egreso_mb','numeric');
+		$this->capturaCount('total_mov_ingreso_mb','numeric');*/
+		
+        $this->captura('id_partida','int4'); 
+        $this->captura('partida','varchar');
+        $this->captura('ceco','varchar');
+        $this->captura('nivel','int4');
+	    $this->captura('formulado','numeric');
+	    $this->captura('comprometido','numeric');
+	    $this->captura('por_comprometer','numeric');
+        $this->captura('ejecutado','numeric');
+        $this->captura('por_ejecutar','numeric');
+        
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
 	}
 }
 ?>

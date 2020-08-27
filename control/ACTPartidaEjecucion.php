@@ -14,10 +14,12 @@
    #44  ENDETR    23/07/2020        JJA          Mejoras en reporte tipo centro de costo de presupuesto 
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
    #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
+   #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
 require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCostoXls.php');
+require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCosto2Xls.php');
 class ACTPartidaEjecucion extends ACTbase{    
 			
 	function listarPartidaEjecucion(){
@@ -263,9 +265,18 @@ class ACTPartidaEjecucion extends ACTbase{
         if($this->objParam->getParametro('id_gestion')){
             $this->objParam->addFiltro(" (pe.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) "); 
         }
+        if($this->objParam->getParametro('id_centro_costo')!=''){//#PRES-5
+            $this->objParam->addFiltro("pe.id_centro_costo = ".$this->objParam->getParametro('id_centro_costo'));
+        }
+
 
         $this->objFunc = $this->create('MODPartidaEjecucion');
-        $this->res = $this->objFunc->ReportePartidaCentroCosto($this->objParam);
+        if($this->objParam->getParametro('exportar')=='CTRAM'){//#PRES-5 
+           $this->res = $this->objFunc->ReportePartidaCentroCosto($this->objParam);
+        }
+        else{
+           $this->res = $this->objFunc->ReportePartidaCentroCostoSinTramite($this->objParam);
+        }
         $titulo = 'PARTIDA CENTRO DE COSTO';
         $nombreArchivo = uniqid(md5(session_id()) . $titulo);
         $nombreArchivo .= '.xls';
@@ -273,7 +284,11 @@ class ACTPartidaEjecucion extends ACTbase{
 
         $this->objParam->addParametro('datos', $this->res->datos);
         //Instancia la clase de excel
-        $this->objReporteFormato = new RPartidaCentroCostoXls($this->objParam);
+        if($this->objParam->getParametro('exportar')=='CTRAM'){//#PRES-5 
+           $this->objReporteFormato = new RPartidaCentroCostoXls($this->objParam);
+        }else{
+           $this->objReporteFormato = new RPartidaCentroCosto2Xls($this->objParam);
+        }
         $this->objReporteFormato->generarDatos();
         $this->objReporteFormato->generarReporte();
 
@@ -281,6 +296,80 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+    function AnalisisImputacionTipoCentroCosto(){//#46
+       /* $this->objParam->defecto('ordenacion','orden');
+        $this->objParam->defecto('dir_ordenacion','asc');*/
+
+        if($this->objParam->getParametro('desde')){
+            $this->objParam->addFiltro("(tcc.fecha_inicio  >= ''%".$this->objParam->getParametro('desde')."%''::date  or cc.id_gestion is NULL )");
+        }
+
+        if($this->objParam->getParametro('hasta')){
+            $this->objParam->addFiltro("(tcc.fecha_final  <= ''%".$this->objParam->getParametro('hasta')."%''::date  or cc.id_gestion is NULL )");
+        }
+        if($this->objParam->getParametro('id_gestion')){
+            $this->objParam->addFiltro("(cc.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer or cc.id_gestion is NULL)"); 
+        }
+
+        if($this->objParam->getParametro('tipo_nodo') !='todos'){//#44
+            if($this->objParam->getParametro('tipo_nodo') == 'transaccional'){
+               $this->objParam->addFiltro("(tcc.movimiento =  ''si''::varchar or cc.id_gestion is NULL)");
+            }else{
+               $this->objParam->addFiltro("(tcc.movimiento !=  ''si''::varchar or cc.id_gestion is NULL)");
+            }
+        }
+        
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','AnalisisImputacionTipoCentroCosto');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+            
+            $this->res=$this->objFunc->AnalisisImputacionTipoCentroCosto($this->objParam);
+        }
+
+        //adicionar una fila al resultado con el summario
+        $temp = Array();
+        $temp['formulacion_egreso_mb'] = $this->res->extraData['total_mov_egreso_mb'];
+        $temp['formulacion_ingreso_mb'] = $this->res->extraData['total_mov_ingreso_mb'];
+
+        $temp['tipo_reg'] = 'summary';
+        $temp['id_tipo_cc'] = 0;
+        
+        $this->res->total++;
+        
+        $this->res->addLastRecDatos($temp);
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function AnalisisImputacionPartida(){//#46
+       /* $this->objParam->defecto('ordenacion','orden');
+        $this->objParam->defecto('dir_ordenacion','asc');*/
+
+        
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','AnalisisImputacionPartida');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+            
+            $this->res=$this->objFunc->AnalisisImputacionPartida($this->objParam);
+        }
+
+        //adicionar una fila al resultado con el summario
+        /*$temp = Array();
+        $temp['formulacion_egreso_mb'] = $this->res->extraData['total_mov_egreso_mb'];
+        $temp['formulacion_ingreso_mb'] = $this->res->extraData['total_mov_ingreso_mb'];
+
+        $temp['tipo_reg'] = 'summary';
+        $temp['id_tipo_cc'] = 0;
+        
+        $this->res->total++;
+        
+        $this->res->addLastRecDatos($temp);*/
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
 }

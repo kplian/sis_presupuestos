@@ -11,6 +11,7 @@ HISTORIAL DE MODIFICACIONES:
 
 ISSUE            FECHA:          AUTOR       DESCRIPCION
 #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
+#47 ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -61,6 +62,47 @@ header("content-type: text/javascript; charset=UTF-8");
                 grid:true,
                 form:true
             },
+            { //#47
+                config:{
+                    name: 'id_centro_costo',
+                    fieldLabel: 'Presupuesto',
+                    allowBlank: true,
+                    tinit: false,
+                    origen: 'CENTROCOSTO',
+                    gdisplayField: 'desc_centro_costo',
+                    width: 150,
+                    anchor:'100%'
+                },
+                type: 'ComboRec',
+                id_grupo: 0,
+                form: true
+            },
+            {//#47
+                config:{
+                    name:'exportar',
+                    fieldLabel:'Exportar',
+                    allowBlank:true,
+                    emptyText:'...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode: 'local',
+                    width: 150,
+                    valueField: 'tipo_moneda',   
+                    anchor:'100%',               
+                    store:new Ext.data.ArrayStore({
+                        fields: ['variable', 'valor'],
+                        data : [ 
+                                    ['CTRAM','con tramite'],
+                                    ['STRAM','sin tramite']
+                                ]
+                    }),
+                    valueField: 'variable',
+                    displayField: 'valor'
+                },
+                type:'ComboBox',
+                form:true
+            },
 
         ],
 
@@ -81,8 +123,10 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         iniciarEventos:function(){
-            /*this.mostrarComponente(this.Cmp.fecha_fin);
-            this.mostrarComponente(this.Cmp.fecha_ini);*/
+            this.Cmp.id_gestion.on('select', function(cmb, rec, ind){ //#47
+                Ext.apply(this.Cmp.id_centro_costo.store.baseParams,{id_gestion: rec.data.id_gestion});
+                
+            },this);
         },
 
         tipo : 'reporte',

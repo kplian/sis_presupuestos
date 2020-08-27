@@ -2,9 +2,9 @@
 /**
 * HISTORIAL DE MODIFICACIONES:
     #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
-    #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
+    #47 ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
  */
-class RPartidaCentroCostoXls
+class RPartidaCentroCosto2Xls
 {
     private $docexcel;
     private $objWriter;
@@ -102,11 +102,11 @@ class RPartidaCentroCostoXls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'PARTIDA CENTRO DE COSTO ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:Q2')->applyFromArray($styleTitulos1);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A2:Q2');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A2:P2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:P2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:Q3')->applyFromArray($styleTitulosFecha);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A3:Q3');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A3:P3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:P3');//#40
 
         /*if($this->objParam->getParametro('fecha_ini')){ 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
@@ -129,15 +129,10 @@ class RPartidaCentroCostoXls
         $this->docexcel->getActiveSheet()->getColumnDimension('N')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('O')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('P')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('Q')->setWidth(30);
 
 
-
-
-
-
-        $this->docexcel->getActiveSheet()->getStyle('A5:Q5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:Q5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:P5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:P5')->applyFromArray($styleTitulos2);
 
 
 
@@ -160,7 +155,6 @@ class RPartidaCentroCostoXls
         $this->docexcel->getActiveSheet()->setCellValue('N5','DESVIACIÓN COMPROMETIDO');
         $this->docexcel->getActiveSheet()->setCellValue('O5','DESVIACIÓN EJECUTADO');
         $this->docexcel->getActiveSheet()->setCellValue('P5','PROVEEDOR');
-        $this->docexcel->getActiveSheet()->setCellValue('Q5','NRO. TRAMITE');
       /*  $this->docexcel->getActiveSheet()->setCellValue('K5','MONTO MB');
         $this->docexcel->getActiveSheet()->setCellValue('L5','NRO. TRAMITE');
         $this->docexcel->getActiveSheet()->setCellValue('M5','ORIGEN');*/
@@ -201,7 +195,6 @@ class RPartidaCentroCostoXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['desviacion_comprometido']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['desviacion_ejecutado']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, $value['proveedor']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, $value['nro_tramite']);
 
             $fila++;
             $this->numero++;
