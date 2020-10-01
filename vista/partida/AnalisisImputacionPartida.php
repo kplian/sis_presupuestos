@@ -43,16 +43,13 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
                 renderer: function (value, p, record, rowIndex, colIndex){
 
                    var espacion_blanco="";
-                   var duplicar="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                   var nivel = record.data.nivel==null?0:record.data.nivel;
-                   var espacion_blanco = duplicar.repeat(nivel);
-
+                   
                    if(record.data.nivel ==1){
-                        return  String.format('<div style="vertical-align:middle;text-align:left;"> '+espacion_blanco+' <img src="../../../lib/imagenes/a_form_edit.png"> '+ record.data.partida+' </div>');
+                        return  String.format('<div style="vertical-align:middle;text-align:left;"> <img src="../../../lib/imagenes/a_form_edit.png"> '+ record.data.partida+' </div>');
                    }
                    else{       
 	                   	if(record.data.nivel){
-	                        return  String.format('<div style="vertical-align:middle;text-align:left;"> '+espacion_blanco+' <img src="../../../lib/imagenes/a_form.png"> '+ record.data.partida+' </div>');
+	                        return  String.format('<div style="vertical-align:middle;text-align:left;">  <img src="../../../lib/imagenes/a_form.png"> '+ record.data.partida+' </div>');
 	                   	}
                         
                    }
@@ -60,22 +57,6 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'Field',
 				filters:{pfiltro:'partida',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:false,
-				bottom_filter: true,
-		},
-		{
-			config:{
-				name: 'ceco',
-				fieldLabel: 'ceco',
-				allowBlank: true,
-				anchor: '200%',
-				gwidth: 200,
-				maxLength:4
-			},
-				type:'Field',
-				filters:{pfiltro:'ceco',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false,
@@ -104,7 +85,12 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+				renderer:function (value,p,record){
+
+					return  String.format('{0}',  Ext.util.Format.number(value,'0,000.00'));
+						
+				}
 			},
 				type:'NumberField', 
 				filters:{pfiltro:'formulado',type:'numeric'}, 
@@ -119,7 +105,10 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+				renderer:function (value,p,record){
+					return  String.format('{0}',  Ext.util.Format.number(value,'0,000.00'));	
+				}
 			},
 				type:'NumberField', 
 				filters:{pfiltro:'forcomprometidomulado',type:'numeric'}, 
@@ -134,7 +123,10 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+				renderer:function (value,p,record){
+					return  String.format('{0}',  Ext.util.Format.number(value,'0,000.00'));	
+				}
 			},
 				type:'NumberField', 
 				filters:{pfiltro:'por_comprometer',type:'numeric'}, 
@@ -149,7 +141,10 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+				renderer:function (value,p,record){
+					return  String.format('{0}',  Ext.util.Format.number(value,'0,000.00'));	
+				}
 			},
 				type:'NumberField', 
 				filters:{pfiltro:'ejecutado',type:'numeric'}, 
@@ -164,7 +159,10 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '100%',
 				gwidth: 70,
-				maxLength:4
+				maxLength:4,
+				renderer:function (value,p,record){
+					return  String.format('{0}',  Ext.util.Format.number(value,'0,000.00'));	
+				}
 			},
 				type:'NumberField', 
 				filters:{pfiltro:'por_ejecutar',type:'numeric'}, 
@@ -188,7 +186,6 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 
         {name:'id_partida', type: 'numeric'},
 		{name:'partida', type: 'string'},
-		{name:'ceco', type: 'string'},
 		{name:'nivel', type: 'numeric'},
 		{name:'formulado', type: 'numeric'},
 		{name:'comprometido', type: 'numeric'},

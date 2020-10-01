@@ -32,6 +32,30 @@ Phx.vista.AnalisisImputacionTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 			grid: false,
 			form:true 
 		},
+		{//#PRES-5 
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					fieldLabel: 'id_centro_costo',
+					name: 'id_centro_costo'
+			},
+			type:'Field',
+			grid: false,
+			form:true 
+		},
+		{//#PRES-5 
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					fieldLabel: 'id_gestion',
+					name: 'id_gestion'
+			},
+			type:'Field',
+			grid: false,
+			form:true 
+		},
 		{
 			config:{
 				name: 'ceco',
@@ -474,6 +498,8 @@ Phx.vista.AnalisisImputacionTipoCentroCosto=Ext.extend(Phx.gridInterfaz,{
 		{name:'nombre_actividad', type: 'string'}, 
 		{name:'nombre_regional', type: 'string'}, 
 		{name:'nombre_financiador', type: 'string'}, 
+		{name:'id_centro_costo', type: 'numeric'}, //#PRES-5
+		{name:'id_gestion', type: 'numeric'} //#PRES-5
 		
 		
 	],

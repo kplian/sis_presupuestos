@@ -384,6 +384,7 @@ class MODPartidaEjecucion extends MODbase{
 		$this->tipo_procedimiento='SEL';
 
 		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('id_gestion','id_gestion','int4');
 		
 		$this->capturaCount('total_mov_egreso_mb','numeric');
 		$this->capturaCount('total_mov_ingreso_mb','numeric');
@@ -417,6 +418,9 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('nombre_regional','varchar'); 
         $this->captura('nombre_financiador','varchar'); 
 
+        $this->captura('id_centro_costo','int4'); //#PRES-5
+        $this->captura('id_gestion','int4'); //#PRES-5
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -431,13 +435,11 @@ class MODPartidaEjecucion extends MODbase{
 		$this->tipo_procedimiento='SEL';
 
 		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
-		
-		/*$this->capturaCount('total_mov_egreso_mb','numeric');
-		$this->capturaCount('total_mov_ingreso_mb','numeric');*/
+		$this->setParametro('id_gestion','id_gestion','int4'); //#PRES-5
 		
         $this->captura('id_partida','int4'); 
         $this->captura('partida','varchar');
-        $this->captura('ceco','varchar');
+        //$this->captura('ceco','varchar');
         $this->captura('nivel','int4');
 	    $this->captura('formulado','numeric');
 	    $this->captura('comprometido','numeric');

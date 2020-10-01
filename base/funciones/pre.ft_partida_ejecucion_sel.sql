@@ -807,8 +807,10 @@ BEGIN
                     tcc.nombre_proyecto, 
                     tcc.nombre_actividad, 
                     tcc.nombre_regional,  
-                    tcc.nombre_financiador 
-                  
+                    tcc.nombre_financiador,
+
+                    cc.id_centro_costo, --#PRES-5 
+                    '|| v_parametros.id_gestion||'::integer as id_gestion  --#PRES-5
                   from tipo_cc tcc
                   left join param.tcentro_costo cc on cc.id_tipo_cc = tcc.id_tipo_cc
                   left join pre.vpartida_ejecucion vpe on vpe.id_centro_costo=cc.id_centro_costo
@@ -846,7 +848,9 @@ BEGIN
                                 tcc.nombre_proyecto, 
                                 tcc.nombre_actividad, 
                                 tcc.nombre_regional,  
-                                tcc.nombre_financiador ';
+                                tcc.nombre_financiador,
+                                cc.id_centro_costo, --#PRES-5
+                                cc.id_gestion --#PRES-5 ';
                     
       v_consulta:=v_consulta||' order by tcc.orden asc  limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
@@ -1467,31 +1471,38 @@ BEGIN
 
     begin
 
+       v_filtro_tipo_cc = ' 0 = 0 and ';
+       IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
+                   
+                IF v_parametros.id_tipo_cc is not NULL THEN
+                      
+                    WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                      SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                      FROM param.ttipo_cc tcc
+                      WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                    UNION ALL
+                      SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                      FROM tipo_cc_rec lrec 
+                      INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                      where tcc2.estado_reg = 'activo'
+                    )
+                  SELECT  pxp.list(id_tipo_cc::varchar) 
+                    into 
+                      v_tipo_cc
+                  FROM tipo_cc_rec;
+                          
+                          
+                  --se agrego el alias vpe al tipo cc #138
+                  v_filtro_tipo_cc = ' p.id_tipo_cc in ('||v_tipo_cc||') and ';
+              END IF;
+       END IF;
+       
+      
+      IF   COALESCE(v_parametros.id_gestion,0)=0  THEN
+          v_parametros.id_gestion=0;
+      end if;
         
-     IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
-                 
-              IF v_parametros.id_tipo_cc is not NULL THEN
-                    
-                  WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
-                    SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
-                    FROM param.ttipo_cc tcc
-                    WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
-                  UNION ALL
-                    SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
-                    FROM tipo_cc_rec lrec 
-                    INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
-                    where tcc2.estado_reg = 'activo'
-                  )
-                SELECT  pxp.list(id_tipo_cc::varchar) 
-                  into 
-                    v_tipo_cc
-                FROM tipo_cc_rec;
-                        
-                        
-                --se agrego el alias vpe al tipo cc #138
-                v_filtro_tipo_cc = ' p.id_tipo_cc in ('||v_tipo_cc||') and ';
-            END IF;
-     END IF;
+      v_consulta:='';
          
       v_consulta:='with RECURSIVE partida as(
                     select 
@@ -1541,18 +1552,17 @@ BEGIN
                     select
                     p.id_partida::integer,
                     p.partida::varchar,
-                    p.ceco::varchar,
                     p.nivel::integer,
                     sum(p.formulado)::numeric as formulado ,
                     sum(p.comprometido)::numeric as comprometido,
                     (sum(p.formulado)-sum(p.comprometido))::numeric  as por_comprometer,
                     sum(p.ejecutado)::numeric as ejecutado,
-                    (sum(p.formulado)-sum(p.ejecutado))::numeric as por_ejecutar
+                    (sum(p.comprometido)-sum(p.ejecutado))::numeric as por_ejecutar
                     from partida2 p
-                    where  '||v_filtro_tipo_cc;
+                    where  '||v_filtro_tipo_cc||'  p.id_gestion= '||v_parametros.id_gestion||' and ';
        
       v_consulta:=v_consulta||v_parametros.filtro;
-      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.nivel,p.orden,p.ceco ';
+      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.nivel,p.orden ';
                     
       v_consulta:=v_consulta||' order by  p.orden asc  limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
 
@@ -1569,6 +1579,8 @@ BEGIN
   elsif(p_transaccion='PRE_AJUIMPPART_CONT')then 
 
     begin
+
+     v_filtro_tipo_cc = ' 0 = 0 and ';
 
      IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
                  
@@ -1594,7 +1606,10 @@ BEGIN
                 v_filtro_tipo_cc = ' p.id_tipo_cc in ('||v_tipo_cc||') and ';
             END IF;
      END IF;
-     
+      
+      IF   COALESCE(v_parametros.id_gestion,0)=0  THEN
+          v_parametros.id_gestion=0;
+      end if;  
       v_consulta:='with RECURSIVE partida as(
                     select 
                     par.id_partida,
@@ -1621,13 +1636,12 @@ BEGIN
                     select 
                     p.id_partida,
                     (replace(p.nivel,''*'','' '')||p.partida)::varchar as partida,
-                    length(replace(p.nivel,'' '',''''))::integer as nivel,
                     (case when pe.tipo_movimiento = ''formulado'' then sum(pe.monto_mb) end)::numeric as formulado,
                     (case when pe.tipo_movimiento = ''comprometido'' then sum(pe.monto_mb) end)::numeric as comprometido,
                     (case when pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) end)::numeric as ejecutado,
                     p.id_gestion,
                     p.orden,
-                    (tcc.codigo||'' ''||tcc.descripcion)::varchar as ceco,
+                    p.nivel,
                     tcc.id_tipo_cc
                     from partida p
                     left join pre.tpartida_ejecucion pe on pe.id_partida=p.id_partida   
@@ -1636,23 +1650,24 @@ BEGIN
                     left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
                     left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc  
                                                   
-                    group by p.id_partida,p.nivel,p.partida,pe.tipo_movimiento,p.orden,p.id_gestion
-                    ,tcc.codigo,tcc.descripcion,tcc.id_tipo_cc
+                    group by p.id_partida,p.partida,pe.tipo_movimiento,p.orden,p.id_gestion,
+                    tcc.id_tipo_cc,p.nivel
                     order by p.orden asc )
                       
                     select
                     count(*)
                     from partida2 p
-                    where  '||v_filtro_tipo_cc;
+                    where  '||v_filtro_tipo_cc||'  p.id_gestion= '||v_parametros.id_gestion||' and ';
 
       v_consulta:=v_consulta||v_parametros.filtro;
-      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.nivel,p.orden  ,p.ceco ';
+      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.orden  ';
                     
         
       return v_consulta;
     end;  
 
     /*********************************
+ 
   #TRANSACCION:  'PRE_STPARCEN_SEL' #PRES-5
   #DESCRIPCION: Reporte partida centro de coso
   #AUTOR:   JUAN
