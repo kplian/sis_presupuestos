@@ -755,3 +755,7 @@ select pxp.f_insert_tgui ('Partida', 'Partida', 'PART', 'si', 18, 'sis_presupues
 --#PRES-5 
 select pxp.f_insert_tgui ('Análisis imputación', 'Análisis imputación', 'ANAIMP', 'si', 19, 'sis_presupuestos/reportes/formulario/Filtro_analisis_imputacion.php', 3, '', 'Filtro_analisis_imputacion', 'PRE');
 /*******************************************F-DAT-JJA-PRE-0-27/08/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-0-28/09/2020***********************************************/
+select pxp.f_insert_tgui ('Formulación Presupuestaria', 'Formulación Presupuestaria', 'FORPRES', 'si', 20, 'sis_presupuestos/reportes/formulario/Formulacion_presupuestaria.php', 3, '', 'Formulacion_presupuestaria', 'PRE'); --#PRES-6
+/*******************************************F-DAT-JJA-PRE-0-28/09/2020***********************************************/

@@ -33,6 +33,7 @@ $body$
  #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
  #46 ENDETR     06/08/2020        JJA             Reporte partida en presupuesto
  #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
+ #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
 ***************************************************************************/
 
 DECLARE
@@ -1862,6 +1863,142 @@ BEGIN
       return v_consulta;
       
     end;
+
+    /*********************************
+  #TRANSACCION:  'PRE_RFORPRESUP_SEL' 
+  #DESCRIPCION: Reporte formulacion presupuestaria
+  #AUTOR:   JUAN
+  #FECHA:   28/09/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_RFORPRESUP_SEL')then --#PRES-6 
+
+    begin
+    
+     v_filtro_tipo_cc = ' 0=0 and ';
+     IF v_parametros.id_tipo_cc is not NULL THEN
+          WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+            SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+            FROM param.ttipo_cc tcc
+            WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+          UNION ALL
+            SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+            FROM tipo_cc_rec lrec 
+            INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+            where tcc2.estado_reg = 'activo'
+          )
+        SELECT  pxp.list(id_tipo_cc::varchar) 
+          into 
+            v_tipo_cc
+        FROM tipo_cc_rec;
+        
+        v_filtro_tipo_cc = ' f.id_tipo_cc in ('||v_tipo_cc||')  and ';        
+     END IF;
+     
+      v_consulta:=' with formulacion as(
+                    select 
+                    
+                    case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
+                    per.periodo,
+                    par.tipo,
+                    case when tcc.control_techo=''si'' then tcc.codigo||'' - ''||tcc.descripcion else te.codigo_techo||'' - ''||te.descripcion_techo end as ceco_techo,
+                    sum(mcd.importe)::NUMERIC as importe,
+                    pres.estado as estado_presupuesto,
+                    ''Formulación'' as tipo_formulacion,
+                    '''' as estado_ajuste,
+                    g.gestion,
+                    ''memoria de calculo''::varchar as origen,
+                    g.id_gestion,
+                    tcc.id_tipo_cc
+                    from pre.tmemoria_calculo mc
+                    join pre.tmemoria_det mcd on mcd.id_memoria_calculo=mc.id_memoria_calculo 
+                    join pre.tpartida par on par.id_partida=mc.id_partida
+                    join pre.tpresupuesto pres on pres.id_presupuesto=mc.id_presupuesto
+                    join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
+                    join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
+                    join param.vtipo_cc_techo te on te.id_tipo_cc=tcc.id_tipo_cc
+                    join param.tgestion g on g.id_gestion = cc.id_gestion
+                    join param.tperiodo per on per.id_periodo=mcd.id_periodo
+                    where mcd.importe != 0
+                    group by 
+                    per.periodo,
+                    par.tipo,
+                    tcc.control_techo,
+                    tcc.id_tipo_cc,
+                    te.id_tipo_cc_techo,
+                    te.codigo_techo,
+                    te.descripcion_techo,
+                    pres.estado,
+                    g.gestion,
+                    g.id_gestion
+
+                    union all
+
+                    select 
+                    case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
+                    per.periodo,
+                    par.tipo,
+                    case when tcc.control_techo=''si'' then tcc.codigo||'' - ''||tcc.descripcion else te.codigo_techo||'' - ''||te.descripcion_techo end as ceco_techo,
+                    sum(ajd.importe)::NUMERIC as importe,
+                    pres.estado as estado_presupuesto,
+                    case when aj.tipo_ajuste=''incremento'' or aj.tipo_ajuste=''decremento'' then  aj.tipo_ajuste_formulacion 
+                        when aj.tipo_ajuste=''reformulacion'' then ''reformulacion''
+                        when aj.tipo_ajuste=''traspaso'' then ''traspaso'' else '''' end as tipo_formulacion,
+                    aj.estado as  estado_ajuste,
+                    g.gestion,
+                    ''Ajuste presupuestario''::varchar as origen,
+                    g.id_gestion,
+                    tcc.id_tipo_cc
+                    from pre.tajuste aj
+                    join pre.tajuste_det ajd on ajd.id_ajuste=aj.id_ajuste 
+                    join pre.tpartida par on par.id_partida=ajd.id_partida
+                    join pre.tpresupuesto pres on pres.id_presupuesto=ajd.id_presupuesto
+                    join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
+                    join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
+                    join param.vtipo_cc_techo te on te.id_tipo_cc=tcc.id_tipo_cc
+                    join param.tgestion g on g.id_gestion = cc.id_gestion
+                    join param.tperiodo per on per.id_gestion=cc.id_gestion and per.periodo::integer=EXTRACT(MONTH from aj.fecha)::integer
+                    where aj.tipo_ajuste not IN(''rev_comprometido'',''rev_comprometido'')
+                    group by 
+                    per.periodo,
+                    par.tipo,
+                    tcc.control_techo,
+                    tcc.id_tipo_cc,
+                    te.id_tipo_cc_techo,
+                    te.codigo_techo,
+                    te.descripcion_techo,
+                    pres.estado,
+                    aj.tipo_ajuste,
+                    aj.tipo_ajuste_formulacion,
+                    aj.estado,
+                    g.gestion,
+                    g.id_gestion)
+                    
+                    select 
+                    f.id_tipo_cc_techo::integer,
+                    f.periodo::varchar,
+                    f.tipo::varchar,
+                    f.ceco_techo::varchar,
+                    f.importe::numeric,
+                    f.estado_presupuesto::varchar,
+                    f.tipo_formulacion::varchar,
+                    f.estado_ajuste::varchar,
+                    f.gestion::varchar,
+                    f.origen::varchar
+                    from formulacion f
+                    where '||v_filtro_tipo_cc;
+                      
+                    
+
+      v_consulta:=v_consulta||v_parametros.filtro;           
+    
+    
+      return v_consulta;
+      
+    end;
+    
   else
 
     raise exception 'Transaccion inexistente';

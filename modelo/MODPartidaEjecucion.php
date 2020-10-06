@@ -16,6 +16,7 @@
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
    #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
    #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
+   #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -455,5 +456,33 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function ReporteFormulacionPresupuestaria(){ //#PRES-6 
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_RFORPRESUP_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		
+        $this-> setCount(false);
+        
+
+        $this->captura('id_tipo_cc_techo','int4');
+        $this->captura('periodo','varchar'); 
+        $this->captura('tipo','varchar'); 
+        $this->captura('ceco_techo','varchar'); 
+        $this->captura('importe','numeric');
+        $this->captura('estado_presupuesto','varchar'); 
+        $this->captura('tipo_formulacion','varchar'); 
+        $this->captura('estado_ajuste','varchar'); 
+        $this->captura('gestion','varchar'); 
+        $this->captura('origen','varchar'); 
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+   
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
 }
 ?>
