@@ -1960,7 +1960,7 @@ BEGIN
                     join param.vtipo_cc_techo te on te.id_tipo_cc=tcc.id_tipo_cc
                     join param.tgestion g on g.id_gestion = cc.id_gestion
                     join param.tperiodo per on per.id_gestion=cc.id_gestion and per.periodo::integer=EXTRACT(MONTH from aj.fecha)::integer
-                    where aj.tipo_ajuste not IN(''rev_comprometido'',''rev_comprometido'')
+                    where aj.tipo_ajuste not IN(''rev_comprometido'',''inc_comprometido'')
                     group by 
                     per.periodo,
                     par.tipo,
