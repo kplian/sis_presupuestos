@@ -464,6 +464,7 @@ class MODPartidaEjecucion extends MODbase{
 		$this->tipo_procedimiento='SEL';
 
 		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('tipo_formulacion','tipo_formulacion','varchar'); //#PRES-6 
 		
         $this-> setCount(false);
         
@@ -482,6 +483,29 @@ class MODPartidaEjecucion extends MODbase{
         $this->armarConsulta();
         $this->ejecutarConsulta();
    
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function ReporteResumenFormulacionPresupuestaria(){ //#PRES-6 
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_RFORPRESUP_SEL';
+		$this->tipo_procedimiento='SEL';
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('tipo_formulacion','tipo_formulacion','varchar'); 
+		
+        $this-> setCount(false);
+        
+        $this->captura('ceco_techo','varchar');
+        $this->captura('formulacion','numeric'); 
+        $this->captura('reformulacion','numeric'); 
+        $this->captura('traspaso','numeric'); 
+        $this->captura('en_blanco','numeric');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+  // var_dump($this->consulta);
         //Devuelve la respuesta
         return $this->respuesta;
     }

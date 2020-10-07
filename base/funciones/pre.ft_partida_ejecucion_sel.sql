@@ -1977,25 +1977,69 @@ BEGIN
                     g.gestion,
                     g.id_gestion)
                     
-                    select 
-                    f.id_tipo_cc_techo::integer,
-                    f.periodo::varchar,
-                    f.tipo::varchar,
-                    f.ceco_techo::varchar,
-                    f.importe::numeric,
-                    f.estado_presupuesto::varchar,
-                    f.tipo_formulacion::varchar,
-                    f.estado_ajuste::varchar,
-                    f.gestion::varchar,
-                    f.origen::varchar
-                    from formulacion f
-                    where '||v_filtro_tipo_cc;
+                    ';
+             
+           if(v_parametros.tipo_formulacion='presform')then   --#PRES-6  
+             v_consulta:=v_consulta||' select 
+                      f.id_tipo_cc_techo::integer,
+                      f.periodo::varchar,
+                      f.tipo::varchar,
+                      f.ceco_techo::varchar,
+                      f.importe::numeric,
+                      f.estado_presupuesto::varchar,
+                      f.tipo_formulacion::varchar,
+                      f.estado_ajuste::varchar,
+                      f.gestion::varchar,
+                      f.origen::varchar
+                      from formulacion f
+                      where '||v_filtro_tipo_cc;
                       
-                    
+             v_consulta:=v_consulta||v_parametros.filtro;   
+                      
+           end if;     
+           
+           if(v_parametros.tipo_formulacion='resform')then  --#PRES-6 
+           
+                v_consulta:=v_consulta||' ,formulacion2 AS(
+                            select 
+                            f.id_tipo_cc_techo::integer,
+                            f.periodo::varchar,
+                            f.tipo::varchar,
+                            f.ceco_techo::varchar,
+                            f.estado_presupuesto::varchar,
+                            case when f.tipo_formulacion=''Formulación'' or f.tipo_formulacion=''formulacion'' then f.importe else 0 end formulacion,
+                            case when f.tipo_formulacion=''reformulacion'' or f.tipo_formulacion=''Reformulación''  then f.importe else 0 end as reformulacion,
+                            case when f.tipo_formulacion=''traspaso'' then f.importe else 0 end traspaso,
+                            case when f.tipo_formulacion != ''Formulación'' and f.tipo_formulacion !=''formulacion'' and f.tipo_formulacion !=''Reformulación'' and f.tipo_formulacion !=''reformulacion'' and f.tipo_formulacion != ''traspaso'' then f.importe else 0 end en_blanco,
+                            f.tipo_formulacion::varchar,
+                            f.estado_ajuste::varchar,
+                            f.gestion::varchar,
+                            f.origen::varchar,
+                            f.id_tipo_cc,
+                            f.id_gestion
+                            from formulacion f
+                          )
+                          select 
+                          f.ceco_techo::varchar,
+                          sum(formulacion)::numeric formulacion,
+                          sum(reformulacion)::NUMERIC as reformulacion,
+                          sum(traspaso)::NUMERIC  as traspaso,
+                          sum(en_blanco)::NUMERIC::NUMERIC as en_blanco
 
-      v_consulta:=v_consulta||v_parametros.filtro;           
+                          from formulacion2 f 
+                         
+                          where '||v_filtro_tipo_cc;
+                
+               v_consulta:=v_consulta||v_parametros.filtro;     
+               v_consulta:=v_consulta||' group by f.ceco_techo ' ;        
+               
+                raise notice 'notice %',v_consulta;
+  
+            END IF;
+
+              
     
-    
+      
       return v_consulta;
       
     end;

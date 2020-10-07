@@ -82,7 +82,34 @@ header("content-type: text/javascript; charset=UTF-8");
             filters:{pfiltro:'vcc.codigo_tcc#vcc.descripcion_tcc',type:'string'},
             grid:true,
             form:true
-            }
+            },
+           { //#PRES-6 
+                config:{
+                    name:'tipo_formulacion',
+                    fieldLabel:'Tipo formulación',
+                    allowBlank:false,
+                    emptyText:'...',
+                    typeAhead: true,
+                    triggerAction: 'all',
+                    lazyRender:true,
+                    mode: 'local',
+                    width: 251,
+                    valueField: 'origen',                   
+                    store:new Ext.data.ArrayStore({
+                        fields: ['variable', 'valor'],
+                        data : [ 
+                                    ['presform','Presupuesto formulación'],
+                                    ['resform','Resumen formulación'],
+                                ]
+                    }),
+                    valueField: 'variable',
+                    displayField: 'valor',
+
+                    enableMultiSelect: false,
+                },
+                type: 'ComboBox',
+                form:true
+            },
 
         ],
 

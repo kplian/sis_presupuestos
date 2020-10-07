@@ -24,6 +24,8 @@ require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCostoXls.php');
 require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCosto2Xls.php');
 require_once(dirname(__FILE__).'/../reportes/RFormulacionPresupuestariaXls.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionInversionXls.php'); //#PRES-7
+require_once(dirname(__FILE__).'/../reportes/RResumenFormulacionPresupuestariaXls.php');//#PRES-6
+
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -380,16 +382,29 @@ class ACTPartidaEjecucion extends ACTbase{
             $this->objParam->addFiltro(" (f.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
         }   
 
-        $this->objFunc = $this->create('MODPartidaEjecucion');  
-        $this->res = $this->objFunc->ReporteFormulacionPresupuestaria($this->objParam); 
-        $titulo = 'Ejecución Proyecto'; 
-        $nombreArchivo = uniqid(md5(session_id()) . $titulo);   
-        $nombreArchivo .= '.xls';   
-        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);    
 
-        $this->objParam->addParametro('datos', $this->res->datos);  
-        //Instancia la clase de excel   
-        $this->objReporteFormato = new RFormulacionPresupuestariaXls($this->objParam);  
+
+        if($this->objParam->getParametro('tipo_formulacion')=='presform'){
+            $this->objFunc = $this->create('MODPartidaEjecucion');  
+            $this->res = $this->objFunc->ReporteFormulacionPresupuestaria($this->objParam); 
+            $titulo = 'Ejecución Proyecto'; 
+            $nombreArchivo = uniqid(md5(session_id()) . $titulo);   
+            $nombreArchivo .= '.xls';   
+            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);    
+            $this->objParam->addParametro('datos', $this->res->datos);  
+            $this->objReporteFormato = new RFormulacionPresupuestariaXls($this->objParam);  
+        }
+        if($this->objParam->getParametro('tipo_formulacion')=='resform'){
+            $this->objFunc = $this->create('MODPartidaEjecucion');  
+            $this->res = $this->objFunc->ReporteResumenFormulacionPresupuestaria($this->objParam); 
+            $titulo = 'Resumen Formulacion presupuestaria'; 
+            $nombreArchivo = uniqid(md5(session_id()) . $titulo);   
+            $nombreArchivo .= '.xls';   
+            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);    
+            $this->objParam->addParametro('datos', $this->res->datos);  
+            $this->objReporteFormato = new RResumenFormulacionPresupuestariaXls($this->objParam);  
+        }
+
         $this->objReporteFormato->generarDatos();   
         $this->objReporteFormato->generarReporte(); 
         $this->mensajeExito = new Mensaje();    
