@@ -15,14 +15,15 @@
    #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
    #46 ENDETR      06/08/2020       JJA            Reporte partida en presupuesto
    #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
-   #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
+   #PRES-6  ENDETR      28/09/2020       JJA         Reporte formulacion presupuestaria
+   #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
 require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCostoXls.php');
 require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCosto2Xls.php');
 require_once(dirname(__FILE__).'/../reportes/RFormulacionPresupuestariaXls.php');
-
+require_once(dirname(__FILE__).'/../reportes/REjecucionInversionXls.php'); //#PRES-7
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -389,6 +390,29 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addParametro('datos', $this->res->datos);  
         //Instancia la clase de excel   
         $this->objReporteFormato = new RFormulacionPresupuestariaXls($this->objParam);  
+        $this->objReporteFormato->generarDatos();   
+        $this->objReporteFormato->generarReporte(); 
+        $this->mensajeExito = new Mensaje();    
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control'); 
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);    
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson()); 
+    }
+    function ReporteEjecucionInversion(){//#PRES-7 
+        if($this->objParam->getParametro('id_gestion')){    
+            $this->objParam->addFiltro(" (g.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
+        }  
+        
+
+        $this->objFunc = $this->create('MODPartidaEjecucion');  
+        $this->res = $this->objFunc->ReporteEjecucionInversion($this->objParam); 
+        $titulo = 'Ejecución Proyecto'; 
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);   
+        $nombreArchivo .= '.xls';   
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);    
+
+        $this->objParam->addParametro('datos', $this->res->datos);  
+      
+        $this->objReporteFormato = new REjecucionInversionXls($this->objParam);  
         $this->objReporteFormato->generarDatos();   
         $this->objReporteFormato->generarReporte(); 
         $this->mensajeExito = new Mensaje();    

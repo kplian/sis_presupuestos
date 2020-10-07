@@ -759,3 +759,7 @@ select pxp.f_insert_tgui ('Análisis imputación', 'Análisis imputación', 'ANA
 /*******************************************I-DAT-JJA-PRE-0-28/09/2020***********************************************/
 select pxp.f_insert_tgui ('Formulación Presupuestaria', 'Formulación Presupuestaria', 'FORPRES', 'si', 20, 'sis_presupuestos/reportes/formulario/Formulacion_presupuestaria.php', 3, '', 'Formulacion_presupuestaria', 'PRE'); --#PRES-6
 /*******************************************F-DAT-JJA-PRE-0-28/09/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-0-29/09/2020***********************************************/
+select pxp.f_insert_tgui ('Ejecución inversiones', 'Ejecución inversiones', 'EJECUINVER', 'si', 21, 'sis_presupuestos/reportes/formulario/Filtro_ejecucion_inversiones.php', 3, '', 'Filtro_ejecucion_inversiones', 'PRE'); --#PRES-7
+/*******************************************F-DAT-JJA-PRE-0-29/09/2020***********************************************/
