@@ -2027,8 +2027,10 @@ BEGIN
                           sum(en_blanco)::NUMERIC::NUMERIC as en_blanco
 
                           from formulacion2 f 
-                         
-                          where '||v_filtro_tipo_cc;
+                          
+                          where f.estado_ajuste in ('''',''aprobado'') and
+                                f.estado_presupuesto in(''aprobado'') and
+                                '||v_filtro_tipo_cc;
                 
                v_consulta:=v_consulta||v_parametros.filtro;     
                v_consulta:=v_consulta||' group by f.ceco_techo ' ;        
@@ -2084,7 +2086,7 @@ BEGIN
                       join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
 
                       where act.codigo_actividad in (''IA'',''PE'')
-                      
+                      and pe.tipo_movimiento = ''ejecutado''
                       and ';
 
           v_consulta:=v_consulta||v_parametros.filtro;                 

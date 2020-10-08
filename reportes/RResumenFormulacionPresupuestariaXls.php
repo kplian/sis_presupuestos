@@ -125,7 +125,7 @@ class RResumenFormulacionPresupuestariaXls
         $this->docexcel->getActiveSheet()->setCellValue('D5','REFORMULACIÓN');
         $this->docexcel->getActiveSheet()->setCellValue('E5','TRASPASO');
         $this->docexcel->getActiveSheet()->setCellValue('F5','VACIO');
-        $this->docexcel->getActiveSheet()->setCellValue('G5','TOTAL');
+        $this->docexcel->getActiveSheet()->setCellValue('G5','VIGENTE'); //#PRES-6
 
 
 
