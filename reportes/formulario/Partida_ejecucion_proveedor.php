@@ -12,7 +12,7 @@ HISTORIAL DE MODIFICACIONES:
 ISSUE            FECHA:          AUTOR       DESCRIPCION
 #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
 #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
-#ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos
+#ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos 
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>

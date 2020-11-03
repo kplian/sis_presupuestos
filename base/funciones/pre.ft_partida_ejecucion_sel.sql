@@ -35,7 +35,7 @@ $body$
  #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
  #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
  #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
- #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido
+ #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido 
 ***************************************************************************/
 
 DECLARE

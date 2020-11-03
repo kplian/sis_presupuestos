@@ -155,7 +155,7 @@ class ACTPartidaEjecucion extends ACTbase{
     }
     //#11
     function ReporteEjecucionProyecto(){ //#37
-
+ 
         if($this->objParam->getParametro('fecha_ini')){
             $this->objParam->addFiltro(" (pt.fecha::date  >= ''".$this->objParam->getParametro('fecha_ini')."''::date )");
         }
