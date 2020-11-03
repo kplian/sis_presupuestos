@@ -12,6 +12,7 @@ HISTORIAL DE MODIFICACIONES:
 ISSUE            FECHA:          AUTOR       DESCRIPCION
 #37 ENDETR      31/03/2020       JUAN            Reporte ejecución de proyectos con proveedor
 #45 ENDETR      26/07/2020       JJA             Agregado de filtros en el reporte de Ejecución de proyectos
+#ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -126,7 +127,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         fields: ['variable', 'valor'],
                         data : [ 
                                     ['ejecucion_proyectos','Ejecucion proyectos '],
-                                    ['ejecucion_proyectos_con_iva','Ejecucion proyectos con iva']
+                                    ['ejecucion_proyectos_con_iva','Ejecucion proyectos con iva'],
+                                    ['ejecucion_comprometido_proyectos','Ejecucion y comprometido proyectos']
                                    
                                 ]
                     }),
@@ -211,7 +213,7 @@ header("content-type: text/javascript; charset=UTF-8");
         }],
 
         //ActSave:'../../sis_contabilidad/control/DocCompraVentaForm/reporteComparacion',
-        ActSave:'../../sis_presupuestos/control/PartidaEjecucion/ReporteEjecucionProyecto',
+        ActSave:'../../sis_presupuestos/control/PartidaEjecucion/ReporteEjecucionProyecto', //#ETR-1599
         successSave :function(resp){
 
             Phx.CP.loadingHide();

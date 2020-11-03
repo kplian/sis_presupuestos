@@ -35,6 +35,7 @@ $body$
  #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
  #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
  #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
+ #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido
 ***************************************************************************/
 
 DECLARE
@@ -1257,6 +1258,39 @@ BEGIN
                     left join param.tproveedor p on p.id_proveedor = pep.id_proveedor ),
                     
                    ProyectoTransaccion as(
+                   --#ETR-1599
+                   select 
+                    concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo,
+                    concat(te.codigo,'' - '',te.descripcion)::varchar as ceco,
+                    concat(par.codigo, '' - '',par.nombre_partida)::varchar as partida,
+                    concat(crr2.codigo, '' - '', crr2.descripcion)::varchar as clas_nivel_1,
+                    concat(crr1.codigo, '' - '', crr1.descripcion)::varchar as clas_nivel_2,
+                    concat(crr.codigo, '' - '', crr.descripcion)::varchar as clas_nivel_3,
+                    pep.proveedor::varchar,
+                    pep.tipo_costo::varchar,
+                    pe.fecha::date,
+                    pe.monto_mb::numeric,
+                    pe.nro_tramite, 
+                    cc.id_gestion,
+                    te.id_tipo_cc_techo,
+                    ''comprometido_proyectos''::varchar as origen
+                    from pre.tpartida_ejecucion pe
+                    inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
+                    inner join param.ttipo_cc tcc on tcc.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_raiz ra on ra.id_tipo_cc = cc.id_tipo_cc
+                    inner join param.vtipo_cc_techo te on te.id_tipo_cc = cc.id_tipo_cc
+                    inner join pre.tpartida par on par.id_partida = pe.id_partida
+                    inner join pre.tpresupuesto pres on pres.id_presupuesto = pe.id_presupuesto
+                    left join pre.tpartida_reporte_ejecucion_dw pred on pred.id_partida = pe.id_partida and pred.id_tipo_presupuesto = pres.tipo_pres::integer
+                    left join pre.tclasificacion_reporte_dw crr on crr.id_clasificacion_reporte_dw = pred.id_clasificacion_reporte_dw
+                    left join pre.tclasificacion_reporte_dw crr1 on crr1.id_clasificacion_reporte_dw = crr.id_padre
+                    left join pre.tclasificacion_reporte_dw crr2 on crr2.id_clasificacion_reporte_dw = crr1.id_padre
+                    left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
+                    where ra.ids::varchar like (''%{2568,1549%'')
+                    and pe.tipo_movimiento in( ''comprometido'')
+                   
+                   union all
+                   
                    select
                     concat(te.codigo_techo,'' - '',te.descripcion_techo)::varchar as ceco_techo,
                     concat(te.codigo,'' - '',te.descripcion)::varchar as ceco,

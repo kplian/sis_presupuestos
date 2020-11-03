@@ -17,6 +17,9 @@
    #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
    #PRES-6  ENDETR      28/09/2020       JJA         Reporte formulacion presupuestaria
    #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
+   #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido
+
+
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -165,8 +168,14 @@ class ACTPartidaEjecucion extends ACTbase{
         if($this->objParam->getParametro('id_tipo_cc_techo')){//#45
             $this->objParam->addFiltro(" (pt.id_tipo_cc_techo::integer  =  ".$this->objParam->getParametro('id_tipo_cc_techo')."::integer) "); 
         }
-        if($this->objParam->getParametro('origen')){//#45
-            $this->objParam->addFiltro(" (pt.origen::varchar  =  ''".$this->objParam->getParametro('origen')."''::varchar) "); 
+        if($this->objParam->getParametro('origen')){ //#ETR-1599
+            if($this->objParam->getParametro('origen')=='ejecucion_comprometido_proyectos'){
+
+                 $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''comprometido_proyectos'')) "); 
+            }else{
+                 $this->objParam->addFiltro(" (pt.origen::varchar  =  ''".$this->objParam->getParametro('origen')."''::varchar) ");  
+            }
+
         }
 
 
