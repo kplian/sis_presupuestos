@@ -18,6 +18,9 @@
    #PRES-5  ENDETR      10/08/2020       JJA            Mejoras en reporte partida con centros de costo de presupuestos
    #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
    #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
+   #ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos
+   #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
+
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -527,6 +530,8 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('monto_mb','numeric');
         $this->captura('nombre_actividad','varchar'); 
         $this->captura('nombre_proyecto','varchar'); 
+        $this->captura('nro_tramite','varchar'); //#ETR-1632
+        $this->captura('proveedor','varchar'); //#ETR-1632
 
         $this->armarConsulta();
         $this->ejecutarConsulta();

@@ -2,6 +2,8 @@
 /**
 * HISTORIAL DE MODIFICACIONES:
   #PRES-7  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
+  #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
+
  */
 class REjecucionInversionXls
 {
@@ -101,11 +103,11 @@ class REjecucionInversionXls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN INVERSIÓN ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:H2')->applyFromArray($styleTitulos1);
-        $this->docexcel->getActiveSheet()->mergeCells('A2:H2'); 
+        $this->docexcel->getActiveSheet()->getStyle('A2:J2')->applyFromArray($styleTitulos1);
+        $this->docexcel->getActiveSheet()->mergeCells('A2:J2'); 
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:H3')->applyFromArray($styleTitulosFecha);
-        $this->docexcel->getActiveSheet()->mergeCells('A3:H3');
+        $this->docexcel->getActiveSheet()->getStyle('A3:J3')->applyFromArray($styleTitulosFecha);
+        $this->docexcel->getActiveSheet()->mergeCells('A3:J3');
 
         $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(25);
         $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
@@ -114,10 +116,12 @@ class REjecucionInversionXls
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:H5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:H5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->applyFromArray($styleTitulos2);
 
 
 
@@ -130,7 +134,8 @@ class REjecucionInversionXls
         $this->docexcel->getActiveSheet()->setCellValue('F5','MONTO_MB');
         $this->docexcel->getActiveSheet()->setCellValue('G5','ACTIVIDAD');
         $this->docexcel->getActiveSheet()->setCellValue('H5','PROYECTO');
-
+        $this->docexcel->getActiveSheet()->setCellValue('I5','NRO. TRAMITE'); //#ETR-1632
+        $this->docexcel->getActiveSheet()->setCellValue('J5','PROVEEDOR');//#ETR-1632
 
 
 
@@ -160,6 +165,8 @@ class REjecucionInversionXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['monto_mb']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['nombre_actividad']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['nombre_proyecto']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['nro_tramite']);//#ETR-1632
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['proveedor']);//#ETR-1632
             $fila++;
             $this->numero++;
         }

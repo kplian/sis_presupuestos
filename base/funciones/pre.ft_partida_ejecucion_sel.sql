@@ -36,6 +36,8 @@ $body$
  #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
  #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
  #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido 
+ #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
+
 ***************************************************************************/
 
 DECLARE
@@ -2103,7 +2105,9 @@ BEGIN
                       ''Ejecucion''::varchar as origen,
                       sum(pe.monto_mb)::numeric as monto_mb,
                       act.nombre_actividad::varchar,
-                      proy.nombre_proyecto::varchar
+                      proy.nombre_proyecto::varchar,
+                      pe.nro_tramite::varchar,
+                      prov.rotulo_comercial::varchar as proveedor
 
                       from pre.tpartida_ejecucion pe
                       join param.tcentro_costo cc on cc.id_centro_costo=pe.id_presupuesto
@@ -2118,17 +2122,70 @@ BEGIN
                       join param.tregional reg ON reg.id_regional = ep.id_regional
                       join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
                       join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
-
+                      left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
+                      left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
                       where act.codigo_actividad in (''IA'',''PE'')
                       and pe.tipo_movimiento = ''ejecutado''
+                      
                       and ';
 
           v_consulta:=v_consulta||v_parametros.filtro;                 
           v_consulta:=v_consulta||' group by ct.codigo_techo,ct.descripcion_techo,g.gestion,p.periodo, act.codigo_actividad,
                       act.nombre_actividad,
-                      proy.nombre_proyecto ';
+                      proy.nombre_proyecto,
+                      pe.nro_tramite,
+                      prov.rotulo_comercial ';
                   
       end if;   
+      IF  EXISTS(with origen AS(SELECT v_parametros.origen::varchar as origen) --#ETR-1632
+
+
+                SELECT * from origen orig
+                where orig.origen::varchar like '%comprometido%')  THEN
+                
+          if(v_consulta !='')THEN
+            v_consulta:=v_consulta||' union all ';
+          end if;
+                    
+          v_consulta:=v_consulta||' select 
+                      (ct.codigo_techo||'' - ''||ct.descripcion_techo)::varchar as ceco_techo,
+                      g.gestion::integer,
+                      pxp.f_obtener_literal_periodo(p.periodo,-1)::varchar as periodo,
+                      ''Comprometido''::varchar as origen,
+                      sum(pe.monto_mb)::numeric as monto_mb,
+                      act.nombre_actividad::varchar,
+                      proy.nombre_proyecto::varchar,
+                      pe.nro_tramite::varchar,
+                      prov.rotulo_comercial::varchar as proveedor
+
+                      from pre.tpartida_ejecucion pe
+                      join param.tcentro_costo cc on cc.id_centro_costo=pe.id_presupuesto
+                      join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+                      join param.tgestion g on g.id_gestion=cc.id_gestion
+                      join param.tperiodo p on p.id_gestion=cc.id_gestion and p.periodo=extract(MONTH from pe.fecha)
+                      join param.tep ep on ep.id_ep=cc.id_ep
+                      join param.tprograma_proyecto_acttividad ppa ON ppa.id_prog_pory_acti = ep.id_prog_pory_acti
+                      join param.tprograma prog ON prog.id_programa = ppa.id_programa
+                      join param.tproyecto proy ON proy.id_proyecto = ppa.id_proyecto
+                      join param.tactividad act ON act.id_actividad = ppa.id_actividad
+                      join param.tregional reg ON reg.id_regional = ep.id_regional
+                      join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
+                      join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
+                      left join pre.vpartida_ejecucion_proveedor pep on pep.valor_id_origen = pe.valor_id_origen and pep.columna_origen = pe.columna_origen
+                      left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
+                      where act.codigo_actividad in (''IA'',''PE'')
+                      and pe.tipo_movimiento = ''comprometido''
+                      
+                      and ';
+
+          v_consulta:=v_consulta||v_parametros.filtro;                 
+          v_consulta:=v_consulta||' group by ct.codigo_techo,ct.descripcion_techo,g.gestion,p.periodo, act.codigo_actividad,
+                      act.nombre_actividad,
+                      proy.nombre_proyecto,
+                      pe.nro_tramite,
+                      prov.rotulo_comercial ';
+                  
+      end if; 
       
       IF  EXISTS(with origen AS(SELECT v_parametros.origen::varchar as origen)
                 SELECT * from origen orig
@@ -2145,7 +2202,9 @@ BEGIN
                         ''IVA''::varchar as origen,
                         sum(tra.importe_debe_mb-tra.importe_haber_mb)::numeric as monto_mb,
                         act.nombre_actividad::varchar,
-                        proy.nombre_proyecto::varchar
+                        proy.nombre_proyecto::varchar,
+                        tra.nro_tramite::varchar,
+                        prov.rotulo_comercial::varchar as proveedor
                         from conta.tint_transaccion tra  
                         join conta.tint_comprobante comp on comp.id_int_comprobante=tra.id_int_comprobante
                         join param.tcentro_costo cc on cc.id_centro_costo=tra.id_centro_costo
@@ -2161,6 +2220,10 @@ BEGIN
                         join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
                         join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
                         join conta.tcuenta cta on cta.id_cuenta=tra.id_cuenta
+                        left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
+                        left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor
+                        left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
+                        left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
                         where act.codigo_actividad in (''IA'',''PE'') 
                         and comp.estado_reg=''validado''
                         and cta.nro_cuenta like ''1.1.3.04%''
@@ -2170,7 +2233,7 @@ BEGIN
           v_consulta:=v_consulta||v_parametros.filtro;
           v_consulta:=v_consulta||' group by ct.codigo_techo,ct.descripcion_techo,g.gestion,p.periodo, act.codigo_actividad,comp.estado_reg,
                                   act.nombre_actividad,
-                                  proy.nombre_proyecto ';
+                                  proy.nombre_proyecto,prov.rotulo_comercial,tra.nro_tramite ';
                   
       end if; 
       
@@ -2189,7 +2252,9 @@ BEGIN
                       ''Inflacion''::varchar as origen,
                       sum(tra.importe_debe_mb-tra.importe_haber_mb)::numeric as monto_mb,
                       act.nombre_actividad::varchar,
-                      proy.nombre_proyecto::varchar
+                      proy.nombre_proyecto::varchar,
+                      tra.nro_tramite::varchar,
+                      prov.rotulo_comercial::varchar as proveedor
                       from conta.tint_transaccion tra  
                       join conta.tint_comprobante comp on comp.id_int_comprobante=tra.id_int_comprobante
                       join param.tcentro_costo cc on cc.id_centro_costo=tra.id_centro_costo
@@ -2205,6 +2270,8 @@ BEGIN
                       join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
                       join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
                       join pre.tpartida par on par.id_partida=tra.id_partida
+                      left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
+                      left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
                       where act.codigo_actividad in (''IA'',''PE'') and comp.estado_reg=''validado''
                       and par.codigo = ''25400''
                       and ';
@@ -2213,9 +2280,11 @@ BEGIN
                 
           v_consulta:=v_consulta||' group by ct.codigo_techo,ct.descripcion_techo,g.gestion,p.periodo, act.codigo_actividad,comp.estado_reg,
                       act.nombre_actividad,
-                      proy.nombre_proyecto ';
+                      proy.nombre_proyecto,
+                      tra.nro_tramite,
+                      prov.rotulo_comercial ';
                   
-      end if;          
+      end if;               
   
     
       return v_consulta;

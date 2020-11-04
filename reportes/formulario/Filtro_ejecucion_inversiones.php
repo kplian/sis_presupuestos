@@ -81,6 +81,7 @@ header("content-type: text/javascript; charset=UTF-8");
 						fields: ['variable', 'valor'],
 						data : [ 
 									['ejecucion','Ejecución'],
+                                    ['comprometido','Comprometido'],
 									['iva','IVA'],
 									['inflacion','Inflación']
 								]
