@@ -3,7 +3,7 @@
 * HISTORIAL DE MODIFICACIONES:
   #PRES-7  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
   #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
-
+ 
  */
 class REjecucionInversionXls
 {

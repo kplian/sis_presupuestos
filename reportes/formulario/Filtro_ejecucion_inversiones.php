@@ -82,7 +82,7 @@ header("content-type: text/javascript; charset=UTF-8");
 						data : [ 
 									['ejecucion','Ejecución'],
                                     ['comprometido','Comprometido'],
-									['iva','IVA'],
+									['iva','IVA'], 
 									['inflacion','Inflación']
 								]
 					}),

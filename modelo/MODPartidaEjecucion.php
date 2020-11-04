@@ -524,7 +524,7 @@ class MODPartidaEjecucion extends MODbase{
         
 
         $this->captura('ceco_techo','varchar');
-        $this->captura('gestion','int4'); 
+        $this->captura('gestion','int4');
         $this->captura('periodo','varchar'); 
         $this->captura('origen','varchar'); 
         $this->captura('monto_mb','numeric');

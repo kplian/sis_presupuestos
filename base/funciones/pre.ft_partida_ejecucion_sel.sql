@@ -37,7 +37,7 @@ $body$
  #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
  #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido 
  #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
-
+ 
 ***************************************************************************/
 
 DECLARE
