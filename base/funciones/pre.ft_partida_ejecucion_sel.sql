@@ -37,7 +37,7 @@ $body$
  #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
  #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido 
  #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
- 
+ #ETR-1673 ENDETR     05/11/2020       JJA         Agregado de tramite y proveedor con movimiento ejecutado en el reporte de ejecucion de inversiones
 ***************************************************************************/
 
 DECLARE
@@ -51,7 +51,7 @@ DECLARE
     v_filtro_tipo_cc  varchar;
     v_tipo_cc  varchar;
     v_filtro    varchar;
-
+    v_bandera varchar; --#ETR-1673
 BEGIN
 
   v_nombre_funcion = 'pre.ft_partida_ejecucion_sel';
@@ -2088,16 +2088,20 @@ BEGIN
   #FECHA:   29/09/2020
   ***********************************/
 
-  elsif(p_transaccion='PRE_REJEINVER_SEL')then --#PRES-7 
+   elsif(p_transaccion='PRE_REJEINVER_SEL')then --#PRES-7 
 
     begin
-    
-      v_consulta:='';
+      --#ETR-1673
+      v_consulta:='with proveedor as(
+                     select DISTINCT p.id_proveedor,p.id_int_comprobante 
+                     from pre.vpartida_ejecucion_proveedor p
+                     )';
+      
  
       IF  EXISTS(with origen AS(SELECT v_parametros.origen::varchar as origen)
                 SELECT * from origen orig
                 where orig.origen::varchar like '%ejecucion%')  THEN
-                    
+          v_bandera:='1'; --#ETR-1673       
           v_consulta:=v_consulta||' select 
                       (ct.codigo_techo||'' - ''||ct.descripcion_techo)::varchar as ceco_techo,
                       g.gestion::integer,
@@ -2143,10 +2147,10 @@ BEGIN
                 SELECT * from origen orig
                 where orig.origen::varchar like '%comprometido%')  THEN
                 
-          if(v_consulta !='')THEN
+          if(v_bandera ='1')THEN --#ETR-1673
             v_consulta:=v_consulta||' union all ';
           end if;
-                    
+          v_bandera:='1';          
           v_consulta:=v_consulta||' select 
                       (ct.codigo_techo||'' - ''||ct.descripcion_techo)::varchar as ceco_techo,
                       g.gestion::integer,
@@ -2191,10 +2195,10 @@ BEGIN
                 SELECT * from origen orig
                 where orig.origen::varchar like '%iva%')  THEN
                 
-          if(v_consulta !='')THEN
+          if(v_bandera ='1')THEN --#ETR-1673
             v_consulta:=v_consulta||' union all ';
           end if;
-                    
+          v_bandera:='1';          
           v_consulta:=v_consulta||' select 
                         (ct.codigo_techo||'' - ''||ct.descripcion_techo)::varchar as ceco_techo,
                         g.gestion,
@@ -2220,7 +2224,7 @@ BEGIN
                         join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
                         join param.vtipo_cc_techo ct on ct.id_tipo_cc=tcc.id_tipo_cc
                         join conta.tcuenta cta on cta.id_cuenta=tra.id_cuenta
-                        left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
+                        left join proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante --#ETR-1673
                         left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor
                         where act.codigo_actividad in (''IA'',''PE'') 
                         and comp.estado_reg=''validado''
@@ -2239,10 +2243,10 @@ BEGIN
                 SELECT * from origen orig
                 where orig.origen::varchar like '%inflacion%')  THEN
                 
-          if(v_consulta!='')THEN
+          if(v_bandera='1')THEN --#ETR-1673
             v_consulta:=v_consulta||' union all ';
           end if;
-                    
+          v_bandera:='1';          
           v_consulta:=v_consulta||' select 
                       (ct.codigo_techo||'' - ''||ct.descripcion_techo)::varchar as ceco_techo,
                       g.gestion,
