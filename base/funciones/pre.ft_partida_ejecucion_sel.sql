@@ -2222,8 +2222,6 @@ BEGIN
                         join conta.tcuenta cta on cta.id_cuenta=tra.id_cuenta
                         left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
                         left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor
-                        left join pre.vpartida_ejecucion_proveedor pep on pep.id_int_comprobante=comp.id_int_comprobante
-                        left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
                         where act.codigo_actividad in (''IA'',''PE'') 
                         and comp.estado_reg=''validado''
                         and cta.nro_cuenta like ''1.1.3.04%''
