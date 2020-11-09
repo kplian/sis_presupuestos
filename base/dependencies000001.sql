@@ -3548,3 +3548,77 @@ select pxp.f_insert_testructura_gui ('ANAIMP', 'REPPRE'); ----#PRES-5
 /**********************************I-DEP-JJA-PRE-0-29/09/2020****************************************/ 
 select pxp.f_insert_testructura_gui ('EJECUINVER', 'REPPRE'); --#PRES-7
 /**********************************F-DEP-JJA-PRE-0-29/09/2020****************************************/
+
+/**********************************I-DEP-JJA-PRE-0-09/11/2020****************************************/ 
+--#PRES-8 Reporte partida ejecucion con adquisiciones
+CREATE OR REPLACE VIEW pre.vobligacion_pago_extendida(
+    id_obligacion_pago,
+    inicio_id,
+    fin_id,
+    ancestros,
+    num_tramite)
+AS
+WITH RECURSIVE obligacion_pago AS(
+  SELECT op_1.id_obligacion_pago,
+         op_1.id_obligacion_pago_extendida,
+         op_1.num_tramite,
+         op_1.id_obligacion_pago::text AS ancestros
+  FROM tes.tobligacion_pago op_1
+  WHERE op_1.id_obligacion_pago_extendida IS NULL
+  UNION ALL
+  SELECT op_1.id_obligacion_pago,
+         op_1.id_obligacion_pago_extendida,
+         op_1.num_tramite,
+         (op2.ancestros || ','::text) || op_1.id_obligacion_pago AS ancestros
+  FROM tes.tobligacion_pago op_1
+       JOIN obligacion_pago op2 ON op2.id_obligacion_pago = op_1.id_obligacion_pago_extendida)
+      SELECT op.id_obligacion_pago,
+             (string_to_array(op.ancestros, ','::text)) [ 1 ]::character varying AS inicio_id,
+             (string_to_array(op.ancestros, ','::text)) [ array_length(string_to_array(op.ancestros, ','::text), 1) ]::character varying AS fin_id,
+             op.ancestros,
+             op.num_tramite
+      FROM obligacion_pago op
+      ORDER BY op.ancestros;
+
+
+CREATE OR REPLACE VIEW pre.vpartidas_homologadas(
+    id_inicio,
+    id_fin,
+    length,
+    id_gestion_fin,
+    gestion_fin)
+AS
+WITH RECURSIVE partida AS(
+  SELECT p1.id_partida_uno,
+         p1.id_partida_dos,
+         p1.id_partida_uno::text AS ancestros,
+         1 AS contador,
+         p_1.fecha_reg
+  FROM pre.tpartida_ids p_1
+       LEFT JOIN pre.tpartida_ids p1 ON p1.id_partida_uno = p_1.id_partida_dos
+  UNION ALL
+  SELECT pids.id_partida_uno,
+         pids.id_partida_dos,
+         (p_1.ancestros || ','::text) || pids.id_partida_uno::text AS ancestros,
+         p_1.contador + 1 AS contador,
+         pids.fecha_reg
+  FROM pre.tpartida_ids pids
+       JOIN partida p_1 ON p_1.id_partida_uno = pids.id_partida_dos)
+      SELECT COALESCE((string_to_array(p.ancestros, ','::text)) [ 1 ]::character varying, par.id_partida::character varying) AS id_inicio,
+             COALESCE((string_to_array(p.ancestros, ','::text)) [ array_length(string_to_array(p.ancestros, ','::text), 1) ]::character varying,
+               par.id_partida::character varying) AS id_fin,
+             array_length(string_to_array(p.ancestros, ','::text), 1) AS length,
+             par1.id_gestion AS id_gestion_fin,
+             g.gestion AS gestion_fin
+      FROM pre.tpartida par
+           LEFT JOIN partida p ON p.id_partida_uno = par.id_partida
+           LEFT JOIN pre.tpartida par1 ON par1.id_partida = COALESCE((string_to_array(p.ancestros, ','::text)) [ array_length(string_to_array(
+             p.ancestros, ','::text), 1) ]::character varying, par.id_partida::character varying)::integer
+           LEFT JOIN param.tgestion g ON g.id_gestion = par1.id_gestion
+      GROUP BY p.id_partida_uno,
+               p.id_partida_dos,
+               p.ancestros,
+               par.id_partida,
+               par1.id_gestion,
+               g.gestion;
+/**********************************F-DEP-JJA-PRE-0-09/11/2020****************************************/
