@@ -562,7 +562,7 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('nro_tramite','varchar'); 
         $this->captura('tipo_tramite','varchar'); 
         $this->captura('tipo_partida','varchar'); 
-        $this->captura('id_tipo_cc_techo','int4'); 
+        $this->captura('id_tipo_cc_techo','int4');  
         
         $this->armarConsulta();
         $this->ejecutarConsulta();
