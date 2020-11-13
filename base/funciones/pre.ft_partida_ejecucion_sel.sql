@@ -2321,7 +2321,7 @@ BEGIN
               pe.nro_tramite::VARCHAR,
               pe.tipo_tramite::VARCHAR,
               pe.tipo_partida::VARCHAR,
-              pe.id_tipo_cc_techo::integer
+              pe.id_tipo_cc_techo::integer  
               from pre.partida_ejecucion_detalle_cotizacion pe where ';
 
           v_consulta:=v_consulta||v_parametros.filtro;  

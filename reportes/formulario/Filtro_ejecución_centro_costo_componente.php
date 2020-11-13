@@ -30,8 +30,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         id: 'id_gestion',
                         root: 'datos',
                         sortInfo:{
-                            field: 'gestion',
-                            direction: 'DESC'
+                             field: 'gestion',
+                             direction: 'DESC'
                         },
                         totalProperty: 'total',
                         fields: ['id_gestion','gestion','moneda','codigo_moneda'],
