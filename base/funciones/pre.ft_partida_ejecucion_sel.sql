@@ -38,6 +38,7 @@ $body$
  #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido 
  #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
  #ETR-1673 ENDETR     05/11/2020       JJA         Agregado de tramite y proveedor con movimiento ejecutado en el reporte de ejecucion de inversiones
+ #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
 ***************************************************************************/
 
 DECLARE
@@ -2292,7 +2293,42 @@ BEGIN
       return v_consulta;
       
   end; 
-  
+   /*********************************
+  #TRANSACCION:  'PRE_REJEDETCOMP_SEL' 
+  #DESCRIPCION: Reporte partida ejecucion con adquisiciones
+  #AUTOR:   JUAN
+  #FECHA:   13/11/2020
+  ***********************************/
+
+   elsif(p_transaccion='PRE_REJEDETCOMP_SEL')then --#PRES-8 
+
+    begin
+             
+          v_consulta:='select 
+              pe.monto_mb::NUMERIC,
+              pe.partida_homologada::VARCHAR,
+              pe.codigo_proceso::VARCHAR,
+              pe.ceco::VARCHAR,
+              pe.cantidad_adju::numeric,
+              pe.unidad_medida::VARCHAR,
+              pe.proveedor::VARCHAR,
+              pe.proveedor_costo_indirecto::VARCHAR,
+              pe.id_gestion::int4,
+              pe.gestion::VARCHAR,
+              pe.periodo::VARCHAR,
+              pe.tipo_costo::VARCHAR,
+              pe.descripcion::VARCHAR,
+              pe.nro_tramite::VARCHAR,
+              pe.tipo_tramite::VARCHAR,
+              pe.tipo_partida::VARCHAR,
+              pe.id_tipo_cc_techo::VARCHAR
+              from pre.partida_ejecucion_detalle_cotizacion pe where ';
+
+          v_consulta:=v_consulta||v_parametros.filtro;  
+                
+      return v_consulta;
+      
+    end;
   else
 
     raise exception 'Transaccion inexistente';

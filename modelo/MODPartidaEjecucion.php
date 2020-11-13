@@ -20,7 +20,7 @@
    #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
    #ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos
    #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
-
+   #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -536,6 +536,37 @@ class MODPartidaEjecucion extends MODbase{
         $this->armarConsulta();
         $this->ejecutarConsulta();
    
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+    function Ejecucion_centro_costo_componente(){//#PRES-8 
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_REJEDETCOMP_SEL';
+		$this->tipo_procedimiento='SEL';
+
+        $this->setCount(false);        
+
+        $this->captura('monto_mb','numeric');
+        $this->captura('partida_homologada','varchar');
+        $this->captura('codigo_proceso','varchar'); 
+        $this->captura('ceco','varchar'); 
+        $this->captura('cantidad_adju','numeric');
+        $this->captura('unidad_medida','varchar'); 
+        $this->captura('proveedor','varchar'); 
+        $this->captura('proveedor_costo_indirecto','varchar'); 
+        $this->captura('id_gestion','int4'); 
+        $this->captura('gestion','varchar'); 
+        $this->captura('periodo','varchar'); 
+        $this->captura('tipo_costo','varchar'); 
+        $this->captura('descripcion','varchar'); 
+        $this->captura('nro_tramite','varchar'); 
+        $this->captura('tipo_tramite','varchar'); 
+        $this->captura('tipo_partida','varchar'); 
+        $this->captura('id_tipo_cc_techo','int4'); 
+        
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //var_dump($this->respuesta); exit;
         //Devuelve la respuesta
         return $this->respuesta;
     }

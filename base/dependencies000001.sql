@@ -3622,3 +3622,275 @@ WITH RECURSIVE partida AS(
                par1.id_gestion,
                g.gestion;
 /**********************************F-DEP-JJA-PRE-0-09/11/2020****************************************/
+
+
+
+
+/**********************************I-DEP-JJA-PRE-0-13/11/2020****************************************/ 
+
+--#PRES-8 Reporte partida ejecucion con adquisiciones
+
+CREATE OR REPLACE VIEW pre.partida_ejecucion_detalle_cotizacion(
+    monto_mb,
+    partida_homologada,
+    codigo_proceso,
+    ceco,
+    cantidad_adju,
+    unidad_medida,
+    proveedor,
+    proveedor_costo_indirecto,
+    id_gestion,
+    gestion,
+    periodo,
+    tipo_costo,
+    descripcion,
+    nro_tramite,
+    tipo_tramite,
+    tipo_partida,
+    id_tipo_cc_techo)
+AS
+WITH vpartidas_homologadas AS(
+  SELECT max(ph.id_inicio::integer) AS id_inicio,
+         ph.id_fin
+  FROM pre.vpartidas_homologadas ph
+  GROUP BY ph.id_fin), proceso_compra AS(
+    SELECT DISTINCT pc.num_tramite,
+           pc.codigo_proceso
+    FROM adq.tproceso_compra pc), extendidas AS(
+      SELECT od.id_obligacion_det,
+             ope.inicio_id,
+             ope.fin_id,
+             op.fecha,
+             cc.id_tipo_cc,
+             od.id_partida AS id_partida_original,
+             ph.id_inicio AS id_partida_homologada,
+             od.descripcion,
+             cot.cantidad_adju,
+             CASE
+               WHEN date_part('year'::text, op.fecha)::integer = "right"(op.num_tramite::text, 4)::integer THEN 'no'::text
+               ELSE 'si'::text
+             END AS extendido,
+             od.factor_porcentual,
+             op.id_obligacion_pago,
+             op.num_tramite,
+             prov.rotulo_comercial AS proveedor,
+             um.descripcion AS unidad_medida,
+             pc.codigo_proceso
+      FROM tes.tobligacion_pago op
+           JOIN tes.tobligacion_det od ON od.id_obligacion_pago = op.id_obligacion_pago
+           JOIN pre.vobligacion_pago_extendida ope ON ope.id_obligacion_pago = op.id_obligacion_pago
+           JOIN vpartidas_homologadas ph ON ph.id_fin::integer = od.id_partida
+           JOIN param.tcentro_costo cc ON cc.id_centro_costo = od.id_centro_costo
+           LEFT JOIN adq.tcotizacion_det cot ON cot.id_obligacion_det = od.id_obligacion_det
+           JOIN param.tproveedor prov ON prov.id_proveedor = op.id_proveedor
+           JOIN param.tconcepto_ingas ingas ON ingas.id_concepto_ingas = od.id_concepto_ingas
+           LEFT JOIN param.tunidad_medida um ON um.id_unidad_medida = ingas.id_unidad_medida
+           LEFT JOIN proceso_compra pc ON pc.num_tramite::text = op.num_tramite::text
+      WHERE date_part('year'::text, op.fecha)::integer <> "right"(op.num_tramite::text, 4)::integer), no_extendidas AS (
+         SELECT od.id_obligacion_det,
+                ope.inicio_id,
+                ope.fin_id,
+                op.fecha,
+                cc.id_tipo_cc,
+                od.id_partida AS id_partida_original,
+                ph.id_inicio AS id_partida_homologada,
+                od.descripcion,
+                cot.cantidad_adju,
+                CASE
+                  WHEN date_part('year'::text, op.fecha)::integer = "right"(op.num_tramite::text, 4)::integer THEN 'no'::text
+                  ELSE 'si'::text
+                END AS extendido,
+                od.factor_porcentual,
+                op.id_obligacion_pago,
+                op.num_tramite,
+                prov.rotulo_comercial AS proveedor,
+                um.descripcion AS unidad_medida,
+                pc.codigo_proceso
+         FROM tes.tobligacion_pago op
+              JOIN tes.tobligacion_det od ON od.id_obligacion_pago = op.id_obligacion_pago
+              JOIN pre.vobligacion_pago_extendida ope ON ope.id_obligacion_pago = op.id_obligacion_pago
+              JOIN vpartidas_homologadas ph ON ph.id_fin::integer = od.id_partida
+              JOIN param.tcentro_costo cc ON cc.id_centro_costo = od.id_centro_costo
+              LEFT JOIN adq.tcotizacion_det cot ON cot.id_obligacion_det = od.id_obligacion_det
+              JOIN param.tproveedor prov ON prov.id_proveedor = op.id_proveedor
+              JOIN param.tconcepto_ingas ingas ON ingas.id_concepto_ingas = od.id_concepto_ingas
+              LEFT JOIN param.tunidad_medida um ON um.id_unidad_medida = ingas.id_unidad_medida
+              LEFT JOIN proceso_compra pc ON pc.num_tramite::text = op.num_tramite::text
+         WHERE date_part('year'::text, op.fecha)::integer = "right"(op.num_tramite::text, 4)::integer), obligacion_pago_detalle AS (
+         SELECT ext.id_obligacion_det,
+                ext.inicio_id,
+                ext.fin_id,
+                ext.fecha,
+                ext.id_tipo_cc,
+                ext.id_partida_original,
+                ext.id_partida_homologada,
+                ext.descripcion,
+                noext.cantidad_adju,
+                ext.extendido,
+                ext.factor_porcentual,
+                ext.id_obligacion_pago,
+                ext.num_tramite,
+                ext.proveedor,
+                ext.unidad_medida,
+                ext.codigo_proceso
+         FROM extendidas ext
+              LEFT JOIN no_extendidas noext ON noext.id_partida_homologada = ext.id_partida_homologada AND noext.descripcion = ext.descripcion AND
+                noext.id_tipo_cc = ext.id_tipo_cc
+         UNION ALL
+         SELECT ext.id_obligacion_det,
+                ext.inicio_id,
+                ext.fin_id,
+                ext.fecha,
+                ext.id_tipo_cc,
+                ext.id_partida_original,
+                ext.id_partida_homologada,
+                ext.descripcion,
+                ext.cantidad_adju,
+                ext.extendido,
+                ext.factor_porcentual,
+                ext.id_obligacion_pago,
+                ext.num_tramite,
+                ext.proveedor,
+                ext.unidad_medida,
+                ext.codigo_proceso
+         FROM no_extendidas ext), partida_ejecucion AS (
+         SELECT DISTINCT ON (pe_1.id_partida_ejecucion) pe_1.id_partida_ejecucion,
+                od.num_tramite,
+                pe_1.fecha,
+                (tcc_1.codigo::text || ' - '::text) || tcc_1.descripcion::text AS tipo_cc,
+                od.id_tipo_cc,
+                od.id_partida_homologada,
+                od.descripcion,
+                od.cantidad_adju,
+                od.unidad_medida,
+                pe_1.monto_mb,
+                'devengado_pago'::text AS origen,
+                od.proveedor,
+                ''::character varying AS proveedor_costo_indirecto,
+                'Costo directo'::character varying AS tipo_costo,
+                od.codigo_proceso
+         FROM pre.tpartida_ejecucion pe_1
+              JOIN conta.tint_transaccion tra ON tra.id_int_transaccion = pe_1.valor_id_origen AND tra.id_int_comprobante = pe_1.id_int_comprobante
+                AND pe_1.nro_tramite::text = tra.nro_tramite::text
+              JOIN tes.tprorrateo pro ON pro.id_int_transaccion = tra.id_int_transaccion
+              JOIN obligacion_pago_detalle od ON od.id_obligacion_det = pro.id_obligacion_det
+              JOIN param.ttipo_cc tcc_1 ON tcc_1.id_tipo_cc = od.id_tipo_cc
+         WHERE pe_1.tipo_movimiento::text = 'ejecutado'::text AND
+               pe_1.columna_origen::text = 'id_int_transaccion'::text
+         UNION ALL
+         SELECT DISTINCT ON (pe_1.id_partida_ejecucion, od.id_obligacion_det) pe_1.id_partida_ejecucion,
+                od.num_tramite,
+                pe_1.fecha,
+                (tcc_1.codigo::text || ' - '::text) || tcc_1.descripcion::text AS tipo_cc,
+                od.id_tipo_cc,
+                od.id_partida_homologada,
+                od.descripcion,
+                od.cantidad_adju,
+                od.unidad_medida,
+                od.factor_porcentual * pe_1.monto_mb AS monto_mb,
+                'anticipo'::text AS origen,
+                od.proveedor,
+                ''::character varying AS proveedor_costo_indirecto,
+                'Costo directo'::character varying AS tipo_costo,
+                od.codigo_proceso
+         FROM pre.tpartida_ejecucion pe_1
+              JOIN tes.tplan_pago pp ON pp.id_plan_pago = pe_1.valor_id_origen
+              JOIN obligacion_pago_detalle od ON od.id_obligacion_pago = pp.id_obligacion_pago
+              JOIN param.ttipo_cc tcc_1 ON tcc_1.id_tipo_cc = od.id_tipo_cc
+         WHERE pe_1.columna_origen::text = 'id_plan_pago'::text AND
+               pe_1.tipo_movimiento::text = 'ejecutado'::text
+         UNION ALL
+         SELECT DISTINCT ON (pe_1.id_partida_ejecucion, od.id_obligacion_det) pe_1.id_partida_ejecucion,
+                pe_1.nro_tramite,
+                pe_1.fecha,
+                (tcc_1.codigo::text || ' - '::text) || tcc_1.descripcion::text AS tipo_cc,
+                od.id_tipo_cc,
+                od.id_partida_homologada,
+                od.descripcion,
+                od.cantidad_adju,
+                od.unidad_medida,
+                od.factor_porcentual * pe_1.monto_mb AS monto_mb,
+                'pago simple'::text AS origen,
+                od.proveedor,
+                prov2.rotulo_comercial AS proveedor_costo_indirecto,
+                'Costo indirecto'::character varying AS tipo_costo,
+                od.codigo_proceso
+         FROM pre.tpartida_ejecucion pe_1
+              JOIN conta.tint_transaccion trans ON trans.id_int_transaccion = pe_1.valor_id_origen AND pe_1.columna_origen::text =
+                'id_int_transaccion'::text
+              JOIN conta.tdoc_concepto dc ON dc.id_doc_concepto = trans.id_origen
+              JOIN cd.tpago_simple_det psd ON psd.id_doc_compra_venta = dc.id_doc_compra_venta
+              JOIN cd.tpago_simple ps ON ps.id_pago_simple = psd.id_pago_simple AND pe_1.nro_tramite::text = ps.nro_tramite::text
+              LEFT JOIN param.tproveedor prov2 ON prov2.id_proveedor = ps.id_proveedor
+              JOIN obligacion_pago_detalle od ON od.id_obligacion_pago = ps.id_obligacion_pago
+              JOIN param.tcentro_costo cc ON cc.id_centro_costo = trans.id_centro_costo
+              JOIN param.ttipo_cc tcc_1 ON tcc_1.id_tipo_cc = cc.id_tipo_cc
+         WHERE pe_1.tipo_movimiento::text = 'ejecutado'::text), partida_ejecucion2 AS (
+         SELECT CASE
+                  WHEN pe1.id_partida_ejecucion IS NULL THEN pe_1.monto_mb
+                  ELSE pe1.monto_mb
+                END AS monto_mb,
+                ((par.codigo::text || ' - '::text) || par.nombre_partida::text)::character varying AS partida_homologada,
+                pe1.codigo_proceso,
+                (tcc_1.codigo::text || ' - '::text) || tcc_1.descripcion::text AS ceco,
+                pe1.cantidad_adju,
+                pe1.unidad_medida,
+                pe1.proveedor,
+                pe1.proveedor_costo_indirecto,
+                g.id_gestion,
+                g.gestion,
+                date_part('month'::text, pe_1.fecha) AS periodo,
+                pe1.tipo_costo,
+                pe1.descripcion,
+                tcc_1.id_tipo_cc,
+                pe_1.nro_tramite,
+                par.tipo AS tipo_partida
+         FROM pre.tpartida_ejecucion pe_1
+              LEFT JOIN partida_ejecucion pe1 ON pe1.id_partida_ejecucion = pe_1.id_partida_ejecucion
+              LEFT JOIN vpartidas_homologadas ph ON ph.id_fin::integer = pe_1.id_partida
+              LEFT JOIN pre.tpartida par ON par.id_partida = ph.id_fin::integer
+              LEFT JOIN param.tcentro_costo cc ON cc.id_centro_costo = pe_1.id_presupuesto
+              LEFT JOIN param.ttipo_cc tcc_1 ON tcc_1.id_tipo_cc = cc.id_tipo_cc
+              LEFT JOIN param.tgestion g ON g.id_gestion = cc.id_gestion
+         WHERE pe_1.tipo_movimiento::text = 'ejecutado'::text)
+ SELECT sum(pe.monto_mb) AS monto_mb,
+        pe.partida_homologada,
+        pe.codigo_proceso,
+        pe.ceco,
+        pe.cantidad_adju,
+        pe.unidad_medida,
+        pe.proveedor,
+        pe.proveedor_costo_indirecto,
+        pe.id_gestion,
+        pe.gestion,
+        pe.periodo,
+        pe.tipo_costo,
+        pe.descripcion,
+        pe.nro_tramite,
+        split_part(pe.nro_tramite::text, '-'::text, 1)::character varying AS tipo_tramite,
+        pe.tipo_partida,
+        tcc.id_tipo_cc_techo
+ FROM partida_ejecucion2 pe
+      LEFT JOIN param.vtipo_cc_techo tcc ON tcc.id_tipo_cc = pe.id_tipo_cc
+ GROUP BY pe.partida_homologada,
+          pe.codigo_proceso,
+          pe.ceco,
+          pe.cantidad_adju,
+          pe.unidad_medida,
+          pe.proveedor,
+          pe.proveedor_costo_indirecto,
+          pe.id_gestion,
+          pe.gestion,
+          pe.periodo,
+          pe.tipo_costo,
+          pe.descripcion,
+          pe.nro_tramite,
+          pe.tipo_partida,
+          tcc.id_tipo_cc_techo;
+
+/**********************************F-DEP-JJA-PRE-0-13/11/2020****************************************/
+
+/**********************************I-DEP-JJA-PRE-1-13/11/2020****************************************/ 
+--#PRES-8 Reporte partida ejecucion con adquisiciones
+select pxp.f_insert_testructura_gui ('EJECENCOSCOM', 'REPPRE');
+/**********************************F-DEP-JJA-PRE-1-13/11/2020****************************************/

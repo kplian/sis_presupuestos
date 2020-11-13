@@ -763,3 +763,7 @@ select pxp.f_insert_tgui ('Formulación Presupuestaria', 'Formulación Presupues
 /*******************************************I-DAT-JJA-PRE-0-29/09/2020***********************************************/
 select pxp.f_insert_tgui ('Ejecución inversiones', 'Ejecución inversiones', 'EJECUINVER', 'si', 21, 'sis_presupuestos/reportes/formulario/Filtro_ejecucion_inversiones.php', 3, '', 'Filtro_ejecucion_inversiones', 'PRE'); --#PRES-7
 /*******************************************F-DAT-JJA-PRE-0-29/09/2020***********************************************/
+
+/*******************************************I-DAT-JJA-PRE-0-13/11/2020***********************************************/
+select pxp.f_insert_tgui ('Ejecución Centro de Costo por Componente', 'Ejecución Centro de Costo por Componente', 'EJECENCOSCOM', 'si', 22, 'sis_presupuestos/reportes/formulario/Filtro_ejecución_centro_costo_componente.php', 3, '', 'Filtro_ejecución_centro_costo_componente', 'PRE');
+/*******************************************F-DAT-JJA-PRE-0-13/11/2020***********************************************/

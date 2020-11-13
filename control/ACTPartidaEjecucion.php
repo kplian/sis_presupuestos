@@ -18,7 +18,7 @@
    #PRES-6  ENDETR      28/09/2020       JJA         Reporte formulacion presupuestaria
    #PRES-7  ENDETR      29/09/2020       JJA         Reporte ejecucion inversion
    #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido
-
+   #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
 
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
@@ -28,7 +28,7 @@ require_once(dirname(__FILE__).'/../reportes/RPartidaCentroCosto2Xls.php');
 require_once(dirname(__FILE__).'/../reportes/RFormulacionPresupuestariaXls.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionInversionXls.php'); //#PRES-7
 require_once(dirname(__FILE__).'/../reportes/RResumenFormulacionPresupuestariaXls.php');//#PRES-6
-
+require_once(dirname(__FILE__).'/../reportes/REjecucion_centro_costo_componenteXls.php'); //#PRES-8
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -437,6 +437,35 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addParametro('datos', $this->res->datos);  
       
         $this->objReporteFormato = new REjecucionInversionXls($this->objParam);  
+        $this->objReporteFormato->generarDatos();   
+        $this->objReporteFormato->generarReporte(); 
+        $this->mensajeExito = new Mensaje();    
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control'); 
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);    
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson()); 
+    }
+    function Ejecucion_centro_costo_componente(){//#PRES-8
+        if($this->objParam->getParametro('id_gestion')){    
+            $this->objParam->addFiltro(" (pe.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
+        }  
+        if($this->objParam->getParametro('periodo')){    
+            $this->objParam->addFiltro(" (pe.periodo::integer  =  ".$this->objParam->getParametro('periodo')."::integer) ");   
+        }  
+        if($this->objParam->getParametro('id_tipo_cc_techo')){
+            $this->objParam->addFiltro(" (pe.id_tipo_cc_techo::integer  =  ".$this->objParam->getParametro('id_tipo_cc_techo')."::integer) "); 
+        }
+
+        $this->objFunc = $this->create('MODPartidaEjecucion');  
+        $this->res = $this->objFunc->Ejecucion_centro_costo_componente($this->objParam); 
+
+        $titulo = 'Ejecución centro costo componente'; 
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);   
+        $nombreArchivo .= '.xls';   
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);    
+
+        $this->objParam->addParametro('datos', $this->res->datos);  
+      
+        $this->objReporteFormato = new REjecucion_centro_costo_componenteXls($this->objParam);  
         $this->objReporteFormato->generarDatos();   
         $this->objReporteFormato->generarReporte(); 
         $this->mensajeExito = new Mensaje();    
