@@ -23,7 +23,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 config:{
                     name:'id_gestion',
                     fieldLabel:'Gestión',
-                    allowBlank:false,
+                    allowBlank:true,
                     emptyText:'Gestión...',
                     store: new Ext.data.JsonStore({
                         url: '../../sis_parametros/control/Gestion/listarGestion',
