@@ -23,7 +23,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 config:{
                     name:'id_gestion',
                     fieldLabel:'Gestión',
-                    allowBlank:true, 
+                    allowBlank:true,   
                     emptyText:'Gestión...',
                     store: new Ext.data.JsonStore({
                         url: '../../sis_parametros/control/Gestion/listarGestion',
@@ -38,7 +38,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         // turn on remote sorting
                         remoteSort: true,
                         baseParams:{par_filtro:'gestion'}
-                    }),
+                    }), 
                     valueField: 'id_gestion',
                     displayField: 'gestion',
                     hiddenName: 'id_gestion',
