@@ -4,7 +4,8 @@
                      HISTORIAL DE MODIFICACIONES:
 #ISSUE		FORK		FECHA				AUTOR				DESCRIPCION
   #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos.
-  #18 	     ENDEETR	 29/07/2019		    Manuel Guerra	   Importacion de presupuestos  
+  #18 	     ENDEETR	 29/07/2019		    Manuel Guerra	   Importacion de presupuestos
+  #ETR1816 	ENDEETR	   17/11/2020		  Manuel Guerra	      agregar el campo de oservaciones
 */
 
 require_once(dirname(__FILE__).'/../../pxp/pxpReport/DataSource.php');
@@ -422,7 +423,7 @@ class ACTMemoriaCalculo extends ACTbase{
 		}              
 		
     }
-	//#5
+	//#5   #ETR1816 
 	function SubirArchivoPre(){
 		$arregloFiles = $this->objParam->getArregloFiles();
 		$ext = pathinfo($arregloFiles['archivo']['name']);
@@ -451,30 +452,31 @@ class ACTMemoriaCalculo extends ACTbase{
 			$this->mensajeRes->setMensaje('ERROR','ACTMemoriaCalculo.php',$mensaje_completo,$mensaje_completo,'control');
 			
 		} else {
-			$lines = file($file_path);			
+			$lines = file($file_path);
 			foreach ($lines as $line_num => $line) {
-				$arr_temp = explode('|', $line);	
+				$arr_temp = explode('|', $line);
 				
-				if (count($arr_temp) != 16) {
+				if (count($arr_temp) != 17) {
 					$error = 'error';
-					$mensaje_completo .= "No se proceso la linea: $line_num, por un error en el formato \n";					
-				} else {														
-					$this->objParam->addParametro('cod_presupuesto', $arr_temp[0]);					
+					$mensaje_completo .= "No se proceso la linea: $line_num, por un error en el formato \n";
+				} else {
+					$this->objParam->addParametro('cod_presupuesto', $arr_temp[0]);
 					$this->objParam->addParametro('desc_pre', $arr_temp[1]);
 					$this->objParam->addParametro('cod_partida', $arr_temp[2]);	
 					$this->objParam->addParametro('desc_partida', $arr_temp[3]);
-					$this->objParam->addParametro('enero', $arr_temp[4]);
-					$this->objParam->addParametro('febrero', $arr_temp[5]);
-					$this->objParam->addParametro('marzo', $arr_temp[6]);
-					$this->objParam->addParametro('abril', $arr_temp[7]);
-					$this->objParam->addParametro('mayo', $arr_temp[8]);
-					$this->objParam->addParametro('junio', $arr_temp[9]);
-					$this->objParam->addParametro('julio', $arr_temp[10]);
-					$this->objParam->addParametro('agosto', $arr_temp[11]);
-					$this->objParam->addParametro('septiembre', $arr_temp[12]);
-					$this->objParam->addParametro('octubre', $arr_temp[13]);
-					$this->objParam->addParametro('noviembre', $arr_temp[14]);
-					$this->objParam->addParametro('diciembre', $arr_temp[15]);
+					$this->objParam->addParametro('observaciones', $arr_temp[4]);
+					$this->objParam->addParametro('enero', $arr_temp[5]);
+					$this->objParam->addParametro('febrero', $arr_temp[6]);
+					$this->objParam->addParametro('marzo', $arr_temp[7]);
+					$this->objParam->addParametro('abril', $arr_temp[8]);
+					$this->objParam->addParametro('mayo', $arr_temp[9]);
+					$this->objParam->addParametro('junio', $arr_temp[10]);
+					$this->objParam->addParametro('julio', $arr_temp[11]);
+					$this->objParam->addParametro('agosto', $arr_temp[12]);
+					$this->objParam->addParametro('septiembre', $arr_temp[13]);
+					$this->objParam->addParametro('octubre', $arr_temp[14]);
+					$this->objParam->addParametro('noviembre', $arr_temp[15]);
+					$this->objParam->addParametro('diciembre', $arr_temp[16]);
 					//$this->objParam->addParametro('id_usuario', $arr_temp[16]);
 					$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
 					$this->objParam->addParametro('id_funcionario', $this->objParam->getParametro('id_funcionario'));
