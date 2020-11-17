@@ -6,6 +6,7 @@
                      HISTORIAL DE MODIFICACIONES:
 #ISSUE		FORK		FECHA				AUTOR				DESCRIPCION
   #5         ENDEETR     09/01/2018         Manuel Guerra      Se corrigió y agrego funcionalidades a la importación subida del archivo de presupuestos. 
+  #ETR1816 	ENDEETR	   17/11/2020		  Manuel Guerra	      agregar el campo de oservaciones
 */
 
 class MODMemoriaCalculo extends MODbase{
@@ -407,7 +408,7 @@ class MODMemoriaCalculo extends MODbase{
 		return $this->respuesta;
 	}
 	
-	//#5
+	//#5   #ETR1816 
 	function insertarMemoriaCalculoXLS(){
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_memoria_calculo_ime';
@@ -419,6 +420,7 @@ class MODMemoriaCalculo extends MODbase{
 		$this->setParametro('desc_pre', 'desc_pre','varchar');
 		$this->setParametro('cod_partida', 'cod_partida','int4');
 		$this->setParametro('desc_partida', 'desc_partida','varchar');
+		$this->setParametro('observaciones', 'observaciones','varchar');
 		$this->setParametro('enero', 'enero','numeric');
 		$this->setParametro('febrero', 'febrero','numeric');
 		$this->setParametro('marzo', 'marzo','numeric');		
