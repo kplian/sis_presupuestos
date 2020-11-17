@@ -473,6 +473,21 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);    
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson()); 
     }
+    function AnalisisImputacionPartidaDetalle(){//#ETR-1823
+       /* $this->objParam->defecto('ordenacion','orden');
+        $this->objParam->defecto('dir_ordenacion','asc');*/
+
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','AnalisisImputacionPartidaDetalle');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+            
+            $this->res=$this->objFunc->AnalisisImputacionPartidaDetalle($this->objParam);
+        }
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 }
 

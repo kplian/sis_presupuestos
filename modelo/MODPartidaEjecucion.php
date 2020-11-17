@@ -21,6 +21,7 @@
    #ETR-1599     03/1/2020    JJA       Agregado de filtros en el reporte de Ejecución de proyectos
    #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
    #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
+   #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -433,7 +434,7 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
-	function AnalisisImputacionPartida(){#PRES-5 
+	function AnalisisImputacionPartida(){ //#PRES-5 
 
 		$this->procedimiento='pre.ft_partida_ejecucion_sel';
 		$this->transaccion='PRE_AJUIMPPART_SEL';
@@ -444,8 +445,9 @@ class MODPartidaEjecucion extends MODbase{
 		
         $this->captura('id_partida','int4'); 
         $this->captura('partida','varchar');
-        //$this->captura('ceco','varchar');
         $this->captura('nivel','int4');
+        $this->captura('filtro_tipo_cc','varchar');//##ETR-1823
+        $this->captura('id_gestion','int4'); //##ETR-1823
 	    $this->captura('formulado','numeric');
 	    $this->captura('comprometido','numeric');
 	    $this->captura('por_comprometer','numeric');
@@ -570,5 +572,35 @@ class MODPartidaEjecucion extends MODbase{
         //Devuelve la respuesta
         return $this->respuesta;
     }
+	function AnalisisImputacionPartidaDetalle(){//#ETR-1823
+
+		$this->procedimiento='pre.ft_partida_ejecucion_sel';
+		$this->transaccion='PRE_AIMPPARTDET_SEL';
+		$this->tipo_procedimiento='SEL';
+
+        $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+		$this->setParametro('id_partida','id_partida','int4');
+		$this->setParametro('id_gestion','id_gestion','int4'); 
+		
+        $this->captura('id_partida','int4'); 
+        $this->captura('partida','varchar');
+
+        $this->captura('nivel','int4');
+        $this->captura('nro_tramite','varchar');
+
+	    $this->captura('formulado','numeric');
+	    $this->captura('comprometido','numeric');
+	    $this->captura('por_comprometer','numeric');
+        $this->captura('ejecutado','numeric');
+        $this->captura('por_ejecutar','numeric');
+        
+
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
 }
 ?>

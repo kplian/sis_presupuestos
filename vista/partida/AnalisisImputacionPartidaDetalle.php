@@ -7,13 +7,12 @@
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
   ISSUE            FECHA:          AUTOR       DESCRIPCION
  #PRES-5  ENDETR    23/07/2020      JJA          Mejoras en reporte tipo centro de costo de presupuesto
- #ETR-1823  ENDETR  16/11/2020      JJA         Detalle partida en reporte analisis de imputacion
 */
 
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
+Phx.vista.AnalisisImputacionPartidaDetalle=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		var me = this;
@@ -28,28 +27,6 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 					inputType:'hidden',
 					fieldLabel: 'id_partida',
 					name: 'id_partida'
-			},
-			type:'Field',
-			grid: false,
-			form:true 
-		},
-		{//#ETR-1823
-			config:{
-					labelSeparator:'',
-					inputType:'hidden',
-					fieldLabel: 'v_filtro_tipo_cc',
-					name: 'v_filtro_tipo_cc'
-			},
-			type:'Field',
-			grid: false,
-			form:true 
-		},
-		{//#ETR-1823
-			config:{
-					labelSeparator:'',
-					inputType:'hidden',
-					fieldLabel: 'id_gestion',
-					name: 'id_gestion'
 			},
 			type:'Field',
 			grid: false,
@@ -80,6 +57,22 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'Field',
 				filters:{pfiltro:'partida',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false,
+				bottom_filter: true,
+		},
+		{
+			config:{
+				name: 'nro_tramite',
+				fieldLabel: 'Nro. tramite',
+				allowBlank: true,
+				anchor: '200%',
+				gwidth: 200,
+				maxLength:4,
+			},
+				type:'Field',
+				filters:{pfiltro:'nro_tramite',type:'string'},
 				id_grupo:1,
 				grid:true,
 				form:false,
@@ -196,22 +189,21 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 
 
 		];     
-		Phx.vista.AnalisisImputacionPartida.superclass.constructor.call(this,config);
+		Phx.vista.AnalisisImputacionPartidaDetalle.superclass.constructor.call(this,config);
 			
 		this.init();
 	},
 				
 	tam_pag:50,	
 	title:'Detalle tipo Centro de costo',
-	ActList:'../../sis_presupuestos/control/PartidaEjecucion/AnalisisImputacionPartida',
+	ActList:'../../sis_presupuestos/control/PartidaEjecucion/AnalisisImputacionPartidaDetalle',
 	id_store:'id_partida',
 	fields: [
 
         {name:'id_partida', type: 'numeric'},
 		{name:'partida', type: 'string'},
 		{name:'nivel', type: 'numeric'},
-		{name:'filtro_tipo_cc', type: 'string'}, //#ETR-1823
-		{name:'id_gestion', type: 'numeric'}, //#ETR-1823
+		{name:'nro_tramite', type: 'string'},
 		{name:'formulado', type: 'numeric'},
 		{name:'comprometido', type: 'numeric'},
 		{name:'por_comprometer', type: 'numeric'},
@@ -224,15 +216,9 @@ Phx.vista.AnalisisImputacionPartida=Ext.extend(Phx.gridInterfaz,{
 		field: 'order',
 		direction: 'asc'
 	},
-    east: {//#ETR-1823
-        url: '../../../sis_presupuestos/vista/partida/AnalisisImputacionPartidaDetalle.php', 
-        title: 'Partida Detalle',
-        width: '40%',
-        cls: 'AnalisisImputacionPartidaDetalle'
-    },
 
 	loadValoresIniciales:function(){
-		Phx.vista.AnalisisImputacionPartida.superclass.loadValoresIniciales.call(this);
+		Phx.vista.AnalisisImputacionPartidaDetalle.superclass.loadValoresIniciales.call(this);
 	
 	},
 	onReloadPage:function(param){
