@@ -39,6 +39,7 @@ $body$
  #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
  #ETR-1673 ENDETR     05/11/2020       JJA         Agregado de tramite y proveedor con movimiento ejecutado en el reporte de ejecucion de inversiones
  #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
+ #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
 ***************************************************************************/
 
 DECLARE
@@ -1592,6 +1593,8 @@ BEGIN
                     p.id_partida::integer,
                     p.partida::varchar,
                     p.nivel::integer,
+                    '''||COALESCE(v_tipo_cc,'''')||'''::varchar as filtro_tipo_cc, --#ETR-1823
+                    '||v_parametros.id_gestion||'::integer as id_gestion, --#ETR-1823
                     sum(p.formulado)::numeric as formulado ,
                     sum(p.comprometido)::numeric as comprometido,
                     (sum(p.formulado)-sum(p.comprometido))::numeric  as por_comprometer,
@@ -1608,6 +1611,182 @@ BEGIN
 
       return v_consulta;
     end;     
+    /*********************************
+  #TRANSACCION:  'PRE_AIMPPARTDET_SEL' #ETR-1823
+  #DESCRIPCION: Reporte detalle de ajuste de imputacion
+  #AUTOR:   JUAN
+  #FECHA:   31/03/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_AIMPPARTDET_SEL')then 
+
+    begin
+
+      v_filtro_tipo_cc = ' 0 = 0 and ';
+
+      v_consulta:='';
+         
+      v_consulta:='with RECURSIVE partida as(
+                    select 
+                    par.id_partida,
+                    par.id_partida_fk,
+                    (par.codigo||'' ''||par.nombre_partida)::varchar as partida,
+                    (par.id_partida)::text as orden,
+                    par.id_gestion,
+                    ''*  ''::VARCHAR as nivel
+                    from pre.tpartida par
+                    where par.id_partida_fk is NULL and par.estado_reg=''activo'' 
+                    UNION ALL
+                    select
+                    par.id_partida,
+                    par.id_partida_fk,
+                    (par.codigo||'' ''||par.nombre_partida)::varchar as parida,
+                    (par1.orden||'' -> ''||par.id_partida)::text as orden,
+                    par.id_gestion,
+                    (par1.nivel||''*    '')::text as nivel
+                    from pre.tpartida par
+                    join partida par1 on par1.id_partida=par.id_partida_fk
+                    where par.id_partida_fk is not NULL and par.estado_reg=''activo''
+                    ),
+                    partida2 as(
+                    select 
+                    p.id_partida,
+                    (replace(p.nivel,''*'','' '')||p.partida)::varchar as partida,
+                    length(replace(p.nivel,'' '',''''))::integer as nivel,
+                    (case when pe.tipo_movimiento = ''formulado'' then sum(pe.monto_mb) end)::numeric as formulado,
+                    (case when pe.tipo_movimiento = ''comprometido'' then sum(pe.monto_mb) end)::numeric as comprometido,
+                    (case when pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) end)::numeric as ejecutado,
+                    p.id_gestion,
+                    p.orden,
+                    (tcc.codigo||'' ''||tcc.descripcion)::varchar as ceco,
+                    tcc.id_tipo_cc
+                    from partida p
+                    left join pre.tpartida_ejecucion pe on pe.id_partida=p.id_partida   
+                      
+                    left join pre.tpresupuesto pre on pre.id_presupuesto=pe.id_presupuesto
+                    left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
+                    left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc  
+                                                  
+                    group by p.id_partida,p.nivel,p.partida,pe.tipo_movimiento,p.orden,p.id_gestion
+                    ,tcc.codigo,tcc.descripcion,tcc.id_tipo_cc
+                    order by p.orden asc )
+                      
+                    select
+                    p.id_partida::integer,
+                    p.partida::varchar,
+                    p.nivel::integer,
+                    pe.nro_tramite::varchar,
+                    sum(p.formulado)::numeric as formulado ,
+                    sum(p.comprometido)::numeric as comprometido,
+                    (sum(p.formulado)-sum(p.comprometido))::numeric  as por_comprometer,
+                    sum(p.ejecutado)::numeric as ejecutado,
+                    (sum(p.comprometido)-sum(p.ejecutado))::numeric as por_ejecutar
+                    from partida2 p
+                    join pre.tpartida_ejecucion pe on pe.id_partida=p.id_partida
+                    where pe.monto <> 0::numeric and  '||v_filtro_tipo_cc||'  p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida= '||v_parametros.id_partida||' and ';
+       
+      v_consulta:=v_consulta||v_parametros.filtro;
+      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.nivel,p.orden,pe.nro_tramite ';
+                    
+      v_consulta:=v_consulta||' order by  p.orden asc  limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+
+      return v_consulta;
+    end;     
+    /*********************************
+  #TRANSACCION:  'PRE_AIMPPARTDET_CONT' #ETR-1823
+  #DESCRIPCION: Reporte detalle de ajuste de imputacion
+  #AUTOR:   JUAN
+  #FECHA:   31/03/2020
+  ***********************************/
+
+  elsif(p_transaccion='PRE_AIMPPARTDET_CONT')then 
+
+    begin
+
+     v_filtro_tipo_cc = ' 0 = 0 and ';
+
+     IF  pxp.f_existe_parametro(p_tabla,'id_tipo_cc')  THEN
+                 
+              IF v_parametros.id_tipo_cc is not NULL THEN
+                    
+                  WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                    SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                    FROM param.ttipo_cc tcc
+                    WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                  UNION ALL
+                    SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                    FROM tipo_cc_rec lrec 
+                    INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                    where tcc2.estado_reg = 'activo'
+                  )
+                SELECT  pxp.list(id_tipo_cc::varchar) 
+                  into 
+                    v_tipo_cc
+                FROM tipo_cc_rec;
+                        
+                        
+                --se agrego el alias vpe al tipo cc #138
+                v_filtro_tipo_cc = ' p.id_tipo_cc in ('||v_tipo_cc||') and ';
+            END IF;
+     END IF;
+       
+      v_consulta:='with RECURSIVE partida as(
+                    select 
+                    par.id_partida,
+                    par.id_partida_fk,
+                    (par.codigo||'' ''||par.nombre_partida)::varchar as partida,
+                    (par.id_partida)::text as orden,
+                    par.id_gestion,
+                    ''*  ''::VARCHAR as nivel
+                    from pre.tpartida par
+                    where par.id_partida_fk is NULL and par.estado_reg=''activo'' 
+                    UNION ALL
+                    select
+                    par.id_partida,
+                    par.id_partida_fk,
+                    (par.codigo||'' ''||par.nombre_partida)::varchar as parida,
+                    (par1.orden||'' -> ''||par.id_partida)::text as orden,
+                    par.id_gestion,
+                    (par1.nivel||''*    '')::text as nivel
+                    from pre.tpartida par
+                    join partida par1 on par1.id_partida=par.id_partida_fk
+                    where par.id_partida_fk is not NULL and par.estado_reg=''activo''
+                    ),
+                    partida2 as(
+                    select 
+                    p.id_partida,
+                    (replace(p.nivel,''*'','' '')||p.partida)::varchar as partida,
+                    (case when pe.tipo_movimiento = ''formulado'' then sum(pe.monto_mb) end)::numeric as formulado,
+                    (case when pe.tipo_movimiento = ''comprometido'' then sum(pe.monto_mb) end)::numeric as comprometido,
+                    (case when pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) end)::numeric as ejecutado,
+                    p.id_gestion,
+                    p.orden,
+                    p.nivel,
+                    tcc.id_tipo_cc
+                    from partida p
+                    left join pre.tpartida_ejecucion pe on pe.id_partida=p.id_partida   
+                      
+                    left join pre.tpresupuesto pre on pre.id_presupuesto=pe.id_presupuesto
+                    left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
+                    left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc  
+                                                  
+                    group by p.id_partida,p.partida,pe.tipo_movimiento,p.orden,p.id_gestion,
+                    tcc.id_tipo_cc,p.nivel
+                    order by p.orden asc )
+                      
+                    select
+                    count(*)
+                    from partida2 p
+                    join pre.tpartida_ejecucion pe on pe.id_partida=p.id_partida
+                    where  '||v_filtro_tipo_cc||'  p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida= '||v_parametros.id_partida||' and ';
+
+      v_consulta:=v_consulta||v_parametros.filtro;
+      v_consulta:=v_consulta||' group by  p.id_partida,p.partida,p.orden,pe.nro_tramite  ';
+                    
+        
+      return v_consulta;
+    end; 
     /*********************************
   #TRANSACCION:  'PRE_AJUIMPPART_CONT' #46
   #DESCRIPCION: Reporte detalle de ajuste de imputacion
