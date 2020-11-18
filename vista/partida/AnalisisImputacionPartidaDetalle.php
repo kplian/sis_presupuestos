@@ -6,7 +6,7 @@
 *@date 03-10-2016 15:47:23
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
   ISSUE            FECHA:          AUTOR       DESCRIPCION
- #PRES-5  ENDETR    23/07/2020      JJA          Mejoras en reporte tipo centro de costo de presupuesto
+  #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
 */
 
 header("content-type: text/javascript; charset=UTF-8");
@@ -194,10 +194,10 @@ Phx.vista.AnalisisImputacionPartidaDetalle=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 	},
 				
-	tam_pag:50,	
+	tam_pag:500,	
 	title:'Detalle tipo Centro de costo',
 	ActList:'../../sis_presupuestos/control/PartidaEjecucion/AnalisisImputacionPartidaDetalle',
-	id_store:'id_partida',
+	id_store:'nro_tramite',
 	fields: [
 
         {name:'id_partida', type: 'numeric'},

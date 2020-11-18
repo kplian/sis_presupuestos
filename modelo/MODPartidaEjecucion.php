@@ -578,7 +578,7 @@ class MODPartidaEjecucion extends MODbase{
 		$this->transaccion='PRE_AIMPPARTDET_SEL';
 		$this->tipo_procedimiento='SEL';
 
-        $this->setParametro('id_tipo_cc','id_tipo_cc','int4');
+        $this->setParametro('filtro_tipo_cc','filtro_tipo_cc','varchar');
 		$this->setParametro('id_partida','id_partida','int4');
 		$this->setParametro('id_gestion','id_gestion','int4'); 
 		
@@ -598,7 +598,7 @@ class MODPartidaEjecucion extends MODbase{
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
-		
+
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
