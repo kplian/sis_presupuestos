@@ -29,6 +29,9 @@ require_once(dirname(__FILE__).'/../reportes/RFormulacionPresupuestariaXls.php')
 require_once(dirname(__FILE__).'/../reportes/REjecucionInversionXls.php'); //#PRES-7
 require_once(dirname(__FILE__).'/../reportes/RResumenFormulacionPresupuestariaXls.php');//#PRES-6
 require_once(dirname(__FILE__).'/../reportes/REjecucion_centro_costo_componenteXls.php'); //#PRES-8
+
+require_once(dirname(__FILE__).'/../reportes/REjecucionXls.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucion2Xls.php');
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -487,6 +490,41 @@ class ACTPartidaEjecucion extends ACTbase{
         }
 
         $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function reporteEjecucion(){
+
+
+        $this->objFunc = $this->create('MODPartidaEjecucion');
+        $this->res = $this->objFunc->reporteEjecucion($this->objParam);
+        $titulo = 'Ejecución presupuestaria';
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+        $nombreArchivo .= '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+        //$this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
+        //$this->objParam->addParametro('fecha_fin', $this->objParam->getParametro('fecha_fin'));
+        //$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
+       // var_dump($this->res->datos);
+
+        $this->objParam->addParametro('datos', $this->res->datos);
+        //Instancia la clase de excel
+
+        if($this->objParam->getParametro('periodicidad')=="si"){
+            $this->objReporteFormato = new REjecucionXls($this->objParam);
+            $this->objReporteFormato->generarDatos();
+            $this->objReporteFormato->generarReporte();
+        }
+        else{
+            $this->objReporteFormato = new REjecucion2Xls($this->objParam);
+            $this->objReporteFormato->generarDatos();
+            $this->objReporteFormato->generarReporte();
+        }
+
+
+
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
 
 }

@@ -40,6 +40,7 @@ $body$
  #ETR-1673 ENDETR     05/11/2020       JJA         Agregado de tramite y proveedor con movimiento ejecutado en el reporte de ejecucion de inversiones
  #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
  #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
+ #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
 ***************************************************************************/
 
 DECLARE
@@ -54,6 +55,8 @@ DECLARE
     v_tipo_cc  varchar;
     v_filtro    varchar;
     v_bandera varchar; --#ETR-1673
+
+    v_filtro_tipo_reporte varchar; --#ETR-1815
 BEGIN
 
   v_nombre_funcion = 'pre.ft_partida_ejecucion_sel';
@@ -2467,6 +2470,169 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
       return v_consulta;
       
   end; 
+      /*********************************
+  #TRANSACCION:  'PRE_REJECUPRES_SEL' 
+  #DESCRIPCION: Reporte EJECUCION PRESUPUESTARIA CON PERIODOS
+  #AUTOR:   JUAN
+  #FECHA:   18/11/2020
+  ***********************************/
+
+   elsif(p_transaccion='PRE_REJECUPRES_SEL')then --##ETR-1815 
+
+    begin
+    
+    
+v_filtro_tipo_cc = ' 0=0 and ';
+     IF v_parametros.id_tipo_cc is not NULL THEN
+          WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+            SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+            FROM param.ttipo_cc tcc
+            WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+          UNION ALL
+            SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+            FROM tipo_cc_rec lrec 
+            INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+            where tcc2.estado_reg = 'activo'
+          )
+        SELECT  pxp.list(id_tipo_cc::varchar) 
+          into 
+            v_tipo_cc
+        FROM tipo_cc_rec;
+        if(v_parametros.tipo_reporte='movimiento')THEN
+          v_filtro_tipo_reporte := '';
+        else
+          v_filtro_tipo_reporte := ' or pe.id_tipo_cc is null ';
+        end if;
+        
+        v_filtro_tipo_cc = ' (pe.id_tipo_cc in('||v_tipo_cc||') '||v_filtro_tipo_reporte||'   ) AND   ';        
+     END IF;            
+     
+          v_consulta:='with RECURSIVE partida as(
+  select
+    par.id_partida,
+    par.id_partida_fk,
+    (par.codigo||'' - ''||par.nombre_partida)::varchar as partida,
+    (par.id_partida)::text as orden,
+    par.id_gestion,
+    ''*  ''::VARCHAR as nivel,
+    par.sw_transaccional
+  from pre.tpartida par
+  where par.id_partida_fk is NULL and par.estado_reg=''activo''
+  UNION ALL
+  select
+    par.id_partida,
+    par.id_partida_fk,
+    (par.codigo||'' - ''||par.nombre_partida)::varchar as parida,
+    (par1.orden||'' -> ''||par.id_partida)::text as orden,
+    par.id_gestion,
+    (par1.nivel||''*   '')::VARCHAR as nivel,
+    par.sw_transaccional
+  from pre.tpartida par
+         join partida par1 on par1.id_partida=par.id_partida_fk
+  where par.id_partida_fk is not NULL and par.estado_reg=''activo''
+  and par.sw_movimiento = ''presupuestaria''
+),
+
+ partida_ejecucion as (  
+ select
+         pe.id_partida,
+         tcc.id_tipo_cc,
+         pe.nro_tramite,
+         (case when pe.tipo_movimiento = ''formulado'' then sum(pe.monto_mb) end)::numeric as formulado,
+         (case when pe.tipo_movimiento = ''comprometido'' then sum(pe.monto_mb) end)::numeric as comprometido,
+          case when  extract(MONTH from  pe.fecha)::integer = 1 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as enero,
+          case when  extract(MONTH from  pe.fecha)::integer = 2 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as febrero,
+          case when  extract(MONTH from  pe.fecha)::integer = 3 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as marzo,
+          case when  extract(MONTH from  pe.fecha)::integer = 4 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as abril,
+          case when  extract(MONTH from  pe.fecha)::integer = 5 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as mayo,
+          case when  extract(MONTH from  pe.fecha)::integer = 6 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as junio,
+          case when  extract(MONTH from  pe.fecha)::integer = 7 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as julio,
+          case when  extract(MONTH from  pe.fecha)::integer = 8 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as agosto,
+          case when  extract(MONTH from  pe.fecha)::integer = 9 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as septiembre,
+          case when  extract(MONTH from  pe.fecha)::integer = 10 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as octubre,
+          case when  extract(MONTH from  pe.fecha)::integer = 11 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as noviembre,
+          case when  extract(MONTH from  pe.fecha)::integer = 12 and pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) else 0 end as diciembre,
+         (case when pe.tipo_movimiento = ''ejecutado'' then sum(pe.monto_mb) end)::numeric as ejecutado,
+         cc.id_gestion,
+         (tcc.codigo||'' ''||tcc.descripcion)::varchar as ceco
+       
+             from pre.tpartida_ejecucion pe 
+
+              left join pre.tpresupuesto pre on pre.id_presupuesto=pe.id_presupuesto
+              left join param.tcentro_costo cc on cc.id_centro_costo = pre.id_presupuesto
+              left join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+        
+       where 
+       case when pe.fecha::date > coalesce ('''||v_parametros.fecha_ini||''',''01-01-1991'' )::date   then 0=0 else pe.fecha::date >= '''||v_parametros.fecha_ini||'''::date  end
+       and 
+       case when pe.fecha::date < coalesce ('''||v_parametros.fecha_fin||''',''31-12-2050'' )::date   then 0=0 else pe.fecha::date <= '''||v_parametros.fecha_fin||'''::date  end
+       
+       
+       group by pe.id_partida,pe.tipo_movimiento,cc.id_gestion
+              ,tcc.codigo,tcc.descripcion,tcc.id_tipo_cc,pe.nro_tramite,pe.fecha
+       ),
+        partida_ejecucion2 as (
+ select pe.id_partida,
+    pe.id_gestion,
+        pe.id_tipo_cc,
+        pe.nro_tramite,
+         sum(pe.formulado) as formulado,
+         sum(pe.comprometido) as comprometido,
+         sum(pe.enero) as enero,
+         sum(pe.febrero) as febrero,
+         sum(pe.marzo) as marzo,
+         sum(pe.abril) as abril,
+         sum(pe.mayo) as mayo,
+         sum(pe.junio) as junio,
+         sum(pe.julio) as julio,
+         sum(pe.agosto) as agosto,
+         sum(pe.septiembre) as septiembre,
+         sum(pe.octubre) as octubre,
+         sum(pe.noviembre) as noviembre,
+         sum(pe.diciembre) as diciembre,
+         sum(pe.ejecutado) as ejecutado
+ from partida_ejecucion pe
+ 
+ group by pe.id_partida,
+    pe.id_gestion,
+        pe.id_partida,
+        pe.id_tipo_cc,
+        pe.nro_tramite
+        ) 
+        
+ select 
+        p.partida::varchar as partida,
+        replace(p.nivel,''*'','' '')::varchar as nivel,
+        pe.nro_tramite::VARCHAR,
+        pe.formulado::NUMERIC,
+        pe.comprometido::NUMERIC,
+        pe.enero::NUMERIC,
+        pe.febrero::NUMERIC,
+        pe.marzo::NUMERIC,
+        pe.abril::NUMERIC,
+        pe.mayo::NUMERIC,
+        pe.junio::NUMERIC,
+        pe.julio::NUMERIC,
+        pe.agosto::NUMERIC,
+        pe.septiembre::NUMERIC,
+        pe.octubre::NUMERIC,
+        pe.noviembre::NUMERIC,
+        pe.diciembre::NUMERIC,
+        pe.ejecutado::NUMERIC,
+        (case when pe.comprometido::numeric>0  then pe.ejecutado/ pe.comprometido  else 0 end)::NUMERIC as porcentaje_ejecutado          
+ from partida p
+ left join partida_ejecucion2 pe on pe.id_partida=p.id_partida and p.id_gestion = pe.id_gestion
+ where 
+ p.id_gestion='||v_parametros.id_gestion||' and '||v_filtro_tipo_cc;
+
+        v_consulta:=v_consulta||v_parametros.filtro||' order by p.orden asc';  
+                
+                  
+      --raise NOTICE 'notice % ',v_consulta;
+      --raise EXCEPTION 'exception juan % ',v_consulta;
+      return v_consulta;
+      
+  end;
    /*********************************
   #TRANSACCION:  'PRE_REJEDETCOMP_SEL' 
   #DESCRIPCION: Reporte partida ejecucion con adquisiciones
