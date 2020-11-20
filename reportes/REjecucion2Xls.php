@@ -3,7 +3,7 @@
 * HISTORIAL DE MODIFICACIONES:
    #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
  */
-class REjecucionXls
+class REjecucion2Xls
 {
     private $docexcel;
     private $objWriter;
@@ -100,12 +100,12 @@ class REjecucionXls
             )
             );
 
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN PRESUPUESTARIA PERIODIFICADO' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:S2')->applyFromArray($styleTitulos1);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A2:S2');//#40
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN PRESUPUESTARIA ' );
+        $this->docexcel->getActiveSheet()->getStyle('A2:G2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:G2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:S3')->applyFromArray($styleTitulosFecha);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A3:S3');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A3:G3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:G3');//#40
 
         /*if($this->objParam->getParametro('fecha_ini')){ //#45
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
@@ -121,25 +121,12 @@ class REjecucionXls
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(30); //#40
-        $this->docexcel->getActiveSheet()->getColumnDimension('M')->setWidth(30); //#45
-        
-        $this->docexcel->getActiveSheet()->getColumnDimension('N')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('O')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('P')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('Q')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('R')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('S')->setWidth(30);
 
 
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:S5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:S5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:G5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:G5')->applyFromArray($styleTitulos2);
 
 
 
@@ -149,21 +136,8 @@ class REjecucionXls
         $this->docexcel->getActiveSheet()->setCellValue('C5','NRO. TRAMITE');
         $this->docexcel->getActiveSheet()->setCellValue('D5','FORMULADO');
         $this->docexcel->getActiveSheet()->setCellValue('E5','COMPROMETIDO');
-        $this->docexcel->getActiveSheet()->setCellValue('F5','ENERO');
-        $this->docexcel->getActiveSheet()->setCellValue('G5','FEBRERO');
-        $this->docexcel->getActiveSheet()->setCellValue('H5','MARZO');
-        $this->docexcel->getActiveSheet()->setCellValue('I5','ABRIL');
-        $this->docexcel->getActiveSheet()->setCellValue('J5','MAYO');
-        $this->docexcel->getActiveSheet()->setCellValue('K5','JUNIO');
-        $this->docexcel->getActiveSheet()->setCellValue('L5','JULIO');
-        $this->docexcel->getActiveSheet()->setCellValue('M5','AGOSTO');
-
-        $this->docexcel->getActiveSheet()->setCellValue('N5','SEPTIEMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('O5','OCTUBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('P5','NOVIEMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('Q5','DICIEMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('R5','EJECUTADO');
-        $this->docexcel->getActiveSheet()->setCellValue('S5','% EJECUTADO');
+        $this->docexcel->getActiveSheet()->setCellValue('F5','EJECUTADO');
+        $this->docexcel->getActiveSheet()->setCellValue('G5','% EJECUTADO');
 
 
         /*$this->docexcel->getActiveSheet()->setCellValue('J5','SUBTOTAL C = A - B');
@@ -202,21 +176,9 @@ class REjecucionXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_tramite']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['formulado']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['comprometido']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['enero']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, $value['febrero']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['marzo']);
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['abril']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['mayo']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['junio']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['julio']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, $value['agosto']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, $value['septiembre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, $value['octubre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, $value['noviembre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, $value['diciembre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila, $value['ejecutado']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, round(($value['porcentaje_ejecutado']*100),2)."%" );
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['ejecutado']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila,  round(($value['porcentaje_ejecutado']*100),2)."%");
 
             $fila++;
             $this->numero++;

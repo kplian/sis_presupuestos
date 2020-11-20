@@ -602,5 +602,49 @@ class MODPartidaEjecucion extends MODbase{
 		//Devuelve la respuesta
 		return $this->respuesta;
 	}
+    function reporteEjecucion(){
+
+        $this->procedimiento='pre.ft_partida_ejecucion_sel';
+        $this->transaccion='PRE_REJECUPRES_SEL';
+        $this->tipo_procedimiento='SEL';
+        $this-> setCount(false);
+
+		  $this->setParametro('id_tipo_cc','id_tipo_cc','int4');  
+		  $this->setParametro('id_gestion','id_gestion','int4');
+		  $this->setParametro('fecha_ini','fecha_ini','date');
+		  $this->setParametro('fecha_fin','fecha_fin','date');
+		  $this->setParametro('tipo_reporte','tipo_reporte','varchar');
+		  
+
+		$this->captura('partida','varchar');
+		$this->captura('nivel','varchar');
+		
+		$this->captura('nro_tramite','varchar');
+        $this->captura('formulado','numeric');
+        $this->captura('comprometido','numeric');
+
+        $this->captura('enero','numeric');
+        $this->captura('febrero','numeric');
+        $this->captura('marzo','numeric');
+        $this->captura('abril','numeric');
+        $this->captura('mayo','numeric');
+        $this->captura('junio','numeric');
+        $this->captura('julio','numeric');
+        $this->captura('agosto','numeric');
+        $this->captura('septiembre','numeric');
+        $this->captura('octubre','numeric');
+        $this->captura('noviembre','numeric');
+        $this->captura('diciembre','numeric');
+        $this->captura('ejecutado','numeric');
+        $this->captura('porcentaje_ejecutado','numeric'); 
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();	
+        //var_dump($this->respuesta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+
+	}
 }
 ?>
