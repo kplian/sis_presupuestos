@@ -22,6 +22,7 @@ $body$
   #17 	   ENDEETR	   24/07/2019		  Manuel Guerra	      modificacion de estructura de importacion de presupuestos
   #18 	   ENDEETR	   29/07/2019		  Manuel Guerra	      Importacion de presupuestos
   #28 	   ENDEETR	   04/01/2020		  Manuel Guerra	      validacion de valores negaticos de las memorias_det
+  #ETR1816 	ENDEETR	   17/11/2020		  Manuel Guerra	      agregar el campo de oservaciones
 ***************************************************************************/
 
 DECLARE
@@ -219,7 +220,7 @@ BEGIN
 
     /*********************************
     #TRANSACCION:  'PRE_MEMOXLS_INS'
-    #DESCRIPCION:  #5 Actualizacion de registros desde excel  #17
+    #DESCRIPCION:  #5 Actualizacion de registros desde excel  #17   #ETR1816
     #AUTOR:    manuel guerra
     #FECHA:    01-09-2013 18:10:12
     ***********************************/
@@ -227,6 +228,7 @@ BEGIN
     ELSIF(p_transaccion='PRE_MEMOXLS_INS')THEN
 		BEGIN
         	--
+
             SELECT tp.id_presupuesto
             INTO v_id_centro_costo
             FROM param.ttipo_cc t
@@ -271,7 +273,7 @@ BEGIN
             	DELETE FROM pre.tformulacion_tmp WHERE migrado='no';
                 RAISE EXCEPTION 'No existe el codigo de partida %',v_parametros.cod_partida;
             END IF;
-
+			--#ETR1816
             INSERT INTO pre.tformulacion_tmp(
             codigo,
             tipo1,
@@ -292,7 +294,8 @@ BEGIN
             migrado,
             id_gestion,
             id_funcionario,
-            id_sesion
+            id_sesion,
+            obs_memoria
             )
             VALUES(
             v_id_centro_costo::varchar,
@@ -314,7 +317,8 @@ BEGIN
             'no',
             v_parametros.id_gestion,
             v_parametros.id_funcionario,
-            p_id_usuario
+            p_id_usuario,
+            v_parametros.observaciones
             )RETURNING id into v_id;
             --#28
             if v_parametros.enero<0 or v_parametros.febrero<0 or
@@ -340,7 +344,7 @@ BEGIN
 
     /*********************************
     #TRANSACCION:  'PRE_ACT_DAT'
-    #DESCRIPCION:  #5 Modificacion de registros  #17
+    #DESCRIPCION:  #5 Modificacion de registros  #17  #ETR1816
     #AUTOR:     MP
     #FECHA:     01-03-2016 14:22:24
     ***********************************/
@@ -411,7 +415,8 @@ BEGIN
                                   f.obs,
                                   f.id_gestion,
                                   f.id_funcionario,
-                                  f.id_sesion
+                                  f.id_sesion,
+                                  f.obs_memoria
                                   FROM pre.tformulacion_tmp f
                                   WHERE f.migrado='no'
                               )LOOP
@@ -431,9 +436,9 @@ BEGIN
                 --
                 INSERT INTO pre.tpresup_partida (id_presupuesto,id_centro_costo,id_partida,fecha_reg,importe,id_usuario_reg,estado_reg)
                 VALUES(v_registros_c.codigo::integer, v_registros_c.codigo::integer, v_registros_c.carga::integer, now(),v_total_memoria::numeric,v_registros_c.id_sesion,'pendiente');
-                --
+                --#ETR1816
                 INSERT INTO pre.tmemoria_calculo (id_usuario_reg,id_presupuesto,id_concepto_ingas,id_partida,fecha_reg,importe_total,obs,estado_reg)
-                VALUES (v_registros_c.id_sesion,v_registros_c.codigo::integer,v_registros_c.tipo1::integer,v_registros_c.carga::integer,now(),v_total_memoria::numeric,' ','pendiente')
+                VALUES (v_registros_c.id_sesion,v_registros_c.codigo::integer,v_registros_c.tipo1::integer,v_registros_c.carga::integer,now(),v_total_memoria::numeric,v_registros_c.obs_memoria,'pendiente')
                 RETURNING id_memoria_calculo INTO v_id_memoria_calculo;
                 -- meses
                 -- ene
@@ -709,4 +714,5 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
