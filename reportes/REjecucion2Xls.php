@@ -2,6 +2,7 @@
 /**
 * HISTORIAL DE MODIFICACIONES:
    #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
+   #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
  */
 class REjecucion2Xls
 {
@@ -11,6 +12,9 @@ class REjecucion2Xls
     private $equivalencias=array();
     private $objParam;
     public  $url_archivo;
+    private $contador=0.0;
+    private $acumulados2=0.0;
+    private $styleTitulos2=ARRAY();
     function __construct(CTParametro $objParam)
     {
         $this->objParam = $objParam;
@@ -45,7 +49,17 @@ class REjecucion2Xls
     }
     function imprimeCabecera() {
         $this->docexcel->createSheet();
-        $this->docexcel->getActiveSheet()->setTitle('Libro Compras');
+
+
+        $objDrawing = new PHPExcel_Worksheet_Drawing();
+        $objDrawing->setName('Logo');
+        $objDrawing->setDescription('Logo');
+        $objDrawing->setPath(dirname(__FILE__).'/../../lib'.$_SESSION['_DIR_LOGO']);
+        $objDrawing->setHeight(75);
+        $objDrawing->setWorksheet($this->docexcel->setActiveSheetIndex(0));
+
+
+        $this->docexcel->getActiveSheet()->setTitle('Ejecución presupuestaria');
         $this->docexcel->setActiveSheetIndex(0);
 
         $datos = $this->objParam->getParametro('datos');
@@ -53,8 +67,8 @@ class REjecucion2Xls
         $styleTitulos1 = array(
             'font'  => array(
                 'bold'  => true,
-                'size'  => 12,
-                'name'  => 'Arial'
+                'size'  => 13,
+                'name'  => 'Calibri'
             ),
             'alignment' => array(
                 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -62,11 +76,11 @@ class REjecucion2Xls
             ),
         );
 
-        $styleTitulos2 = array(
+        $this->$styleTitulos2 = array(
             'font'  => array(
                 'bold'  => true,
-                'size'  => 9,
-                'name'  => 'Arial',
+                'size'  => 11,
+                'name'  => 'Calibri',
                 'color' => array(
                     'rgb' => 'FFFFFF'
                 )
@@ -79,7 +93,7 @@ class REjecucion2Xls
             'fill' => array(
                 'type' => PHPExcel_Style_Fill::FILL_SOLID,
                 'color' => array(
-                    'rgb' => '0066CC'
+                    'rgb' => '366092'
                 )
             ),
             'borders' => array(
@@ -90,8 +104,8 @@ class REjecucion2Xls
         $styleTitulosFecha = array(
             'font'  => array(
                 'bold'  => true,
-                'size'  => 9,
-                'name'  => 'Arial',
+                'size'  => 11,
+                'name'  => 'Calibri',
 
             ),
             'alignment' => array(
@@ -101,11 +115,11 @@ class REjecucion2Xls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN PRESUPUESTARIA ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:G2')->applyFromArray($styleTitulos1);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A2:G2');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A2:H2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:H2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:G3')->applyFromArray($styleTitulosFecha);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A3:G3');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A3:H3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:H3');//#40
 
         /*if($this->objParam->getParametro('fecha_ini')){ //#45
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
@@ -115,18 +129,18 @@ class REjecucion2Xls
         }*/
 
 
-        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(25);
+        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(50);
         $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(40);
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
 
 
 
-
-        $this->docexcel->getActiveSheet()->getStyle('A5:G5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:G5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:H5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:H5')->applyFromArray($this->$styleTitulos2);
 
 
 
@@ -137,8 +151,8 @@ class REjecucion2Xls
         $this->docexcel->getActiveSheet()->setCellValue('D5','FORMULADO');
         $this->docexcel->getActiveSheet()->setCellValue('E5','COMPROMETIDO');
         $this->docexcel->getActiveSheet()->setCellValue('F5','EJECUTADO');
-        $this->docexcel->getActiveSheet()->setCellValue('G5','% EJECUTADO');
-
+        $this->docexcel->getActiveSheet()->setCellValue('G5','% EJECUTADO/FORMULADO');
+        $this->docexcel->getActiveSheet()->setCellValue('H5','% EJECUTADO/COMPROMETIDO');
 
         /*$this->docexcel->getActiveSheet()->setCellValue('J5','SUBTOTAL C = A - B');
         if($datos[0]['gestion']<2017) {
@@ -169,20 +183,98 @@ class REjecucion2Xls
         $datos = $this->objParam->getParametro('datos');
         $this->imprimeCabecera(0);
         //var_dump($datos);exit;
+        $acumulados=0.0;
+        $bandera=0;
+        $contador=0;
+        //var_dump($datos[$fila-1]["sumar_partida"]);
+     
+        $estilo_titular = array(
+         
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 11,
+                'name'  => 'Calibri',
+                'color' => array(
+                    'rgb' => '060908'
+                )
+            ),
+
+            'fill' => array(
+            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+            'color' => array(
+            'rgb' => 'DCE6F1'
+            )
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            )
+
+        );
+        $estilo_contenido = array( 
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            )
+        );
+
+        $estilo_porcentaje = array( 
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            )
+        );
+
+        $total=0;
+        $ejecutado=0.0;
+        $formulado=0.0;
+        $comprometido=0.0;
+
         foreach ($datos as $value){
+         
+             if($value['sw_transaccional']=='titular'){
+                $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($estilo_titular);
+                $ejecutado +=(float)$value['ejecutado'];
+                $formulado +=(float)$value['formulado'];
+                $comprometido +=(float)$value['comprometido'];
+             }else{
+                $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($estilo_contenido);
+             }
+
+            $this->docexcel->getActiveSheet()->getStyle("H$fila:H$fila")->applyFromArray($estilo_contenido);
 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $this->numero);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nivel'].$value['partida']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_tramite']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['formulado']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['comprometido']);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($value['formulado'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($value['comprometido'],2,",","."));
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['ejecutado']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila,  round(($value['porcentaje_ejecutado']*100),2)."%");
-
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($value['ejecutado'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila,  number_format($value['porcentaje_eje_form'] * 100, 2, ",", ".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format($value['porcentaje_eje_comp'] * 100, 2, ",", ".")." %");
             $fila++;
             $this->numero++;
+            
         }
+
+
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:H$fila")->applyFromArray($this->$styleTitulos2);
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, '');
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, 'TOTAL GENERAL');
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, '');
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($formulado,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($comprometido,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($ejecutado,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
+
+
+
+
+    
     }
     function generarReporte(){
 

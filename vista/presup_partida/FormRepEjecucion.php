@@ -6,7 +6,8 @@
  *@date    01-12-2014
  *@description Archivo con la interfaz para generaci�n de reporte
 
-  #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
+  #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria 
+  #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -104,8 +105,8 @@ Phx.vista.FormRepEjecucion = Ext.extend(Phx.frmInterfaz, {
                 store:new Ext.data.ArrayStore({
                     fields: ['variable', 'valor'],
                     data : [ 
-                                ['movimiento','Solo movimiento '],
-                                ['todos','Todos']
+                                ['movimiento','Agrupado '],
+                                ['todos','Detallado']
                                
                             ]
                 }),
@@ -118,7 +119,7 @@ Phx.vista.FormRepEjecucion = Ext.extend(Phx.frmInterfaz, {
         {
             config:{
                 name:'periodicidad',
-                fieldLabel:'Periodicidad',
+                fieldLabel:'Mensualizado',
                 allowBlank:false,
                 emptyText:'...',
                 typeAhead: true,
