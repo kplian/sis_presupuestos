@@ -20,6 +20,8 @@
    #ETR-1599 ENDETR     03/11/2021       JJA         Agregar tipo movimiento comprometido
    #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
 
+   #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionProyectoXls.php');
@@ -32,6 +34,9 @@ require_once(dirname(__FILE__).'/../reportes/REjecucion_centro_costo_componenteX
 
 require_once(dirname(__FILE__).'/../reportes/REjecucionXls.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucion2Xls.php');
+
+require_once(dirname(__FILE__).'/../reportes/REjecucionPeriodoAgrupadoXls.php');
+require_once(dirname(__FILE__).'/../reportes/REjecucionAgrupadoXls.php');
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -491,11 +496,17 @@ class ACTPartidaEjecucion extends ACTbase{
 
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-    function reporteEjecucion(){
+    function reporteEjecucion(){ //#ETR-1890
 
+        if($this->objParam->getParametro('tipo_reporte')=="movimiento"){
+            $this->objFunc = $this->create('MODPartidaEjecucion');
+            $this->res = $this->objFunc->reporteEjecucionAgrupado($this->objParam);
+        }
+        else{
+            $this->objFunc = $this->create('MODPartidaEjecucion');
+            $this->res = $this->objFunc->reporteEjecucion($this->objParam);
+        }
 
-        $this->objFunc = $this->create('MODPartidaEjecucion');
-        $this->res = $this->objFunc->reporteEjecucion($this->objParam);
         $titulo = 'Ejecución presupuestaria';
         $nombreArchivo = uniqid(md5(session_id()) . $titulo);
         $nombreArchivo .= '.xls';
@@ -503,21 +514,37 @@ class ACTPartidaEjecucion extends ACTbase{
         //$this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
         //$this->objParam->addParametro('fecha_fin', $this->objParam->getParametro('fecha_fin'));
         //$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
-       // var_dump($this->res->datos);
+
 
         $this->objParam->addParametro('datos', $this->res->datos);
         //Instancia la clase de excel
 
-        if($this->objParam->getParametro('periodicidad')=="si"){
-            $this->objReporteFormato = new REjecucionXls($this->objParam);
-            $this->objReporteFormato->generarDatos();
-            $this->objReporteFormato->generarReporte();
+        //var_dump($this->objParam->getParametro('tipo_reporte'));
+        if($this->objParam->getParametro('tipo_reporte')=="movimiento"){
+            if($this->objParam->getParametro('periodicidad')=="si"){
+                $this->objReporteFormato = new REjecucionPeriodoAgrupadoXls ($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+            }
+            else{
+                $this->objReporteFormato = new REjecucionAgrupadoXls($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+            }  
         }
         else{
-            $this->objReporteFormato = new REjecucion2Xls($this->objParam);
-            $this->objReporteFormato->generarDatos();
-            $this->objReporteFormato->generarReporte();
+            if($this->objParam->getParametro('periodicidad')=="si"){
+                $this->objReporteFormato = new REjecucionXls($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+            }
+            else{
+                $this->objReporteFormato = new REjecucion2Xls($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+            }   
         }
+
 
 
 

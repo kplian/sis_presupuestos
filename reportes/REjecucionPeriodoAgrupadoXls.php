@@ -4,7 +4,7 @@
    #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
    #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
  */
-class REjecucionXls
+class REjecucionPeriodoAgrupadoXls
 {
     private $docexcel;
     private $objWriter;
@@ -115,11 +115,11 @@ class REjecucionXls
             );
 
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'EJECUCIÓN PRESUPUESTARIA ' );
-        $this->docexcel->getActiveSheet()->getStyle('A2:T2')->applyFromArray($styleTitulos1);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A2:T2');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A2:S2')->applyFromArray($styleTitulos1);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A2:S2');//#40
 
-        $this->docexcel->getActiveSheet()->getStyle('A3:T3')->applyFromArray($styleTitulosFecha);//#40
-        $this->docexcel->getActiveSheet()->mergeCells('A3:T3');//#40
+        $this->docexcel->getActiveSheet()->getStyle('A3:S3')->applyFromArray($styleTitulosFecha);//#40
+        $this->docexcel->getActiveSheet()->mergeCells('A3:S3');//#40
 
         /*if($this->objParam->getParametro('fecha_ini')){ //#45
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Desde '.$this->objParam->getParametro('fecha_ini').' Hasta '.$this->objParam->getParametro('fecha_fin') );
@@ -148,39 +148,37 @@ class REjecucionXls
         $this->docexcel->getActiveSheet()->getColumnDimension('Q')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('R')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('S')->setWidth(30);
-        $this->docexcel->getActiveSheet()->getColumnDimension('T')->setWidth(30);
 
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:T5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:T5')->applyFromArray($this->$styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:S5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:S5')->applyFromArray($this->$styleTitulos2);
 
 
 
         //*************************************Cabecera*****************************************
         $this->docexcel->getActiveSheet()->setCellValue('A5','Nº');
         $this->docexcel->getActiveSheet()->setCellValue('B5','PARTIDA');
-        $this->docexcel->getActiveSheet()->setCellValue('C5','NRO. TRAMITE');
-        $this->docexcel->getActiveSheet()->setCellValue('D5','FORMULADO');
-        $this->docexcel->getActiveSheet()->setCellValue('E5','COMPROMETIDO');
+        $this->docexcel->getActiveSheet()->setCellValue('C5','FORMULADO');
+        $this->docexcel->getActiveSheet()->setCellValue('D5','COMPROMETIDO');
 
-        $this->docexcel->getActiveSheet()->setCellValue('F5','ENERO');
-        $this->docexcel->getActiveSheet()->setCellValue('G5','FEBRERO');
-        $this->docexcel->getActiveSheet()->setCellValue('H5','MARZO');
-        $this->docexcel->getActiveSheet()->setCellValue('I5','ABRIL');
-        $this->docexcel->getActiveSheet()->setCellValue('J5','MAYO');
-        $this->docexcel->getActiveSheet()->setCellValue('K5','JUNIO');
-        $this->docexcel->getActiveSheet()->setCellValue('L5','JULIO');
-        $this->docexcel->getActiveSheet()->setCellValue('M5','AGOSTO');
+        $this->docexcel->getActiveSheet()->setCellValue('E5','ENERO');
+        $this->docexcel->getActiveSheet()->setCellValue('F5','FEBRERO');
+        $this->docexcel->getActiveSheet()->setCellValue('G5','MARZO');
+        $this->docexcel->getActiveSheet()->setCellValue('H5','ABRIL');
+        $this->docexcel->getActiveSheet()->setCellValue('I5','MAYO');
+        $this->docexcel->getActiveSheet()->setCellValue('J5','JUNIO');
+        $this->docexcel->getActiveSheet()->setCellValue('K5','JULIO');
+        $this->docexcel->getActiveSheet()->setCellValue('L5','AGOSTO');
 
-        $this->docexcel->getActiveSheet()->setCellValue('N5','SEPTIEMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('O5','OCTUBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('P5','NOVIEMBRE');
-        $this->docexcel->getActiveSheet()->setCellValue('Q5','DICIEMBRE');
+        $this->docexcel->getActiveSheet()->setCellValue('M5','SEPTIEMBRE');
+        $this->docexcel->getActiveSheet()->setCellValue('N5','OCTUBRE');
+        $this->docexcel->getActiveSheet()->setCellValue('O5','NOVIEMBRE');
+        $this->docexcel->getActiveSheet()->setCellValue('P5','DICIEMBRE');
 
-        $this->docexcel->getActiveSheet()->setCellValue('R5','EJECUTADO');
-        $this->docexcel->getActiveSheet()->setCellValue('S5','% EJECUTADO/FORMULADO');
-        $this->docexcel->getActiveSheet()->setCellValue('T5','% EJECUTADO/COMPROMETIDO');
+        $this->docexcel->getActiveSheet()->setCellValue('Q5','EJECUTADO');
+        $this->docexcel->getActiveSheet()->setCellValue('R5','% EJECUTADO/FORMULADO');
+        $this->docexcel->getActiveSheet()->setCellValue('S5','% EJECUTADO/COMPROMETIDO');
 
         /*$this->docexcel->getActiveSheet()->setCellValue('J5','SUBTOTAL C = A - B');
         if($datos[0]['gestion']<2017) {
@@ -277,7 +275,7 @@ class REjecucionXls
         foreach ($datos as $value){
          
              if($value['sw_transaccional']=='titular'){
-                $this->docexcel->getActiveSheet()->getStyle("A$fila:T$fila")->applyFromArray($estilo_titular);
+                $this->docexcel->getActiveSheet()->getStyle("A$fila:S$fila")->applyFromArray($estilo_titular);
                 $ejecutado +=(float)$value['ejecutado'];
                 $formulado +=(float)$value['formulado'];
                 $comprometido +=(float)$value['comprometido'];
@@ -295,69 +293,67 @@ class REjecucionXls
                 $noviembre +=(float)$value['noviembre'];
                 $diciembre +=(float)$value['diciembre'];
              }else{
-                $this->docexcel->getActiveSheet()->getStyle("A$fila:T$fila")->applyFromArray($estilo_contenido);
+                $this->docexcel->getActiveSheet()->getStyle("A$fila:S$fila")->applyFromArray($estilo_contenido);
              }
 
-            $this->docexcel->getActiveSheet()->getStyle("H$fila:T$fila")->applyFromArray($estilo_contenido);
+            $this->docexcel->getActiveSheet()->getStyle("H$fila:S$fila")->applyFromArray($estilo_contenido);
 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $this->numero);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['nivel'].$value['partida']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nro_tramite']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($value['formulado'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($value['comprometido'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, number_format($value['formulado'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($value['comprometido'],2,",","."));
 
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($value['enero'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, number_format($value['febrero'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format($value['marzo'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($value['enero'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($value['febrero'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, number_format($value['marzo'],2,",","."));
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, number_format($value['abril'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, number_format($value['mayo'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, number_format($value['junio'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, number_format($value['julio'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, number_format($value['agosto'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, number_format($value['septiembre'],2,",",".")
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format($value['abril'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, number_format($value['mayo'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, number_format($value['junio'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, number_format($value['julio'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, number_format($value['agosto'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, number_format($value['septiembre'],2,",",".")
             );
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, number_format($value['octubre'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, number_format($value['noviembre'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, number_format($value['diciembre'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, number_format($value['octubre'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, number_format($value['noviembre'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, number_format($value['diciembre'],2,",","."));
 
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila, number_format($value['ejecutado'],2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila,  number_format($value['porcentaje_eje_form'] * 100, 2, ",", ".")." %");
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $fila, number_format($value['porcentaje_eje_comp'] * 100, 2, ",", ".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, number_format($value['ejecutado'],2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila,  number_format($value['porcentaje_eje_form'] * 100, 2, ",", ".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, number_format($value['porcentaje_eje_comp'] * 100, 2, ",", ".")." %");
             $fila++;
             $this->numero++;   
             
         }
 
 
-            $this->docexcel->getActiveSheet()->getStyle("A$fila:T$fila")->applyFromArray($this->$styleTitulos2);
+            $this->docexcel->getActiveSheet()->getStyle("A$fila:S$fila")->applyFromArray($this->$styleTitulos2);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, '');
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, 'TOTAL GENERAL');
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, '');
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($formulado,2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($comprometido,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, number_format($formulado,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, number_format($comprometido,2,",","."));
 
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($enero));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, number_format($febrero));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format($marzo));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, number_format($abril));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, number_format($mayo));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, number_format($junio));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, number_format($julio));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, number_format($agosto));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, number_format($septiembre)
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, number_format($enero));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, number_format($febrero));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila, number_format($marzo));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, number_format($abril));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, number_format($mayo));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, number_format($junio));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, number_format($julio));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, number_format($agosto));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(12, $fila, number_format($septiembre)
             );
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, number_format($octubre));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, number_format($noviembre));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, number_format($diciembre));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(13, $fila, number_format($octubre));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, number_format($noviembre));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, number_format($diciembre));
 
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila, number_format($ejecutado,2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, number_format($ejecutado,2,",","."));
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
 
     
     }
