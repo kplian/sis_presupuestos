@@ -7,6 +7,7 @@
 *@description Archivo con la interfaz de usuario que permite 
 *dar el visto a solicitudes de compra
 *
+#ETR-1358 ENDETR  18/11/2020     JJA     Habilitar boton en interfaz consulta de proceso de ajuste
 */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -37,7 +38,9 @@ Phx.vista.AjusteConsulta = {
          
           this.getBoton('btnObs').disable();    
           this.getBoton('btnChequeoDocumentosWf').enable(); 
-          this.getBoton('diagrama_gantt').enable();
+          this.getBoton('diagrama_gantt').enable();  
+          this.getBoton('btnTipAjusForm').enable();//ETR-1358
+
           
           if (data['tipo_ajuste'] == 'incremento' || data['tipo_ajuste'] == 'inc_comprometido'){ 
           	this.disableTabDecrementos();
