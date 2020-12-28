@@ -1,5 +1,5 @@
 <?php
-// Extend the TCPDF class to create custom MultiRow
+// #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
 class REFormulacionPeriodoPDF extends  ReportePDF {
 	var $datos_titulo;
 	var $datos_detalle;
@@ -129,7 +129,7 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
         
 		$this->Ln(10.8);
 	
-		$this->SetFont('','B',6);
+		$this->SetFont('','B',5);
 		$this->generarCabecera();
 		
 		
@@ -232,7 +232,7 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
 
 		$this->SetFillColor(54, 96, 146);
 		$this->SetTextColor(255,255,255);
-        $this->SetFont('','B',6);
+        $this->SetFont('','B',5);
 
 		$RowArray = array(
 				's0' => 'PARTIDA',
@@ -294,7 +294,7 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
 		$fill = !$fill;
 		$this->SetFillColor(255, 255, 255);
         $this->SetTextColor(0);
-        $this->SetFont('','',6);
+        $this->SetFont('','',5);
 
         /*if($this->objParam->getParametro('tipo_reporte')=="agr"){
         }*/
@@ -314,12 +314,12 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
 	    if(trim($val['sw_transaccional'])=="titular"){
 			$this->SetFillColor(189, 215, 238);
 	        $this->SetTextColor(0);
-	        $this->SetFont('','',6);
+	        $this->SetFont('','',5);
 	    }	
 	    else{
 			$this->SetFillColor(255, 255, 255);
 	        $this->SetTextColor(0);
-	        $this->SetFont('','',6);
+	        $this->SetFont('','',5);
 	    }
 
 		$RowArray = array(
@@ -389,7 +389,7 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
     $conf_tabletextcolor=array(array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255),array(255, 255, 255));
     $this->tabletextcolor=$conf_tabletextcolor;
 
-    $this->SetFont('','B',6);
+    $this->SetFont('','B',5);
     $this->SetFillColor(54, 96, 146);
     $RowArray = array( 
                 'espacio' => 'TOTAL: ', 
