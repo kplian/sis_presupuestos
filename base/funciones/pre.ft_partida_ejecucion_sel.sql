@@ -2914,6 +2914,317 @@ p_ejecucion as (
       return v_consulta;
       
     end;
+   /*********************************
+  #TRANSACCION:  'PRE_RFORMUPERIO_SEL' 
+  #DESCRIPCION: Reporte partida ejecucion con adquisiciones
+  #AUTOR:   JJA
+  #FECHA:   08/12/2020
+  ***********************************/
+
+   elsif(p_transaccion='PRE_RFORMUPERIO_SEL')then  --ETR-1877
+
+
+    begin
+     
+           v_filtro_tipo_cc = ' 0=0 and ';
+           IF v_parametros.id_tipo_cc is not NULL THEN
+                WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
+                  SELECT tcc.id_tipo_cc, tcc.id_tipo_cc_fk
+                  FROM param.ttipo_cc tcc
+                  WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
+                UNION ALL
+                  SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
+                  FROM tipo_cc_rec lrec 
+                  INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
+                  where tcc2.estado_reg = 'activo'
+                )
+              SELECT  pxp.list(id_tipo_cc::varchar) 
+                into 
+                  v_tipo_cc
+              FROM tipo_cc_rec;
+              
+      
+           END IF; 
+                 
+          v_consulta:='with  RECURSIVE partida as(
+                      select
+                      distinct
+                        par.id_partida,
+                        par.id_partida_fk,
+                        (par.codigo||'' - ''||par.nombre_partida)::varchar as partida,
+                        (par.id_partida)::text as orden,
+                        par.id_gestion,
+                        ''   ''::text as nivel,
+                        par.sw_transaccional,
+                            1 as nivel2,
+                        case when par1.tipo = ''gasto'' then ''gasto'' else ''recurso'' end as tipo_bandera
+                      from pre.tpartida par
+                      left join pre.tpartida par1 on par1.id_partida_fk=par.id_partida
+                      where par.id_partida_fk is NULL and par.estado_reg=''activo''
+                      
+                      UNION ALL
+                      select
+                        par.id_partida,
+                        par.id_partida_fk,
+                        (par.codigo||'' - ''||par.nombre_partida)::varchar as parida,
+                        (par1.orden||'' -> ''||par.id_partida)::text as orden,
+                        par.id_gestion,
+                        (par1.nivel||''    '')::text as nivel,
+                        par.sw_transaccional,
+                        par1.nivel2+1 as nivel2,
+                        case when par.tipo = ''gasto'' then ''gasto'' else ''recurso'' end as tipo_bandera
+                      from pre.tpartida par
+                      join partida par1 on par1.id_partida=par.id_partida_fk
+                      --left join pre.tpartida par2 on par2.id_partida_fk=par.id_partida
+                      where par.id_partida_fk is not NULL and par.estado_reg=''activo''
+                      and par.sw_movimiento = ''presupuestaria''
+                    ) ,
+ 
+ 
+ 
+      formulacion as(
+                    select 
+                    case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
+                    per.periodo,
+                    par.tipo,
+                    case when tcc.control_techo=''si'' then tcc.codigo||'' - ''||tcc.descripcion else te.codigo_techo||'' - ''||te.descripcion_techo end as ceco_techo,
+                    sum(mcd.importe)::NUMERIC as importe,
+                    pres.estado as estado_presupuesto,
+                    ''Formulación'' as tipo_formulacion,
+                    '''' as estado_ajuste,
+                    g.gestion,
+                    ''memoria de calculo''::varchar as origen,
+                    g.id_gestion,
+                    tcc.id_tipo_cc,
+                    mc.obs,
+                    par.id_partida,
+                    par.id_partida_fk,
+                    tcc.codigo,
+                    case when per.periodo = 1 then sum(mcd.importe) else 0 end as enero,
+                    case when per.periodo = 2 then sum(mcd.importe) else 0 end as febrero,
+                    case when per.periodo = 3 then sum(mcd.importe) else 0 end as marzo,
+                    case when per.periodo = 4 then sum(mcd.importe) else 0 end as abril,
+                    case when per.periodo = 5 then sum(mcd.importe) else 0 end as mayo,
+                    case when per.periodo = 6 then sum(mcd.importe) else 0 end as junio,
+                    case when per.periodo = 7 then sum(mcd.importe) else 0 end as julio,
+                    case when per.periodo = 8 then sum(mcd.importe) else 0 end as agosto,
+                    case when per.periodo = 9 then sum(mcd.importe) else 0 end as septiembre,
+                    case when per.periodo = 10 then sum(mcd.importe) else 0 end as octubre,
+                    case when per.periodo = 11 then sum(mcd.importe) else 0 end as noviembre,
+                    case when per.periodo = 12 then sum(mcd.importe) else 0 end as diciembre,
+                    sum(mcd.importe) as formulado
+                    
+                    from pre.tmemoria_calculo mc
+                    join pre.tmemoria_det mcd on mcd.id_memoria_calculo=mc.id_memoria_calculo 
+                    join pre.tpartida par on par.id_partida=mc.id_partida
+                    join pre.tpresupuesto pres on pres.id_presupuesto=mc.id_presupuesto
+                    join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
+                    join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
+                    join param.vtipo_cc_techo te on te.id_tipo_cc=tcc.id_tipo_cc
+                    join param.tgestion g on g.id_gestion = cc.id_gestion
+                    join param.tperiodo per on per.id_periodo=mcd.id_periodo
+                    where mcd.importe != 0
+                    group by 
+                    per.periodo,
+                    par.tipo,
+                    tcc.control_techo,
+                    tcc.id_tipo_cc,
+                    te.id_tipo_cc_techo,
+                    te.codigo_techo,
+                    te.descripcion_techo,
+                    pres.estado,
+                    g.gestion,
+                    g.id_gestion,
+                    mc.obs,
+                    par.id_partida,
+                    tcc.codigo
+
+                    union all
+
+                    select 
+                    case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
+                    per.periodo,
+                    par.tipo,
+                    case when tcc.control_techo=''si'' then tcc.codigo||'' - ''||tcc.descripcion else te.codigo_techo||'' - ''||te.descripcion_techo end as ceco_techo,
+                    sum(ajd.importe)::NUMERIC as importe,
+                    pres.estado as estado_presupuesto,
+                    case when aj.tipo_ajuste=''incremento'' or aj.tipo_ajuste=''decremento'' then  aj.tipo_ajuste_formulacion 
+                        when aj.tipo_ajuste=''reformulacion'' then ''reformulacion''
+                        when aj.tipo_ajuste=''traspaso'' then ''traspaso'' else '''' end as tipo_formulacion,
+                    aj.estado as  estado_ajuste,
+                    g.gestion,
+                    ''Ajuste presupuestario''::varchar as origen,
+                    g.id_gestion,
+                    tcc.id_tipo_cc,
+                    aj.justificacion as obs,
+                    par.id_partida,
+                    par.id_partida_fk,
+                    tcc.codigo,
+                    case when per.periodo = 1 then sum(ajd.importe) else 0 end as enero,
+                    case when per.periodo = 2 then sum(ajd.importe) else 0 end as febrero,
+                    case when per.periodo = 3 then sum(ajd.importe) else 0 end as marzo,
+                    case when per.periodo = 4 then sum(ajd.importe) else 0 end as abril,
+                    case when per.periodo = 5 then sum(ajd.importe) else 0 end as mayo,
+                    case when per.periodo = 6 then sum(ajd.importe) else 0 end as junio,
+                    case when per.periodo = 7 then sum(ajd.importe) else 0 end as julio,
+                    case when per.periodo = 8 then sum(ajd.importe) else 0 end as agosto,
+                    case when per.periodo = 9 then sum(ajd.importe) else 0 end as septiembre,
+                    case when per.periodo = 10 then sum(ajd.importe) else 0 end as octubre,
+                    case when per.periodo = 11 then sum(ajd.importe) else 0 end as noviembre,
+                    case when per.periodo = 12 then sum(ajd.importe) else 0 end as diciembre,
+                    sum(ajd.importe) as formulado
+                    
+                    from pre.tajuste aj
+                    join pre.tajuste_det ajd on ajd.id_ajuste=aj.id_ajuste 
+                    join pre.tpartida par on par.id_partida=ajd.id_partida
+                    join pre.tpresupuesto pres on pres.id_presupuesto=ajd.id_presupuesto
+                    join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
+                    join param.ttipo_cc tcc on tcc.id_tipo_cc=cc.id_tipo_cc
+                    join param.vtipo_cc_raiz ra on ra.id_tipo_cc=tcc.id_tipo_cc
+                    join param.vtipo_cc_techo te on te.id_tipo_cc=tcc.id_tipo_cc
+                    join param.tgestion g on g.id_gestion = cc.id_gestion
+                    
+                    join param.tperiodo per on per.id_gestion=cc.id_gestion and per.periodo::integer=EXTRACT(MONTH from aj.fecha)::integer
+                    where aj.tipo_ajuste not IN(''rev_comprometido'',''inc_comprometido'')
+                    
+                    group by 
+                    per.periodo,
+                    par.tipo,
+                    tcc.control_techo,
+                    tcc.id_tipo_cc,
+                    te.id_tipo_cc_techo,
+                    te.codigo_techo,
+                    te.descripcion_techo,
+                    pres.estado,
+                    aj.tipo_ajuste,
+                    aj.tipo_ajuste_formulacion,
+                    aj.estado,
+                    g.gestion,
+                    g.id_gestion,
+                    aj.justificacion,
+                    par.id_partida,
+                    tcc.codigo) ,
+                    
+                    formulacion_total as(
+                    select 
+                    
+                      f.id_partida_fk,
+                      f.estado_presupuesto::varchar,
+                      f.tipo_formulacion::varchar,
+                      f.estado_ajuste::varchar,
+                      f.codigo,
+                      f.id_gestion,
+                      f.id_tipo_cc,
+                      sum(f.enero)::numeric as enero,
+                      sum(f.febrero)::numeric as febrero,
+                      sum(f.marzo)::numeric as marzo,
+                      sum(f.abril)::numeric as abril,
+                      sum(f.mayo)::numeric as mayo,
+                      sum(f.junio)::numeric as junio,
+                      sum(f.julio)::numeric as julio,
+                      sum(f.agosto)::numeric as agosto,
+                      sum(f.septiembre)::numeric as septiembre,
+                      sum(f.octubre)::numeric as octubre,
+                      sum(f.noviembre)::numeric as noviembre,
+                      sum(f.diciembre)::numeric as diciembre,
+                      sum(f.formulado)::numeric as formulado,
+                      f.tipo
+
+                      
+                      from formulacion f 
+                  
+                      group by 
+                       f.id_partida_fk,
+                         f.codigo,
+                         f.id_gestion,
+                      f.estado_presupuesto,
+                      f.tipo_formulacion,
+                      f.estado_ajuste,
+                      f.id_tipo_cc,
+                      f.tipo)';  
+                      
+
+
+           
+          if (v_parametros.tipo_reporte ='agr') THEN
+          
+                  v_consulta = v_consulta||'
+                    select 
+                      par.partida::varchar as partida,
+                      par.sw_transaccional::varchar,
+                      ''''::varchar as obs,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.enero) else sum(tp.enero) end::numeric as enero,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.febrero) else sum(tp.febrero) end::numeric as febrero,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.marzo) else sum(tp.marzo) end::numeric as marzo,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.abril) else sum(tp.abril) end::numeric as abril,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.mayo) else sum(tp.mayo) end::numeric as mayo,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.junio) else sum(tp.junio) end::numeric as junio,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.julio) else sum(tp.julio) end::numeric as julio,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.agosto) else sum(tp.agosto) end::numeric as agosto,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.septiembre) else sum(tp.septiembre) end::numeric as septiembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.octubre) else sum(tp.octubre) end::numeric as octubre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.noviembre) else sum(tp.noviembre) end::numeric as noviembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.diciembre) else sum(tp.diciembre) end::numeric as diciembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.formulado) else sum(tp.formulado) end::numeric as formulado,
+                      par.nivel::varchar as nivel
+                      from partida par 
+                      left join formulacion f on f.id_partida = par.id_partida and f.id_tipo_cc in ('||v_tipo_cc||') 
+                      left join formulacion_total tp on tp.id_partida_fk = par.id_partida and tp.id_tipo_cc in ('||v_tipo_cc||')
+                      where 
+                       case when par.sw_transaccional=''movimiento'' then f.formulado is not null  else tp.formulado is not null end 
+                       and
+                       ';
+                   v_consulta:=v_consulta||v_parametros.filtro;     
+                   v_consulta:=v_consulta||' group by 
+                                    par.nivel,par.partida,par.orden,
+                                    par.sw_transaccional,
+                                      par.nivel
+                                    order by par.orden asc ';
+          else
+                  v_consulta = v_consulta||'
+                    select 
+                      par.partida::varchar as partida,
+                      par.sw_transaccional::varchar,
+                      f.obs::varchar as obs,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.enero) else sum(tp.enero) end::numeric as enero,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.febrero) else sum(tp.febrero) end::numeric as febrero,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.marzo) else sum(tp.marzo) end::numeric as marzo,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.abril) else sum(tp.abril) end::numeric as abril,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.mayo) else sum(tp.mayo) end::numeric as mayo,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.junio) else sum(tp.junio) end::numeric as junio,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.julio) else sum(tp.julio) end::numeric as julio,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.agosto) else sum(tp.agosto) end::numeric as agosto,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.septiembre) else sum(tp.septiembre) end::numeric as septiembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.octubre) else sum(tp.octubre) end::numeric as octubre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.noviembre) else sum(tp.noviembre) end::numeric as noviembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.diciembre) else sum(tp.diciembre) end::numeric as diciembre,
+                      case when par.sw_transaccional=''movimiento'' then sum(f.formulado) else sum(tp.formulado) end::numeric as formulado,
+                      par.nivel::varchar as nivel
+                      from partida par 
+                      left join formulacion f on f.id_partida = par.id_partida and f.id_tipo_cc in ('||v_tipo_cc||') 
+                      left join formulacion_total tp on tp.id_partida_fk = par.id_partida and tp.id_tipo_cc in ('||v_tipo_cc||')
+                      where 
+                       case when par.sw_transaccional=''movimiento'' then f.formulado is not null  else tp.formulado is not null end 
+                       and
+                       ';
+                   v_consulta:=v_consulta||v_parametros.filtro; 
+                   v_consulta:=v_consulta||' group by 
+                                    f.obs,
+                                    par.nivel,par.partida,par.orden,
+                                    par.sw_transaccional,
+                                      par.nivel
+                                    order by par.orden asc ';
+          end if;            
+
+
+                                    
+                                    RAISE NOTICE 'NOTICE % ',v_consulta;
+                                    --raise exception 'error jonas gay %',v_consulta;
+                
+      return v_consulta;
+      
+    end;
   else
 
     raise exception 'Transaccion inexistente';

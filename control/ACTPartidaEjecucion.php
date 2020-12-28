@@ -21,6 +21,8 @@
    #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
 
    #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+   #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
+
 
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
@@ -37,6 +39,12 @@ require_once(dirname(__FILE__).'/../reportes/REjecucion2Xls.php');
 
 require_once(dirname(__FILE__).'/../reportes/REjecucionPeriodoAgrupadoXls.php');
 require_once(dirname(__FILE__).'/../reportes/REjecucionAgrupadoXls.php');
+
+require_once(dirname(__FILE__).'/../reportes/REFormuladoPeriodoXls.php');
+require_once(dirname(__FILE__).'/../reportes/REFormuladoXls.php');
+
+require_once(dirname(__FILE__).'/../reportes/REFormulacionPeriodoPDF.php');
+require_once(dirname(__FILE__).'/../reportes/REFormulacionPeriodoAgrupadoPDF.php');
 class ACTPartidaEjecucion extends ACTbase{    
             
     function listarPartidaEjecucion(){
@@ -514,6 +522,7 @@ class ACTPartidaEjecucion extends ACTbase{
         //$this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
         //$this->objParam->addParametro('fecha_fin', $this->objParam->getParametro('fecha_fin'));
         //$this->objParam->addParametro('id_gestion', $this->objParam->getParametro('id_gestion'));
+        $this->objParam->addParametro('tipo_reporte', $this->objParam->getParametro('tipo_reporte'));
 
 
         $this->objParam->addParametro('datos', $this->res->datos);
@@ -553,6 +562,104 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
+    function ReporteFormulacion(){ //#ETR-1877
+
+        $this->objParam->addFiltro(" (par.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
+
+        if($this->objParam->getParametro('tipo_formulacion')=="ratp"){
+           $this->objParam->addFiltro(" ( f.estado_presupuesto::varchar != ''aprobado'') "); 
+        }
+        if($this->objParam->getParametro('tipo_formulacion')=="ra"){
+           $this->objParam->addFiltro(" ( case when par.sw_transaccional=''movimiento'' then f.estado_presupuesto::varchar  = ''aprobado'' and f.estado_ajuste = '''' or (f.estado_ajuste = ''aprobado'' and 
+  f.tipo_formulacion = ''Formulación'')
+   else tp.estado_presupuesto::varchar  = ''aprobado'' and tp.estado_ajuste = '''' or (tp.estado_ajuste = ''aprobado'' and 
+  tp.tipo_formulacion = ''Formulación'')
+   end) "); 
+        }
+         if($this->objParam->getParametro('tipo_formulacion')=="rv"){
+           $this->objParam->addFiltro("  case when par.sw_transaccional=''movimiento'' then f.estado_presupuesto::varchar  = ''aprobado'' and f.estado_ajuste = '''' 
+ or (f.estado_ajuste = ''aprobado'' )
+   else tp.estado_presupuesto::varchar  = ''aprobado'' and tp.estado_ajuste = ''''
+   or (tp.estado_ajuste = ''aprobado'' )
+   end"); 
+        }
+
+
+        if($this->objParam->getParametro('tipo_partida')=="tpg"){
+            $this->objParam->addFiltro(" case when par.sw_transaccional=''movimiento'' then f.tipo = ''gasto'' else tp.tipo = ''gasto'' end ");   
+        }
+        if($this->objParam->getParametro('tipo_partida')=="tpr"){
+            $this->objParam->addFiltro(" case when par.sw_transaccional=''movimiento'' then f.tipo = ''recurso'' else tp.tipo = ''recurso'' end ");   
+        }
+
+        if($this->objParam->getParametro('periodicidad')=="si"){
+            $this->objFunc = $this->create('MODPartidaEjecucion');
+            $this->res = $this->objFunc->ReporteFormulacionPeriodo($this->objParam);
+        }
+        else{
+            $this->objFunc = $this->create('MODPartidaEjecucion');
+            $this->res = $this->objFunc->ReporteFormulacionPeriodo($this->objParam);
+        }
+
+
+        if($this->objParam->getParametro('exportar')=="xls"){
+
+            $titulo = 'Reporte Formulacion';
+            $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+            $nombreArchivo .= '.xls';
+            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+            $this->objParam->addParametro('tipo_reporte', $this->objParam->getParametro('tipo_reporte'));
+            $this->objParam->addParametro('tipo_formulacion', $this->objParam->getParametro('tipo_formulacion'));
+            $this->objParam->addParametro('ceco', $this->objParam->getParametro('ceco'));
+            $this->objParam->addParametro('gestion', $this->objParam->getParametro('gestion'));
+
+            $this->objParam->addParametro('datos', $this->res->datos);
+
+            if($this->objParam->getParametro('periodicidad')=="si"){
+                    $this->objReporteFormato = new REFormuladoPeriodoXls ($this->objParam);
+                    $this->objReporteFormato->generarDatos();
+                    $this->objReporteFormato->generarReporte();
+            }
+            else {
+                $this->objReporteFormato = new REFormuladoXls ($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+            }   
+        }
+        else{
+            $nombreArchivo = uniqid(md5(session_id()).'Egresos') . '.pdf'; 
+     
+            
+                $tamano = 'LETTER';
+                $orientacion = 'L';
+                $titulo = 'Consolidado';
+
+                $this->objParam->addParametro('orientacion',$orientacion);
+                $this->objParam->addParametro('tamano',$tamano);        
+                $this->objParam->addParametro('titulo_archivo',$titulo);    
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                
+                if($this->objParam->getParametro('tipo_reporte')=="agr"){
+                    $reporte = new REFormulacionPeriodoAgrupadoPDF($this->objParam); 
+                }else{
+                    $reporte = new REFormulacionPeriodoPDF($this->objParam);                 
+                }
+
+                $reporte->datosHeader($this->res->getDatos(),$this->objParam);
+       
+                $reporte->generarReporte();
+                $reporte->output($reporte->url_archivo,'F');
+            
+
+        }
+
+
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
 
 }
 
