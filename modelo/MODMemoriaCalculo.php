@@ -437,6 +437,7 @@ class MODMemoriaCalculo extends MODbase{
 		$this->setParametro('id_gestion', 'id_gestion','int4');
 		$this->setParametro('id_funcionario', 'id_funcionario','int4');
 		$this->setParametro('id_sesion', 'id_sesion','int4');
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -449,7 +450,9 @@ class MODMemoriaCalculo extends MODbase{
 		//Definicion de variables para ejecucion del procedimiento
 		$this->procedimiento='pre.ft_memoria_calculo_ime';
 		$this->transaccion='PRE_ACT_DAT';
-		$this->tipo_procedimiento='IME';				
+		$this->tipo_procedimiento='IME';
+		
+		$this->setParametro('tipo', 'tipo','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
