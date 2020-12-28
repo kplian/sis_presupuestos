@@ -22,6 +22,7 @@
    #ETR-1632 ENDETR     04/11/2020       JJA         Agregado de tramite y proveedor con movimiento comprometido en el reporte de ejecucion de inversiones
    #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
    #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
+   #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -683,6 +684,48 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('porcentaje_eje_form','numeric'); 
         $this->captura('porcentaje_eje_comp','numeric'); 
         $this->captura('sw_transaccional','varchar');
+        
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();	
+        //var_dump($this->consulta); exit;
+        //Devuelve la respuesta
+        return $this->respuesta;
+
+
+	}
+    function ReporteFormulacionPeriodo(){ //#ETR-1877
+
+        $this->procedimiento='pre.ft_partida_ejecucion_sel';
+        $this->transaccion='PRE_RFORMUPERIO_SEL';
+        $this->tipo_procedimiento='SEL';
+        $this-> setCount(false);
+
+		$this->setParametro('id_tipo_cc','id_tipo_cc','int4');  
+		$this->setParametro('id_gestion','id_gestion','int4');
+		$this->setParametro('tipo_reporte','tipo_reporte','varchar');
+		$this->setParametro('tipo_formulacion','tipo_formulacion','varchar');
+		$this->setParametro('periodicidad','periodicidad','varchar');
+		$this->setParametro('tipo_partida','tipo_partida','varchar');
+
+		$this->captura('partida','varchar');
+        $this->captura('sw_transaccional','varchar');
+        $this->captura('obs','varchar');
+
+        $this->captura('enero','numeric');
+        $this->captura('febrero','numeric');
+        $this->captura('marzo','numeric');
+        $this->captura('abril','numeric');
+        $this->captura('mayo','numeric');
+        $this->captura('junio','numeric');
+        $this->captura('julio','numeric');
+        $this->captura('agosto','numeric');
+        $this->captura('septiembre','numeric');
+        $this->captura('octubre','numeric');
+        $this->captura('noviembre','numeric');
+        $this->captura('diciembre','numeric');
+        $this->captura('formulado','numeric');
+        $this->captura('nivel','varchar');
         
         //Ejecuta la instruccion
         $this->armarConsulta();

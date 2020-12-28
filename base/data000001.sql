@@ -767,3 +767,7 @@ select pxp.f_insert_tgui ('Ejecución inversiones', 'Ejecución inversiones', 'E
 /*******************************************I-DAT-JJA-PRE-0-13/11/2020***********************************************/
 select pxp.f_insert_tgui ('Ejecución Centro de Costo por Componente', 'Ejecución Centro de Costo por Componente', 'EJECENCOSCOM', 'si', 22, 'sis_presupuestos/reportes/formulario/Filtro_ejecución_centro_costo_componente.php', 3, '', 'Filtro_ejecución_centro_costo_componente', 'PRE');
 /*******************************************F-DAT-JJA-PRE-0-13/11/2020***********************************************/
+/*******************************************I-DAT-JJA-PRE-0-22/12/2020***********************************************/
+--#ETR-1877
+select pxp.f_insert_tgui ('Reporte Formulación', 'Reporte Formulacion', 'REPFORM', 'si', 23, 'sis_presupuestos/reportes/formulario/Filtro_memoria_calculo.php', 3, '', 'Filtro_memoria_calculo', 'PRE');
+/*******************************************F-DAT-JJA-PRE-0-22/12/2020***********************************************/

@@ -3894,3 +3894,7 @@ WITH vpartidas_homologadas AS(
 --#PRES-8 Reporte partida ejecucion con adquisiciones
 select pxp.f_insert_testructura_gui ('EJECENCOSCOM', 'REPPRE');
 /**********************************F-DEP-JJA-PRE-1-13/11/2020****************************************/
+/**********************************I-DEP-JJA-PRE-1-22/12/2020****************************************/ 
+--#ETR-1877
+select pxp.f_insert_testructura_gui ('REPFORM', 'REPPRE');
+/**********************************F-DEP-JJA-PRE-1-22/12/2020****************************************/
