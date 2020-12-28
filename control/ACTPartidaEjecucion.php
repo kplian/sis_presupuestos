@@ -567,7 +567,7 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addFiltro(" (par.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
 
         if($this->objParam->getParametro('tipo_formulacion')=="ratp"){
-           $this->objParam->addFiltro(" ( f.estado_presupuesto::varchar != ''aprobado'') "); 
+           $this->objParam->addFiltro(" ( f.estado_presupuesto::varchar != ''aprobado'' or f.estado_presupuesto::varchar IS NULL) "); 
         }
         if($this->objParam->getParametro('tipo_formulacion')=="ra"){
            $this->objParam->addFiltro(" ( case when par.sw_transaccional=''movimiento'' then f.estado_presupuesto::varchar  = ''aprobado'' and f.estado_ajuste = '''' or (f.estado_ajuste = ''aprobado'' and 
