@@ -127,7 +127,7 @@ class REFormulacionPeriodoPDF extends  ReportePDF {
         $this->SetFillColor(192,192,192, true);
         $this->Cell($width_c2, $height, ($this->param->getParametro('tipo_reporte')=="agr")?'Agrupado':'Detallado', 0, 0, 'L', false, '', 0, false, 'T', 'C');
         
-		$this->Ln(10.8);
+		$this->Ln(11.1);
 	
 		$this->SetFont('','B',5);
 		$this->generarCabecera();

@@ -214,7 +214,7 @@ class REFormulacionPeriodoAgrupadoPDF extends  ReportePDF {
 	}
     function generarCabecera(){
     	
-		$conf_par_tablewidths=array(73,15,15,15,15,15,15,15,15,15,15,15,15,16);
+		$conf_par_tablewidths=array(47,17,17,17,17,17,17,17,17,17,17,17,17,18);
         $conf_par_tablealigns=array('C','C','C','C','C','C','C','C','C','C','C','C','C','C','C');
         $conf_par_tablenumbers=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 
@@ -297,7 +297,7 @@ class REFormulacionPeriodoAgrupadoPDF extends  ReportePDF {
         /*if($this->objParam->getParametro('tipo_reporte')=="agr"){
         }*/
 	
-	    $conf_par_tablewidths=array(73,15,15,15,15,15,15,15,15,15,15,15,15,16);
+	    $conf_par_tablewidths=array(47,17,17,17,17,17,17,17,17,17,17,17,17,18);
         $conf_par_tablealigns=array('L','R','R','R','R','R','R','R','R','R','R','R','R','R');
         $conf_par_tablenumbers=array(0,2,2,0,2,0,0  ,0,0,0,0,0,0,0);
 		$conf_tableborders=array('LRB','LRB','LRB','LRB','LRB','LRB','LRB'  ,'LRB','LRB','LRB','LRB','LRB','LRB','LRB');
@@ -374,7 +374,7 @@ class REFormulacionPeriodoAgrupadoPDF extends  ReportePDF {
 
   function cerrarCuadroTotal(){
 
-	$this->tablewidths=array(73,15,15,15,15,15,15,15,15,15,15,15,15,16);
+	$conf_par_tablewidths=array(47,17,17,17,17,17,17,17,17,17,17,17,17,18);
     $this->tablealigns=array('L','R','R','R','R','R','R','R','R','R','R','R','R','R');
     $this->tablenumbers=array(0,2,2,0,2,0,0  ,0,0,0,0,0,0,0);	
     $this->tableborders=array('LRB','LRB','LRB','LRB','LRB','LRB','LRB'  ,'LRB','LRB','LRB','LRB','LRB','LRB','LRB');		
