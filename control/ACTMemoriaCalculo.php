@@ -497,8 +497,7 @@ class ACTMemoriaCalculo extends ACTbase{
 				$error = 'error';
 				$mensaje_completo .= $this->res->getMensaje() . " \n";						
 			}
-		}
-
+		} 
 		//armar respuesta en caso de exito o error en algunas tuplas
 		if ($error == 'error') {			
 			$this->mensajeRes=new Mensaje();
