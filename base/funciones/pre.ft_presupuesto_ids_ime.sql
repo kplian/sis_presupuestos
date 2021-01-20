@@ -39,6 +39,8 @@ DECLARE
     v_id_presupuesto		integer;
     v_id_presupuesto_sg		integer; --#10
     v_estado 				varchar; --#10
+    v_mensaje				varchar;
+    v_obligacion_pago		record;
 
 BEGIN
 
@@ -255,14 +257,68 @@ BEGIN
                     where p.id_presupuesto = v_id_presupuesto_sg; --#10
 
                    if(v_estado = 'borrador')then --#10
-                        delete from pre.tpresupuesto pr --#10
-                        where pr.id_presupuesto = v_id_presupuesto_sg; --#10
-
-                        delete from param.tcentro_costo cc --#10
-                        where cc.id_centro_costo = v_id_presupuesto_sg;  --#10
-
+                   
                         delete from pre.tpresupuesto_ids se
                         where se.id_presupuesto_dos = v_id_presupuesto_sg;
+                       
+                        delete from pre.tpresupuesto pr --#10
+                        where pr.id_presupuesto = v_id_presupuesto_sg; --#10
+						 
+                        
+                        
+                       
+                   		if exists (   select o.id_obligacion_pago,
+                                             o.estado,
+                                             d.estado_reg
+                                      from param.tcentro_costo c
+                                      inner join tes.tobligacion_det d on d.id_centro_costo = c.id_centro_costo
+                                      inner join tes.tobligacion_pago o on o.id_obligacion_pago = d.id_obligacion_pago
+                                      where c.id_centro_costo = v_id_presupuesto_sg	
+                                            and o.estado = 'anulado' and d.estado_reg = 'inactivo')then
+                                             select o.id_obligacion_pago,
+                                                     o.estado,
+                                                     d.estado_reg
+                                                     into 
+                                                     v_obligacion_pago
+                                                     
+                                              from param.tcentro_costo c
+                                              inner join tes.tobligacion_det d on d.id_centro_costo = c.id_centro_costo
+                                              inner join tes.tobligacion_pago o on o.id_obligacion_pago = d.id_obligacion_pago
+                                              where c.id_centro_costo = v_id_presupuesto_sg;
+                        
+                                            
+                                            update tes.tobligacion_det set
+                                            id_centro_costo = null
+                                            where id_obligacion_pago = v_obligacion_pago.id_obligacion_pago;
+                      
+                        end if;
+                        
+                        if exists ( select 1
+                                     from param.tcentro_costo c
+                                      inner join tes.tobligacion_det d on d.id_centro_costo = c.id_centro_costo
+                                      inner join tes.tobligacion_pago o on o.id_obligacion_pago = d.id_obligacion_pago
+                                      where c.id_centro_costo = v_id_presupuesto_sg	
+                                            and o.estado != 'anulado' )then
+                                            
+                                            
+                                          select o.num_tramite ||' - estado: '||o.estado into v_mensaje
+                                          from param.tcentro_costo c
+                                          inner join tes.tobligacion_det d on d.id_centro_costo = c.id_centro_costo
+                                          inner join tes.tobligacion_pago o on o.id_obligacion_pago = d.id_obligacion_pago
+                                          where c.id_centro_costo = v_id_presupuesto_sg;
+                        
+                        	raise exception 'Existe una Obigacion de Pago (Con contrato) %', v_mensaje;
+                       end if;
+                        
+                        
+                                            
+         
+                        
+                        delete from param.tcentro_costo cc --#10
+                        where cc.id_centro_costo = v_id_presupuesto_sg;  --#10
+                        
+                       
+
                    else --#10
                       raise exception 'Solo puede eliminar la replicacion si el presupuesto esta en estado (borrador)'; --#10
                    end if; --#10
@@ -337,4 +393,5 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
