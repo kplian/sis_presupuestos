@@ -14,3 +14,14 @@ select from pre.f_update_pres_part_eje(2021);
 /********************************************I-DAUP-MGM-PRE-1-19/01/2021********************************************/
 select from pre.f_update_pres_part_eje(2021);
 /********************************************F-DAUP-MGM-PRE-1-19/01/2021********************************************/
+
+/********************************************I-DAUP-YMR-PRE-2540-27/01/2021********************************************/
+update pre.tpresupuesto as p
+   set fecha_inicio_pres = TO_DATE('20210101', 'YYYYMMDD'),
+       fecha_fin_pres    = TO_DATE('20211231', 'YYYYMMDD'),
+       id_categoria_prog = 5
+  from param.vcentro_costo as cc
+ where p.id_centro_costo = cc.id_centro_costo
+   and cc.gestion = 2021
+   and p.id_categoria_prog is null;
+/********************************************F-DAUP-YMR-PRE-2540-27/01/2021********************************************/
