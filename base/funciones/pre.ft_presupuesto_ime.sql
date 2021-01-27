@@ -17,7 +17,7 @@ $body$
  HISTORIAL DE MODIFICACIONES:
 #ISSUE        FECHA        AUTOR        DESCRIPCION
   #25    ETR  02/01/2020   MMV          Añadir columna id_usuario_reg para clonar los presupuestos y centros de costos para la siguiente gestion
-
+  #26    ETR  27/01/2020   YMR          correcion de clonacion de presupuestos y centro de costo.
 ***************************************************************************/
 
 DECLARE
@@ -60,8 +60,8 @@ DECLARE
     v_tipo_noti 						varchar;
     v_titulo  							varchar;
     v_id_presupuesto_dos				integer;
-
-
+    --YMR 27/01/2021
+    v_gestion                           integer;
 
 BEGIN
 
@@ -383,11 +383,13 @@ BEGIN
            where ges.id_gestion = v_parametros.id_gestion;
 
 
-
+            --YMR 27/01/2021
            select
-              ges.id_gestion
+              ges.id_gestion,
+              ges.gestion
            into
-              v_id_gestion_destino
+              v_id_gestion_destino,
+              v_gestion
            from
            param.tgestion ges
            where       ges.gestion = v_registros_ges.gestion + 1
@@ -455,6 +457,7 @@ BEGIN
 
                      --TODO revisar el estado de formualcion del presupeusto ......        OJO
                      --  insertamos nuevo presupuesto
+                     --YMR 27/01/2021
                      INSERT INTO  pre.tpresupuesto
                                   (
                                     id_usuario_reg,
@@ -473,7 +476,9 @@ BEGIN
                                     cod_pry,
                                     cod_act,
                                     descripcion,
-                                    sw_consolidado
+                                    sw_consolidado,
+									fecha_inicio_pres,
+									fecha_fin_pres
                                   )
                                   VALUES (
                                     p_id_usuario,
@@ -492,7 +497,9 @@ BEGIN
                                     v_registros.cod_pry,
                                     v_registros.cod_act,
                                     v_registros.descripcion,
-                                    v_registros.sw_consolidado
+                                    v_registros.sw_consolidado,
+									TO_DATE(concat(v_gestion,'0101'),'YYYYMMDD'),
+									TO_DATE(concat(v_gestion,'1231'),'YYYYMMDD')
                                   )RETURNING id_presupuesto into v_id_presupuesto;
 
                                   INSERT INTO pre.tpresupuesto_ids (id_presupuesto_uno, id_presupuesto_dos, sw_cambio_gestion,id_usuario_reg )
