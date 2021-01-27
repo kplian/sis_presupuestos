@@ -469,9 +469,8 @@ Phx.vista.Presupuesto=Ext.extend(Phx.gridInterfaz,{
 		'id_estado_wf','nro_tramite','id_proceso_wf',
 		'desc_tipo_presupuesto','descripcion','movimiento_tipo_pres',
 		'id_gestion','obs_wf','sw_consolidado','codigo_categoria','id_categoria_prog','mov_pres','momento_pres','id_uo','codigo_uo','nombre_uo','id_tipo_cc','desc_tcc',
-		{ name:'fecha_inicio_pres', type: 'date'},
-		{ name:'fecha_fin_pres', type: 'date'}
-
+        {name:'fecha_inicio_pres', type: 'date',dateFormat:'Y-m-d'},
+        {name:'fecha_fin_pres', type: 'date',dateFormat:'Y-m-d'}
 	],
 	
 	
