@@ -46,7 +46,7 @@ BEGIN
             JOIN pre.tpresupuesto pres on pres.id_presupuesto=mc.id_presupuesto
             JOIN pre.tpartida p on p.id_partida=mc.id_partida
             WHERE 
-            cc.gestion=p_id_gestion and pres.estado='aprobado' and mc.importe_total>0
+            cc.gestion=p_id_gestion and pres.estado='borrador' and mc.importe_total>0
             AND cc.id_centro_costo!=11396
             
             union 
@@ -68,7 +68,7 @@ BEGIN
             JOIN pre.tpresupuesto pres on pres.id_presupuesto=pp.id_presupuesto
             JOIN pre.tpartida p on p.id_partida=pp.id_partida
             where 
-            cc.gestion=p_id_gestion  and pres.estado='aprobado' and pp.importe>0
+            cc.gestion=p_id_gestion  and pres.estado='borrador' and pp.importe>0
             AND cc.id_centro_costo!=11396
 
             union
@@ -132,7 +132,7 @@ BEGIN
         JOIN pre.tpresupuesto pres on pres.id_presupuesto=pp.id_presupuesto
         JOIN pre.tpartida p on p.id_partida=pp.id_partida
         where 
-        cc.gestion=p_id_gestion and pres.estado='aprobado' and pp.importe>0
+        cc.gestion=p_id_gestion and pres.estado='borrador' and pp.importe>0
         AND cc.id_centro_costo!=11396        
         order by cc.id_centro_costo,p.id_partida,pp.id_presup_partida
     ) LOOP
