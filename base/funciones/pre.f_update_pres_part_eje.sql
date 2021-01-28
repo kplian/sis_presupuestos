@@ -141,7 +141,7 @@ BEGIN
         SET importe=v_id_caja[v_sw]::numeric,importe_aprobado=v_id_caja[v_sw]::numeric
         WHERE id_presup_partida=v_part_eje.id_presup_partida;
         v_sw=v_sw+1;
-        raise notice 'total==>>%,%,%,%',v_part_eje.id_presup_partida,v_part_eje.id_centro_costo,v_part_eje.id_partida,v_id_caja[v_sw];
+        
 	END LOOP;
     
     
@@ -177,7 +177,7 @@ BEGIN
         v_sw_1,v_id_caja_v2[v_sw_1],v_part_eje_fin.id_partida_ejecucion;
         
 	END LOOP;*/
-    --raise notice 'total==>>%,%',v_part_eje.id_presup_partida,v_part_eje.id_centro_costo,v_part_eje.id_partida,;
+    --raise notice 'total==>>%,%';
 	RETURN v_total;
 
 
