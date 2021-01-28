@@ -145,7 +145,7 @@ BEGIN
 	END LOOP;
     
     
-     FOR v_part_eje_fin IN (
+    /* FOR v_part_eje_fin IN (
     	select 
         pe.id_partida_ejecucion,
         cc.codigo_tcc,
@@ -176,8 +176,8 @@ BEGIN
         v_part_eje_fin.id_partida,
         v_sw_1,v_id_caja_v2[v_sw_1],v_part_eje_fin.id_partida_ejecucion;
         
-	END LOOP;
-    raise notice 'total==>>%,%',v_sw,v_sw_1;
+	END LOOP;*/
+    --raise notice 'total==>>%,%';
 	RETURN v_total;
 
 
