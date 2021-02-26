@@ -42,6 +42,7 @@ $body$
  #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
  #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
  #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+ #ETR-3107          26/02/2021      JJA         Agregar filtros comprobante cierre y apertura
 ***************************************************************************/
 
 DECLARE
@@ -2408,6 +2409,7 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                         where act.codigo_actividad in (''IA'',''PE'') 
                         and comp.estado_reg=''validado''
                         and cta.nro_cuenta like ''1.1.3.04%''
+                        and comp.cbte_apertura=''no'' and comp.cbte_cierre=''no'' --#ETR-3107
                         and
                          ';
 
@@ -2455,6 +2457,7 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                       left join param.tproveedor prov on prov.id_proveedor=pep.id_proveedor 
                       where act.codigo_actividad in (''IA'',''PE'') and comp.estado_reg=''validado''
                       and par.codigo = ''25400''
+                      and comp.cbte_apertura=''no'' and comp.cbte_cierre=''no'' --#ETR-3107
                       and ';
 
           v_consulta:=v_consulta||v_parametros.filtro;  
