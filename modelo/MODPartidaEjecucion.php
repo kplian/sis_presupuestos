@@ -23,6 +23,7 @@
    #PRES-8          13/11/2020      JJA         Reporte partida ejecucion con adquisiciones
    #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
    #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
+   #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
 */
 
 class MODPartidaEjecucion extends MODbase{
@@ -484,7 +485,9 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('tipo_formulacion','varchar'); 
         $this->captura('estado_ajuste','varchar'); 
         $this->captura('gestion','varchar'); 
-        $this->captura('origen','varchar'); 
+        $this->captura('origen','varchar');
+        $this->captura('ceco_transaccional','varchar'); //#ETR-3221
+        $this->captura('partida','varchar'); //#ETR-3221
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
