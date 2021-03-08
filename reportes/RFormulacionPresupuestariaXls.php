@@ -2,6 +2,7 @@
 /**
 * HISTORIAL DE MODIFICACIONES:
   #PRES-6  ENDETR      28/09/2020       JJA            Reporte formulacion presupuestaria
+  #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
  */
 class RFormulacionPresupuestariaXls
 {
@@ -107,7 +108,7 @@ class RFormulacionPresupuestariaXls
         $this->docexcel->getActiveSheet()->getStyle('A3:J3')->applyFromArray($styleTitulosFecha);
         $this->docexcel->getActiveSheet()->mergeCells('A3:J3');
 
-        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(25);
+        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(70);
         $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(40);
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(30);
@@ -116,10 +117,12 @@ class RFormulacionPresupuestariaXls
         $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
         $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(30);
+        $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(70);
+        $this->docexcel->getActiveSheet()->getColumnDimension('L')->setWidth(80);
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A5:J5')->applyFromArray($styleTitulos2);
+        $this->docexcel->getActiveSheet()->getStyle('A5:L5')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A5:L5')->applyFromArray($styleTitulos2);
 
 
 
@@ -134,6 +137,9 @@ class RFormulacionPresupuestariaXls
         $this->docexcel->getActiveSheet()->setCellValue('H5','ESTADO AJUSTE');
         $this->docexcel->getActiveSheet()->setCellValue('I5','GESTION');
         $this->docexcel->getActiveSheet()->setCellValue('J5','ORIGEN');
+
+        $this->docexcel->getActiveSheet()->setCellValue('K5','CECO TRANSACCIONAL'); //#ETR-3221
+        $this->docexcel->getActiveSheet()->setCellValue('L5','PARTIDA'); //#ETR-3221
 
 
 
@@ -205,6 +211,9 @@ class RFormulacionPresupuestariaXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['estado_ajuste']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8, $fila, $value['gestion']);
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9, $fila, $value['origen']);
+
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10, $fila, $value['ceco_transaccional']); //#ETR-3221
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(11, $fila, $value['partida']); //#ETR-3221
             $fila++;
             $this->numero++;
         }

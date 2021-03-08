@@ -43,6 +43,7 @@ $body$
  #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
  #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
  #ETR-3107          26/02/2021      JJA         Agregar filtros comprobante cierre y apertura
+ #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
 ***************************************************************************/
 
 DECLARE
@@ -2082,16 +2083,16 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
     end;
 
     /*********************************
-  #TRANSACCION:  'PRE_RFORPRESUP_SEL' 
+  #TRANSACCION:  'PRE_RFORPRESUP_SEL'
   #DESCRIPCION: Reporte formulacion presupuestaria
   #AUTOR:   JUAN
   #FECHA:   28/09/2020
   ***********************************/
 
-  elsif(p_transaccion='PRE_RFORPRESUP_SEL')then --#PRES-6 
+  elsif(p_transaccion='PRE_RFORPRESUP_SEL')then --#PRES-6
 
     begin
-    
+
      v_filtro_tipo_cc = ' 0=0 and ';
      IF v_parametros.id_tipo_cc is not NULL THEN
           WITH RECURSIVE tipo_cc_rec (id_tipo_cc, id_tipo_cc_fk) AS (
@@ -2100,21 +2101,21 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
             WHERE tcc.id_tipo_cc = v_parametros.id_tipo_cc and tcc.estado_reg = 'activo'
           UNION ALL
             SELECT tcc2.id_tipo_cc, tcc2.id_tipo_cc_fk
-            FROM tipo_cc_rec lrec 
+            FROM tipo_cc_rec lrec
             INNER JOIN param.ttipo_cc tcc2 ON lrec.id_tipo_cc = tcc2.id_tipo_cc_fk
             where tcc2.estado_reg = 'activo'
           )
-        SELECT  pxp.list(id_tipo_cc::varchar) 
-          into 
+        SELECT  pxp.list(id_tipo_cc::varchar)
+          into
             v_tipo_cc
         FROM tipo_cc_rec;
-        
-        v_filtro_tipo_cc = ' f.id_tipo_cc in ('||v_tipo_cc||')  and ';        
+
+        v_filtro_tipo_cc = ' f.id_tipo_cc in ('||v_tipo_cc||')  and ';
      END IF;
-     
+
       v_consulta:=' with formulacion as(
-                    select 
-                    
+                    select
+
                     case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
                     per.periodo,
                     par.tipo,
@@ -2126,9 +2127,11 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                     g.gestion,
                     ''memoria de calculo''::varchar as origen,
                     g.id_gestion,
-                    tcc.id_tipo_cc
+                    tcc.id_tipo_cc,
+                    tcc.codigo||'' - ''||tcc.descripcion as ceco_transaccional, --#ETR-3221,
+                    par.codigo||'' - ''||par.nombre_partida::varchar as partida --#ETR-3221
                     from pre.tmemoria_calculo mc
-                    join pre.tmemoria_det mcd on mcd.id_memoria_calculo=mc.id_memoria_calculo 
+                    join pre.tmemoria_det mcd on mcd.id_memoria_calculo=mc.id_memoria_calculo
                     join pre.tpartida par on par.id_partida=mc.id_partida
                     join pre.tpresupuesto pres on pres.id_presupuesto=mc.id_presupuesto
                     join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
@@ -2138,7 +2141,7 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                     join param.tgestion g on g.id_gestion = cc.id_gestion
                     join param.tperiodo per on per.id_periodo=mcd.id_periodo
                     where mcd.importe != 0
-                    group by 
+                    group by
                     per.periodo,
                     par.tipo,
                     tcc.control_techo,
@@ -2148,27 +2151,33 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                     te.descripcion_techo,
                     pres.estado,
                     g.gestion,
-                    g.id_gestion
+                    g.id_gestion,
+                    tcc.codigo, --#ETR-3221
+                    tcc.descripcion, --#ETR-3221
+                    par.codigo, --#ETR-3221
+                    par.nombre_partida --#ETR-3221
 
                     union all
 
-                    select 
+                    select
                     case when tcc.control_techo=''si'' then tcc.id_tipo_cc else te.id_tipo_cc_techo end as id_tipo_cc_techo,
                     per.periodo,
                     par.tipo,
                     case when tcc.control_techo=''si'' then tcc.codigo||'' - ''||tcc.descripcion else te.codigo_techo||'' - ''||te.descripcion_techo end as ceco_techo,
                     sum(ajd.importe)::NUMERIC as importe,
                     pres.estado as estado_presupuesto,
-                    case when aj.tipo_ajuste=''incremento'' or aj.tipo_ajuste=''decremento'' then  aj.tipo_ajuste_formulacion 
+                    case when aj.tipo_ajuste=''incremento'' or aj.tipo_ajuste=''decremento'' then  aj.tipo_ajuste_formulacion
                         when aj.tipo_ajuste=''reformulacion'' then ''reformulacion''
                         when aj.tipo_ajuste=''traspaso'' then ''traspaso'' else '''' end as tipo_formulacion,
                     aj.estado as  estado_ajuste,
                     g.gestion,
                     ''Ajuste presupuestario''::varchar as origen,
                     g.id_gestion,
-                    tcc.id_tipo_cc
+                    tcc.id_tipo_cc,
+                    tcc.codigo||'' - ''||tcc.descripcion as ceco_transaccional, --#ETR-3221
+                    par.codigo||'' - ''||par.nombre_partida::varchar as partida --#ETR-3221
                     from pre.tajuste aj
-                    join pre.tajuste_det ajd on ajd.id_ajuste=aj.id_ajuste 
+                    join pre.tajuste_det ajd on ajd.id_ajuste=aj.id_ajuste
                     join pre.tpartida par on par.id_partida=ajd.id_partida
                     join pre.tpresupuesto pres on pres.id_presupuesto=ajd.id_presupuesto
                     join param.tcentro_costo cc on cc.id_centro_costo=pres.id_presupuesto
@@ -2178,7 +2187,7 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                     join param.tgestion g on g.id_gestion = cc.id_gestion
                     join param.tperiodo per on per.id_gestion=cc.id_gestion and per.periodo::integer=EXTRACT(MONTH from aj.fecha)::integer
                     where aj.tipo_ajuste not IN(''rev_comprometido'',''inc_comprometido'')
-                    group by 
+                    group by
                     per.periodo,
                     par.tipo,
                     tcc.control_techo,
@@ -2191,12 +2200,16 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                     aj.tipo_ajuste_formulacion,
                     aj.estado,
                     g.gestion,
-                    g.id_gestion)
-                    
+                    g.id_gestion,
+                    tcc.codigo, --#ETR-3221
+                    tcc.descripcion, --#ETR-3221
+                    par.codigo, --#ETR-3221
+                    par.nombre_partida --#ETR-3221
+                    )
                     ';
-             
-           if(v_parametros.tipo_formulacion='presform')then   --#PRES-6  
-             v_consulta:=v_consulta||' select 
+
+           if(v_parametros.tipo_formulacion='presform')then   --#PRES-6
+             v_consulta:=v_consulta||' select
                       f.id_tipo_cc_techo::integer,
                       f.periodo::varchar,
                       f.tipo::varchar,
@@ -2206,18 +2219,20 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                       f.tipo_formulacion::varchar,
                       f.estado_ajuste::varchar,
                       f.gestion::varchar,
-                      f.origen::varchar
+                      f.origen::varchar,
+                      f.ceco_transaccional::varchar,
+                      f.partida::varchar
                       from formulacion f
                       where '||v_filtro_tipo_cc;
-                      
-             v_consulta:=v_consulta||v_parametros.filtro;   
-                      
-           end if;     
-           
-           if(v_parametros.tipo_formulacion='resform')then  --#PRES-6 
-           
+
+             v_consulta:=v_consulta||v_parametros.filtro;
+
+           end if;
+
+           if(v_parametros.tipo_formulacion='resform')then  --#PRES-6
+
                 v_consulta:=v_consulta||' ,formulacion2 AS(
-                            select 
+                            select
                             f.id_tipo_cc_techo::integer,
                             f.periodo::varchar,
                             f.tipo::varchar,
@@ -2225,7 +2240,7 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                             f.estado_presupuesto::varchar,
                             case when f.tipo_formulacion=''Formulación'' or f.tipo_formulacion=''formulacion'' then f.importe else 0 end formulacion,
                             case when f.tipo_formulacion=''reformulacion'' or f.tipo_formulacion=''Reformulación''  then f.importe else 0 end as reformulacion,
-                            case when f.tipo_formulacion=''Traspaso'' then f.importe else 0 end traspaso,
+                            case when upper(f.tipo_formulacion)=''TRASPASO'' then f.importe else 0 end traspaso, --#ETR-3221
                             case when f.tipo_formulacion = '''' or f.tipo_formulacion is null then f.importe else 0 end en_blanco,
                             f.tipo_formulacion::varchar,
                             f.estado_ajuste::varchar,
@@ -2235,31 +2250,31 @@ where  0 = 0 and   p.id_gestion= '||v_parametros.id_gestion||' and  p.id_partida
                             f.id_gestion
                             from formulacion f
                           )
-                          select 
+                          select
                           f.ceco_techo::varchar,
                           sum(formulacion)::numeric formulacion,
                           sum(reformulacion)::NUMERIC as reformulacion,
                           sum(traspaso)::NUMERIC  as traspaso,
                           sum(en_blanco)::NUMERIC::NUMERIC as en_blanco
 
-                          from formulacion2 f 
-                          
+                          from formulacion2 f
+
                           where f.estado_ajuste in ('''',''aprobado'') and
                                 f.estado_presupuesto in(''aprobado'') and
                                 '||v_filtro_tipo_cc;
-                
-               v_consulta:=v_consulta||v_parametros.filtro;     
-               v_consulta:=v_consulta||' group by f.ceco_techo ' ;        
-               
+
+               v_consulta:=v_consulta||v_parametros.filtro;
+               v_consulta:=v_consulta||' group by f.ceco_techo ' ;
+
                 raise notice 'notice %',v_consulta;
-  
+
             END IF;
 
-              
-    
-      
+
+
+
       return v_consulta;
-      
+
     end;
     /*********************************
   #TRANSACCION:  'PRE_REJEINVER_SEL' 
