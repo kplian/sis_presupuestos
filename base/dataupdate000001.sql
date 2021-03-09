@@ -37,3 +37,11 @@ select from pre.f_update_pres_part_eje(2021);
 /********************************************I-DAUP-MGM-PRE-1-29/01/2021********************************************/
 select from pre.f_update_pres_part_eje(2021);
 /********************************************F-DAUP-MGM-PRE-1-29/01/2021********************************************/
+
+
+/********************************************I-DAUP-MGM-PRE-ETR-3236-09/03/2021********************************************/
+--rollback
+--update pre.tpresup_partida set importe=793440,importe_aprobado=793440 where id_partida in (4166) and id_presupuesto in (11396) and id_presup_partida in (372401);
+--commit
+update pre.tpresup_partida set importe=0,importe_aprobado=0 where id_partida in (4166) and id_presupuesto in (11396) and id_presup_partida in (372401);
+/********************************************F-DAUP-MGM-PRE-ETR-3236-09/03/2021********************************************/
