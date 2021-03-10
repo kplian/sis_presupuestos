@@ -45,3 +45,14 @@ select from pre.f_update_pres_part_eje(2021);
 --commit
 update pre.tpresup_partida set importe=0,importe_aprobado=0 where id_partida in (4166) and id_presupuesto in (11396) and id_presup_partida in (372401);
 /********************************************F-DAUP-MGM-PRE-ETR-3236-09/03/2021********************************************/
+
+
+/********************************************I-DAUP-MGM-PRE-ETR-3236-10/03/2021********************************************/
+--rollback
+--UPDATE pre.tpartida_ejecucion SET monto=793440,monto_mb=793440,estado_reg='activo' WHERE id_partida_ejecucion=1641507 and id_partida= 4166 and id_presupuesto= 11396;
+--commit
+UPDATE pre.tpartida_ejecucion SET monto=0,monto_mb=0,estado_reg='inactivo' WHERE id_partida_ejecucion=1641507 and id_partida= 4166 and id_presupuesto= 11396;
+
+/********************************************F-DAUP-MGM-PRE-ETR-3236-10/03/2021********************************************/
+
+
