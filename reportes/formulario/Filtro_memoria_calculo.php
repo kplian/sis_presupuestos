@@ -83,6 +83,55 @@ header("content-type: text/javascript; charset=UTF-8");
             grid:true,
             form:true
             },
+            {
+                config: {
+                    name: 'id_partida',
+                    fieldLabel: 'Excluir partida ',
+                    allowBlank: true,
+                    emptyText: 'Partida...',
+                    blankText: 'Debe seleccionar una partida',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_presupuestos/control/PartidaEjecucion/listarPartidaPresupuestaria',
+                        //id: 'id_competencia_nivel',
+                        id: 'id_partida',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'p.id_partida,p.partida,codigo,nombre_partida',
+                            //field: 'competencia_nivel',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_partida', 'partida','codigo','nombre_partida'],
+                        remoteSort: true,
+                        baseParams: {par_filtro: 'codigo#nombre_partida'}
+                    }),
+                    valueField: 'id_partida',
+                    displayField: 'partida',
+                    //tpl: '<tpl for=".">  <div class="x-combo-list-item" >  <div class="awesomecombo-item {checked}"> <b>{tipo} </b> </div> <p>{competencia} </p> </div> </tpl>',
+                    tpl: '<tpl for=".">  <div class="x-combo-list-item" >  <div class="awesomecombo-item {checked}">{partida} </div>  </div> </tpl>',
+                    gdisplayField: 'partida',
+                    hiddenName: 'id_partida',
+                    forceSelection: true,
+                    typeAhead: false,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 300,
+                    queryDelay: 1000,
+                    anchor: '110%',
+                    gwidth: 180,
+                    minChars: 2,
+                    enableMultiSelect: true,
+                    /*renderer: function (value, p, record) {
+                        return String.format('{0}', (record.data['desc_competencia']) ? record.data['desc_competencia'] : '');
+                    }*/
+                },
+                type: 'AwesomeCombo',
+                id_grupo: 0,
+                filters: {pfiltro: 'partida', type: 'string'},
+                grid: true,
+                form: true
+            },
             { 
                 config:{
                     name:'tipo_formulacion',
@@ -236,6 +285,15 @@ header("content-type: text/javascript; charset=UTF-8");
         },
 
         iniciarEventos:function(){
+            this.Cmp.id_gestion.on('select',function(c,r,n){
+
+                console.log("ver gestion ",c.value);
+                this.Cmp.id_partida.reset();
+                this.Cmp.id_partida.store.baseParams.id_gestion = c.value;
+                this.Cmp.id_partida.modificado=true;
+
+
+            },this);
         },
 
         tipo : 'reporte',
