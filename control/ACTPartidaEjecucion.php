@@ -567,21 +567,21 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->objParam->addFiltro(" (par.id_gestion::integer  =  ".$this->objParam->getParametro('id_gestion')."::integer) ");   
 
         if($this->objParam->getParametro('tipo_formulacion')=="ratp"){
-           $this->objParam->addFiltro(" ( f.estado_presupuesto::varchar != ''aprobado'' or f.estado_presupuesto::varchar IS NULL) "); 
+           $this->objParam->addFiltro(" ( f.estado_presupuesto::varchar != ''aprobado'' or f.estado_presupuesto::varchar IS NULL) ");
         }
         if($this->objParam->getParametro('tipo_formulacion')=="ra"){
            $this->objParam->addFiltro(" ( case when par.sw_transaccional=''movimiento'' then f.estado_presupuesto::varchar  = ''aprobado'' and f.estado_ajuste = '''' or (f.estado_ajuste = ''aprobado'' and 
   f.tipo_formulacion = ''Formulación'')
    else tp.estado_presupuesto::varchar  = ''aprobado'' and tp.estado_ajuste = '''' or (tp.estado_ajuste = ''aprobado'' and 
   tp.tipo_formulacion = ''Formulación'')
-   end) "); 
+   end) ");
         }
          if($this->objParam->getParametro('tipo_formulacion')=="rv"){
            $this->objParam->addFiltro("  case when par.sw_transaccional=''movimiento'' then f.estado_presupuesto::varchar  = ''aprobado'' and f.estado_ajuste = '''' 
  or (f.estado_ajuste = ''aprobado'' )
    else tp.estado_presupuesto::varchar  = ''aprobado'' and tp.estado_ajuste = ''''
    or (tp.estado_ajuste = ''aprobado'' )
-   end"); 
+   end");
         }
 
 
@@ -591,6 +591,9 @@ class ACTPartidaEjecucion extends ACTbase{
         if($this->objParam->getParametro('tipo_partida')=="tpr"){
             $this->objParam->addFiltro(" case when par.sw_transaccional=''movimiento'' then f.tipo = ''recurso'' else tp.tipo = ''recurso'' end ");   
         }
+        /*if($this->objParam->getParametro('id_partida')){
+            $this->objParam->addFiltro(" (  par.id_partida not in ( ".$this->objParam->getParametro('id_partida')."  )   ) ");
+        }*/
 
         if($this->objParam->getParametro('periodicidad')=="si"){
             $this->objFunc = $this->create('MODPartidaEjecucion');
@@ -658,6 +661,25 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
+    function listarPartidaPresupuestaria(){
+       // $this->objParam->defecto('ordenacion','fecha, fecha_reg');
+        //$this->objParam->defecto('dir_ordenacion','asc');
+
+        if($this->objParam->getParametro('id_gestion')){
+            $this->objParam->addFiltro(" p.id_gestion::integer = ".$this->objParam->getParametro('id_gestion'));
+        }
+        if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte = new Reporte($this->objParam,$this);
+            $this->res = $this->objReporte->generarReporteListado('MODPartidaEjecucion','listarPartidaPresupuestaria');
+        } else{
+            $this->objFunc=$this->create('MODPartidaEjecucion');
+
+            $this->res=$this->objFunc->listarPartidaPresupuestaria($this->objParam);
+        }
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
 
