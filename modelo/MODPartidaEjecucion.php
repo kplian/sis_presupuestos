@@ -24,7 +24,9 @@
    #ETR-1823    ENDETR  17/11/2020     JJA     añadir una vista al detalle con trámites 
    #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
    #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
-*/
+   #ETR-3297          17/03/2021      JJA         Funcionalidad de excluir partidas del reporte formulacion de presupuestos
+
+ */
 
 class MODPartidaEjecucion extends MODbase{
 	
@@ -711,7 +713,9 @@ class MODPartidaEjecucion extends MODbase{
 		$this->setParametro('periodicidad','periodicidad','varchar');
 		$this->setParametro('tipo_partida','tipo_partida','varchar');
 
-		$this->captura('partida','varchar');
+        $this->setParametro('id_partida','id_partida','varchar');//#ETR-3297
+
+        $this->captura('partida','varchar');
         $this->captura('sw_transaccional','varchar');
         $this->captura('obs','varchar');
 
@@ -739,5 +743,30 @@ class MODPartidaEjecucion extends MODbase{
 
 
 	}
+
+
+    function listarPartidaPresupuestaria(){ //#ETR-3297
+        //Definicion de variables para ejecucion del procedimientp
+        $this->procedimiento='pre.ft_partida_ejecucion_sel';
+        $this->transaccion='PRE_PAREJPR_SEL';
+        $this->tipo_procedimiento='SEL';//tipo de transaccion
+
+        $this->setParametro('id_gestion','id_gestion','int4');
+
+
+        //Definicion de la lista del resultado del query
+        $this->captura('id_partida','int4');
+        $this->captura('partida','varchar');
+        $this->captura('codigo','varchar');
+        $this->captura('nombre_partida','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 }
 ?>
