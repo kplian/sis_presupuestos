@@ -57,362 +57,413 @@ UPDATE pre.tpartida_ejecucion SET monto=0,monto_mb=0,estado_reg='inactivo' WHERE
 
 
 /********************************************I-DAUP-MGM-PRE-ETR-3598-12/04/2021********************************************/
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743832;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743749;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743810;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743760;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743709;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743843;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743748;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743759;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743831;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743842;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743708;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743809;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743798;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743697;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743770;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743853;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743796;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743695;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743769;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743694;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743799;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743795;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743698;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743852;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743829;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743827;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743722;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743744;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743815;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743746;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743826;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743725;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743743;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743830;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743816;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743747;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743741;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743715;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743756;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743824;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743839;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743812;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743811;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743712;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743757;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743825;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743742;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743840;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743776;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743690;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743666;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743775;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743791;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743774;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743783;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743689;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743665;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743664;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743790;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743682;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743750;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743805;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743777;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743817;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743704;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743667;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743728;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743685;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743778;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743677;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743786;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743833;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743787;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743679;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743678;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743780;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743834;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743779;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743751;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743703;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743804;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743686;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743818;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743731;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743739;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743807;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743835;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743782;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743784;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743822;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743752;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743688;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743706;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743681;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743789;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743683;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743740;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743785;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743680;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743705;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743788;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743806;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743753;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743823;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743687;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743836;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743684;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743781;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743459;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743461;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743462;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743460;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743435;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743437;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743436;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743438;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743453;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743454;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743768;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743851;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743429;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743428;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743766;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743719;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743797;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743814;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743849;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743696;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743838;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743755;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743844;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743820;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743761;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743700;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743850;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743767;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743737;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743801;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743716;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743772;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743848;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743854;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743813;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743765;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743771;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743855;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743846;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743763;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743803;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743702;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743699;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743800;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743693;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743794;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743793;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743692;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743762;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743845;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743764;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743847;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744407;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744326;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743985;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743982;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743984;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743986;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743988;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743989;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743987;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743983;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743892;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743893;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744412;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744331;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744290;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744371;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744289;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744370;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743920;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743923;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743918;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743921;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743925;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743919;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743924;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1743922;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744411;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744330;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744409;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744328;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744085;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744088;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744087;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744089;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744084;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744082;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744086;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744083;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744390;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744401;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744259;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744309;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744376;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744295;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744262;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744352;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744390;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744401;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744271;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744320;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744344;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744270;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744260;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744308;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744341;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744377;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744351;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744296;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744389;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744263;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744402;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744321;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744338;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744350;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744372;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744291;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744399;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744257;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744258;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744305;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744386;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744269;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744339;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744318;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744304;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744255;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744349;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744292;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744373;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744319;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744268;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744336;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744385;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744256;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744400;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744337;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744362;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744252;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744253;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744335;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744358;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744254;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744334;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744354;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744273;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744333;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744277;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744281;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744392;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744404;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744380;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744311;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744299;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744323;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744300;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744403;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744381;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744322;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744310;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744391;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744313;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744394;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744302;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744315;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744383;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744396;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744384;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744397;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744393;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744303;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744312;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744316;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744026;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744024;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744028;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744014;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744016;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744036;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744029;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744015;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744027;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744025;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744017;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744037;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744022;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744032;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744020;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744034;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744030;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744018;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744035;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744031;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744021;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744033;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744019;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744023;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744388;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744307;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744288;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744363;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744298;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744379;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744369;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744282;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744327;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744408;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744406;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744317;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744325;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744329;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744293;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744374;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744410;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744398;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744359;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744342;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744261;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744276;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744278;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744353;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744272;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744357;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744368;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744266;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744346;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744265;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744347;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744287;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744264;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744267;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744286;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744345;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744367;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744348;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744283;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744274;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744355;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744360;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744279;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744364;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744284;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744365;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744275;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744361;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744356;
-UPDATE pre.tpartida_ejecucion  SET fecha='31/03/2021' WHERE id_partida_ejecucion=1744280;
+--rollback
+--"id_partida_ejecucion"	"fecha"
+--"1743428"	"05/01/2021"
+--"1743429"	"05/01/2021"
+--"1743435"	"08/01/2021"
+--"1743436"	"08/01/2021"
+--"1743437"	"08/01/2021"
+--"1743438"	"08/01/2021"
+--"1743453"	"14/01/2021"
+--"1743454"	"14/01/2021"
+--"1743459"	"24/01/2021"
+--"1743460"	"24/01/2021"
+--"1743461"	"24/01/2021"
+--"1743462"	"24/01/2021"
+--"1743664"	"31/01/2021"
+--"1743665"	"31/01/2021"
+--"1743666"	"31/01/2021"
+--"1743667"	"31/01/2021"
+--"1743677"	"31/01/2021"
+--"1743678"	"31/01/2021"
+--"1743679"	"31/01/2021"
+--"1743680"	"31/01/2021"
+--"1743681"	"31/01/2021"
+--"1743682"	"31/01/2021"
+--"1743683"	"31/01/2021"
+--"1743684"	"31/01/2021"
+--"1743685"	"31/01/2021"
+--"1743686"	"31/01/2021"
+--"1743687"	"31/01/2021"
+--"1743688"	"31/01/2021"
+--"1743689"	"31/01/2021"
+--"1743690"	"31/01/2021"
+--"1743692"	"31/01/2021"
+--"1743693"	"31/01/2021"
+--"1743694"	"31/01/2021"
+--"1743695"	"31/01/2021"
+--"1743696"	"31/01/2021"
+--"1743697"	"31/01/2021"
+--"1743698"	"31/01/2021"
+--"1743699"	"31/01/2021"
+--"1743700"	"31/01/2021"
+--"1743702"	"31/01/2021"
+--"1743703"	"31/01/2021"
+--"1743704"	"31/01/2021"
+--"1743705"	"31/01/2021"
+--"1743706"	"31/01/2021"
+--"1743708"	"31/01/2021"
+--"1743709"	"31/01/2021"
+--"1743712"	"31/01/2021"
+--"1743715"	"31/01/2021"
+--"1743716"	"31/01/2021"
+--"1743719"	"31/01/2021"
+--"1743722"	"31/01/2021"
+--"1743725"	"31/01/2021"
+--"1743728"	"31/01/2021"
+--"1743731"	"31/01/2021"
+--"1743737"	"31/01/2021"
+--"1743739"	"31/01/2021"
+--"1743740"	"31/01/2021"
+--"1743741"	"31/01/2021"
+--"1743742"	"31/01/2021"
+--"1743743"	"31/01/2021"
+--"1743744"	"31/01/2021"
+--"1743746"	"31/01/2021"
+--"1743747"	"31/01/2021"
+--"1743748"	"31/01/2021"
+--"1743749"	"31/01/2021"
+--"1743750"	"31/01/2021"
+--"1743751"	"31/01/2021"
+--"1743752"	"31/01/2021"
+--"1743753"	"31/01/2021"
+--"1743755"	"31/01/2021"
+--"1743756"	"31/01/2021"
+--"1743757"	"31/01/2021"
+--"1743759"	"31/01/2021"
+--"1743760"	"31/01/2021"
+--"1743761"	"31/01/2021"
+--"1743762"	"31/01/2021"
+--"1743763"	"31/01/2021"
+--"1743764"	"31/01/2021"
+--"1743765"	"31/01/2021"
+--"1743766"	"31/01/2021"
+--"1743767"	"31/01/2021"
+--"1743768"	"31/01/2021"
+--"1743769"	"31/01/2021"
+--"1743770"	"31/01/2021"
+--"1743771"	"31/01/2021"
+--"1743772"	"31/01/2021"
+--"1743774"	"31/01/2021"
+--"1743775"	"31/01/2021"
+--"1743776"	"31/01/2021"
+--"1743777"	"31/01/2021"
+--"1743778"	"31/01/2021"
+--"1743779"	"31/01/2021"
+--"1743780"	"31/01/2021"
+--"1743781"	"31/01/2021"
+--"1743782"	"31/01/2021"
+--"1743783"	"31/01/2021"
+--"1743784"	"31/01/2021"
+--"1743785"	"31/01/2021"
+--"1743786"	"31/01/2021"
+--"1743787"	"31/01/2021"
+--"1743788"	"31/01/2021"
+--"1743789"	"31/01/2021"
+--"1743790"	"31/01/2021"
+--"1743791"	"31/01/2021"
+--"1743793"	"31/01/2021"
+--"1743794"	"31/01/2021"
+--"1743795"	"31/01/2021"
+--"1743796"	"31/01/2021"
+--"1743797"	"31/01/2021"
+--"1743798"	"31/01/2021"
+--"1743799"	"31/01/2021"
+--"1743800"	"31/01/2021"
+--"1743801"	"31/01/2021"
+--"1743803"	"31/01/2021"
+--"1743804"	"31/01/2021"
+--"1743805"	"31/01/2021"
+--"1743806"	"31/01/2021"
+--"1743807"	"31/01/2021"
+--"1743809"	"31/01/2021"
+--"1743810"	"31/01/2021"
+--"1743811"	"31/01/2021"
+--"1743812"	"31/01/2021"
+--"1743813"	"31/01/2021"
+--"1743814"	"31/01/2021"
+--"1743815"	"31/01/2021"
+--"1743816"	"31/01/2021"
+--"1743817"	"31/01/2021"
+--"1743818"	"31/01/2021"
+--"1743820"	"31/01/2021"
+--"1743822"	"31/01/2021"
+--"1743823"	"31/01/2021"
+--"1743824"	"31/01/2021"
+--"1743825"	"31/01/2021"
+--"1743826"	"31/01/2021"
+--"1743827"	"31/01/2021"
+--"1743829"	"31/01/2021"
+--"1743830"	"31/01/2021"
+--"1743831"	"31/01/2021"
+--"1743832"	"31/01/2021"
+--"1743833"	"31/01/2021"
+--"1743834"	"31/01/2021"
+--"1743835"	"31/01/2021"
+--"1743836"	"31/01/2021"
+--"1743838"	"31/01/2021"
+--"1743839"	"31/01/2021"
+--"1743840"	"31/01/2021"
+--"1743842"	"31/01/2021"
+--"1743843"	"31/01/2021"
+--"1743844"	"31/01/2021"
+--"1743845"	"31/01/2021"
+--"1743846"	"31/01/2021"
+--"1743847"	"31/01/2021"
+--"1743848"	"31/01/2021"
+--"1743849"	"31/01/2021"
+--"1743850"	"31/01/2021"
+--"1743851"	"31/01/2021"
+--"1743852"	"31/01/2021"
+--"1743853"	"31/01/2021"
+--"1743854"	"31/01/2021"
+--"1743855"	"31/01/2021"
+--"1743892"	"01/02/2021"
+--"1743893"	"01/02/2021"
+--"1743918"	"10/02/2021"
+--"1743919"	"10/02/2021"
+--"1743920"	"10/02/2021"
+--"1743921"	"10/02/2021"
+--"1743922"	"10/02/2021"
+--"1743923"	"10/02/2021"
+--"1743924"	"10/02/2021"
+--"1743925"	"10/02/2021"
+--"1743982"	"14/02/2021"
+--"1743983"	"14/02/2021"
+--"1743984"	"14/02/2021"
+--"1743985"	"14/02/2021"
+--"1743986"	"14/02/2021"
+--"1743987"	"14/02/2021"
+--"1743988"	"14/02/2021"
+--"1743989"	"14/02/2021"
+--"1744014"	"23/02/2021"
+--"1744015"	"23/02/2021"
+--"1744016"	"23/02/2021"
+--"1744017"	"23/02/2021"
+--"1744018"	"23/02/2021"
+--"1744019"	"23/02/2021"
+--"1744020"	"23/02/2021"
+--"1744021"	"23/02/2021"
+--"1744022"	"23/02/2021"
+--"1744023"	"23/02/2021"
+--"1744024"	"23/02/2021"
+--"1744025"	"23/02/2021"
+--"1744026"	"23/02/2021"
+--"1744027"	"23/02/2021"
+--"1744028"	"23/02/2021"
+--"1744029"	"23/02/2021"
+--"1744030"	"23/02/2021"
+--"1744031"	"23/02/2021"
+--"1744032"	"23/02/2021"
+--"1744033"	"23/02/2021"
+--"1744034"	"23/02/2021"
+--"1744035"	"23/02/2021"
+--"1744036"	"23/02/2021"
+--"1744037"	"23/02/2021"
+--"1744082"	"25/02/2021"
+--"1744083"	"25/02/2021"
+--"1744084"	"25/02/2021"
+--"1744085"	"25/02/2021"
+--"1744086"	"25/02/2021"
+--"1744087"	"25/02/2021"
+--"1744088"	"25/02/2021"
+--"1744089"	"25/02/2021"
+--"1744252"	"28/02/2021"
+--"1744253"	"28/02/2021"
+--"1744254"	"28/02/2021"
+--"1744255"	"28/02/2021"
+--"1744256"	"28/02/2021"
+--"1744257"	"28/02/2021"
+--"1744258"	"28/02/2021"
+--"1744259"	"28/02/2021"
+--"1744260"	"28/02/2021"
+--"1744261"	"28/02/2021"
+--"1744262"	"28/02/2021"
+--"1744263"	"28/02/2021"
+--"1744264"	"28/02/2021"
+--"1744265"	"28/02/2021"
+--"1744266"	"28/02/2021"
+--"1744267"	"28/02/2021"
+--"1744268"	"28/02/2021"
+--"1744269"	"28/02/2021"
+--"1744270"	"28/02/2021"
+--"1744271"	"28/02/2021"
+--"1744272"	"28/02/2021"
+--"1744273"	"28/02/2021"
+--"1744274"	"28/02/2021"
+--"1744275"	"28/02/2021"
+--"1744276"	"28/02/2021"
+--"1744277"	"28/02/2021"
+--"1744278"	"28/02/2021"
+--"1744279"	"28/02/2021"
+--"1744280"	"28/02/2021"
+--"1744281"	"28/02/2021"
+--"1744282"	"28/02/2021"
+--"1744283"	"28/02/2021"
+--"1744284"	"28/02/2021"
+--"1744286"	"28/02/2021"
+--"1744287"	"28/02/2021"
+--"1744288"	"28/02/2021"
+--"1744289"	"28/02/2021"
+--"1744290"	"28/02/2021"
+--"1744291"	"28/02/2021"
+--"1744292"	"28/02/2021"
+--"1744293"	"28/02/2021"
+--"1744295"	"28/02/2021"
+--"1744296"	"28/02/2021"
+--"1744298"	"28/02/2021"
+--"1744299"	"28/02/2021"
+--"1744300"	"28/02/2021"
+--"1744302"	"28/02/2021"
+--"1744303"	"28/02/2021"
+--"1744304"	"28/02/2021"
+--"1744305"	"28/02/2021"
+--"1744307"	"28/02/2021"
+--"1744308"	"28/02/2021"
+--"1744309"	"28/02/2021"
+--"1744310"	"28/02/2021"
+--"1744311"	"28/02/2021"
+--"1744312"	"28/02/2021"
+--"1744313"	"28/02/2021"
+--"1744315"	"28/02/2021"
+--"1744316"	"28/02/2021"
+--"1744317"	"28/02/2021"
+--"1744318"	"28/02/2021"
+--"1744319"	"28/02/2021"
+--"1744320"	"28/02/2021"
+--"1744321"	"28/02/2021"
+--"1744322"	"28/02/2021"
+--"1744323"	"28/02/2021"
+--"1744325"	"28/02/2021"
+--"1744326"	"28/02/2021"
+--"1744327"	"28/02/2021"
+--"1744328"	"28/02/2021"
+--"1744329"	"28/02/2021"
+--"1744330"	"28/02/2021"
+--"1744331"	"28/02/2021"
+--"1744333"	"28/02/2021"
+--"1744334"	"28/02/2021"
+--"1744335"	"28/02/2021"
+--"1744336"	"28/02/2021"
+--"1744337"	"28/02/2021"
+--"1744338"	"28/02/2021"
+--"1744339"	"28/02/2021"
+--"1744340"	"28/02/2021"
+--"1744341"	"28/02/2021"
+--"1744342"	"28/02/2021"
+--"1744343"	"28/02/2021"
+--"1744344"	"28/02/2021"
+--"1744345"	"28/02/2021"
+--"1744346"	"28/02/2021"
+--"1744347"	"28/02/2021"
+--"1744348"	"28/02/2021"
+--"1744349"	"28/02/2021"
+--"1744350"	"28/02/2021"
+--"1744351"	"28/02/2021"
+--"1744352"	"28/02/2021"
+--"1744353"	"28/02/2021"
+--"1744354"	"28/02/2021"
+--"1744355"	"28/02/2021"
+--"1744356"	"28/02/2021"
+--"1744357"	"28/02/2021"
+--"1744358"	"28/02/2021"
+--"1744359"	"28/02/2021"
+--"1744360"	"28/02/2021"
+--"1744361"	"28/02/2021"
+--"1744362"	"28/02/2021"
+--"1744363"	"28/02/2021"
+--"1744364"	"28/02/2021"
+--"1744365"	"28/02/2021"
+--"1744367"	"28/02/2021"
+--"1744368"	"28/02/2021"
+--"1744369"	"28/02/2021"
+--"1744370"	"28/02/2021"
+--"1744371"	"28/02/2021"
+--"1744372"	"28/02/2021"
+--"1744373"	"28/02/2021"
+--"1744374"	"28/02/2021"
+--"1744376"	"28/02/2021"
+--"1744377"	"28/02/2021"
+--"1744379"	"28/02/2021"
+--"1744380"	"28/02/2021"
+--"1744381"	"28/02/2021"
+--"1744383"	"28/02/2021"
+--"1744384"	"28/02/2021"
+--"1744385"	"28/02/2021"
+--"1744386"	"28/02/2021"
+--"1744388"	"28/02/2021"
+--"1744389"	"28/02/2021"
+--"1744390"	"28/02/2021"
+--"1744391"	"28/02/2021"
+--"1744392"	"28/02/2021"
+--"1744393"	"28/02/2021"
+--"1744394"	"28/02/2021"
+--"1744396"	"28/02/2021"
+--"1744397"	"28/02/2021"
+--"1744398"	"28/02/2021"
+--"1744399"	"28/02/2021"
+--"1744400"	"28/02/2021"
+--"1744401"	"28/02/2021"
+--"1744402"	"28/02/2021"
+--"1744403"	"28/02/2021"
+--"1744404"	"28/02/2021"
+--"1744406"	"28/02/2021"
+--"1744407"	"28/02/2021"
+--"1744408"	"28/02/2021"
+--"1744409"	"28/02/2021"
+--"1744410"	"28/02/2021"
+--"1744411"	"28/02/2021"
+--"1744412"	"28/02/2021"
+--commit
+
+UPDATE pre.tpartida_ejecucion
+set fecha = '31/03/2021'::Date
+where id_partida_ejecucion in (1743832, 1743749, 1743810, 1743760, 1743709,
+  1743843, 1743748, 1743759, 1743831, 1743842, 1743708, 1743809, 1743798,
+  1743697, 1743770, 1743853, 1743796, 1743695, 1743769, 1743694, 1743799,
+  1743795, 1743698, 1743852, 1743829, 1743827, 1743722, 1743744, 1743815,
+  1743746, 1743826, 1743725, 1743743, 1743830, 1743816, 1743747, 1743741,
+  1743715, 1743756, 1743824, 1743839, 1743812, 1743811, 1743712, 1743757,
+  1743825, 1743742, 1743840, 1743776, 1743690, 1743666, 1743775, 1743791,
+  1743774, 1743783, 1743689, 1743665, 1743664, 1743790, 1743682, 1743750,
+  1743805, 1743777, 1743817, 1743704, 1743667, 1743728, 1743685, 1743778,
+  1743677, 1743786, 1743833, 1743787, 1743679, 1743678, 1743780, 1743834,
+  1743779, 1743751, 1743703, 1743804, 1743686, 1743818, 1743731, 1743739,
+  1743807, 1743835, 1743782, 1743784, 1743822, 1743752, 1743688, 1743706,
+  1743681, 1743789, 1743683, 1743740, 1743785, 1743680, 1743705, 1743788,
+  1743806, 1743753, 1743823, 1743687, 1743836, 1743684, 1743781, 1743459,
+  1743461, 1743462, 1743460, 1743435, 1743437, 1743436, 1743438, 1743453,
+  1743454, 1743768, 1743851, 1743429, 1743428, 1743766, 1743719, 1743797,
+  1743814, 1743849, 1743696, 1743838, 1743755, 1743844, 1743820, 1743761,
+  1743700, 1743850, 1743767, 1743737, 1743801, 1743716, 1743772, 1743848,
+  1743854, 1743813, 1743765, 1743771, 1743855, 1743846, 1743763, 1743803,
+  1743702, 1743699, 1743800, 1743693, 1743794, 1743793, 1743692, 1743762,
+  1743845, 1743764, 1743847, 1744407, 1744326, 1743985, 1743982, 1743984,
+  1743986, 1743988, 1743989, 1743987, 1743983, 1743892, 1743893, 1744412,
+  1744331, 1744290, 1744371, 1744289, 1744370, 1743920, 1743923, 1743918,
+  1743921, 1743925, 1743919, 1743924, 1743922, 1744411, 1744330, 1744409,
+  1744328, 1744085, 1744088, 1744087, 1744089, 1744084, 1744082, 1744086,
+  1744083, 1744390, 1744401, 1744259, 1744309, 1744376, 1744295, 1744262,
+  1744352, 1744390, 1744401, 1744271, 1744320, 1744344, 1744270, 1744260,
+  1744308, 1744341, 1744377, 1744351, 1744296, 1744389, 1744263, 1744402,
+  1744321, 1744338, 1744350, 1744372, 1744291, 1744399, 1744257, 1744258,
+  1744305, 1744386, 1744269, 1744339, 1744318, 1744304, 1744255, 1744349,
+  1744292, 1744373, 1744319, 1744268, 1744336, 1744385, 1744256, 1744400,
+  1744337, 1744362, 1744252, 1744253, 1744335, 1744358, 1744254, 1744334,
+  1744354, 1744273, 1744333, 1744277, 1744281, 1744392, 1744404, 1744380,
+  1744311, 1744299, 1744323, 1744300, 1744403, 1744381, 1744322, 1744310,
+  1744391, 1744313, 1744394, 1744302, 1744315, 1744383, 1744396, 1744384,
+  1744397, 1744393, 1744303, 1744312, 1744316, 1744026, 1744024, 1744028,
+  1744014, 1744016, 1744036, 1744029, 1744015, 1744027, 1744025, 1744017,
+  1744037, 1744022, 1744032, 1744020, 1744034, 1744030, 1744018, 1744035,
+  1744031, 1744021, 1744033, 1744019, 1744023, 1744388, 1744307, 1744288,
+  1744363, 1744298, 1744379, 1744369, 1744282, 1744327, 1744408, 1744406,
+  1744317, 1744325, 1744329, 1744293, 1744374, 1744410, 1744398, 1744359,
+  1744342, 1744261, 1744276, 1744278, 1744353, 1744272, 1744357, 1744368,
+  1744266, 1744346, 1744265, 1744347, 1744287, 1744264, 1744267, 1744286,
+  1744345, 1744367, 1744348, 1744283, 1744274, 1744355, 1744360, 1744279,
+  1744364, 1744284, 1744365, 1744275, 1744361, 1744356, 1744280,1744340,1744343)
 
 /********************************************F-DAUP-MGM-PRE-ETR-3598-12/04/2021********************************************/
 
