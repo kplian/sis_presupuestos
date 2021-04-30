@@ -476,3 +476,8 @@ update param.ttipo_cc set
 id_tipo_cc_fk = 1045
 where id_tipo_cc in (4064);
 /********************************************F-DAUP-MMV-PRE-ETR-3405-19/04/2021********************************************/
+
+/********************************************I-DAUP-EGS-PRE-ETR-3813-30/04/2021********************************************/
+-- Se ejecuto directo en base de datos por el apuro
+-- update pre.tajuste_det set id_ajuste = 3659 where id_ajuste = 3658;
+/********************************************F-DAUP-EGS-PRE-ETR-3813-30/04/2021********************************************/
