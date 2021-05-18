@@ -98,6 +98,8 @@ class MODPartidaEjecucion extends MODbase{
         $this->captura('desc_contrato','varchar');
         $this->captura('obs','varchar');
         $this->captura('tipo_ajuste_formulacion','varchar'); //#41
+        $this->captura('beneficiario','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
