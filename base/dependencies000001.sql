@@ -3995,3 +3995,124 @@ FROM param.vcentro_costo cec
          JOIN pre.ttipo_presupuesto tp ON tp.codigo::text = pre.tipo_pres::text;
 /**********************************F-DEP-EGS-SVF-3-1-28/04/2021****************************************/
 
+/**********************************I-DEP-YMR-PRE-3854-18/05/2021****************************************/
+--------------- #ETR-3854 ---------------
+
+DROP VIEW pre.vpartida_ejecucion;
+
+CREATE OR REPLACE VIEW pre.vpartida_ejecucion(
+    id_partida_ejecucion,
+    id_int_comprobante,
+    id_moneda,
+    moneda,
+    id_presupuesto,
+    desc_pres,
+    codigo_categoria,
+    id_partida,
+    codigo,
+    nombre_partida,
+    nro_tramite,
+    tipo_cambio,
+    columna_origen,
+    tipo_movimiento,
+    id_partida_ejecucion_fk,
+    estado_reg,
+    fecha,
+    egreso_mb,
+    ingreso_mb,
+    monto_mb,
+    monto,
+    valor_id_origen,
+    id_usuario_reg,
+    fecha_reg,
+    usuario_ai,
+    id_usuario_ai,
+    fecha_mod,
+    id_usuario_mod,
+    usr_reg,
+    usr_mod,
+    id_tipo_cc,
+    desc_tipo_cc,
+    nro_cbte,
+    id_proceso_wf,
+    monto_anticipo_mb,
+    monto_desc_anticipo_mb,
+    monto_iva_revertido_mb,
+    id_centro_costo,
+    glosa1,
+    glosa,
+    cantidad_descripcion,
+    id_gestion,
+    tipo_ajuste_formulacion, --#41
+    beneficiario) --#3854
+AS
+  SELECT pareje.id_partida_ejecucion,
+         pareje.id_int_comprobante,
+         pareje.id_moneda,
+         mon.moneda,
+         pareje.id_presupuesto,
+         pre.descripcion AS desc_pres,
+         cat.codigo_categoria,
+         pareje.id_partida,
+         par.codigo,
+         par.nombre_partida,
+         pareje.nro_tramite,
+         pareje.tipo_cambio,
+         pareje.columna_origen,
+         pareje.tipo_movimiento,
+         pareje.id_partida_ejecucion_fk,
+         pareje.estado_reg,
+         pareje.fecha,
+         CASE
+           WHEN par.tipo::text = 'gasto'::text THEN pareje.monto_mb
+           ELSE 0::numeric
+         END AS egreso_mb,
+         CASE
+           WHEN par.tipo::text = 'recurso'::text THEN pareje.monto_mb
+           ELSE 0::numeric
+         END AS ingreso_mb,
+         pareje.monto_mb,
+         pareje.monto,
+         pareje.valor_id_origen,
+         pareje.id_usuario_reg,
+         pareje.fecha_reg,
+         pareje.usuario_ai,
+         pareje.id_usuario_ai,
+         pareje.fecha_mod,
+         pareje.id_usuario_mod,
+         usu1.cuenta AS usr_reg,
+         usu2.cuenta AS usr_mod,
+         tcc.id_tipo_cc,
+         tcc.codigo AS desc_tipo_cc,
+         COALESCE(cbte.nro_cbte, ''::character varying) AS nro_cbte,
+         COALESCE(cbte.id_proceso_wf, pre.id_proceso_wf) AS id_proceso_wf,
+         COALESCE(pareje.monto_anticipo_mb, 0::numeric) AS monto_anticipo_mb,
+         COALESCE(pareje.monto_desc_anticipo_mb, 0::numeric) AS monto_desc_anticipo_mb,
+         COALESCE(pareje.monto_iva_revertido_mb, 0::numeric) AS monto_iva_revertido_mb,
+         cc.id_centro_costo,
+         cbte.glosa1,
+         pareje.glosa,
+         pareje.cantidad_descripcion,
+         cc.id_gestion,
+         pareje.tipo_ajuste_formulacion,
+         cbte.beneficiario
+  FROM pre.tpartida_ejecucion pareje
+       JOIN pre.tpresupuesto pre ON pre.id_presupuesto = pareje.id_presupuesto
+       JOIN param.tcentro_costo cc ON cc.id_centro_costo = pre.id_presupuesto
+       JOIN param.ttipo_cc tcc ON tcc.id_tipo_cc = cc.id_tipo_cc
+       JOIN pre.vcategoria_programatica cat ON cat.id_categoria_programatica = pre.id_categoria_prog
+       JOIN pre.tpartida par ON par.id_partida = pareje.id_partida
+       JOIN param.tmoneda mon ON mon.id_moneda = pareje.id_moneda
+       JOIN segu.tusuario usu1 ON usu1.id_usuario = pareje.id_usuario_reg
+       LEFT JOIN segu.tusuario usu2 ON usu2.id_usuario = pareje.id_usuario_mod
+       LEFT JOIN conta.tint_comprobante cbte ON cbte.id_int_comprobante = pareje.id_int_comprobante
+  WHERE pareje.monto <> 0::numeric;
+
+ALTER TABLE pre.vpartida_ejecucion
+    OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES, TRIGGER, TRUNCATE
+      ON pre.vpartida_ejecucion TO postgres;
+GRANT SELECT
+    ON pre.vpartida_ejecucion TO lectura;
+/**********************************F-DEP-YMR-PRE-3854-18/05/2021****************************************/

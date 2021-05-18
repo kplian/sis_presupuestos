@@ -483,6 +483,21 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 			grid: true,
 			form: true
 		},
+        {
+            config:{
+                name: 'beneficiario',
+                fieldLabel: 'Beneficiario',
+                allowBlank: true,
+                anchor: '80%',
+                gwidth: 300,
+                maxLength:1000,
+            },
+            type:'TextArea',
+            filters:{pfiltro:'beneficiario',type:'string'},
+            id_grupo:0,
+            grid:true,
+            form:true
+        },
 		{
 			config:{
 				name: 'tipo_cambio',
@@ -712,8 +727,8 @@ Phx.vista.PartidaEjecucion=Ext.extend(Phx.gridInterfaz,{
 		'total_pago',
 		'desc_contrato',
 		'obs',
-		'tipo_ajuste_formulacion' //#41
-		
+		'tipo_ajuste_formulacion', //#41
+        {name:'beneficiario', type: 'string'},
 	],
 	
 	imprimirCbte : function() {
