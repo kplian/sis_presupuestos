@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION pre.ft_partida_ejecucion_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -44,6 +42,7 @@ $body$
  #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
  #ETR-3107          26/02/2021      JJA         Agregar filtros comprobante cierre y apertura
  #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
+ #ETR-3854          18/05/2021      YMR      se agrego el campo beneficiario a la partida ejecucion
 ***************************************************************************/
 
 DECLARE
@@ -164,7 +163,8 @@ BEGIN
                                   obpg.total_pago::numeric as total_pago, -- #14
                                   obpg.desc_contrato::VARCHAR, -- #14
                                   obpg.obs::VARCHAR, -- #14
-                                  vpe.tipo_ajuste_formulacion --#41
+                                  vpe.tipo_ajuste_formulacion, --#41
+                                  vpe.beneficiario			--#3854
                           from pre.vpartida_ejecucion vpe
                           JOIN param.tcentro_costo cc ON cc.id_centro_costo = vpe.id_presupuesto --#38
                           LEFT join obligacionPago obpg on obpg.id_partida_ejecucion_com=vpe.id_partida_ejecucion -- #14
