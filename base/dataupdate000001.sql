@@ -481,3 +481,6 @@ where id_tipo_cc in (4064);
 -- Se ejecuto directo en base de datos por el apuro
 -- update pre.tajuste_det set id_ajuste = 3659 where id_ajuste = 3658;
 /********************************************F-DAUP-EGS-PRE-ETR-3813-30/04/2021********************************************/
+/********************************************I-DAUP-MGM-PRE-ETR-4270-15/06/2021********************************************/
+select from pre.f_update_pres_part_eje(2021);
+/********************************************F-DAUP-MGM-PRE-ETR-4270-15/06/2021********************************************/
