@@ -22,7 +22,7 @@
 
    #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
    #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
-
+    #ETR-4057          22/06/2021      JJA         Correccion de filtros de cecos de proyectos
 
 */
 require_once(dirname(__FILE__).'/../reportes/RIntegridadPresupuestaria.php');
@@ -185,12 +185,22 @@ class ACTPartidaEjecucion extends ACTbase{
             $this->objParam->addFiltro(" (pt.id_tipo_cc_techo::integer  =  ".$this->objParam->getParametro('id_tipo_cc_techo')."::integer) "); 
         }
         if($this->objParam->getParametro('origen')){ //#ETR-1599
+            //var_dump($this->objParam->getParametro('origen')); exit;
             if($this->objParam->getParametro('origen')=='ejecucion_comprometido_proyectos'){
-
-                 $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''comprometido_proyectos'')) "); 
-            }else{
-                 $this->objParam->addFiltro(" (pt.origen::varchar  =  ''".$this->objParam->getParametro('origen')."''::varchar) ");  
+                 $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''comprometido_proyectos'')) ");
             }
+            if($this->objParam->getParametro('origen')=='ejecucion_proyectos'){
+
+                $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'')) ");
+            }
+            if($this->objParam->getParametro('origen')=='ejecucion_proyectos_con_iva'){
+
+                $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''ejecucion_proyectos_con_iva'')) ");
+            }
+
+            /*else{
+                 $this->objParam->addFiltro(" (pt.origen::varchar  =  ''".$this->objParam->getParametro('origen')."''::varchar) ");  
+            }*/
 
         }
 
