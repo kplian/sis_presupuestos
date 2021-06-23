@@ -170,7 +170,7 @@ class ACTPartidaEjecucion extends ACTbase{
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
     //#11
-    function ReporteEjecucionProyecto(){ //#37
+    function ReporteEjecucionProyecto(){ //#ETR-4037
  
         if($this->objParam->getParametro('fecha_ini')){
             $this->objParam->addFiltro(" (pt.fecha::date  >= ''".$this->objParam->getParametro('fecha_ini')."''::date )");
@@ -185,17 +185,15 @@ class ACTPartidaEjecucion extends ACTbase{
             $this->objParam->addFiltro(" (pt.id_tipo_cc_techo::integer  =  ".$this->objParam->getParametro('id_tipo_cc_techo')."::integer) "); 
         }
         if($this->objParam->getParametro('origen')){ //#ETR-1599
-            //var_dump($this->objParam->getParametro('origen')); exit;
+
             if($this->objParam->getParametro('origen')=='ejecucion_comprometido_proyectos'){
-                 $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''comprometido_proyectos'')) ");
+                 $this->objParam->addFiltro(" pt.origen::varchar in (''ejecucion_proyectos''::varchar,''comprometido_proyectos''::varchar ) ");
             }
             if($this->objParam->getParametro('origen')=='ejecucion_proyectos'){
-
-                $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'')) ");
+                $this->objParam->addFiltro(" pt.origen::varchar in (''ejecucion_proyectos''::varchar ) ");
             }
             if($this->objParam->getParametro('origen')=='ejecucion_proyectos_con_iva'){
-
-                $this->objParam->addFiltro(" (pt.origen::varchar in (''ejecucion_proyectos'',''ejecucion_proyectos_con_iva'')) ");
+                $this->objParam->addFiltro(" pt.origen::varchar in (''ejecucion_proyectos''::varchar,''ejecucion_proyectos_con_iva''::varchar ) ");
             }
 
             /*else{
