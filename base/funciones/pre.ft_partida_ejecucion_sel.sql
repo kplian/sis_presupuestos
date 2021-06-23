@@ -1257,7 +1257,7 @@ BEGIN
 
   elsif(p_transaccion='PRE_EJEPRO_SEL')then --#37
 
-    begin
+begin
 
       --#45 consulta
       v_consulta:='with transaccion_proveedor as (
@@ -1363,8 +1363,9 @@ BEGIN
                     left join pre.tclasificacion_reporte_dw crr on crr.id_clasificacion_reporte_dw = pred.id_clasificacion_reporte_dw
                     left join pre.tclasificacion_reporte_dw crr1 on crr1.id_clasificacion_reporte_dw = crr.id_padre
                     left join pre.tclasificacion_reporte_dw crr2 on crr2.id_clasificacion_reporte_dw = crr1.id_padre                 
-
-                    group by 
+ 					where ra.ids::varchar like (''%{2568,1549%'') --#ETR-4057
+                    and cbte.cbte_apertura=''no'' --#ETR-4338
+                    group by
                     te.codigo_techo,
                     te.descripcion_techo,
                     te.codigo,
@@ -1386,13 +1387,13 @@ BEGIN
                     pep.proveedor,
                     te.id_tipo_cc_techo
                     having cbte.estado_reg=''validado''
-                    AND cta.nro_cuenta like (''1.1.3.04%'') 
+                    AND cta.nro_cuenta like (''1.1.3.04%'')
 
 
-                    
-                    
-                    )  
-                    select 
+
+
+                    )
+                    select
                     pt.ceco_techo::varchar,
                     pt.ceco::varchar,
                     pt.partida::varchar,
@@ -1405,14 +1406,14 @@ BEGIN
                     pt.monto_mb::numeric,
                     pt.nro_tramite::varchar,
                     origen::varchar
-                    
+
                     from ProyectoTransaccion pt
                     where  ';
 
     v_consulta:=v_consulta||v_parametros.filtro;
---raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
-      return v_consulta;
-    end;
+raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
+return v_consulta;
+end;
     /*********************************
   #TRANSACCION:  'PRE_PARCEN_SEL' #46
   #DESCRIPCION: Reporte de ejecucion de proyectos
