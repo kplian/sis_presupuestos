@@ -1251,7 +1251,6 @@ end if;
                                                             where '||v_filtro;
 return v_consulta;
 end;
-
     /*********************************
   #TRANSACCION:  'PRE_EJEPRO_SEL' #37
   #DESCRIPCION: Reporte de ejecucion de proyectos
@@ -1415,9 +1414,10 @@ begin
                     where  ';
 
     v_consulta:=v_consulta||v_parametros.filtro;
-raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
+--raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
 return v_consulta;
 end;
+
     /*********************************
   #TRANSACCION:  'PRE_PARCEN_SEL' #46
   #DESCRIPCION: Reporte de ejecucion de proyectos
