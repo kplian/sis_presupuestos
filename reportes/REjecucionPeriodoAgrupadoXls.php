@@ -3,6 +3,7 @@
 * HISTORIAL DE MODIFICACIONES:
    #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
    #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+   #ETR-4575           13/07/2021     JJA        Excluir partida del reporte ejecucion presupuestaria
  */
 class REjecucionPeriodoAgrupadoXls
 {
@@ -349,12 +350,20 @@ class REjecucionPeriodoAgrupadoXls
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(14, $fila, number_format($noviembre,2,",","."));
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(15, $fila, number_format($diciembre,2,",","."));
 
-
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(16, $fila, number_format($ejecutado,2,",","."));
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
 
-    
+            if($formulado<=0){//#ETR-4575
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila,  number_format(0,2,",",".")." %");
+            }else{
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
+            }
+            if($comprometido<=0){
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, number_format(0,2,",",".")." %");
+
+            }else{
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
+            }
+
     }
     function generarReporte(){
 

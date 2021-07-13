@@ -47,6 +47,8 @@ $body$
  #ETR-3854          18/05/2021      YMR      se agrego el campo beneficiario a la partida ejecucion
  #ETR-4057          22/06/2021      JJA         Correccion de filtros de cecos de proyectos
  #ETR-4338	        22/06/2021      JJA        Adicionar filtro de comprobantes de cierre
+
+ #ETR-4575           13/07/2021      JJA        Excluir partida del reporte ejecucion presupuestaria
 ***************************************************************************/
 
 DECLARE
@@ -1251,6 +1253,7 @@ end if;
                                                             where '||v_filtro;
 return v_consulta;
 end;
+
     /*********************************
   #TRANSACCION:  'PRE_EJEPRO_SEL' #37
   #DESCRIPCION: Reporte de ejecucion de proyectos
@@ -1417,7 +1420,6 @@ begin
 --raise notice 'notice %',v_parametros.filtro; raise exception 'error %',v_parametros.filtro;
 return v_consulta;
 end;
-
     /*********************************
   #TRANSACCION:  'PRE_PARCEN_SEL' #46
   #DESCRIPCION: Reporte de ejecucion de proyectos
@@ -2532,6 +2534,10 @@ end if;
         v_filtro_tipo_cc = ' (cc.id_tipo_cc in('||v_tipo_cc||') '||v_filtro_tipo_reporte||'   ) AND   ';
 END IF;
 
+     if(v_parametros.id_partida='')then --#ETR-4575
+     v_parametros.id_partida=0;
+end if;
+
           v_consulta:='  with RECURSIVE partida as(
   select
     par.id_partida,
@@ -2586,8 +2592,11 @@ p_ejecucion as (
          inner join pre.tpartida par on par.id_partida = pe.id_partida
          inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
 
-         where  cc.id_gestion='||v_parametros.id_gestion||' and '||v_filtro_tipo_cc||'
+         where
 
+         cc.id_gestion='||v_parametros.id_gestion||' and '||v_filtro_tipo_cc||'
+
+         pe.id_partida not in ('||v_parametros.id_partida||') and --#ETR-4575
 
          case when pe.fecha::date > coalesce ('''||v_parametros.fecha_ini||''',''01-01-1991'' )::date   then 0=0 else pe.fecha::date >= '''||v_parametros.fecha_ini||'''::date  end
          and
@@ -2646,7 +2655,8 @@ p_ejecucion as (
   case when par.sw_transaccional=''movimiento'' then pe.octubre else pe1.octubre end as octubre,
   case when par.sw_transaccional=''movimiento'' then pe.noviembre else pe1.noviembre end as noviembre,
   case when par.sw_transaccional=''movimiento'' then pe.diciembre else pe1.diciembre end as diciembre,
-  case when par.sw_transaccional=''movimiento'' then pe.ejecutado else pe1.ejecutado end as ejecutado
+  case when par.sw_transaccional=''movimiento'' then pe.ejecutado else pe1.ejecutado end as ejecutado,
+  par.id_partida
   from partida par
 
   left join p_ejecucion pe on pe.id_partida = par.id_partida and par.sw_transaccional=''movimiento''
@@ -2682,7 +2692,9 @@ p_ejecucion as (
   case when sum(par.formulado) > 0 and  par.sw_transaccional = ''titular'' then   sum(par.ejecutado)/sum(par.formulado) else NULL end::numeric porcentaje_eje_form,
   case when sum(par.comprometido) > 0 then   sum(par.ejecutado)/sum(par.comprometido) else NULL end::numeric porcentaje_eje_comp,
   par.sw_transaccional::varchar as sw_transaccional
-  from partida2 par
+
+    from partida2 par
+
   where ';
 
         v_consulta:=v_consulta||v_parametros.filtro||'   group by
@@ -2737,6 +2749,11 @@ end if;
         v_filtro_tipo_cc = ' (cc.id_tipo_cc in('||v_tipo_cc||') '||v_filtro_tipo_reporte||'   ) AND   ';
 END IF;
 
+
+     if(v_parametros.id_partida='')then --#ETR-4575
+     v_parametros.id_partida=0;
+end if;
+
           v_consulta:='  with RECURSIVE partida as(
   select
     par.id_partida,
@@ -2792,6 +2809,8 @@ p_ejecucion as (
          inner join param.tcentro_costo cc on cc.id_centro_costo = pe.id_presupuesto
 
          where  cc.id_gestion='||v_parametros.id_gestion||' and '||v_filtro_tipo_cc||'
+
+         par.id_partida not in ('||v_parametros.id_partida||')  and --#ETR-4575
 
 
          case when pe.fecha::date > coalesce ('''||v_parametros.fecha_ini||''',''01-01-1991'' )::date   then 0=0 else pe.fecha::date >= '''||v_parametros.fecha_ini||'''::date  end
@@ -2851,7 +2870,8 @@ p_ejecucion as (
   case when par.sw_transaccional=''movimiento'' then pe.octubre else pe1.octubre end as octubre,
   case when par.sw_transaccional=''movimiento'' then pe.noviembre else pe1.noviembre end as noviembre,
   case when par.sw_transaccional=''movimiento'' then pe.diciembre else pe1.diciembre end as diciembre,
-  case when par.sw_transaccional=''movimiento'' then pe.ejecutado else pe1.ejecutado end as ejecutado
+  case when par.sw_transaccional=''movimiento'' then pe.ejecutado else pe1.ejecutado end as ejecutado,
+  par.id_partida
   from partida par
 
   left join p_ejecucion pe on pe.id_partida = par.id_partida and par.sw_transaccional=''movimiento''
@@ -2887,6 +2907,7 @@ p_ejecucion as (
   case when sum(par.comprometido) > 0 then   sum(par.ejecutado)/sum(par.comprometido) else NULL end::numeric porcentaje_eje_comp,
   par.sw_transaccional::varchar as sw_transaccional
   from partida2 par
+
   where ';
 
         v_consulta:=v_consulta||v_parametros.filtro||'   group by
@@ -2896,7 +2917,7 @@ p_ejecucion as (
         order by par.orden asc';
 
 
-      --raise NOTICE 'notice % ',v_consulta;
+      raise NOTICE 'notice % ',v_consulta;
       --raise EXCEPTION 'exception juan % ',v_consulta;
 return v_consulta;
 
