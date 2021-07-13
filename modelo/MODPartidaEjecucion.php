@@ -25,7 +25,7 @@
    #ETR-1877          22/12/2020      JJA         Reporte memoria de calculo
    #ETR-3221          08/03/2021      JJA         Cambios en filtros del reporte formulacion presupuestaria
    #ETR-3297          17/03/2021      JJA         Funcionalidad de excluir partidas del reporte formulacion de presupuestos
-
+   #ETR-4575           13/07/2021      JJA        Excluir partida del reporte ejecucion presupuestaria
  */
 
 class MODPartidaEjecucion extends MODbase{
@@ -622,7 +622,9 @@ class MODPartidaEjecucion extends MODbase{
 		  $this->setParametro('fecha_ini','fecha_ini','date');
 		  $this->setParametro('fecha_fin','fecha_fin','date');
 		  $this->setParametro('tipo_reporte','tipo_reporte','varchar');
-		  
+
+        $this->setParametro('id_partida','id_partida','varchar'); //#ETR-4575
+
 
 		$this->captura('partida','varchar');
 		
@@ -668,7 +670,8 @@ class MODPartidaEjecucion extends MODbase{
 		  $this->setParametro('fecha_ini','fecha_ini','date');
 		  $this->setParametro('fecha_fin','fecha_fin','date');
 		  $this->setParametro('tipo_reporte','tipo_reporte','varchar');
-		  
+
+            $this->setParametro('id_partida','id_partida','varchar');//#ETR-4575
 
 		$this->captura('partida','varchar');
 		

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  *@package pXP
  *@file    GenerarLibroBancos.php
@@ -8,6 +8,7 @@
 
   #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria 
   #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+  #ETR-4575           13/07/2021      JJA        Excluir partida del reporte ejecucion presupuestaria
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
@@ -90,6 +91,57 @@ Phx.vista.FormRepEjecucion = Ext.extend(Phx.frmInterfaz, {
    			id_grupo:0,
    			form:true
 	    },
+
+    {
+        config: {
+            name: 'id_partida',
+            fieldLabel: 'Excluir partida ',
+            allowBlank: true,
+            emptyText: 'Partida...',
+            blankText: 'Debe seleccionar una partida',
+            store: new Ext.data.JsonStore({
+                url: '../../sis_presupuestos/control/PartidaEjecucion/listarPartidaPresupuestaria',
+                //id: 'id_competencia_nivel',
+                id: 'id_partida',
+                root: 'datos',
+                sortInfo: {
+                    field: 'p.id_partida,p.partida,codigo,nombre_partida',
+                    //field: 'competencia_nivel',
+                    direction: 'ASC'
+                },
+                totalProperty: 'total',
+                fields: ['id_partida', 'partida','codigo','nombre_partida'],
+                remoteSort: true,
+                baseParams: {par_filtro: 'codigo#nombre_partida'}
+            }),
+            valueField: 'id_partida',
+            displayField: 'partida',
+            //tpl: '<tpl for=".">  <div class="x-combo-list-item" >  <div class="awesomecombo-item {checked}"> <b>{tipo} </b> </div> <p>{competencia} </p> </div> </tpl>',
+            tpl: '<tpl for=".">  <div class="x-combo-list-item" >  <div class="awesomecombo-item {checked}">{partida} </div>  </div> </tpl>',
+            gdisplayField: 'partida',
+            hiddenName: 'id_partida',
+            forceSelection: true,
+            typeAhead: false,
+            triggerAction: 'all',
+            lazyRender: true,
+            mode: 'remote',
+            pageSize: 300,
+            queryDelay: 1000,
+            anchor: '110%',
+            gwidth: 180,
+            minChars: 2,
+            enableMultiSelect: true,
+            /*renderer: function (value, p, record) {
+                return String.format('{0}', (record.data['desc_competencia']) ? record.data['desc_competencia'] : '');
+            }*/
+        },
+        type: 'AwesomeCombo',
+        id_grupo: 0,
+        filters: {pfiltro: 'partida', type: 'string'},
+        grid: true,
+        form: true
+    },
+
         {
             config:{
                 name:'tipo_reporte',
@@ -192,8 +244,10 @@ Phx.vista.FormRepEjecucion = Ext.extend(Phx.frmInterfaz, {
 					
 					this.Cmp.id_tipo_cc.reset();
 					this.Cmp.id_tipo_cc.modificado=true;
-					
-					
+
+                    this.Cmp.id_partida.reset();//#ETR-4575
+                    this.Cmp.id_partida.store.baseParams.id_gestion = c.value;//#ETR-4575
+                    this.Cmp.id_partida.modificado=true;//#ETR-4575
 					
 					this.Cmp.fecha_ini.setValue('01/01/'+r.data.gestion);
 					this.Cmp.fecha_fin.setValue('31/12/'+r.data.gestion);
@@ -201,6 +255,8 @@ Phx.vista.FormRepEjecucion = Ext.extend(Phx.frmInterfaz, {
 			},this);
 			
 		},
+
+
 		
 		
 		
