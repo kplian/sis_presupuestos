@@ -3,6 +3,7 @@
 * HISTORIAL DE MODIFICACIONES:
    #ETR-1815    ENDETR  18/11/2020     JJA     Reporte ejecucion Presupuestaria
    #ETR-1890          13/11/2020      JJA         Reporte partida ejecucion presupuestaria
+    #ETR-4575           13/07/2021     JJA        Excluir partida del reporte ejecucion presupuestaria
  */
 class REjecucionXls
 {
@@ -355,8 +356,19 @@ class REjecucionXls
 
 
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(17, $fila, number_format($ejecutado,2,",","."));
+
+            if($formulado<=0){//#ETR-4575
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila,  number_format(0,2,",",".")." %");
+        }else{
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(18, $fila,  number_format(($ejecutado/$formulado)*100,2,",",".")." %");
+        }
+        if($comprometido<=0){
+            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $fila, number_format(0,2,",",".")." %");
+
+        }else{
             $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(19, $fila, number_format(($ejecutado/$comprometido)*100,2,",",".")." %");
+        }
+
 
     
     }
