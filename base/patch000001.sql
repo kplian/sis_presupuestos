@@ -14,7 +14,7 @@ CREATE TABLE pre.tpresupuesto (
   id_centro_costo INTEGER NOT NULL,
   tipo_pres VARCHAR(30), 
   estado_pres VARCHAR(30), 
-  id_categoria_prog INTEGER, 
+  id_categoria_prog INTEGER DEFAULT 1, 
   id_parametro INTEGER, 
   id_fuente_financiamiento INTEGER, 
   id_concepto_colectivo INTEGER, 
@@ -22,51 +22,32 @@ CREATE TABLE pre.tpresupuesto (
   cod_prg VARCHAR(10), 
   cod_pry VARCHAR(10), 
   cod_act VARCHAR(10), 
+  estado VARCHAR DEFAULT 'borrador' NOT NULL,
+  nro_tramite VARCHAR,
+  id_proceso_wf INTEGER,
+  descripcion VARCHAR,
+  id_estado_wf INTEGER,
+  sw_consolidado VARCHAR(3) DEFAULT 'no' NOT NULL,
+  fecha_inicio_pres DATE,
+  fecha_fin_pres DATE,
   CONSTRAINT pk_tpresupuesto__id_presupuesto PRIMARY KEY (id_presupuesto)
 ) INHERITS (pxp.tbase)
 WITH (
   OIDS=TRUE
 );
 ALTER TABLE pre.tpresupuesto OWNER TO postgres;
+CREATE INDEX tpresupuesto_idx1 ON pre.tpresupuesto
+  USING btree (id_categoria_prog);
 
-
-CREATE TABLE pre.tpartida (
-  id_partida SERIAL, 
-  id_partida_fk integer, 
-  codigo VARCHAR(20), 
-  descripcion VARCHAR(200), 
-  tipo varchar(15),
-  CONSTRAINT tpartida__id_partida PRIMARY KEY(id_partida),
-  CONSTRAINT chk_tpartida__tipo check (tipo in ('trans','no_trans'))
-) INHERITS (pxp.tbase)
-WITH OIDS;
-ALTER TABLE pre.tpartida OWNER TO postgres;
-
-
-CREATE TABLE pre.tpresup_partida (
-  id_presup_partida  SERIAL NOT NULL,
-  id_presupuesto integer,
-  id_partida integer,
-  id_centro_costo integer,
-  id_moneda integer,
-  fecha_hora timestamp,
-  importe numeric(18,2),
-  tipo varchar(15),
-  CONSTRAINT tpresup_partida__id_presup_partida PRIMARY KEY (id_presup_partida),
-  CONSTRAINT chk_tpresup_partida__tipo check (tipo in ('presupuestado','ejecutado'))
-) INHERITS (pxp.tbase)
-WITH (
-  OIDS=TRUE
-);
-ALTER TABLE pre.tpresup_partida OWNER TO postgres;
-
-/***********************************F-SCP-GSS-PRE-31-23/11/2012*****************************************/
-
-
-
-/***********************************I-SCP-RAC-PRE-0-07/01/2013*****************************************/
-
-DROP TABLE pre.tpartida;  --elimina tabla creada para mantenimiento
+COMMENT ON COLUMN pre.tpresupuesto.sw_consolidado
+IS 'si el presupeusto es consolidado se base en presupuestos parte, si el presupuesto no es consolidado  se base en su propia memoria de calculo solamente';
+COMMENT ON COLUMN pre.tpresupuesto.tipo_pres
+IS '1 presupuesto de recursos,
+2 presupuesto de gasto,
+3 presupuesto de inversion,
+4 presupuesto de recursos no oficial,
+5 presupuesto de gastos no oficial
+6 presupuesto de inversio no oficial';
 
 CREATE TABLE pre.tpartida (
   id_partida SERIAL, 
@@ -96,6 +77,38 @@ IS 'recurso o gasto';
 
 COMMENT ON COLUMN pre.tpartida.sw_movimiento
 IS 'flujo, presupuestaria';
+  
+
+
+CREATE TABLE pre.tpresup_partida (
+  id_presup_partida  SERIAL NOT NULL,
+  id_presupuesto integer,
+  id_partida integer,
+  id_centro_costo integer,
+  id_moneda integer,
+  fecha_hora timestamp,
+  importe numeric(18,2) DEFAULT 0.00 NOT NULL,
+  tipo varchar(15),
+  importe_aprobado NUMERIC(18,2) DEFAULT 0.0 NOT NULL,
+  CONSTRAINT tpresup_partida__id_presup_partida PRIMARY KEY (id_presup_partida),
+  CONSTRAINT chk_tpresup_partida__tipo check (tipo in ('presupuestado','ejecutado'))
+) INHERITS (pxp.tbase)
+WITH (
+  OIDS=TRUE
+);
+ALTER TABLE pre.tpresup_partida OWNER TO postgres;
+
+COMMENT ON COLUMN pre.tpresup_partida.importe_aprobado
+IS 'este es el importe final que se traduce a partida ejecucion como formulado, segun WF en el estado vobopre, se determina el monto';
+
+/***********************************F-SCP-GSS-PRE-31-23/11/2012*****************************************/
+
+
+
+/***********************************I-SCP-RAC-PRE-0-07/01/2013*****************************************/
+
+
+
 
 CREATE TABLE pre.tconcepto_cta(
   id_concepto_cta SERIAL NOT NULL, 
@@ -124,6 +137,10 @@ CREATE TABLE pre.tpartida_ids (
   id_partida_uno INTEGER NOT NULL, 
   id_partida_dos INTEGER NOT NULL, 
   sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion'::character varying, 
+  insercion VARCHAR(20),
+  id_usuario_reg INTEGER,
+  fecha_reg DATE DEFAULT now(),
+  estado_reg VARCHAR(20) DEFAULT 'activo',
   CONSTRAINT tpartida_ids_pkey PRIMARY KEY(id_partida_uno)
 ) WITHOUT OIDS;
 /***********************************F-SCP-RCM-PRE-0-18/12/2013*****************************************/
@@ -133,6 +150,10 @@ CREATE TABLE pre.tpresupuesto_ids (
   id_presupuesto_uno INTEGER NOT NULL, 
   id_presupuesto_dos INTEGER NOT NULL, 
   sw_cambio_gestion VARCHAR(10) DEFAULT 'gestion'::character varying NOT NULL, 
+  insercion VARCHAR(20),
+  id_usuario_reg INTEGER,
+  fecha_reg DATE DEFAULT now(),
+  estado_reg VARCHAR(20) DEFAULT 'activo',
   CONSTRAINT tpresupuesto_ids_pkey PRIMARY KEY(id_presupuesto_uno)  
 ) WITH OIDS;
 
@@ -146,26 +167,16 @@ CREATE TABLE pre.tcategoria_programatica (
   id_categoria_programatica INTEGER NOT NULL, 
   id_gestion INTEGER NOT NULL, 
   descripcion TEXT NOT NULL, 
+  id_cp_programa INTEGER,
+  id_cp_proyecto INTEGER,
+  id_cp_actividad INTEGER,
+  id_cp_fuente_fin INTEGER,
+  id_cp_organismo_fin INTEGER,
   CONSTRAINT tcategoria_programatica_pkey PRIMARY KEY(id_categoria_programatica)) 
 INHERITS (pxp.tbase); 
 
 
 /***********************************F-SCP-JRR-PRE-0-02/01/2015*****************************************/
-
-/***********************************I-SCP-RAC-PRE-0-16/01/2015*****************************************/
-
---------------- SQL ---------------
-
-COMMENT ON COLUMN pre.tpresupuesto.tipo_pres
-IS '1 presupuesto de recursos,
-2 presupuesto de gasto,
-3 presupuesto de inversion,
-4 presupuesto de recursos no oficial,
-5 presupuesto de gastos no oficial
-6 presupuesto de inversio no oficial';
-
-/***********************************F-SCP-RAC-PRE-0-16/01/2015*****************************************/
-
 
 /***********************************I-SCP-RAC-PRE-0-01/12/2015*****************************************/
 
@@ -182,30 +193,83 @@ CREATE TABLE pre.tpartida_ejecucion (
   id_partida INTEGER,
   tipo_movimiento VARCHAR(30) NOT NULL,
   tipo_cambio NUMERIC,
+  fecha DATE DEFAULT now() NOT NULL,
+  id_int_comprobante INTEGER,
+  columna_origen VARCHAR,
+  valor_id_origen INTEGER,
+  id_partida_ejecucion_fk INTEGER,
+  monto_anticipo NUMERIC,
+  monto_anticipo_mb NUMERIC,
+  monto_desc_anticipo NUMERIC,
+  monto_desc_anticipo_mb NUMERIC,
+  glosa VARCHAR,
+  monto_iva_revertido NUMERIC,
+  monto_iva_revertido_mb NUMERIC,
+  obs VARCHAR,
+  descripcion TEXT,
+  cantidad_descripcion NUMERIC,
+  tabla_descripcion VARCHAR(100),
+  id_tabla_descripcion INTEGER,
+  importe_mb_bk NUMERIC,
+  marca_tmp VARCHAR,
+  tipo_ajuste_formulacion VARCHAR(50),
   PRIMARY KEY(id_partida_ejecucion)
 ) INHERITS (pxp.tbase)
 ;
 
 COMMENT ON COLUMN pre.tpartida_ejecucion.tipo_movimiento
 IS 'formulado, comprometido, devengado, pagao, traspaso, modificacion (los revertidos son numeros negativos)';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN fecha DATE DEFAULT now() NOT NULL;
-
 COMMENT ON COLUMN pre.tpartida_ejecucion.fecha
 IS 'fecha de ejecucion , no necesariamente igual a la fecha de registro';
 
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN id_int_comprobante INTEGER;
-
 COMMENT ON COLUMN pre.tpartida_ejecucion.id_int_comprobante
 IS 'identifica el cbte si existe';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.tipo_movimiento
+IS 'formulado, comprometido, ejecutado, pagado (los revertidos son numeros negativos)';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.columna_origen
+IS 'columna origen donde se hizo la llamada para la ejecucion';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.id_partida_ejecucion_fk
+IS 'id partida ejecuon referencial';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo
+IS 'monto anticipo en moenda original, (si la ejecucion correponde a un anticipo)';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo_mb
+IS 'monto anticipado en moenda base';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo
+IS 'descuentos de anticipo en moenda original (es el monto que no se ejecuta por que se desconto de un anticipo)';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo_mb
+IS 'monto descuento de anticipo en moenda base';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.glosa
+IS 'descripcion de la trasaccion';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido
+IS 'monto de iva revertido en moenda original';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido_mb
+IS 'monto iva revertido en moenda base';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.descripcion
+IS 'para lamacenar descripcion de la compra para ayudar en el analisis de costos';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.tabla_descripcion
+IS 'nombre de la tabla donde se origina la descripcion';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.id_tabla_descripcion
+IS 'Id de la tabla donde se origina la descripcion';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.importe_mb_bk
+IS 'para guardar dato modificado enmoneda bas';
+
+COMMENT ON COLUMN pre.tpartida_ejecucion.marca_tmp
+IS 'usado para operacion temporal para ajsutar datos manualmente';
+
 /***********************************F-SCP-RAC-PRE-0-01/12/2015*****************************************/
 
 
@@ -266,6 +330,8 @@ CREATE TABLE pre.ttipo_presupuesto (
   nombre VARCHAR,
   descripcion VARCHAR,
   movimiento VARCHAR(15) DEFAULT 'gasto' NOT NULL,
+  sw_oficial VARCHAR(4) DEFAULT 'si' NOT NULL,
+  codigo_alterno VARCHAR(10),
   PRIMARY KEY(id_tipo_presupuesto)
 ) INHERITS (pxp.tbase)
 
@@ -274,27 +340,12 @@ WITH (oids = false);
 COMMENT ON COLUMN pre.ttipo_presupuesto.movimiento
 IS 'gasto o recurso';
 
+COMMENT ON COLUMN pre.ttipo_presupuesto.sw_oficial
+IS 'si es oficial o no';
 
---------------- SQL ---------------
 
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN estado VARCHAR DEFAULT 'borrador' NOT NULL;
-  
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN nro_tramite VARCHAR;
-  
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN id_proceso_wf INTEGER;  
-  
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN descripcion VARCHAR;
+CREATE INDEX ttipo_presupuesto_idx ON pre.ttipo_presupuesto
+  USING btree (codigo COLLATE pg_catalog."default");
   
 /***********************************F-SCP-RAC-PRE-1-26/02/2016*****************************************/
 
@@ -307,6 +358,9 @@ CREATE TABLE pre.tmemoria_calculo (
   obs VARCHAR NOT NULL,
   importe_total NUMERIC(18,2) DEFAULT 0.00 NOT NULL,
   id_presupuesto INTEGER NOT NULL,
+  id_memoria_calculo_original INTEGER,
+  id_rel_pre INTEGER,
+  id_partida INTEGER,
   CONSTRAINT tmemoria_calculo_pkey PRIMARY KEY(id_memoria_calculo)
 ) INHERITS (pxp.tbase)
 
@@ -318,6 +372,15 @@ IS 'justificación del concepto';
 COMMENT ON COLUMN pre.tmemoria_calculo.importe_total
 IS 'importe totalen moneda base';
 
+COMMENT ON COLUMN pre.tmemoria_calculo.id_memoria_calculo_original
+IS 'hace referencia a la memoria calculo del presupuesto no oficial consolidado';
+
+COMMENT ON COLUMN pre.tmemoria_calculo.id_rel_pre
+IS 'hace referencia al la relacion de consolidado desde la que se origino la memoria consolidada, si es distinto de null sabemos que esta memoria es consolidada';
+
+COMMENT ON COLUMN pre.tmemoria_calculo.id_partida
+IS 'se llena con el triguer de memoria de calculo';
+
 --------------- SQL ---------------
 
 CREATE TABLE pre.tmemoria_det (
@@ -325,6 +388,9 @@ CREATE TABLE pre.tmemoria_det (
   importe NUMERIC(18,2) DEFAULT 0 NOT NULL,
   id_periodo INTEGER NOT NULL,
   id_memoria_calculo INTEGER NOT NULL,
+  unidad_medida VARCHAR(300) DEFAULT 'meses' NOT NULL,
+  cantidad_mem NUMERIC(18,2) DEFAULT 1 NOT NULL,
+  importe_unitario NUMERIC(18,2) DEFAULT 0 NOT NULL,
   PRIMARY KEY(id_memoria_det)
 ) INHERITS (pxp.tbase)
 
@@ -336,90 +402,10 @@ IS 'importe para el periodo en moneda base';
 COMMENT ON COLUMN pre.tmemoria_det.id_periodo
 IS 'periodo de la gestión al que corresponde el importe';
 
-
+COMMENT ON COLUMN pre.tmemoria_det.unidad_medida
+IS 'unidad de medida variable, revisar catologo para ver posibles valores';
 /***********************************F-SCP-RAC-PRE-0-07/03/2016*****************************************/
 
-
-/***********************************I-SCP-RAC-PRE-0-11/03/2016*****************************************/
-
-
-ALTER TABLE pre.tpresup_partida
-  ADD COLUMN importe_aprobado NUMERIC(18,2) DEFAULT 0.0 NOT NULL;
-
-COMMENT ON COLUMN pre.tpresup_partida.importe_aprobado
-IS 'este es el importe final que se traduce a partida ejecucion como formulado, segun WF en el estado vobopre, se determina el monto';
-
-update pre.tpresup_partida pp set
- importe = 0.00 
- where importe is null;
- 
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresup_partida
-  ALTER COLUMN importe SET DEFAULT 0.00;
-
-ALTER TABLE pre.tpresup_partida
-  ALTER COLUMN importe SET NOT NULL;
-
-/***********************************F-SCP-RAC-PRE-0-11/03/2016*****************************************/
-
-
-
-/***********************************I-SCP-RAC-PRE-0-16/03/2016*****************************************/
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN id_estado_wf INTEGER; 
-  
-   
-  
-/***********************************F-SCP-RAC-PRE-0-16/03/2016*****************************************/
-
-
-
-
-/***********************************I-SCP-RAC-PRE-0-23/03/2016*****************************************/
-
------------- SQL ---------------
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.tipo_movimiento
-IS 'formulado, comprometido, ejecutado, pagado (los revertidos son numeros negativos)';
-
-/***********************************F-SCP-RAC-PRE-0-23/03/2016*****************************************/
-
-
-
-/***********************************I-SCP-RAC-PRE-0-31/03/2016*****************************************/
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN columna_origen VARCHAR;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.columna_origen
-IS 'columna origen donde se hizo la llamada para la ejecucion';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN valor_id_origen INTEGER;
-
-/***********************************F-SCP-RAC-PRE-0-31/03/2016*****************************************/
-
-
-
-/*****************************I-SCP-RAC-PRE-0-04/04/2016*************/
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN id_partida_ejecucion_fk INTEGER;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.id_partida_ejecucion_fk
-IS 'id partida ejecuon referencial';
-
-/*****************************F-SCP-RAC-PRE-0-04/04/2016*************/
 
 
 
@@ -435,6 +421,12 @@ CREATE TABLE pre.tajuste (
   id_proceso_wf INTEGER,
   id_estado_wf INTEGER,
   tipo_ajuste VARCHAR(50) DEFAULT 'traspaso' NOT NULL,
+  fecha DATE DEFAULT now() NOT NULL,
+  id_gestion INTEGER,
+  importe_ajuste NUMERIC(18,2) DEFAULT 0 NOT NULL,
+  movimiento VARCHAR(30) DEFAULT 'gasto' NOT NULL,
+  id_moneda INTEGER NOT NULL,
+  tipo_ajuste_formulacion VARCHAR(50),
   PRIMARY KEY(id_ajuste)
 ) INHERITS (pxp.tbase)
 
@@ -446,6 +438,11 @@ IS '(traspaso) - de una partida a la misma de otro presupuesto pero del mismo ti
 (incremento) - solo aumenta en una partida
 (disminución) -  solo disminuye';
 
+COMMENT ON COLUMN pre.tajuste.movimiento
+IS 'recuros o gasto, este campo es para evitar que mexclen lso tipo de presupuesto';
+
+COMMENT ON COLUMN pre.tajuste.id_moneda
+IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupueusto comprometido,  si fue comprometido en dolares la moenda se tiene que mantener';
 
   
 --------------- SQL ---------------
@@ -456,6 +453,8 @@ CREATE TABLE pre.tajuste_det (
   id_partida INTEGER,
   id_partida_ejecucion INTEGER,
   importe NUMERIC(20,2) DEFAULT 0 NOT NULL,
+  tipo_ajuste VARCHAR(30) DEFAULT 'incremento' NOT NULL,
+  id_ajuste INTEGER NOT NULL,
   PRIMARY KEY(id_ajuste_det)
 ) INHERITS (pxp.tbase)
 
@@ -467,73 +466,15 @@ ALTER TABLE pre.tajuste_det
 COMMENT ON COLUMN pre.tajuste_det.importe
 IS 'los ajuste siempre se realizan en siempre en moneda base';
 
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste_det
-  ADD COLUMN tipo_ajuste VARCHAR(30) DEFAULT 'incremento' NOT NULL;
-
 COMMENT ON COLUMN pre.tajuste_det.tipo_ajuste
 IS 'incremento o decremento';
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste
-  ADD COLUMN fecha DATE DEFAULT now() NOT NULL;
-  
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste
-  ADD COLUMN "id_gestion" INTEGER;
 
 /*****************************F-SCP-RAC-PRE-0-13/04/2016*************/
 
 
 
 
-/*****************************I-SCP-RAC-PRE-0-14/04/2016*************/
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste
-  ADD COLUMN importe_ajuste NUMERIC(18,2) DEFAULT 0 NOT NULL;
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste
-  ADD COLUMN movimiento VARCHAR(30) DEFAULT 'gasto' NOT NULL;
-
-COMMENT ON COLUMN pre.tajuste.movimiento
-IS 'recuros o gasto, este campo es para evitar que mexclen lso tipo de presupuesto';
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste_det
-  ADD COLUMN id_ajuste INTEGER NOT NULL;
-
-/*****************************F-SCP-RAC-PRE-0-14/04/2016*************/
-
-
 /*****************************I-SCP-RAC-PRE-0-15/04/2016*************/
-
-ALTER TABLE pre.ttipo_presupuesto
-  ADD COLUMN sw_oficial VARCHAR(4) DEFAULT 'si' NOT NULL;
-
-COMMENT ON COLUMN pre.ttipo_presupuesto.sw_oficial
-IS 'si es oficial o no';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN sw_consolidado VARCHAR(3) DEFAULT 'no' NOT NULL;
-
-COMMENT ON COLUMN pre.tpresupuesto.sw_consolidado
-IS 'si el presupeusto es consolidado se base en presupuestos parte, si el presupuesto no es consolidado  se base en su propia memoria de calculo solamente';
-
-
---------------- SQL ---------------
 
 CREATE TABLE pre.trel_pre (
   id_rel_pre SERIAL,
@@ -552,30 +493,6 @@ IS 'borrador o procesado';
 /*****************************F-SCP-RAC-PRE-0-15/04/2016*************/
 
 
-
-
-
-/*****************************I-SCP-RAC-PRE-0-18/04/2016*************/
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tmemoria_calculo
-  ADD COLUMN id_memoria_calculo_original INTEGER;
-
-COMMENT ON COLUMN pre.tmemoria_calculo.id_memoria_calculo_original
-IS 'hace referencia a la memoria calculo del presupuesto no oficial consolidado';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tmemoria_calculo
-  ADD COLUMN id_rel_pre INTEGER;
-
-COMMENT ON COLUMN pre.tmemoria_calculo.id_rel_pre
-IS 'hace referencia al la relacion de consolidado desde la que se origino la memoria consolidada, si es distinto de null sabemos que esta memoria es consolidada';
-
-/*****************************F-SCP-RAC-PRE-0-18/04/2016*************/
 
 
 /*****************************I-SCP-RAC-PRE-0-19/04/2016*************/
@@ -644,49 +561,7 @@ CREATE TABLE pre.tcp_organismo_fin (
 WITH (oids = false);
 
 
-
---------------- SQL ---------------
-ALTER TABLE pre.tcategoria_programatica
-  ADD COLUMN id_cp_programa INTEGER;
-ALTER TABLE pre.tcategoria_programatica
-  ADD COLUMN id_cp_proyecto INTEGER;
-ALTER TABLE pre.tcategoria_programatica
-  ADD COLUMN id_cp_actividad INTEGER;
-ALTER TABLE pre.tcategoria_programatica
-  ADD COLUMN id_cp_fuente_fin INTEGER;
-ALTER TABLE pre.tcategoria_programatica
-  ADD COLUMN id_cp_organismo_fin INTEGER;
-
 /*****************************F-SCP-RAC-PRE-0-19/04/2016*************/
-
-
-/*****************************I-SCP-RAC-PRE-0-20/04/2016*************/
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tmemoria_det
-  ADD COLUMN unidad_medida VARCHAR(300) DEFAULT 'meses' NOT NULL;
-
-COMMENT ON COLUMN pre.tmemoria_det.unidad_medida
-IS 'unidad de medida variable, revisar catologo para ver posibles valores';
-
---------------- SQL ---------------
-ALTER TABLE pre.tmemoria_det
-  ADD COLUMN cantidad_mem NUMERIC(18,2) DEFAULT 1 NOT NULL;
-
-
-ALTER TABLE pre.tmemoria_det
-  ADD COLUMN importe_unitario NUMERIC(18,2) DEFAULT 0 NOT NULL;
-  
---------------- SQL ---------------
-
-ALTER TABLE pre.tmemoria_calculo
-  ADD COLUMN id_partida INTEGER;
-
-COMMENT ON COLUMN pre.tmemoria_calculo.id_partida
-IS 'se llena con el triguer de memoria de calculo';  
-
-/*****************************F-SCP-RAC-PRE-0-20/04/2016*************/
 
 
 /*****************************I-SCP-GVC-PRE-0-27/10/2016*************/
@@ -779,31 +654,38 @@ WITH (oids = false);
 
 /*****************************I-SCP-RAC-PRE-0-27/06/2017*************/
 --------------- SQL ---------------
-
 CREATE TABLE pre.tformulacion_tmp (
-  id_formulacion_tmp SERIAL,
-  gestion INTEGER,
-  codigo_presupuesto VARCHAR,
-  partida VARCHAR,
-  m1 NUMERIC,
-  m2 NUMERIC,
-  m3 NUMERIC,
-  m4 NUMERIC,
-  m5 NUMERIC,
-  m6 INTEGER,
-  m7 NUMERIC,
-  m8 NUMERIC,
-  m9 NUMERIC,
-  m10 NUMERIC,
-  m11 NUMERIC,
-  m12 NUMERIC,
+  id SERIAL NOT NULL,
+  nro VARCHAR(1000),
+  codigo VARCHAR(1000),
+  tipo1 VARCHAR(1000),
+  tipo2 VARCHAR(1000),
+  techo VARCHAR(1000),
+  carga VARCHAR(1000),
+  descripcion VARCHAR(1000),
+  m1 VARCHAR(1000),
+  m2 VARCHAR(1000),
+  m3 VARCHAR(1000),
+  m4 VARCHAR(1000),
+  m5 VARCHAR(1000),
+  m6 VARCHAR(1000),
+  m7 VARCHAR(1000),
+  m8 VARCHAR(1000),
+  m9 VARCHAR(1000),
+  m10 VARCHAR(1000),
+  m11 VARCHAR(1000),
+  m12 VARCHAR(1000),
+  presupuesto VARCHAR(1000),
   id_memoria_calculo INTEGER,
-  migrado VARCHAR(3) DEFAULT 'no'::character varying NOT NULL,
+  migrado VARCHAR(3) DEFAULT 'no'::character varying,
   obs VARCHAR,
-  CONSTRAINT tformulacion_tmp_pkey PRIMARY KEY(id_formulacion_tmp)
+  id_gestion INTEGER,
+  obs_memoria VARCHAR,
+  id_funcionario INTEGER,
+  id_sesion INTEGER,
+  CONSTRAINT tpresupuesto_tmp_pkey PRIMARY KEY(id)
 ) 
 WITH (oids = false);
-
 
 /*****************************F-SCP-RAC-PRE-0-27/06/2017*************/
 
@@ -950,104 +832,10 @@ ALTER TABLE pre.tunidad_ejecutora
 
 /*****************************F-SCP-FEA-PRE-0-25/07/2017*************/
 
-/*****************************I-SCP-FEA-PRE-0-01/08/2017*************/
-ALTER TABLE pre.tpresupuesto
-  ADD COLUMN fecha_inicio_pres DATE,
-  ADD COLUMN fecha_fin_pres DATE;
-/*****************************F-SCP-FEA-PRE-0-01/08/2017*************/
-
-
-
-/*****************************I-SCP-RAC-PRE-0-12/10/2017*************/
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tajuste
-  ADD COLUMN id_moneda INTEGER NOT NULL;
-
-COMMENT ON COLUMN pre.tajuste.id_moneda
-IS 'la moenda del ajuste, se agrega por la necesidad de ajsutar presupueusto comprometido,  si fue comprometido en dolares la moenda se tiene que mantener';
-
-/*****************************F-SCP-RAC-PRE-0-12/10/2017*************/
-
-
-
-/*****************************I-SCP-RAC-PRE-0-03/02/2018*************/
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.ttipo_presupuesto
-  ADD COLUMN codigo_alterno VARCHAR(10);
-  
-/*****************************F-SCP-RAC-PRE-0-03/02/2018*************/
-  
  
- 
-  
   
  /*****************************I-SCP-RAC-PRE-0-05/02/2018*************/
    
-  --------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_anticipo NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo
-IS 'monto anticipo en moenda original, (si la ejecucion correponde a un anticipo)';
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_anticipo_mb NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_anticipo_mb
-IS 'monto anticipado en moenda base';
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_desc_anticipo NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo
-IS 'descuentos de anticipo en moenda original (es el monto que no se ejecuta por que se desconto de un anticipo)';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_desc_anticipo_mb NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_desc_anticipo_mb
-IS 'monto descuento de anticipo en moenda base';
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN glosa VARCHAR;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.glosa
-IS 'descripcion de la trasaccion';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_iva_revertido NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido
-IS 'monto de iva revertido en moenda original';
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN monto_iva_revertido_mb NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.monto_iva_revertido_mb
-IS 'monto iva revertido en moenda base';
-
---------------- SQL ---------------
 
 CREATE TABLE pre.tpartida_temp (
   codigo_1 VARCHAR,
@@ -1059,32 +847,16 @@ CREATE TABLE pre.tpartida_temp (
   desc_2 VARCHAR,
   tipo_2 VARCHAR,
   tipo_mov_2 VARCHAR,
-  mov VARCHAR
+  mov VARCHAR,
+  id_partida_2 INTEGER,
+  migrado VARCHAR(2) DEFAULT 'no' NOT NULL,
+  obs VARCHAR,
+  gestion_ini INTEGER DEFAULT 2018 NOT NULL
 ) 
 WITH (oids = false); 
 
 
---------------- SQL ---------------
 
-ALTER TABLE pre.tpartida_temp
-  ADD COLUMN id_partida_2 INTEGER;
-
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_temp
-  ADD COLUMN migrado VARCHAR(2) DEFAULT 'no' NOT NULL;
-  
-  
-  --------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_temp
-  ADD COLUMN obs VARCHAR;
-
---------------- SQL ---------------
-
-ALTER TABLE pre.tpartida_temp
-  ADD COLUMN gestion_ini INTEGER DEFAULT 2018 NOT NULL;
   
   
   --------------- SQL ---------------
@@ -1109,145 +881,16 @@ WITH (oids = false);
   id SERIAL,
   id_concepto_ingas_uno INTEGER,
   id_concepto_ingas_dos INTEGER,
-  migrado VARCHAR(5) DEFAULT 'no'::character varying NOT NULL
+  migrado VARCHAR(5) DEFAULT 'no'::character varying NOT NULL,
+  PRIMARY KEY (id) NOT DEFERRABLE
 ) 
 WITH (oids = false);
 
 
-ALTER TABLE pre.tpresupuesto
-  ALTER COLUMN id_categoria_prog SET DEFAULT 1;
 
 
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN obs VARCHAR;
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN descripcion TEXT;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.descripcion
-IS 'para lamacenar descripcion de la compra para ayudar en el analisis de costos';
-
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN cantidad_descripcion NUMERIC;
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN tabla_descripcion VARCHAR(100);
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.tabla_descripcion
-IS 'nombre de la tabla donde se origina la descripcion';
-
-
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN id_tabla_descripcion INTEGER;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.id_tabla_descripcion
-IS 'Id de la tabla donde se origina la descripcion';
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN importe_mb_bk NUMERIC;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.importe_mb_bk
-IS 'para guardar dato modificado enmoneda bas';
-
-
-
-CREATE INDEX ttipo_presupuesto_idx ON pre.ttipo_presupuesto
-  USING btree (codigo COLLATE pg_catalog."default");
-
-CREATE INDEX tpresupuesto_idx1 ON pre.tpresupuesto
-  USING btree (id_categoria_prog);
-
-
- 
- 
 /*****************************F-SCP-RAC-PRE-0-01/12/2018*************/
 
-
-/*****************************I-SCP-CAP-PRE-0-06/12/2018*************/
-
-ALTER TABLE pre.tconcepto_tmp
-  ADD CONSTRAINT tconcepto_tmp_pkey 
-    PRIMARY KEY (id) NOT DEFERRABLE;
-
--- Drop the source table
-DROP TABLE pre.tformulacion_tmp;
--- Create the destination table
-CREATE TABLE pre.tformulacion_tmp (
-  id SERIAL NOT NULL,
-  nro VARCHAR(1000),
-  codigo VARCHAR(1000),
-  tipo1 VARCHAR(1000),
-  tipo2 VARCHAR(1000),
-  techo VARCHAR(1000),
-  carga VARCHAR(1000),
-  descripcion VARCHAR(1000),
-  m1 VARCHAR(1000),
-  m2 VARCHAR(1000),
-  m3 VARCHAR(1000),
-  m4 VARCHAR(1000),
-  m5 VARCHAR(1000),
-  m6 VARCHAR(1000),
-  m7 VARCHAR(1000),
-  m8 VARCHAR(1000),
-  m9 VARCHAR(1000),
-  m10 VARCHAR(1000),
-  m11 VARCHAR(1000),
-  m12 VARCHAR(1000),
-  presupuesto VARCHAR(1000),
-  id_memoria_calculo INTEGER,
-  migrado VARCHAR(3) DEFAULT 'no'::character varying,
-  obs VARCHAR,
-  CONSTRAINT tpresupuesto_tmp_pkey PRIMARY KEY(id)
-) 
-WITH (oids = false);
-
-ALTER TABLE pre.tpartida_ejecucion
-  ADD COLUMN marca_tmp VARCHAR;
-
-COMMENT ON COLUMN pre.tpartida_ejecucion.marca_tmp
-IS 'usado para operacion temporal para ajsutar datos manualmente';
-/*****************************F-SCP-CAP-PRE-0-06/12/2018*************/
-
-/***********************************I-SCP-MMV-PRE-0-20/12/2018*****************************************/
-ALTER TABLE pre.tpartida_ids
-  ADD COLUMN insercion VARCHAR(20);
-
-ALTER TABLE pre.tpartida_ids
-  ADD COLUMN id_usuario_reg INTEGER;
-
-ALTER TABLE pre.tpartida_ids
-  ADD COLUMN fecha_reg DATE;
-
-ALTER TABLE pre.tpartida_ids
-  ALTER COLUMN fecha_reg SET DEFAULT now();
-
-ALTER TABLE pre.tpartida_ids
-  ADD COLUMN estado_reg VARCHAR(20);
-
-ALTER TABLE pre.tpartida_ids
-  ALTER COLUMN estado_reg SET DEFAULT 'activo';
-
-ALTER TABLE pre.tpresupuesto_ids
-  ADD COLUMN insercion VARCHAR(20);
-
-ALTER TABLE pre.tpresupuesto_ids
-  ADD COLUMN id_usuario_reg INTEGER;
-
-ALTER TABLE pre.tpresupuesto_ids
-  ADD COLUMN fecha_reg DATE;
-
-ALTER TABLE pre.tpresupuesto_ids
-  ALTER COLUMN fecha_reg SET DEFAULT now();
-
-ALTER TABLE pre.tpresupuesto_ids
-  ADD COLUMN estado_reg VARCHAR(20);
-
-ALTER TABLE pre.tpresupuesto_ids
-  ALTER COLUMN estado_reg SET DEFAULT 'activo';
-/***********************************F-SCP-MMV-PRE-0-20/12/2018*****************************************/
 
 /*****************************I-SCP-RAC-PRE-3-20/12/2018*************/
 
@@ -1263,19 +906,14 @@ CREATE TABLE pre.tpartida_ejecucion_tmp (
   id_int_cbte INTEGER  ,
   glosa VARCHAR,
   migrado VARCHAR(2) DEFAULT 'no' NOT NULL,
+  obs VARCHAR,
+  id_partida_ejecucion INTEGER,
   PRIMARY KEY(id)
 ) 
 WITH (oids = false);
 
---------------- SQL ---------------
 
-ALTER TABLE pre.tpartida_ejecucion_tmp
-  ADD COLUMN obs VARCHAR;
-  
-  --------------- SQL ---------------
 
-ALTER TABLE pre.tpartida_ejecucion_tmp
-  ADD COLUMN id_partida_ejecucion INTEGER;
 
 
  /*****************************F-SCP-RAC-PRE-3-20/12/2018*************/
@@ -1300,28 +938,3 @@ CREATE TABLE pre.tpartida_reporte_ejecucion_dw (
 ) 
 WITH (oids = false);
  /*****************************F-SCP-JJA-PRE-0-26/03/2019*************/
-
- /**********************************I-SCP-MANU-PRE-01-04/01/2020****************************************/
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_gestion INTEGER;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN obs_memoria VARCHAR;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_funcionario INTEGER;
-
-ALTER TABLE pre.tformulacion_tmp
-  ADD COLUMN id_sesion INTEGER;
-
-/**********************************F-SCP-MANU-PRE-01-04/01/2020****************************************/
-
-/**********************************I-SCP-JJA-PRE-01-09/07/2020****************************************/
-ALTER TABLE pre.tajuste --#39
-  ADD COLUMN tipo_ajuste_formulacion VARCHAR(50);--#39
-/**********************************F-SCP-JJA-PRE-01-09/07/2020****************************************/
-
-/**********************************I-SCP-JJA-PRE-01-12/07/2020****************************************/
-ALTER TABLE pre.tpartida_ejecucion --#41
-  ADD COLUMN tipo_ajuste_formulacion VARCHAR(50); --#41
-/**********************************F-SCP-JJA-PRE-01-12/07/2020****************************************/
